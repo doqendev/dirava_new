@@ -94,7 +94,9 @@ export interface ShopifyCartLine {
     id: string
     title: string
     price: ShopifyMoney
+    compareAtPrice?: ShopifyMoney | null
     product: {
+      id: string
       title: string
       handle: string
       featuredImage: ShopifyImage | null

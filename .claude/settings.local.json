@@ -24,7 +24,8 @@
       "Bash(tasklist:*)",
       "Bash(taskkill /PID 38476 /F)",
       "Bash(powershell -Command:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "WebSearch"
     ]
   }
 }

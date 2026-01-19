@@ -10,6 +10,7 @@ import { ProductGallery } from '@/components/product/ProductGallery'
 import { VariantSelector } from '@/components/product/VariantSelector'
 import { QuantitySelector } from '@/components/product/QuantitySelector'
 import { AddToCartButton } from '@/components/product/AddToCartButton'
+import { WishlistButton } from '@/components/product/WishlistButton'
 import { Badge } from '@/components/ui/Badge'
 import type { ShopifyMoney, ShopifySelectedOption } from '@/types/shopify'
 
@@ -230,17 +231,33 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               </div>
             )}
 
-            {/* Add to Cart */}
-            <div className="pt-4">
-              <AddToCartButton
-                variantId={selectedVariant?.id || ''}
-                quantity={quantity}
-                available={selectedVariant?.availableForSale ?? false}
-                attributes={
-                  product.personalization && personalizationName.trim()
-                    ? [{ key: 'Personalization', value: personalizationName.trim() }]
-                    : undefined
-                }
+            {/* Add to Cart & Wishlist */}
+            <div className="pt-4 flex flex-col sm:flex-row gap-3">
+              <div className="flex-1">
+                <AddToCartButton
+                  variantId={selectedVariant?.id || ''}
+                  quantity={quantity}
+                  available={selectedVariant?.availableForSale ?? false}
+                  attributes={
+                    product.personalization && personalizationName.trim()
+                      ? [{ key: 'Personalization', value: personalizationName.trim() }]
+                      : undefined
+                  }
+                />
+              </div>
+              <WishlistButton
+                product={{
+                  productId: product.id,
+                  variantId: selectedVariant?.id || '',
+                  handle: product.handle,
+                  title: product.title,
+                  price: selectedVariant?.price || product.priceRange.minVariantPrice,
+                  compareAtPrice: selectedVariant?.compareAtPrice || product.compareAtPriceRange?.minVariantPrice,
+                  image: product.images[0] || null,
+                  universe,
+                }}
+                variant="button"
+                size="lg"
               />
             </div>
 

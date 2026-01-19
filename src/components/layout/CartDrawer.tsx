@@ -4,17 +4,34 @@ import { useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react'
+import { X, Minus, Plus, Trash2, Heart, ShoppingBag } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { formatPrice } from '@/lib/utils/formatPrice'
 import { useUIStore } from '@/stores/uiStore'
 import { useCartStore } from '@/stores/cartStore'
+import { useWishlistStore } from '@/stores/wishlistStore'
 import { Button } from '@/components/ui/Button'
 
 export function CartDrawer() {
   const { isCartOpen, closeCart } = useUIStore()
   const { lines, totalQuantity, subtotal, checkoutUrl, updateItem, removeItem, isLoading } =
     useCartStore()
+  const { addItem: addToWishlist, isInWishlist } = useWishlistStore()
+
+  const handleSaveForLater = (line: typeof lines[0]) => {
+    // Add to wishlist
+    addToWishlist({
+      productId: line.merchandise.product.id,
+      variantId: line.merchandise.id,
+      handle: line.merchandise.product.handle,
+      title: line.merchandise.product.title,
+      price: line.merchandise.price,
+      compareAtPrice: line.merchandise.compareAtPrice,
+      image: line.merchandise.product.featuredImage,
+    })
+    // Remove from cart
+    removeItem(line.id)
+  }
 
   // Close on escape key
   useEffect(() => {
@@ -186,13 +203,29 @@ export function CartDrawer() {
                               </button>
                             </div>
 
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2">
                               <span className="font-mono text-neon-cyan">
                                 {formatPrice(
                                   parseFloat(line.merchandise.price.amount) * line.quantity,
                                   line.merchandise.price.currencyCode
                                 )}
                               </span>
+                              <button
+                                onClick={() => handleSaveForLater(line)}
+                                disabled={isLoading || isInWishlist(line.merchandise.product.id)}
+                                className={cn(
+                                  'w-8 h-8 flex items-center justify-center',
+                                  isInWishlist(line.merchandise.product.id)
+                                    ? 'text-neon-pink'
+                                    : 'text-white/30 hover:text-neon-pink',
+                                  'disabled:opacity-50 disabled:cursor-not-allowed',
+                                  'transition-colors'
+                                )}
+                                aria-label="Save for later"
+                                title={isInWishlist(line.merchandise.product.id) ? 'Already in wishlist' : 'Save for later'}
+                              >
+                                <Heart className={cn('w-4 h-4', isInWishlist(line.merchandise.product.id) && 'fill-current')} />
+                              </button>
                               <button
                                 onClick={() => removeItem(line.id)}
                                 disabled={isLoading}

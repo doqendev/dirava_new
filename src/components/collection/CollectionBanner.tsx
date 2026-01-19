@@ -11,22 +11,22 @@ interface CollectionBannerProps {
   imageUrl?: string
 }
 
-// Map universe slugs to their banner images
-const universeBannerImages: Record<string, string> = {
-  'one-piece': '/images/banners/one-piece-banner.png',
-  'demon-slayer': '/images/banners/demon-slayer-banner.png',
-  'dragon-ball': '/images/banners/dragon-ball-banner.png',
-  'hunter-hunter': '/images/banners/hunter-hunter-banner.png',
-  'attack-on-titan': '/images/banners/attack-on-titan-banner.png',
-  'digimon': '/images/banners/digimon-banner.png',
+// Map universe slugs to their images (reusing the universe card images)
+const universeImages: Record<string, string> = {
+  'one-piece': '/images/universes/one-piece.png',
+  'demon-slayer': '/images/universes/demon-slayer.png',
+  'dragon-ball': '/images/universes/dragon-ball.png',
+  'hunter-hunter': '/images/universes/hunter-hunter.png',
+  'attack-on-titan': '/images/universes/attack-on-titan.png',
+  'digimon': '/images/universes/digimon.png',
 }
 
-// Get banner image by checking the slug
-function getBannerImage(slug: string): string | null {
-  if (universeBannerImages[slug]) {
-    return universeBannerImages[slug]
+// Get universe image by checking the slug
+function getUniverseImage(slug: string): string | null {
+  if (universeImages[slug]) {
+    return universeImages[slug]
   }
-  for (const [key, image] of Object.entries(universeBannerImages)) {
+  for (const [key, image] of Object.entries(universeImages)) {
     if (slug.includes(key)) {
       return image
     }
@@ -147,20 +147,23 @@ export function CollectionBanner({
   themeColor,
   imageUrl,
 }: CollectionBannerProps) {
-  const bannerImage = imageUrl || getBannerImage(universe)
-  const hasBanner = !!bannerImage
+  const universeImage = imageUrl || getUniverseImage(universe)
+  const hasImage = !!universeImage
 
   return (
     <div className="relative w-full h-32 md:h-48 overflow-hidden">
       {/* Background */}
-      {hasBanner ? (
+      {hasImage ? (
         <Image
-          src={bannerImage}
+          src={universeImage}
           alt={`${universeName} collection banner`}
           fill
-          className="object-cover"
+          className="object-cover object-top"
           priority
           sizes="100vw"
+          style={{
+            objectPosition: 'center 20%',
+          }}
         />
       ) : (
         <div

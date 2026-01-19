@@ -1,7 +1,6 @@
 'use client'
 
-import { useCallback, useState, useEffect } from 'react'
-import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ChevronDown, Check, SlidersHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
@@ -18,6 +17,8 @@ interface CollectionFiltersProps {
   priceRange: { min: number; max: number }
   themeColor: string
   productCount: number
+  basePath: string
+  currentParams: Record<string, string>
 }
 
 // Filter Checkbox Component
@@ -453,33 +454,27 @@ export function CollectionFilters({
   priceRange,
   themeColor,
   productCount,
+  basePath,
+  currentParams,
 }: CollectionFiltersProps) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
   const { isFilterDrawerOpen, closeFilterDrawer } = useUIStore()
 
-  const updateFilters = useCallback(
-    (key: string, value: unknown) => {
-      const params = new URLSearchParams(searchParams.toString())
+  const updateFilters = (key: string, value: unknown) => {
+    const params = new URLSearchParams(currentParams)
 
-      if (value === null || value === undefined || value === '') {
-        params.delete(key)
-      } else {
-        params.set(key, String(value))
-      }
+    if (value === null || value === undefined || value === '') {
+      params.delete(key)
+    } else {
+      params.set(key, String(value))
+    }
 
-      const queryString = params.toString()
-      router.push(queryString ? `${pathname}?${queryString}` : pathname, {
-        scroll: false,
-      })
-    },
-    [router, pathname, searchParams]
-  )
+    const queryString = params.toString()
+    window.location.href = queryString ? `${basePath}?${queryString}` : basePath
+  }
 
-  const clearFilters = useCallback(() => {
-    router.push(pathname, { scroll: false })
-  }, [router, pathname])
+  const clearFilters = () => {
+    window.location.href = basePath
+  }
 
   return (
     <>

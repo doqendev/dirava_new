@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from 'next'
 import { Orbitron, Inter, JetBrains_Mono } from 'next/font/google'
 import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { CartDrawer } from '@/components/layout/CartDrawer'
+import { SearchModal } from '@/components/search/SearchModal'
 import './globals.css'
 
 const orbitron = Orbitron({
@@ -71,8 +73,10 @@ export default function RootLayout({
         <main className="pt-16 pb-20 lg:pb-0 overflow-visible">
           {children}
         </main>
+        <Footer />
         <BottomNav />
         <CartDrawer />
+        <SearchModal />
       </body>
     </html>
   )

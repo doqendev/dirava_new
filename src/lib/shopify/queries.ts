@@ -231,7 +231,12 @@ export const GET_CART = gql`
                   amount
                   currencyCode
                 }
+                compareAtPrice {
+                  amount
+                  currencyCode
+                }
                 product {
+                  id
                   title
                   handle
                   featuredImage {

@@ -1,7 +1,5 @@
 'use client'
 
-import { useCallback } from 'react'
-import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { SORT_OPTIONS, type SortOption } from '@/lib/utils/filters'
@@ -9,30 +7,27 @@ import { SORT_OPTIONS, type SortOption } from '@/lib/utils/filters'
 interface CollectionSortProps {
   currentSort: SortOption
   themeColor: string
+  basePath: string
+  currentParams: Record<string, string>
 }
 
-export function CollectionSort({ currentSort }: CollectionSortProps) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
+export function CollectionSort({
+  currentSort,
+  basePath,
+  currentParams,
+}: CollectionSortProps) {
+  const handleSortChange = (newSort: SortOption) => {
+    const params = new URLSearchParams(currentParams)
 
-  const handleSortChange = useCallback(
-    (newSort: SortOption) => {
-      const params = new URLSearchParams(searchParams.toString())
+    if (newSort === 'featured') {
+      params.delete('sort')
+    } else {
+      params.set('sort', newSort)
+    }
 
-      if (newSort === 'featured') {
-        params.delete('sort')
-      } else {
-        params.set('sort', newSort)
-      }
-
-      const queryString = params.toString()
-      router.push(queryString ? `${pathname}?${queryString}` : pathname, {
-        scroll: false,
-      })
-    },
-    [router, pathname, searchParams]
-  )
+    const queryString = params.toString()
+    window.location.href = queryString ? `${basePath}?${queryString}` : basePath
+  }
 
   return (
     <div className="relative">

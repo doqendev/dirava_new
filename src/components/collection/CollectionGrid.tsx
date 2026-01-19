@@ -42,7 +42,9 @@ export function CollectionGrid({
   themeColor,
 }: CollectionGridProps) {
   const gridColumns = useUIStore((state) => state.gridColumns)
-  const showProductInfo = useUIStore((state) => state.showProductInfo)
+
+  // 3-column grid automatically hides product info
+  const compactMode = gridColumns === 3
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {
@@ -98,7 +100,7 @@ export function CollectionGrid({
     'grid gap-4',
     gridColumns === 1 && 'grid-cols-1',
     gridColumns === 2 && 'grid-cols-2',
-    gridColumns === 3 && 'grid-cols-2 md:grid-cols-3'
+    gridColumns === 3 && 'grid-cols-3'
   )
 
   // Empty state
@@ -155,7 +157,7 @@ export function CollectionGrid({
                 product={product}
                 universe={universe}
                 showQuickAdd={!!product.variantId}
-                compactMode={!showProductInfo}
+                compactMode={compactMode}
               />
             </motion.div>
           ))}

@@ -1,5 +1,7 @@
 import { Suspense } from 'react'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { ChevronRight } from 'lucide-react'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_UNIVERSE_PRODUCTS } from '@/lib/shopify/queries'
 import { extractNodes, getFirstAvailableVariant } from '@/lib/shopify/utils'
@@ -9,7 +11,6 @@ import {
   calculatePriceRange,
 } from '@/lib/utils/filters'
 import {
-  CollectionBanner,
   CollectionFilters,
   CollectionGrid,
   CollectionToolbar,
@@ -92,7 +93,9 @@ async function UniverseContent({
     notFound()
   }
 
-  const config = UNIVERSE_CONFIG[universe as keyof typeof UNIVERSE_CONFIG]
+  // Remove trailing "-1", "-2", etc. that Shopify adds for duplicate handles
+  const cleanUniverse = universe.replace(/-\d+$/, '')
+  const config = UNIVERSE_CONFIG[cleanUniverse as keyof typeof UNIVERSE_CONFIG]
   const themeColor = config?.color || '#00f5ff'
 
   // Parse filters from URL
@@ -100,6 +103,17 @@ async function UniverseContent({
 
   // Calculate price range from products
   const priceRange = calculatePriceRange(data.products)
+
+  // Prepare URL data for client components
+  const basePath = `/worlds/${universe}`
+  const currentParams: Record<string, string> = {}
+  for (const [key, value] of Object.entries(searchParams)) {
+    if (typeof value === 'string') {
+      currentParams[key] = value
+    } else if (Array.isArray(value) && value.length > 0 && value[0]) {
+      currentParams[key] = value[0]
+    }
+  }
 
   return (
     <div className="flex gap-6">
@@ -109,12 +123,19 @@ async function UniverseContent({
         priceRange={priceRange}
         themeColor={themeColor}
         productCount={data.products.length}
+        basePath={basePath}
+        currentParams={currentParams}
       />
 
       {/* Main Content */}
       <div className="flex-1 min-w-0">
         {/* Toolbar */}
-        <CollectionToolbar filters={filters} themeColor={themeColor} />
+        <CollectionToolbar
+          filters={filters}
+          themeColor={themeColor}
+          basePath={basePath}
+          currentParams={currentParams}
+        />
 
         {/* Product Grid */}
         <CollectionGrid
@@ -163,21 +184,49 @@ export default async function UniversePage({ params, searchParams }: Props) {
   const { universe } = await params
   const resolvedSearchParams = await searchParams
 
-  const config = UNIVERSE_CONFIG[universe as keyof typeof UNIVERSE_CONFIG]
-  const universeName = config?.name || universe.replace(/-/g, ' ')
+  // Remove trailing "-1", "-2", etc. that Shopify adds for duplicate handles
+  const cleanUniverse = universe.replace(/-\d+$/, '')
+  const config = UNIVERSE_CONFIG[cleanUniverse as keyof typeof UNIVERSE_CONFIG]
+  const universeName = config?.name || cleanUniverse.replace(/-/g, ' ')
   const themeColor = config?.color || '#00f5ff'
 
   return (
     <div className="min-h-screen">
-      {/* Compact Banner */}
-      <CollectionBanner
-        universe={universe}
-        universeName={universeName}
-        themeColor={themeColor}
-      />
+      {/* Header Section */}
+      <section className="pt-6 px-4 max-w-7xl mx-auto">
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-2 text-sm mb-4">
+          <Link
+            href="/"
+            className="text-white/50 hover:text-white transition-colors"
+          >
+            Home
+          </Link>
+          <ChevronRight className="w-4 h-4 text-white/30" />
+          <Link
+            href="/worlds"
+            className="text-white/50 hover:text-white transition-colors"
+          >
+            Worlds
+          </Link>
+          <ChevronRight className="w-4 h-4 text-white/30" />
+          <span style={{ color: themeColor }}>{universeName}</span>
+        </nav>
+
+        {/* Collection Title */}
+        <h1
+          className="font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-wider uppercase mb-6"
+          style={{
+            color: themeColor,
+            textShadow: `0 0 20px ${themeColor}60, 0 0 40px ${themeColor}30`,
+          }}
+        >
+          {universeName}
+        </h1>
+      </section>
 
       {/* Main Content */}
-      <section className="py-6 px-4 max-w-7xl mx-auto">
+      <section className="pb-6 px-4 max-w-7xl mx-auto">
         <Suspense fallback={<UniverseContentSkeleton />}>
           <UniverseContent
             universe={universe}
