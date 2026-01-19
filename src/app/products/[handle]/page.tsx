@@ -1,0 +1,105 @@
+import { redirect } from 'next/navigation'
+import { shopifyFetch } from '@/lib/shopify/client'
+import { GET_PRODUCT } from '@/lib/shopify/queries'
+import type { ShopifyProduct, ShopifyMetafield } from '@/types/shopify'
+import type { Metadata } from 'next'
+
+interface ProductWithCollections extends ShopifyProduct {
+  collections?: {
+    edges: Array<{
+      node: {
+        handle: string
+        metafield?: { value: string } | null
+      }
+    }>
+  }
+}
+
+interface Props {
+  params: Promise<{ handle: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { handle } = await params
+  try {
+    const data = await shopifyFetch<{ product: ShopifyProduct | null }>(GET_PRODUCT, {
+      handle,
+    })
+
+    if (data.product) {
+      return {
+        title: data.product.title,
+        description: data.product.description,
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch product metadata:', error)
+  }
+
+  return {
+    title: 'Product',
+  }
+}
+
+async function getProduct(handle: string) {
+  try {
+    const data = await shopifyFetch<{ product: ProductWithCollections | null }>(GET_PRODUCT, {
+      handle,
+    })
+    return data.product
+  } catch (error) {
+    console.error('Failed to fetch product:', error)
+    return null
+  }
+}
+
+function getUniverseFromProduct(product: ProductWithCollections): string | null {
+  // First, try to get universe from product's own metafields
+  const universeMetafield = product.metafields?.find(
+    (mf: ShopifyMetafield | null) => mf?.key === 'universe'
+  )
+  if (universeMetafield?.value) {
+    return universeMetafield.value
+  }
+
+  // If not found, try to get universe from the product's collections
+  // We use the collection HANDLE (not the metafield value) because routes use handles
+  if (product.collections?.edges) {
+    // Find first collection that has a universe metafield set
+    for (const edge of product.collections.edges) {
+      if (edge.node.metafield?.value) {
+        // Return the collection handle, not the metafield value
+        return edge.node.handle
+      }
+    }
+
+    // If no collection has universe metafield, use the first collection's handle
+    const firstCollection = product.collections.edges[0]
+    if (firstCollection) {
+      return firstCollection.node.handle
+    }
+  }
+
+  return null
+}
+
+export default async function ProductPage({ params }: Props) {
+  const { handle } = await params
+  const product = await getProduct(handle)
+
+  if (!product) {
+    redirect('/404')
+  }
+
+  // Get universe from product metafields or collections
+  const universe = getUniverseFromProduct(product)
+
+  // If we have a universe, redirect to the universe-specific product page
+  if (universe) {
+    redirect(`/worlds/${universe}/${handle}`)
+  }
+
+  // If still no universe found, redirect to home
+  // In a real app, you might want to show a generic product page instead
+  redirect('/')
+}

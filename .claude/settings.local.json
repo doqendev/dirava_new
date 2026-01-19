@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm dev)",
+      "Bash(timeout /t 5 /nobreak)",
+      "Bash(curl:*)",
+      "Bash(more:*)",
+      "Bash(timeout /t 5)",
+      "Bash(npx tsc:*)",
+      "Bash(timeout /t 8 /nobreak)",
+      "Bash(ping:*)",
+      "Bash(python scripts/with_server.py:*)",
+      "Bash(pip install:*)",
+      "Bash(playwright install:*)",
+      "Bash(python:*)",
+      "Bash(/c/Users/Marcos/AppData/Local/Microsoft/WindowsApps/python3.11.exe:*)",
+      "Bash(npm run build:*)",
+      "Skill(feature-dev:feature-dev)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(npx next build)",
+      "Bash(tasklist:*)",
+      "Bash(taskkill /PID 38476 /F)",
+      "Bash(powershell -Command:*)",
+      "Bash(npm run dev:*)"
+    ]
+  }
+}
