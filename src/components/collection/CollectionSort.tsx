@@ -1,8 +1,18 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { SORT_OPTIONS, type SortOption } from '@/lib/utils/filters'
+
+// Map sort option values to translation keys
+const SORT_TRANSLATION_KEYS: Record<SortOption, string> = {
+  featured: 'featured',
+  'price-asc': 'priceLowHigh',
+  'price-desc': 'priceHighLow',
+  newest: 'newest',
+  az: 'nameAZ',
+}
 
 interface CollectionSortProps {
   currentSort: SortOption
@@ -16,6 +26,8 @@ export function CollectionSort({
   basePath,
   currentParams,
 }: CollectionSortProps) {
+  const t = useTranslations('filters')
+
   const handleSortChange = (newSort: SortOption) => {
     const params = new URLSearchParams(currentParams)
 
@@ -52,7 +64,7 @@ export function CollectionSort({
             value={option.value}
             className="bg-bg-primary text-white"
           >
-            {option.label}
+            {t(SORT_TRANSLATION_KEYS[option.value])}
           </option>
         ))}
       </select>

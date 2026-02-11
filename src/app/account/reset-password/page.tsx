@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Reset Password',
-  description: 'Set a new password for your Neo-Stage Collective account.',
+  description: 'Set a new password for your Tamashii account.',
 }
 
 export default function ResetPasswordPage() {

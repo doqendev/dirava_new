@@ -2,8 +2,11 @@ import { Suspense } from 'react'
 import { HeroSection } from '@/components/home/HeroSection'
 import { UniverseGrid, UniverseGridSkeleton } from '@/components/home/UniverseGrid'
 import { DropRunway, DropRunwaySkeleton } from '@/components/home/DropRunway'
+import { NewsletterBanner } from '@/components/home/NewsletterBanner'
+import { TrustBadges } from '@/components/home/TrustBadges'
+import { Testimonials } from '@/components/home/Testimonials'
 import { shopifyFetch } from '@/lib/shopify/client'
-import { GET_UNIVERSES, GET_DROP_PRODUCTS } from '@/lib/shopify/queries'
+import { GET_UNIVERSES, GET_DROP_PRODUCTS, GET_NEW_ARRIVALS, GET_BEST_SELLERS } from '@/lib/shopify/queries'
 import { extractNodes, getCollectionUniverse, getCollectionProductCount } from '@/lib/shopify/utils'
 import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
 import type { ShopifyCollection, ShopifyProduct } from '@/types/shopify'
@@ -35,7 +38,7 @@ async function getUniverses() {
 
         return {
           slug: collection.handle,
-          name: collection.title,
+          name: config?.name || collection.title,
           itemCount: getCollectionProductCount(collection),
           themeColor: (config?.colorName || 'cyan') as UniverseColorName,
           backgroundImage: collection.image?.url,
@@ -77,15 +80,80 @@ async function getDropProducts() {
   }
 }
 
+async function getNewArrivals() {
+  try {
+    const data = await shopifyFetch<{
+      products: { edges: Array<{ node: ShopifyProduct & {
+        universe?: { value: string } | null
+      } }> }
+    }>(GET_NEW_ARRIVALS, { first: 12 })
+
+    const products = extractNodes(data.products)
+
+    return products.map((product) => ({
+      id: product.id,
+      handle: product.handle,
+      title: product.title,
+      price: product.priceRange.minVariantPrice,
+      image: product.featuredImage,
+      universe: product.universe?.value || null,
+    }))
+  } catch (error) {
+    console.error('Failed to fetch new arrivals:', error)
+    return []
+  }
+}
+
+async function getBestSellers() {
+  try {
+    const data = await shopifyFetch<{
+      products: { edges: Array<{ node: ShopifyProduct & {
+        isBestseller?: { value: string } | null
+        universe?: { value: string } | null
+      } }> }
+    }>(GET_BEST_SELLERS, { first: 20 })
+
+    const products = extractNodes(data.products)
+
+    // Filter to products with is_bestseller metafield
+    return products
+      .filter((product) => product.isBestseller?.value === 'true')
+      .slice(0, 12)
+      .map((product) => ({
+        id: product.id,
+        handle: product.handle,
+        title: product.title,
+        price: product.priceRange.minVariantPrice,
+        image: product.featuredImage,
+        universe: product.universe?.value || null,
+      }))
+  } catch (error) {
+    console.error('Failed to fetch best sellers:', error)
+    return []
+  }
+}
+
 async function UniversesSection() {
   const universes = await getUniverses()
   return <UniverseGrid universes={universes} />
 }
 
+async function NewArrivalsSection() {
+  const products = await getNewArrivals()
+  if (products.length === 0) return null
+  return <DropRunway products={products} titleKey="newArrivals" />
+}
+
 async function DropsSection() {
   const products = await getDropProducts()
   if (products.length === 0) return null
-  return <DropRunway products={products} />
+  return <DropRunway products={products} titleKey="dropRunway" />
+}
+
+async function BestSellersSection() {
+  const products = await getBestSellers()
+  if (products.length === 0) return null
+  return <DropRunway products={products} titleKey="bestSellers" />
 }
 
 export default function HomePage() {
@@ -98,8 +166,23 @@ export default function HomePage() {
       </Suspense>
 
       <Suspense fallback={<DropRunwaySkeleton />}>
+        <NewArrivalsSection />
+      </Suspense>
+
+      <Suspense fallback={<DropRunwaySkeleton />}>
         <DropsSection />
       </Suspense>
+
+      <Suspense fallback={<DropRunwaySkeleton />}>
+        <BestSellersSection />
+      </Suspense>
+
+      <Testimonials />
+
+      <NewsletterBanner />
+
+      <TrustBadges />
+
     </div>
   )
 }

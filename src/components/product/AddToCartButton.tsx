@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ShoppingBag, Check, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
@@ -14,9 +15,14 @@ interface AddToCartButtonProps {
   available?: boolean
   attributes?: Array<{ key: string; value: string }>
   className?: string
+  requiresPersonalization?: boolean
+  personalizationValue?: string
+  onPersonalizationError?: () => void
+  onBeforeAdd?: () => boolean // Return true to proceed, false to cancel
+  label?: string
 }
 
-type ButtonState = 'idle' | 'loading' | 'success' | 'error'
+type ButtonState = 'idle' | 'loading' | 'success' | 'error' | 'personalization-error'
 
 export function AddToCartButton({
   variantId,
@@ -24,13 +30,33 @@ export function AddToCartButton({
   available = true,
   attributes,
   className,
+  requiresPersonalization = false,
+  personalizationValue = '',
+  onPersonalizationError,
+  onBeforeAdd,
+  label,
 }: AddToCartButtonProps) {
+  const t = useTranslations('product')
+  const tCommon = useTranslations('common')
   const [state, setState] = useState<ButtonState>('idle')
   const addItem = useCartStore((state) => state.addItem)
   const openCart = useUIStore((state) => state.openCart)
 
   const handleClick = async () => {
     if (!available || state === 'loading') return
+
+    // Check personalization requirement
+    if (requiresPersonalization && !personalizationValue.trim()) {
+      setState('personalization-error')
+      onPersonalizationError?.()
+      setTimeout(() => setState('idle'), 2000)
+      return
+    }
+
+    // Run validation callback if provided
+    if (onBeforeAdd && !onBeforeAdd()) {
+      return
+    }
 
     setState('loading')
 
@@ -54,22 +80,23 @@ export function AddToCartButton({
     idle: (
       <>
         <ShoppingBag className="w-5 h-5 mr-2" />
-        ADD TO CART
+        {(label || t('addToCart')).toUpperCase()}
       </>
     ),
     loading: (
       <>
         <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-        ADDING...
+        {t('adding').toUpperCase()}
       </>
     ),
     success: (
       <>
         <Check className="w-5 h-5 mr-2" />
-        ADDED!
+        {t('addedToCart').toUpperCase()}
       </>
     ),
-    error: <>TRY AGAIN</>,
+    error: <>{tCommon('error').toUpperCase()}</>,
+    'personalization-error': <>{t('personalizationRequired').toUpperCase()}</>,
   }
 
   if (!available) {
@@ -80,7 +107,7 @@ export function AddToCartButton({
         disabled
         className={cn('w-full', className)}
       >
-        OUT OF STOCK
+        {tCommon('outOfStock').toUpperCase()}
       </Button>
     )
   }
@@ -100,6 +127,7 @@ export function AddToCartButton({
           'w-full',
           state === 'success' && 'bg-neon-green hover:bg-neon-green/90',
           state === 'error' && 'bg-red-500 hover:bg-red-500/90',
+          state === 'personalization-error' && 'bg-orange-500 hover:bg-orange-500/90',
           className
         )}
       >

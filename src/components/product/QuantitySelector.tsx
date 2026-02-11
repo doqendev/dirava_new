@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { Minus, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 
@@ -43,6 +44,7 @@ export function QuantitySelector({
   size = 'md',
   className,
 }: QuantitySelectorProps) {
+  const t = useTranslations('quantity')
   const styles = sizeStyles[size]
 
   const handleDecrement = () => {
@@ -85,7 +87,7 @@ export function QuantitySelector({
           'disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-white/50',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-neon-cyan'
         )}
-        aria-label="Decrease quantity"
+        aria-label={t('decrease')}
       >
         <Minus className={styles.icon} />
       </button>
@@ -107,7 +109,7 @@ export function QuantitySelector({
           // Hide number input spinners
           '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
         )}
-        aria-label="Quantity"
+        aria-label={t('quantity')}
       />
 
       <button
@@ -121,7 +123,7 @@ export function QuantitySelector({
           'disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-white/50',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-neon-cyan'
         )}
-        aria-label="Increase quantity"
+        aria-label={t('increase')}
       >
         <Plus className={styles.icon} />
       </button>

@@ -6,47 +6,31 @@ import Image from 'next/image'
 import { Heart, Trash2, ShoppingCart, ArrowRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AccountLayout } from '@/components/account/AccountLayout'
+import { WishlistItemDrawer } from '@/components/account/WishlistItemDrawer'
 import { Button } from '@/components/ui/Button'
 import { useWishlistStore } from '@/stores/wishlistStore'
-import { useCartStore } from '@/stores/cartStore'
-import { useUIStore } from '@/stores/uiStore'
 import { formatPrice } from '@/lib/utils/formatPrice'
 import type { WishlistItem } from '@/types/wishlist'
 
 export default function WishlistPage() {
   const { items, removeItem } = useWishlistStore()
-  const addToCart = useCartStore((state) => state.addItem)
-  const openCart = useUIStore((state) => state.openCart)
 
   // Hydration fix - only render items after mount
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 
-  const [addingToCart, setAddingToCart] = useState<string | null>(null)
+  // Drawer state
+  const [selectedItem, setSelectedItem] = useState<WishlistItem | null>(null)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
-  const handleAddToCart = async (item: WishlistItem) => {
-    if (!item.variantId) return
-
-    setAddingToCart(item.productId)
-    try {
-      await addToCart(item.variantId, 1)
-      removeItem(item.productId)
-      openCart()
-    } catch (error) {
-      console.error('Failed to add to cart:', error)
-    } finally {
-      setAddingToCart(null)
-    }
+  const handleAddToCart = (item: WishlistItem) => {
+    setSelectedItem(item)
+    setIsDrawerOpen(true)
   }
 
-  const handleMoveAllToCart = async () => {
-    for (const item of items) {
-      if (item.variantId) {
-        await addToCart(item.variantId, 1)
-      }
-    }
-    useWishlistStore.getState().clearWishlist()
-    openCart()
+  const handleCloseDrawer = () => {
+    setIsDrawerOpen(false)
+    setSelectedItem(null)
   }
 
   if (!mounted) {
@@ -81,20 +65,11 @@ export default function WishlistPage() {
         </div>
       ) : (
         <>
-          {/* Header with actions */}
+          {/* Header with count */}
           <div className="flex items-center justify-between mb-6">
             <p className="text-white/60">
               {items.length} {items.length === 1 ? 'item' : 'items'} saved
             </p>
-            <Button
-              variant="primary"
-              glow="cyan"
-              size="sm"
-              onClick={handleMoveAllToCart}
-            >
-              <ShoppingCart className="w-4 h-4 mr-2" />
-              Add All to Cart
-            </Button>
           </div>
 
           {/* Wishlist Items */}
@@ -173,8 +148,6 @@ export default function WishlistPage() {
                         size="sm"
                         glow="cyan"
                         onClick={() => handleAddToCart(item)}
-                        isLoading={addingToCart === item.productId}
-                        disabled={!item.variantId}
                       >
                         <ShoppingCart className="w-4 h-4" />
                       </Button>
@@ -205,6 +178,13 @@ export default function WishlistPage() {
           </div>
         </>
       )}
+
+      {/* Wishlist Item Drawer */}
+      <WishlistItemDrawer
+        item={selectedItem}
+        isOpen={isDrawerOpen}
+        onClose={handleCloseDrawer}
+      />
     </AccountLayout>
   )
 }

@@ -1,0 +1,218 @@
+'use client'
+
+import { Suspense, useState, useEffect, useRef, Component, type ReactNode, useCallback } from 'react'
+import { Canvas } from '@react-three/fiber'
+import * as THREE from 'three'
+import { Loader2, Box, Hand, Search, Download } from 'lucide-react'
+import { TextExtrusionScene } from './TextExtrusionScene'
+import { SvgExtrusionScene } from './SvgExtrusionScene'
+import { CompositeSignScene } from './CompositeSignScene'
+import { downloadOBJ } from '@/lib/preview/exportOBJ'
+import type { PreviewConfig } from '@/lib/preview/types'
+
+interface Preview3DCanvasProps {
+  config: PreviewConfig
+  text: string
+  selectedVariantName?: string
+}
+
+function LoadingFallback() {
+  return (
+    <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0a12]">
+      <Loader2 className="w-8 h-8 text-neon-cyan animate-spin mb-3" />
+      <p className="text-sm text-white/50">Loading 3D preview...</p>
+    </div>
+  )
+}
+
+function ErrorFallback() {
+  return (
+    <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0a12]">
+      <Box className="w-8 h-8 text-white/30 mb-3" />
+      <p className="text-sm text-white/40">3D preview not available</p>
+      <p className="text-xs text-white/20 mt-1">WebGL may not be supported</p>
+    </div>
+  )
+}
+
+// Error boundary to catch WebGL and Three.js runtime errors
+class WebGLErrorBoundary extends Component<
+  { children: ReactNode; fallback: ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: ReactNode; fallback: ReactNode }) {
+    super(props)
+    this.state = { hasError: false }
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+
+  componentDidCatch(error: Error) {
+    console.warn('3D Preview error:', error.message)
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback
+    }
+    return this.props.children
+  }
+}
+
+function checkWebGLSupport(): boolean {
+  if (typeof window === 'undefined') return false
+  try {
+    const canvas = document.createElement('canvas')
+    const gl = canvas.getContext('webgl2') || canvas.getContext('webgl')
+    if (!gl) return false
+    // Explicitly lose the context to free the slot
+    const ext = (gl as WebGLRenderingContext).getExtension('WEBGL_lose_context')
+    if (ext) ext.loseContext()
+    canvas.width = 0
+    canvas.height = 0
+    return true
+  } catch {
+    return false
+  }
+}
+
+interface SceneRouterProps extends Preview3DCanvasProps {
+  sceneRef?: React.Ref<THREE.Group>
+}
+
+function SceneRouter({ config, text, selectedVariantName, sceneRef }: SceneRouterProps) {
+  switch (config.type) {
+    case 'text-extrusion':
+      return <TextExtrusionScene text={text} config={config} />
+    case 'svg-extrusion': {
+      // Resolve SVG path: variant-specific or single SVG
+      const svgPath = (selectedVariantName && config.variantSvgs?.[selectedVariantName]) || config.svg
+      if (!svgPath) return null
+      return <SvgExtrusionScene config={config} svgPath={svgPath} />
+    }
+    case 'composite-sign': {
+      const jollySvgPath = (selectedVariantName && config.variantSvgs?.[selectedVariantName]) || config.svg
+      return <CompositeSignScene config={config} svgPath={jollySvgPath} text={text} selectedVariantName={selectedVariantName} sceneRef={sceneRef} />
+    }
+    default:
+      return null
+  }
+}
+
+export function Preview3DCanvas({ config, text, selectedVariantName }: Preview3DCanvasProps) {
+  const [webGLSupported, setWebGLSupported] = useState<boolean | null>(null)
+  const [debouncedText, setDebouncedText] = useState(text)
+  const [showHint, setShowHint] = useState(true)
+  const sceneRef = useRef<THREE.Group>(null)
+
+  const handleDownloadOBJ = useCallback(() => {
+    if (!sceneRef.current) return
+    downloadOBJ(sceneRef.current, 'tamashii-preview')
+  }, [])
+
+  // Check WebGL support on mount
+  useEffect(() => {
+    setWebGLSupported(checkWebGLSupport())
+  }, [])
+
+  // Auto-hide interaction hint after 4 seconds
+  useEffect(() => {
+    if (!showHint) return
+    const timer = setTimeout(() => setShowHint(false), 4000)
+    return () => clearTimeout(timer)
+  }, [showHint])
+
+  // Debounce text input for performance
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedText(text)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [text])
+
+  // Still checking
+  if (webGLSupported === null) {
+    return (
+      <div className="relative w-full h-full bg-[#0a0a12]">
+        <LoadingFallback />
+      </div>
+    )
+  }
+
+  // WebGL not supported
+  if (!webGLSupported) {
+    return (
+      <div className="relative w-full h-full bg-[#0a0a12]">
+        <ErrorFallback />
+      </div>
+    )
+  }
+
+  return (
+    <div className="relative w-full h-full bg-[#0a0a12]">
+      <WebGLErrorBoundary
+        fallback={
+          <div className="relative w-full h-full bg-[#0a0a12]">
+            <ErrorFallback />
+          </div>
+        }
+      >
+        <Canvas
+          camera={{
+            position: config.camera.position,
+            fov: config.camera.fov ?? 50,
+            near: config.camera.near ?? 0.1,
+            far: config.camera.far ?? 1000,
+          }}
+          dpr={[1, 1.5]}
+          gl={{ antialias: true, alpha: false }}
+        >
+          <Suspense fallback={null}>
+            <SceneRouter config={config} text={debouncedText} selectedVariantName={selectedVariantName} sceneRef={sceneRef} />
+          </Suspense>
+        </Canvas>
+      </WebGLErrorBoundary>
+
+      {/* Download OBJ test button */}
+      <button
+        onClick={handleDownloadOBJ}
+        className="absolute top-3 left-3 z-30 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-white/80 hover:text-white bg-black/50 hover:bg-black/70 border border-white/10 hover:border-white/20 transition-all backdrop-blur-sm"
+        title="Download OBJ"
+      >
+        <Download className="w-4 h-4" />
+        OBJ
+      </button>
+
+      {/* Interaction hints — animated, fades out after 4s */}
+      <div
+        className="absolute top-8 inset-x-0 z-10 pointer-events-none flex justify-center"
+        style={{
+          opacity: showHint ? 1 : 0,
+          transform: showHint ? 'translateY(0)' : 'translateY(-8px)',
+          transition: 'opacity 1s ease, transform 1s ease',
+        }}
+      >
+        <div
+          className="flex items-center gap-5 px-5 py-2 rounded-full text-xs text-neon-cyan/80 animate-pulse"
+          style={{
+            background: 'rgba(0, 255, 255, 0.06)',
+            boxShadow: '0 0 20px rgba(0, 255, 255, 0.15), 0 0 40px rgba(0, 255, 255, 0.05)',
+            border: '1px solid rgba(0, 255, 255, 0.15)',
+          }}
+        >
+          <span className="flex items-center gap-2">
+            <Hand className="w-4 h-4" />
+            Drag to rotate
+          </span>
+          <span className="text-neon-cyan/30">|</span>
+          <span className="flex items-center gap-2">
+            <Search className="w-4 h-4" />
+            Pinch to zoom
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}

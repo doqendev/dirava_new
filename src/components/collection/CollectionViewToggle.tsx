@@ -13,9 +13,9 @@ const columnOptions: Array<{
   icon: React.ComponentType<{ className?: string }>
   label: string
 }> = [
-  { cols: 1, icon: LayoutGrid, label: '1 column' },
-  { cols: 2, icon: Grid2X2, label: '2 columns' },
-  { cols: 3, icon: Grid3X3, label: '3 columns (compact)' },
+  { cols: 1, icon: LayoutGrid, label: '2 columns (large)' },
+  { cols: 2, icon: Grid2X2, label: '4 columns' },
+  { cols: 3, icon: Grid3X3, label: '4 columns (compact)' },
 ]
 
 export function CollectionViewToggle({ themeColor }: CollectionViewToggleProps) {

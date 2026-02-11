@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Package, Loader2, ShoppingBag } from 'lucide-react'
+import { Package, Loader2, ShoppingBag, ArrowRight } from 'lucide-react'
+import { useTranslations, useLocale } from 'next-intl'
 import { AccountLayout } from '@/components/account/AccountLayout'
 import { useAuthStore } from '@/stores/authStore'
 import { shopifyClient } from '@/lib/shopify/client'
@@ -22,7 +23,19 @@ const statusColors: Record<string, string> = {
   PARTIALLY_FULFILLED: 'bg-neon-cyan/20 text-neon-cyan',
 }
 
+const statusTranslationMap: Record<string, string> = {
+  PAID: 'paid',
+  PENDING: 'pending',
+  REFUNDED: 'refunded',
+  PARTIALLY_REFUNDED: 'partiallyRefunded',
+  UNFULFILLED: 'unfulfilled',
+  FULFILLED: 'fulfilled',
+  PARTIALLY_FULFILLED: 'partiallyFulfilled',
+}
+
 export default function OrdersPage() {
+  const t = useTranslations('orderHistory')
+  const locale = useLocale()
   const { accessToken } = useAuthStore()
   const [orders, setOrders] = useState<ShopifyOrder[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -52,7 +65,7 @@ export default function OrdersPage() {
   }, [accessToken])
 
   return (
-    <AccountLayout title="Orders" description="View your order history">
+    <AccountLayout title={t('title')} description={t('description')}>
       {isLoading ? (
         <div className="flex justify-center py-12">
           <Loader2 className="w-8 h-8 text-neon-cyan animate-spin" />
@@ -62,23 +75,24 @@ export default function OrdersPage() {
           <div className="w-16 h-16 rounded-full bg-bg-secondary flex items-center justify-center mx-auto mb-4">
             <ShoppingBag className="w-8 h-8 text-white/30" />
           </div>
-          <h2 className="font-display text-xl text-white mb-2">No Orders Yet</h2>
+          <h2 className="font-display text-xl text-white mb-2">{t('noOrders')}</h2>
           <p className="text-white/60 mb-6">
-            You haven&apos;t placed any orders yet. Start shopping!
+            {t('noOrdersDescription')}
           </p>
           <Link
             href="/worlds"
             className="inline-flex items-center justify-center px-6 py-3 bg-neon-cyan text-black font-display font-semibold uppercase tracking-wider rounded-lg hover:bg-neon-cyan/90 transition-colors"
           >
-            Browse Products
+            {t('browseProducts')}
           </Link>
         </div>
       ) : (
         <div className="space-y-4">
           {orders.map((order) => (
-            <div
+            <Link
               key={order.id}
-              className="bg-bg-card/50 backdrop-blur-sm border border-border-subtle rounded-xl overflow-hidden"
+              href={`/account/orders/${encodeURIComponent(btoa(order.id))}`}
+              className="block bg-bg-card/50 backdrop-blur-sm border border-border-subtle rounded-xl overflow-hidden hover:border-neon-cyan/50 transition-colors"
             >
               {/* Order Header */}
               <div className="px-4 py-3 border-b border-border-subtle flex flex-wrap items-center justify-between gap-2">
@@ -93,7 +107,7 @@ export default function OrdersPage() {
                       statusColors[order.financialStatus] || 'bg-white/10 text-white'
                     )}
                   >
-                    {order.financialStatus.replace('_', ' ')}
+                    {t(statusTranslationMap[order.financialStatus] || 'unknown')}
                   </span>
                   <span
                     className={cn(
@@ -101,7 +115,7 @@ export default function OrdersPage() {
                       statusColors[order.fulfillmentStatus] || 'bg-white/10 text-white'
                     )}
                   >
-                    {order.fulfillmentStatus.replace('_', ' ')}
+                    {t(statusTranslationMap[order.fulfillmentStatus] || 'unknown')}
                   </span>
                 </div>
               </div>
@@ -146,7 +160,7 @@ export default function OrdersPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-white/50">
-                      {new Date(order.processedAt).toLocaleDateString('en-US', {
+                      {new Date(order.processedAt).toLocaleDateString(locale, {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
@@ -156,9 +170,13 @@ export default function OrdersPage() {
                       {formatPrice(order.totalPrice.amount, order.totalPrice.currencyCode)}
                     </p>
                   </div>
+                  <div className="flex items-center gap-2 text-neon-cyan text-sm font-medium">
+                    {t('viewDetails')}
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

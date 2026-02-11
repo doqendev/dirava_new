@@ -4,16 +4,7 @@ import { GET_PRODUCT } from '@/lib/shopify/queries'
 import type { ShopifyProduct, ShopifyMetafield } from '@/types/shopify'
 import type { Metadata } from 'next'
 
-interface ProductWithCollections extends ShopifyProduct {
-  collections?: {
-    edges: Array<{
-      node: {
-        handle: string
-        metafield?: { value: string } | null
-      }
-    }>
-  }
-}
+type ProductWithCollections = ShopifyProduct
 
 interface Props {
   params: Promise<{ handle: string }>

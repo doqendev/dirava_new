@@ -1,7 +1,12 @@
+'use client'
+
+import { useTranslations } from 'next-intl'
 import { Ghost } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
 export default function NotFound() {
+  const t = useTranslations('errors')
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="text-center max-w-md">
@@ -18,19 +23,19 @@ export default function NotFound() {
         </h1>
 
         <h2 className="font-display text-xl text-white mb-4">
-          Page Not Found
+          {t('notFound')}
         </h2>
 
         <p className="text-white/60 mb-8">
-          The page you&apos;re looking for doesn&apos;t exist or has been moved to another dimension.
+          {t('notFoundDescription')}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button as="a" href="/" variant="primary" glow="cyan">
-            Return Home
+            {t('returnHome')}
           </Button>
           <Button as="a" href="/worlds" variant="outline">
-            Explore Worlds
+            {t('exploreWorlds')}
           </Button>
         </div>
       </div>

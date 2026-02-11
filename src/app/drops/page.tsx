@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import { getTranslations } from 'next-intl/server'
 import { Clock, Flame } from 'lucide-react'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_DROP_PRODUCTS } from '@/lib/shopify/queries'
@@ -9,9 +10,25 @@ import { SkeletonProductGrid } from '@/components/ui/Skeleton'
 import type { ShopifyProduct } from '@/types/shopify'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = {
-  title: 'Drops',
-  description: 'Exclusive limited drops and new releases. Get the latest anime merchandise before they sell out.',
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('seo')
+
+  return {
+    title: t('dropsTitle'),
+    description: t('dropsDescription'),
+    keywords: t('keywords'),
+    openGraph: {
+      title: t('dropsTitle'),
+      description: t('dropsDescription'),
+      type: 'website',
+      siteName: t('siteName'),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('dropsTitle'),
+      description: t('dropsDescription'),
+    },
+  }
 }
 
 export const revalidate = 60
@@ -53,6 +70,7 @@ async function getDropProducts() {
 
 async function DropsContent() {
   const products = await getDropProducts()
+  const t = await getTranslations('drops')
 
   if (products.length === 0) {
     return (
@@ -60,9 +78,9 @@ async function DropsContent() {
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-bg-secondary mb-4">
           <Clock className="w-8 h-8 text-white/30" />
         </div>
-        <h2 className="font-display text-xl text-white mb-2">No Active Drops</h2>
+        <h2 className="font-display text-xl text-white mb-2">{t('noActiveDrops')}</h2>
         <p className="text-white/60 max-w-md mx-auto">
-          There are no active drops right now. Check back soon for exclusive limited releases!
+          {t('noActiveDropsDescription')}
         </p>
       </div>
     )
@@ -74,14 +92,16 @@ async function DropsContent() {
         <ProductCard
           key={product.id}
           product={product}
-          showQuickAdd={!!product.variantId}
+          showQuickView={!!product.variantId}
         />
       ))}
     </div>
   )
 }
 
-export default function DropsPage() {
+export default async function DropsPage() {
+  const t = await getTranslations('drops')
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -93,16 +113,16 @@ export default function DropsPage() {
         <div className="relative px-4 max-w-7xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 mb-4">
             <Flame className="w-6 h-6 text-neon-orange" />
-            <Badge variant="orange" glow>LIMITED</Badge>
+            <Badge variant="orange" glow>{t('limited')}</Badge>
           </div>
 
           <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-wider">
-            <span className="text-neon-pink">EXCLUSIVE</span>{' '}
-            <span className="text-white">DROPS</span>
+            <span className="text-neon-pink">{t('exclusive')}</span>{' '}
+            <span className="text-white">{t('dropsWord')}</span>
           </h1>
 
           <p className="mt-4 text-white/60 max-w-lg mx-auto">
-            Limited edition merchandise and exclusive releases. Once they&apos;re gone, they&apos;re gone.
+            {t('description')}
           </p>
         </div>
       </section>

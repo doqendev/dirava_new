@@ -1,12 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { LogIn, AlertCircle } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { useAuthStore } from '@/stores/authStore'
+import { useWishlistStore } from '@/stores/wishlistStore'
 import type { LoginFormData } from '@/types/customer'
 
 interface FormErrors {
@@ -14,23 +16,8 @@ interface FormErrors {
   password?: string
 }
 
-function validateForm(data: LoginFormData): FormErrors {
-  const errors: FormErrors = {}
-
-  if (!data.email.trim()) {
-    errors.email = 'Email is required'
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-    errors.email = 'Please enter a valid email'
-  }
-
-  if (!data.password) {
-    errors.password = 'Password is required'
-  }
-
-  return errors
-}
-
 export function LoginForm() {
+  const t = useTranslations('auth')
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -41,12 +28,29 @@ export function LoginForm() {
     : '/account/dashboard'
 
   const { login, devLogin, isLoading, error: storeError } = useAuthStore()
+  const syncWishlist = useWishlistStore((state) => state.syncFromShopify)
 
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
     password: '',
   })
   const [errors, setErrors] = useState<FormErrors>({})
+
+  const validateForm = (data: LoginFormData): FormErrors => {
+    const errors: FormErrors = {}
+
+    if (!data.email.trim()) {
+      errors.email = t('emailRequired')
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+      errors.email = t('emailInvalid')
+    }
+
+    if (!data.password) {
+      errors.password = t('passwordRequired')
+    }
+
+    return errors
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -68,6 +72,14 @@ export function LoginForm() {
     const result = await login(formData.email, formData.password)
 
     if (result.success) {
+      // Get the new access token from the store after login
+      const newToken = useAuthStore.getState().accessToken
+      if (newToken) {
+        // Sync wishlist from Shopify (don't await, let it happen in background)
+        syncWishlist(newToken).catch((err) => {
+          console.error('Failed to sync wishlist after login:', err)
+        })
+      }
       router.push(decodeURIComponent(returnUrl))
     }
   }
@@ -80,24 +92,24 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <Input
-        label="Email"
+        label={t('email')}
         name="email"
         type="email"
         value={formData.email}
         onChange={handleChange}
-        placeholder="your@email.com"
+        placeholder={t('emailPlaceholder')}
         error={errors.email}
         disabled={isLoading}
         autoComplete="email"
       />
 
       <Input
-        label="Password"
+        label={t('password')}
         name="password"
         type="password"
         value={formData.password}
         onChange={handleChange}
-        placeholder="Enter your password"
+        placeholder={t('passwordPlaceholder')}
         error={errors.password}
         disabled={isLoading}
         autoComplete="current-password"
@@ -109,7 +121,7 @@ export function LoginForm() {
           href="/account/forgot-password"
           className="text-sm text-neon-cyan hover:underline"
         >
-          Forgot password?
+          {t('forgotPassword')}
         </Link>
       </div>
 
@@ -129,20 +141,20 @@ export function LoginForm() {
         className="w-full"
       >
         <LogIn className="w-4 h-4 mr-2" />
-        Sign In
+        {t('signIn')}
       </Button>
 
       {/* Dev Login - for testing */}
       {process.env.NODE_ENV === 'development' && (
         <div className="pt-4 border-t border-border-subtle">
-          <p className="text-xs text-white/40 text-center mb-2">Development Only</p>
+          <p className="text-xs text-white/40 text-center mb-2">{t('devOnly')}</p>
           <Button
             type="button"
             variant="ghost"
             onClick={handleDevLogin}
             className="w-full text-neon-orange"
           >
-            Dev Login (Test Account)
+            {t('devLogin')}
           </Button>
         </div>
       )}

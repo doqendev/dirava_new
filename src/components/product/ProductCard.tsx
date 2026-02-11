@@ -3,15 +3,13 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
-import { Plus, Check } from 'lucide-react'
+import { Eye } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { formatPrice } from '@/lib/utils/formatPrice'
-import { Badge } from '@/components/ui/Badge'
 import { WishlistButton } from '@/components/product/WishlistButton'
-import { useCartStore } from '@/stores/cartStore'
 import { useUIStore } from '@/stores/uiStore'
-import type { Rarity } from '@/types/common'
 
 interface ProductCardProps {
   product: {
@@ -22,33 +20,24 @@ interface ProductCardProps {
     compareAtPrice?: { amount: string; currencyCode: string } | null
     image: { url: string; altText: string | null } | null
     variantId?: string
-    rarity?: Rarity | null
   }
   universe?: string
-  showQuickAdd?: boolean
+  showQuickView?: boolean
   compactMode?: boolean
   className?: string
-}
-
-const rarityColors: Record<Rarity, 'default' | 'purple' | 'yellow'> = {
-  common: 'default',
-  rare: 'purple',
-  legendary: 'yellow',
 }
 
 export function ProductCard({
   product,
   universe,
-  showQuickAdd = true,
+  showQuickView = true,
   compactMode = false,
   className,
 }: ProductCardProps) {
+  const t = useTranslations('product')
   const [isHovered, setIsHovered] = useState(false)
-  const [isAdding, setIsAdding] = useState(false)
-  const [isAdded, setIsAdded] = useState(false)
 
-  const addItem = useCartStore((state) => state.addItem)
-  const openCart = useUIStore((state) => state.openCart)
+  const openQuickView = useUIStore((state) => state.openQuickView)
 
   const hasDiscount =
     product.compareAtPrice &&
@@ -66,25 +55,10 @@ export function ProductCard({
     ? `/worlds/${universe}/${product.handle}`
     : `/products/${product.handle}`
 
-  const handleQuickAdd = async (e: React.MouseEvent) => {
+  const handleQuickView = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-
-    if (!product.variantId || isAdding) return
-
-    setIsAdding(true)
-    try {
-      await addItem(product.variantId, 1)
-      setIsAdded(true)
-      setTimeout(() => {
-        setIsAdded(false)
-        openCart()
-      }, 1000)
-    } catch (error) {
-      console.error('Failed to add to cart:', error)
-    } finally {
-      setIsAdding(false)
-    }
+    openQuickView({ handle: product.handle, universe })
   }
 
   return (
@@ -117,28 +91,14 @@ export function ProductCard({
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center text-white/20">
-              <span>No Image</span>
+              <span>{t('noImage')}</span>
             </div>
           )}
 
-          {/* Badges */}
-          <div className="absolute top-2 left-2 flex flex-col gap-1">
-            {hasDiscount && (
-              <Badge variant="pink" size="sm">
-                -{discountPercent}%
-              </Badge>
-            )}
-            {product.rarity && product.rarity !== 'common' && (
-              <Badge variant={rarityColors[product.rarity]} size="sm">
-                {product.rarity}
-              </Badge>
-            )}
-          </div>
-
           {/* Action Buttons */}
           <div className="absolute top-2 right-2 flex flex-col gap-2">
-            {/* Quick Add Button */}
-            {showQuickAdd && product.variantId && (
+            {/* Quick View Button */}
+            {showQuickView && (
               <motion.button
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{
@@ -146,24 +106,16 @@ export function ProductCard({
                   scale: isHovered ? 1 : 0.8,
                 }}
                 transition={{ duration: 0.15 }}
-                onClick={handleQuickAdd}
-                disabled={isAdding}
+                onClick={handleQuickView}
                 className={cn(
                   'w-8 h-8 rounded-lg',
                   'flex items-center justify-center',
                   'transition-colors duration-200',
-                  isAdded
-                    ? 'bg-neon-green text-black'
-                    : 'bg-neon-cyan text-black hover:bg-neon-cyan/90',
-                  'disabled:opacity-50'
+                  'bg-white/90 text-black hover:bg-white'
                 )}
-                aria-label="Add to cart"
+                aria-label={t('quickView')}
               >
-                {isAdded ? (
-                  <Check className="w-4 h-4" />
-                ) : (
-                  <Plus className="w-4 h-4" />
-                )}
+                <Eye className="w-4 h-4" />
               </motion.button>
             )}
 
@@ -202,17 +154,22 @@ export function ProductCard({
             <h3 className="text-sm font-medium text-white truncate group-hover:text-neon-cyan transition-colors">
               {product.title}
             </h3>
-            <div className="mt-1 flex items-center gap-2">
+            <div className="mt-1 flex items-center gap-1.5">
               <span className="text-sm font-mono text-neon-cyan">
                 {formatPrice(product.price.amount, product.price.currencyCode)}
               </span>
               {hasDiscount && (
-                <span className="text-xs font-mono text-white/40 line-through">
-                  {formatPrice(
-                    product.compareAtPrice!.amount,
-                    product.compareAtPrice!.currencyCode
-                  )}
-                </span>
+                <>
+                  <span className="text-xs font-mono text-white/40 line-through">
+                    {formatPrice(
+                      product.compareAtPrice!.amount,
+                      product.compareAtPrice!.currencyCode
+                    )}
+                  </span>
+                  <span className="px-1 py-0.5 text-[10px] font-medium bg-red-500/90 text-white rounded">
+                    -{discountPercent}%
+                  </span>
+                </>
               )}
             </div>
           </div>

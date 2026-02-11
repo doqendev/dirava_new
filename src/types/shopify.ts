@@ -35,6 +35,7 @@ export interface ShopifyProductVariant {
   id: string
   title: string
   availableForSale: boolean
+  quantityAvailable?: number | null
   price: ShopifyMoney
   compareAtPrice?: ShopifyMoney | null
   selectedOptions: ShopifySelectedOption[]
@@ -57,6 +58,14 @@ export interface ShopifyProduct {
     edges: Array<{ node: ShopifyProductVariant }>
   }
   metafields?: ShopifyMetafield[] | null
+  collections?: {
+    edges: Array<{
+      node: {
+        handle: string
+        metafield?: ShopifyMetafield | null
+      }
+    }>
+  }
   tags?: string[]
   productType?: string
   vendor?: string
@@ -105,6 +114,15 @@ export interface ShopifyCartLine {
   }
 }
 
+export interface ShopifyDiscountCode {
+  code: string
+  applicable: boolean
+}
+
+export interface ShopifyDiscountAllocation {
+  discountedAmount: ShopifyMoney
+}
+
 export interface ShopifyCart {
   id: string
   checkoutUrl: string
@@ -114,6 +132,8 @@ export interface ShopifyCart {
     totalAmount: ShopifyMoney
     totalTaxAmount?: ShopifyMoney
   }
+  discountCodes?: ShopifyDiscountCode[]
+  discountAllocations?: ShopifyDiscountAllocation[]
   lines: {
     edges: Array<{ node: ShopifyCartLine }>
   }

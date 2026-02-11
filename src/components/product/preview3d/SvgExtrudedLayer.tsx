@@ -1,0 +1,105 @@
+'use client'
+
+import { useMemo } from 'react'
+import * as THREE from 'three'
+import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js'
+import { expandShapes } from '@/lib/preview/expandShapes'
+import type { LayerConfig } from '@/lib/preview/types'
+
+interface SvgExtrudedLayerProps {
+  svgData: { paths: THREE.ShapePath[] }
+  matchColor: string
+  layer: LayerConfig
+  depthScale: number
+  cutShapes?: THREE.Shape[]
+}
+
+function colorMatch(svgColor: THREE.Color, targetHex: string): boolean {
+  return '#' + svgColor.getHexString() === targetHex.toLowerCase()
+}
+
+/** Compute 2D bounding box from a set of points */
+function getBBox(points: THREE.Vector2[]): { minX: number; minY: number; maxX: number; maxY: number } {
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+  for (const p of points) {
+    if (p.x < minX) minX = p.x
+    if (p.y < minY) minY = p.y
+    if (p.x > maxX) maxX = p.x
+    if (p.y > maxY) maxY = p.y
+  }
+  return { minX, minY, maxX, maxY }
+}
+
+/** Check if two 2D bounding boxes overlap */
+function bboxOverlap(
+  a: { minX: number; minY: number; maxX: number; maxY: number },
+  b: { minX: number; minY: number; maxX: number; maxY: number },
+): boolean {
+  return a.minX <= b.maxX && a.maxX >= b.minX && a.minY <= b.maxY && a.maxY >= b.minY
+}
+
+export function SvgExtrudedLayer({ svgData, matchColor, layer, depthScale, cutShapes }: SvgExtrudedLayerProps) {
+  const geometry = useMemo(() => {
+    // Filter SVG paths by fill color
+    const allShapes: THREE.Shape[] = []
+    for (const svgPath of svgData.paths) {
+      if (colorMatch(svgPath.color, matchColor)) {
+        const shapes = SVGLoader.createShapes(svgPath)
+        allShapes.push(...shapes)
+      }
+    }
+
+    if (allShapes.length === 0) return null
+
+    // Apply Clipper offset if strokeWidth is set
+    const finalShapes = layer.strokeWidth
+      ? expandShapes(allShapes, layer.strokeWidth)
+      : allShapes
+
+    if (finalShapes.length === 0) return null
+
+    // Add cut shapes as holes — only where bounding boxes overlap
+    if (cutShapes && cutShapes.length > 0) {
+      for (const shape of finalShapes) {
+        const shapeBBox = getBBox(shape.getPoints())
+        for (const cutShape of cutShapes) {
+          const cutPoints = cutShape.getPoints()
+          const cutBBox = getBBox(cutPoints)
+          if (bboxOverlap(shapeBBox, cutBBox)) {
+            shape.holes.push(new THREE.Path(cutPoints))
+          }
+        }
+      }
+    }
+
+    const extrudeSettings: THREE.ExtrudeGeometryOptions = {
+      depth: layer.depth * depthScale,
+      bevelEnabled: false,
+      steps: 1,
+    }
+
+    const geo = new THREE.ExtrudeGeometry(finalShapes, extrudeSettings)
+    geo.computeVertexNormals()
+    return geo
+  }, [svgData, matchColor, layer.depth, layer.strokeWidth, depthScale, cutShapes])
+
+  const material = useMemo(() => {
+    return new THREE.MeshStandardMaterial({
+      color: layer.color,
+      metalness: layer.metalness ?? 0.1,
+      roughness: layer.roughness ?? 0.7,
+    })
+  }, [layer.color, layer.metalness, layer.roughness])
+
+  if (!geometry) return null
+
+  const scaledOffset = (layer.offsetZ ?? 0) * depthScale
+
+  return (
+    <mesh
+      geometry={geometry}
+      material={material}
+      position={[0, 0, scaledOffset]}
+    />
+  )
+}

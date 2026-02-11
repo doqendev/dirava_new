@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
 import { Heart } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
@@ -34,6 +35,8 @@ export function WishlistButton({
   className,
   showOnHover = false,
 }: WishlistButtonProps) {
+  const t = useTranslations('product')
+  const tCommon = useTranslations('common')
   const { toggleItem, isInWishlist } = useWishlistStore()
   const [isInList, setIsInList] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -84,7 +87,7 @@ export function WishlistButton({
             className={cn(iconSizes[size], isInList && 'fill-current')}
           />
         </motion.div>
-        <span>{isInList ? 'Saved' : 'Save'}</span>
+        <span>{isInList ? t('inWishlist') : tCommon('save')}</span>
       </button>
     )
   }
@@ -104,7 +107,7 @@ export function WishlistButton({
       )}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      aria-label={isInList ? 'Remove from wishlist' : 'Add to wishlist'}
+      aria-label={isInList ? t('removeFromWishlist') : t('addToWishlist')}
     >
       <motion.div
         animate={isAnimating ? { scale: [1, 1.4, 1] } : {}}

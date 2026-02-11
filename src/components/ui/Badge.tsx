@@ -2,13 +2,14 @@
 
 import { cn } from '@/lib/utils/cn'
 
-type BadgeVariant = 'default' | 'cyan' | 'pink' | 'orange' | 'green' | 'purple' | 'yellow'
+type BadgeVariant = 'default' | 'cyan' | 'pink' | 'orange' | 'green' | 'purple' | 'yellow' | 'sale' | 'new'
 
 interface BadgeProps {
   children: React.ReactNode
   variant?: BadgeVariant
   size?: 'sm' | 'md'
   glow?: boolean
+  pulse?: boolean
   className?: string
 }
 
@@ -20,6 +21,8 @@ const variantStyles: Record<BadgeVariant, string> = {
   green: 'bg-neon-green/20 text-neon-green border-neon-green/50',
   purple: 'bg-neon-purple/20 text-neon-purple border-neon-purple/50',
   yellow: 'bg-neon-yellow/20 text-neon-yellow border-neon-yellow/50',
+  sale: 'bg-red-500 text-white border-red-400 font-bold',
+  new: 'bg-neon-green text-black border-neon-green font-bold',
 }
 
 const glowStyles: Record<BadgeVariant, string> = {
@@ -30,10 +33,12 @@ const glowStyles: Record<BadgeVariant, string> = {
   green: 'shadow-glow-sm-green',
   purple: '',
   yellow: '',
+  sale: 'shadow-[0_0_10px_rgba(239,68,68,0.5)]',
+  new: 'shadow-glow-sm-green',
 }
 
 const sizeStyles = {
-  sm: 'px-2 py-0.5 text-[10px]',
+  sm: 'px-2.5 py-1 text-[11px]',
   md: 'px-3 py-1 text-xs',
 }
 
@@ -42,6 +47,7 @@ export function Badge({
   variant = 'default',
   size = 'md',
   glow = false,
+  pulse = false,
   className,
 }: BadgeProps) {
   return (
@@ -53,6 +59,7 @@ export function Badge({
         variantStyles[variant],
         sizeStyles[size],
         glow && glowStyles[variant],
+        pulse && 'animate-pulse',
         className
       )}
     >

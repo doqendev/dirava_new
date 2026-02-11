@@ -1,0 +1,13 @@
+{
+  "runId": "run-20260211-120000",
+  "taskId": "T001",
+  "result": "PASS",
+  "findings": [],
+  "evidence": [
+    {
+      "command": "pnpm test --filter example",
+      "result": "pass"
+    }
+  ],
+  "residualRisks": []
+}

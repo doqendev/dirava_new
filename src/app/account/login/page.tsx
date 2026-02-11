@@ -5,7 +5,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Sign In',
-  description: 'Sign in to your Neo-Stage Collective account.',
+  description: 'Sign in to your Tamashii account.',
 }
 
 export default function LoginPage() {

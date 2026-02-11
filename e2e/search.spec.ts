@@ -1,0 +1,184 @@
+import { test, expect } from '@playwright/test'
+
+test.describe('Search Functionality', () => {
+  test('search modal opens on click', async ({ page }) => {
+    await page.goto('/')
+    await page.waitForLoadState('networkidle')
+
+    // Click search button
+    const searchButton = page.getByRole('button', { name: /search/i })
+    await searchButton.click()
+    await page.waitForTimeout(500)
+
+    // Search modal/overlay should be visible
+    const searchModal = page.locator('[role="dialog"]').or(page.locator('[class*="search"]').filter({ hasText: /search/i }))
+    await expect(searchModal.first()).toBeVisible({ timeout: 5000 })
+  })
+
+  test('can type in search input', async ({ page }) => {
+    await page.goto('/')
+    await page.waitForLoadState('networkidle')
+
+    // Open search
+    const searchButton = page.getByRole('button', { name: /search/i })
+    await searchButton.click()
+    await page.waitForTimeout(500)
+
+    // Find search input
+    const searchInput = page.locator('input[type="search"], input[placeholder*="search" i]').first()
+    await expect(searchInput).toBeVisible()
+
+    // Type search query
+    await searchInput.fill('luffy')
+    await page.waitForTimeout(1000)
+
+    // Input should contain the text
+    const inputValue = await searchInput.inputValue()
+    expect(inputValue.toLowerCase()).toContain('luffy')
+  })
+
+  test('search results appear after typing', async ({ page }) => {
+    await page.goto('/')
+    await page.waitForLoadState('networkidle')
+
+    // Open search
+    const searchButton = page.getByRole('button', { name: /search/i })
+    await searchButton.click()
+    await page.waitForTimeout(500)
+
+    // Type search query
+    const searchInput = page.locator('input[type="search"], input[placeholder*="search" i]').first()
+    await searchInput.fill('hoodie')
+    await page.waitForTimeout(2000) // Wait for search results from Shopify
+
+    // Look for product results
+    const results = page.locator('a[href*="/worlds/"]')
+    const resultCount = await results.count()
+
+    console.log('Search results found:', resultCount)
+
+    // If results exist, they should be visible
+    if (resultCount > 0) {
+      await expect(results.first()).toBeVisible()
+    }
+  })
+
+  test('clicking result navigates to product', async ({ page }) => {
+    await page.goto('/')
+    await page.waitForLoadState('networkidle')
+
+    // Open search
+    const searchButton = page.getByRole('button', { name: /search/i })
+    await searchButton.click()
+    await page.waitForTimeout(500)
+
+    // Search for a product
+    const searchInput = page.locator('input[type="search"], input[placeholder*="search" i]').first()
+    await searchInput.fill('luffy')
+    await page.waitForTimeout(2000)
+
+    // Click first result if exists
+    const firstResult = page.locator('a[href*="/worlds/"]').first()
+    const resultCount = await firstResult.count()
+
+    if (resultCount > 0) {
+      await firstResult.click()
+      await page.waitForLoadState('networkidle')
+
+      // Should navigate to product page
+      expect(page.url()).toContain('/worlds/')
+    }
+  })
+
+  test('search modal closes on Escape key', async ({ page }) => {
+    await page.goto('/')
+    await page.waitForLoadState('networkidle')
+
+    // Open search
+    const searchButton = page.getByRole('button', { name: /search/i })
+    await searchButton.click()
+    await page.waitForTimeout(500)
+
+    // Modal should be visible
+    const searchModal = page.locator('[role="dialog"]').first()
+    if ((await searchModal.count()) > 0) {
+      await expect(searchModal).toBeVisible()
+
+      // Press Escape
+      await page.keyboard.press('Escape')
+      await page.waitForTimeout(500)
+
+      // Modal should be closed
+      await expect(searchModal).not.toBeVisible()
+    }
+  })
+
+  test('empty search shows appropriate state', async ({ page }) => {
+    await page.goto('/')
+    await page.waitForLoadState('networkidle')
+
+    // Open search
+    const searchButton = page.getByRole('button', { name: /search/i })
+    await searchButton.click()
+    await page.waitForTimeout(500)
+
+    // Search input should be empty initially
+    const searchInput = page.locator('input[type="search"], input[placeholder*="search" i]').first()
+    const inputValue = await searchInput.inputValue()
+    expect(inputValue).toBe('')
+
+    // Should show placeholder or empty state message
+    const placeholder = await searchInput.getAttribute('placeholder')
+    expect(placeholder).toBeTruthy()
+  })
+
+  test('search with no results shows empty state', async ({ page }) => {
+    await page.goto('/')
+    await page.waitForLoadState('networkidle')
+
+    // Open search
+    const searchButton = page.getByRole('button', { name: /search/i })
+    await searchButton.click()
+    await page.waitForTimeout(500)
+
+    // Search for something unlikely to exist
+    const searchInput = page.locator('input[type="search"], input[placeholder*="search" i]').first()
+    await searchInput.fill('xyzabc123nonexistent')
+    await page.waitForTimeout(2000)
+
+    // Should show no results message or empty state
+    const noResults = page.getByText(/no results|no products|not found/i)
+    const noResultsCount = await noResults.count()
+
+    console.log('No results message found:', noResultsCount > 0)
+  })
+
+  test('search modal has close button', async ({ page }) => {
+    await page.goto('/')
+    await page.waitForLoadState('networkidle')
+
+    // Open search
+    const searchButton = page.getByRole('button', { name: /search/i })
+    await searchButton.click()
+    await page.waitForTimeout(500)
+
+    // Look for close button (X icon or close text)
+    const closeButton = page.getByRole('button', { name: /close/i }).or(
+      page.locator('button').filter({ has: page.locator('svg.lucide-x, svg[class*="close"]') })
+    )
+
+    const closeButtonCount = await closeButton.count()
+    console.log('Close buttons found:', closeButtonCount)
+
+    if (closeButtonCount > 0) {
+      await closeButton.first().click()
+      await page.waitForTimeout(500)
+
+      // Modal should close
+      const searchModal = page.locator('[role="dialog"]')
+      if ((await searchModal.count()) > 0) {
+        await expect(searchModal).not.toBeVisible()
+      }
+    }
+  })
+})

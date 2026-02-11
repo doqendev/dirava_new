@@ -38,7 +38,7 @@ async function getUniverses() {
 
         return {
           slug: collection.handle,
-          name: collection.title,
+          name: config?.name || collection.title,
           itemCount: getCollectionProductCount(collection),
           themeColor: (config?.colorName || 'cyan') as UniverseColorName,
           backgroundImage: collection.image?.url,

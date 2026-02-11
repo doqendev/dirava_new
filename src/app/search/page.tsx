@@ -1,19 +1,18 @@
 import { Suspense } from 'react'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { SEARCH_PRODUCTS } from '@/lib/shopify/queries'
-import { extractNodes, getFirstAvailableVariant } from '@/lib/shopify/utils'
-import { ProductCard } from '@/components/product/ProductCard'
+import { extractNodes } from '@/lib/shopify/utils'
 import { SearchBar } from '@/components/search/SearchBar'
+import { SearchResultsClient } from '@/components/search/SearchResultsClient'
 import { SkeletonProductGrid } from '@/components/ui/Skeleton'
-import type { ShopifyProduct } from '@/types/shopify'
 import type { Metadata } from 'next'
 
 interface Props {
-  searchParams: { q?: string }
+  searchParams: Promise<{ q?: string }>
 }
 
-export function generateMetadata({ searchParams }: Props): Metadata {
-  const query = searchParams.q
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const { q: query } = await searchParams
 
   return {
     title: query ? `Search: ${query}` : 'Search',
@@ -23,6 +22,24 @@ export function generateMetadata({ searchParams }: Props): Metadata {
   }
 }
 
+interface SearchProductResult {
+  id: string
+  handle: string
+  title: string
+  productType?: string | null
+  priceRange: {
+    minVariantPrice: { amount: string; currencyCode: string }
+  }
+  compareAtPriceRange?: {
+    minVariantPrice: { amount: string; currencyCode: string }
+  } | null
+  featuredImage: { url: string; altText: string | null } | null
+  variants: {
+    edges: Array<{ node: { id: string } }>
+  }
+  universe?: { value: string } | null
+}
+
 async function searchProducts(query: string) {
   if (!query || query.trim().length === 0) {
     return []
@@ -30,16 +47,16 @@ async function searchProducts(query: string) {
 
   try {
     const data = await shopifyFetch<{
-      products: { edges: Array<{ node: ShopifyProduct }> }
+      products: { edges: Array<{ node: SearchProductResult }> }
     }>(SEARCH_PRODUCTS, {
       query,
-      first: 24,
+      first: 50, // Fetch more to have good filter results
     })
 
     const products = extractNodes(data.products)
 
     return products.map((product) => {
-      const firstVariant = getFirstAvailableVariant(product)
+      const firstVariantId = product.variants?.edges?.[0]?.node?.id
       return {
         id: product.id,
         handle: product.handle,
@@ -47,7 +64,9 @@ async function searchProducts(query: string) {
         price: product.priceRange.minVariantPrice,
         compareAtPrice: product.compareAtPriceRange?.minVariantPrice,
         image: product.featuredImage,
-        variantId: firstVariant?.id,
+        variantId: firstVariantId,
+        universe: product.universe?.value || null,
+        productType: product.productType || null,
       }
     })
   } catch (error) {
@@ -59,45 +78,11 @@ async function searchProducts(query: string) {
 async function SearchResults({ query }: { query: string }) {
   const products = await searchProducts(query)
 
-  if (!query) {
-    return (
-      <div className="text-center py-16">
-        <p className="text-white/60 text-lg">Enter a search term to find products</p>
-      </div>
-    )
-  }
-
-  if (products.length === 0) {
-    return (
-      <div className="text-center py-16">
-        <h2 className="font-display text-xl text-white mb-2">No results found</h2>
-        <p className="text-white/60">
-          No products match &quot;{query}&quot;. Try a different search term.
-        </p>
-      </div>
-    )
-  }
-
-  return (
-    <div>
-      <p className="text-white/60 mb-6">
-        {products.length} result{products.length !== 1 ? 's' : ''} for &quot;{query}&quot;
-      </p>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-        {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            showQuickAdd={!!product.variantId}
-          />
-        ))}
-      </div>
-    </div>
-  )
+  return <SearchResultsClient products={products} query={query} />
 }
 
-export default function SearchPage({ searchParams }: Props) {
-  const query = searchParams.q || ''
+export default async function SearchPage({ searchParams }: Props) {
+  const { q: query = '' } = await searchParams
 
   return (
     <div className="min-h-screen">
@@ -114,7 +99,7 @@ export default function SearchPage({ searchParams }: Props) {
       {/* Results */}
       <section className="py-6">
         <div className="px-4 max-w-7xl mx-auto">
-          <Suspense fallback={<SkeletonProductGrid count={8} />}>
+          <Suspense fallback={<SkeletonProductGrid count={12} />}>
             <SearchResults query={query} />
           </Suspense>
         </div>

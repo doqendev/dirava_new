@@ -49,6 +49,14 @@ const config: Config = {
         'slide-up': 'slide-up 0.3s ease-out',
         'slide-down': 'slide-down 0.3s ease-out',
         'fade-in': 'fade-in 0.2s ease-out',
+        // Gacha animations
+        'shake': 'shake 0.15s ease-in-out infinite',
+        'shake-intense': 'shake-intense 0.1s ease-in-out infinite',
+        'burst': 'burst 0.6s ease-out forwards',
+        'reveal-glow': 'reveal-glow 0.5s ease-out infinite',
+        'confetti-fall': 'confetti-fall 3s linear forwards',
+        'sparkle': 'sparkle 0.8s ease-out infinite',
+        'pulse-glow': 'pulse-glow 1.5s ease-in-out infinite',
       },
       keyframes: {
         'glow-pulse': {
@@ -78,6 +86,39 @@ const config: Config = {
         'fade-in': {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
+        },
+        // Gacha keyframes
+        shake: {
+          '0%, 100%': { transform: 'translateX(0) rotate(0)' },
+          '25%': { transform: 'translateX(-5px) rotate(-2deg)' },
+          '75%': { transform: 'translateX(5px) rotate(2deg)' },
+        },
+        'shake-intense': {
+          '0%, 100%': { transform: 'translateX(0) translateY(0) rotate(0)' },
+          '20%': { transform: 'translateX(-8px) translateY(-3px) rotate(-3deg)' },
+          '40%': { transform: 'translateX(8px) translateY(3px) rotate(3deg)' },
+          '60%': { transform: 'translateX(-8px) translateY(-3px) rotate(-3deg)' },
+          '80%': { transform: 'translateX(8px) translateY(3px) rotate(3deg)' },
+        },
+        burst: {
+          '0%': { transform: 'scale(0)', opacity: '1' },
+          '100%': { transform: 'scale(3)', opacity: '0' },
+        },
+        'reveal-glow': {
+          '0%, 100%': { boxShadow: '0 0 20px currentColor' },
+          '50%': { boxShadow: '0 0 40px currentColor, 0 0 60px currentColor' },
+        },
+        'confetti-fall': {
+          '0%': { transform: 'translateY(-10vh) rotate(0deg)', opacity: '1' },
+          '100%': { transform: 'translateY(110vh) rotate(720deg)', opacity: '0' },
+        },
+        sparkle: {
+          '0%, 100%': { transform: 'scale(0)', opacity: '0' },
+          '50%': { transform: 'scale(1)', opacity: '1' },
+        },
+        'pulse-glow': {
+          '0%, 100%': { boxShadow: '0 0 20px rgba(255, 215, 0, 0.4)' },
+          '50%': { boxShadow: '0 0 40px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.4)' },
         },
       },
       backgroundImage: {

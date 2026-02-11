@@ -2,34 +2,12 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
 import { Instagram, Twitter, Music2, MessageCircle, Send, CheckCircle } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { Button } from '@/components/ui/Button'
-
-// Footer link sections
-const shopLinks = [
-  { label: 'Worlds', href: '/worlds' },
-  { label: 'Drops', href: '/drops' },
-  { label: 'New Arrivals', href: '/new' },
-  { label: 'Sale', href: '/sale' },
-]
-
-const accountLinks = [
-  { label: 'My Account', href: '/account' },
-  { label: 'Order Tracking', href: '/account/orders' },
-  { label: 'Wishlist', href: '/wishlist' },
-]
-
-const policyLinks = [
-  { label: 'Privacy Policy', href: '/policies/privacy' },
-  { label: 'Terms of Service', href: '/policies/terms' },
-  { label: 'Shipping Policy', href: '/policies/shipping' },
-  { label: 'Returns & Refunds', href: '/policies/returns' },
-  { label: 'FAQ', href: '/faq' },
-  { label: 'Contact Us', href: '/contact' },
-  { label: 'Accessibility', href: '/policies/accessibility' },
-]
+import { LocaleSwitcher } from './LocaleSwitcher'
 
 const socialLinks = [
   { label: 'Instagram', href: 'https://instagram.com', icon: Instagram },
@@ -69,6 +47,8 @@ function FooterLinkColumn({
 
 // Newsletter form component
 function NewsletterForm() {
+  const t = useTranslations('footer')
+  const tErrors = useTranslations('errors')
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
@@ -79,7 +59,7 @@ function NewsletterForm() {
     // Basic email validation
     if (!email.trim()) {
       setStatus('error')
-      setErrorMessage('Please enter an email address')
+      setErrorMessage(tErrors('invalidEmail'))
       return
     }
 
@@ -87,17 +67,28 @@ function NewsletterForm() {
     setErrorMessage('')
 
     try {
-      // Simulate API call (replace with actual newsletter integration)
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: email.trim() }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || tErrors('generic'))
+      }
 
       setStatus('success')
       setEmail('')
 
       // Reset after 3 seconds
       setTimeout(() => setStatus('idle'), 3000)
-    } catch {
+    } catch (err) {
       setStatus('error')
-      setErrorMessage('Failed to subscribe. Please try again.')
+      setErrorMessage(err instanceof Error ? err.message : tErrors('generic'))
     }
   }
 
@@ -111,7 +102,7 @@ function NewsletterForm() {
             setEmail(e.target.value)
             if (status === 'error') setStatus('idle')
           }}
-          placeholder="Enter your email"
+          placeholder={t('emailPlaceholder')}
           disabled={status === 'loading' || status === 'success'}
           className={cn(
             'w-full px-4 py-3',
@@ -122,7 +113,7 @@ function NewsletterForm() {
             'disabled:opacity-50 disabled:cursor-not-allowed',
             status === 'error' && 'border-red-500 focus:border-red-500 focus:ring-red-500'
           )}
-          aria-label="Email address for newsletter"
+          aria-label={t('emailPlaceholder')}
         />
       </div>
       <Button
@@ -137,12 +128,12 @@ function NewsletterForm() {
         {status === 'success' ? (
           <>
             <CheckCircle className="w-4 h-4 mr-2" />
-            Subscribed
+            {t('subscribed')}
           </>
         ) : (
           <>
             <Send className="w-4 h-4 mr-2" />
-            Subscribe
+            {t('subscribe')}
           </>
         )}
       </Button>
@@ -156,6 +147,33 @@ function NewsletterForm() {
 }
 
 export function Footer() {
+  const t = useTranslations('footer')
+  const tCommon = useTranslations('common')
+  const tHeader = useTranslations('header')
+
+  // Footer link sections with translations
+  const shopLinks = [
+    { label: tCommon('worlds'), href: '/worlds' },
+    { label: tCommon('drops'), href: '/drops' },
+    { label: tCommon('newArrivals'), href: '/new' },
+    { label: tCommon('sale'), href: '/sale' },
+  ]
+
+  const accountLinks = [
+    { label: tCommon('account'), href: '/account' },
+    { label: tCommon('orders'), href: '/account/orders' },
+    { label: tCommon('wishlist'), href: '/wishlist' },
+  ]
+
+  const policyLinks = [
+    { label: t('privacyPolicy'), href: '/policies/privacy' },
+    { label: t('termsOfService'), href: '/policies/terms' },
+    { label: t('shippingPolicy'), href: '/policies/shipping' },
+    { label: t('returnsRefunds'), href: '/policies/returns' },
+    { label: t('faq'), href: '/faq' },
+    { label: t('contactUs'), href: '/contact' },
+  ]
+
   return (
     <footer className="bg-bg-primary border-t border-border-subtle" aria-label="Site footer">
       {/* Newsletter Section */}
@@ -182,10 +200,10 @@ export function Footer() {
                 textShadow: '0 0 20px rgba(0, 245, 255, 0.5)',
               }}
             >
-              JOIN THE COLLECTIVE
+              {t('joinSpirit')}
             </motion.h2>
             <p className="text-white/60 mb-6">
-              Get exclusive drops, early access, and special offers delivered to your inbox.
+              {t('newsletterDescription')}
             </p>
             <NewsletterForm />
           </div>
@@ -196,21 +214,21 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
           {/* Shop Links */}
-          <FooterLinkColumn title="Shop" links={shopLinks} />
+          <FooterLinkColumn title={t('shop')} links={shopLinks} />
 
           {/* Account Links */}
-          <FooterLinkColumn title="Account" links={accountLinks} />
+          <FooterLinkColumn title={t('account')} links={accountLinks} />
 
           {/* Policy Links */}
-          <FooterLinkColumn title="Policies" links={policyLinks} />
+          <FooterLinkColumn title={t('policies')} links={policyLinks} />
 
           {/* Connect Section */}
           <div>
             <h3 className="font-display text-sm uppercase tracking-wider text-white mb-4">
-              Connect
+              {t('connect')}
             </h3>
             <p className="text-sm text-white/50 mb-4">
-              Follow us for the latest drops and anime culture.
+              {t('followUs')}
             </p>
             <div className="flex gap-3">
               {socialLinks.map((social) => (
@@ -239,34 +257,37 @@ export function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-border-subtle">
+      <div className="border-t border-border-subtle pb-20 lg:pb-0">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Copyright */}
             <p className="text-sm text-white/40">
-              © {new Date().getFullYear()} Neo-Stage Collective. All rights reserved.
+              {t('copyright', { year: new Date().getFullYear() })}
             </p>
 
             {/* Logo */}
             <Link href="/" className="flex flex-col items-center">
               <span
-                className="font-display text-lg font-bold text-white/60 tracking-wider"
+                className="font-display text-xl font-bold text-white tracking-wider"
                 style={{
-                  textShadow: '0 0 10px rgba(255, 255, 255, 0.2)',
+                  textShadow: '0 0 15px rgba(0, 245, 255, 0.4)',
                 }}
               >
-                NEO-STAGE
+                TAMASHII
               </span>
-              <span className="font-display text-[8px] text-white/30 tracking-[3px]">
-                COLLECTIVE
+              <span className="text-[9px] text-neon-cyan/60 tracking-[2px]">
+                {tHeader('tagline')}
               </span>
             </Link>
 
-            {/* Payment/Trust badges placeholder */}
-            <div className="flex items-center gap-2 text-white/30 text-xs">
-              <span>Secure Checkout</span>
-              <span>•</span>
-              <span>Worldwide Shipping</span>
+            {/* Language/Currency Switcher and Trust badges */}
+            <div className="flex items-center gap-4">
+              <LocaleSwitcher />
+              <div className="hidden sm:flex items-center gap-2 text-white/30 text-xs">
+                <span>{t('secureCheckout')}</span>
+                <span>•</span>
+                <span>{t('worldwideShipping')}</span>
+              </div>
             </div>
           </div>
         </div>

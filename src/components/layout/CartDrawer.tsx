@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Minus, Plus, Trash2, Heart, ShoppingBag } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
@@ -11,10 +12,16 @@ import { useUIStore } from '@/stores/uiStore'
 import { useCartStore } from '@/stores/cartStore'
 import { useWishlistStore } from '@/stores/wishlistStore'
 import { Button } from '@/components/ui/Button'
+import { CartUpsells } from '@/components/cart/CartUpsells'
+import { DiscountCodeInput } from '@/components/cart/DiscountCodeInput'
 
 export function CartDrawer() {
+  const t = useTranslations('cart')
+  const tCommon = useTranslations('common')
+  const tProduct = useTranslations('product')
   const { isCartOpen, closeCart } = useUIStore()
-  const { lines, totalQuantity, subtotal, checkoutUrl, updateItem, removeItem, isLoading } =
+  const tDiscount = useTranslations('discount')
+  const { lines, totalQuantity, subtotal, total, discountAmount, checkoutUrl, updateItem, removeItem, isLoading } =
     useCartStore()
   const { addItem: addToWishlist, isInWishlist } = useWishlistStore()
 
@@ -84,7 +91,7 @@ export function CartDrawer() {
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border-subtle">
               <h2 className="font-display text-lg tracking-wider text-white">
-                YOUR CART
+                {t('title').toUpperCase()}
                 {totalQuantity > 0 && (
                   <span className="ml-2 text-neon-cyan">({totalQuantity})</span>
                 )}
@@ -97,7 +104,7 @@ export function CartDrawer() {
                   'transition-colors duration-200',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan rounded-lg'
                 )}
-                aria-label="Close cart"
+                aria-label={tCommon('close')}
               >
                 <X className="w-6 h-6" />
               </button>
@@ -111,18 +118,18 @@ export function CartDrawer() {
                     <ShoppingBag className="w-10 h-10 text-white/30" />
                   </div>
                   <h3 className="font-display text-lg text-white mb-2">
-                    Your cart is empty
+                    {t('empty')}
                   </h3>
                   <p className="text-white/50 text-sm mb-6">
-                    Explore our universes and find something you love.
+                    {t('emptyDescription')}
                   </p>
                   <Button variant="outline" onClick={closeCart}>
-                    Continue Shopping
+                    {t('continueShopping')}
                   </Button>
                 </div>
               ) : (
                 <ul className="divide-y divide-border-subtle">
-                  {lines.map((line) => (
+                  {lines.filter((line) => line?.merchandise?.product).map((line) => (
                     <li key={line.id} className="p-4">
                       <div className="flex gap-4">
                         {/* Product Image */}
@@ -221,8 +228,8 @@ export function CartDrawer() {
                                   'disabled:opacity-50 disabled:cursor-not-allowed',
                                   'transition-colors'
                                 )}
-                                aria-label="Save for later"
-                                title={isInWishlist(line.merchandise.product.id) ? 'Already in wishlist' : 'Save for later'}
+                                aria-label={tProduct('addToWishlist')}
+                                title={isInWishlist(line.merchandise.product.id) ? tProduct('inWishlist') : tProduct('addToWishlist')}
                               >
                                 <Heart className={cn('w-4 h-4', isInWishlist(line.merchandise.product.id) && 'fill-current')} />
                               </button>
@@ -235,7 +242,7 @@ export function CartDrawer() {
                                   'disabled:opacity-50 disabled:cursor-not-allowed',
                                   'transition-colors'
                                 )}
-                                aria-label="Remove item"
+                                aria-label={tCommon('remove')}
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
@@ -249,16 +256,46 @@ export function CartDrawer() {
               )}
             </div>
 
+            {/* Upsells - show when cart has items */}
+            {lines.length > 0 && (
+              <CartUpsells
+                cartLines={lines}
+                onClose={closeCart}
+              />
+            )}
+
             {/* Footer */}
             {lines.length > 0 && (
               <div className="p-4 border-t border-border-subtle space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-white/70">Subtotal</span>
-                  <span className="font-mono text-lg text-white">
-                    {subtotal
-                      ? formatPrice(subtotal.amount, subtotal.currencyCode)
-                      : '$0.00'}
-                  </span>
+                <DiscountCodeInput />
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/70">{t('subtotal')}</span>
+                    <span className="font-mono text-white">
+                      {subtotal
+                        ? formatPrice(subtotal.amount, subtotal.currencyCode)
+                        : '$0.00'}
+                    </span>
+                  </div>
+
+                  {discountAmount && parseFloat(discountAmount.amount) > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-neon-green">{tDiscount('discount')}</span>
+                      <span className="font-mono text-neon-green">
+                        -{formatPrice(discountAmount.amount, discountAmount.currencyCode)}
+                      </span>
+                    </div>
+                  )}
+
+                  {total && discountAmount && parseFloat(discountAmount.amount) > 0 && (
+                    <div className="flex items-center justify-between pt-2 border-t border-border-subtle">
+                      <span className="text-white font-medium">{t('total')}</span>
+                      <span className="font-mono text-lg text-neon-cyan">
+                        {formatPrice(total.amount, total.currencyCode)}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <Button
@@ -269,14 +306,14 @@ export function CartDrawer() {
                   className="w-full"
                   disabled={!checkoutUrl}
                 >
-                  CONTINUE TO CHECKOUT
+                  {t('checkout').toUpperCase()}
                 </Button>
 
                 <button
                   onClick={closeCart}
                   className="w-full text-center text-white/50 hover:text-neon-cyan text-sm transition-colors"
                 >
-                  Continue Shopping
+                  {t('continueShopping')}
                 </button>
               </div>
             )}

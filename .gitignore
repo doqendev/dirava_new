@@ -43,3 +43,7 @@ next-env.d.ts
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Codex orchestrator runtime data
+.codex-orchestrator/runs/*
+!.codex-orchestrator/runs/.gitkeep

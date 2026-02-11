@@ -47,13 +47,22 @@ export const CREATE_CART_WITH_LINES = gql`
                     amount
                     currencyCode
                   }
+                  compareAtPrice {
+                    amount
+                    currencyCode
+                  }
                   product {
+                    id
                     title
                     handle
                     featuredImage {
                       url
                       altText
                     }
+                  }
+                  selectedOptions {
+                    name
+                    value
                   }
                 }
               }
@@ -102,7 +111,12 @@ export const ADD_TO_CART = gql`
                     amount
                     currencyCode
                   }
+                  compareAtPrice {
+                    amount
+                    currencyCode
+                  }
                   product {
+                    id
                     title
                     handle
                     featuredImage {
@@ -160,13 +174,22 @@ export const UPDATE_CART_LINE = gql`
                     amount
                     currencyCode
                   }
+                  compareAtPrice {
+                    amount
+                    currencyCode
+                  }
                   product {
+                    id
                     title
                     handle
                     featuredImage {
                       url
                       altText
                     }
+                  }
+                  selectedOptions {
+                    name
+                    value
                   }
                 }
               }
@@ -202,6 +225,37 @@ export const REMOVE_FROM_CART = gql`
             node {
               id
               quantity
+              attributes {
+                key
+                value
+              }
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  title
+                  price {
+                    amount
+                    currencyCode
+                  }
+                  compareAtPrice {
+                    amount
+                    currencyCode
+                  }
+                  product {
+                    id
+                    title
+                    handle
+                    featuredImage {
+                      url
+                      altText
+                    }
+                  }
+                  selectedOptions {
+                    name
+                    value
+                  }
+                }
+              }
             }
           }
         }
@@ -223,6 +277,84 @@ export const UPDATE_CART_BUYER = gql`
       cart {
         id
         checkoutUrl
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`
+
+/**
+ * Apply discount codes to cart
+ */
+export const CART_DISCOUNT_CODES_UPDATE = gql`
+  mutation CartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]!) {
+    cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
+      cart {
+        id
+        checkoutUrl
+        totalQuantity
+        cost {
+          subtotalAmount {
+            amount
+            currencyCode
+          }
+          totalAmount {
+            amount
+            currencyCode
+          }
+        }
+        discountCodes {
+          code
+          applicable
+        }
+        discountAllocations {
+          discountedAmount {
+            amount
+            currencyCode
+          }
+        }
+        lines(first: 100) {
+          edges {
+            node {
+              id
+              quantity
+              attributes {
+                key
+                value
+              }
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  title
+                  price {
+                    amount
+                    currencyCode
+                  }
+                  compareAtPrice {
+                    amount
+                    currencyCode
+                  }
+                  product {
+                    id
+                    title
+                    handle
+                    featuredImage {
+                      url
+                      altText
+                    }
+                  }
+                  selectedOptions {
+                    name
+                    value
+                  }
+                }
+              }
+            }
+          }
+        }
       }
       userErrors {
         field

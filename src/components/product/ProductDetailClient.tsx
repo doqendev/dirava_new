@@ -1,23 +1,35 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { ArrowLeft, Box, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { formatPrice } from '@/lib/utils/formatPrice'
 import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
 import { ProductGallery } from '@/components/product/ProductGallery'
+import type { ProductGalleryHandle } from '@/components/product/ProductGallery'
 import { VariantSelector } from '@/components/product/VariantSelector'
 import { QuantitySelector } from '@/components/product/QuantitySelector'
 import { AddToCartButton } from '@/components/product/AddToCartButton'
 import { WishlistButton } from '@/components/product/WishlistButton'
 import { Badge } from '@/components/ui/Badge'
+import { StockIndicator } from '@/components/product/StockIndicator'
+import { ShareButtons } from '@/components/product/ShareButtons'
+import { SizeGuideButton } from '@/components/product/SizeGuideButton'
+import { SizeGuideModal } from '@/components/product/SizeGuideModal'
+import { ReviewSummary } from '@/components/product/ReviewSummary'
+import { useTrackProductView } from '@/hooks/useTrackProductView'
+import { getSizeGuide } from '@/data/sizeGuides'
+import { getPreviewConfig } from '@/lib/preview'
 import type { ShopifyMoney, ShopifySelectedOption } from '@/types/shopify'
+import type { ReviewRating } from '@/types/reviews'
 
 interface ProductVariant {
   id: string
   title: string
   availableForSale: boolean
+  quantityAvailable?: number | null
   price: ShopifyMoney
   compareAtPrice?: ShopifyMoney | null
   selectedOptions: ShopifySelectedOption[]
@@ -36,6 +48,7 @@ interface ProductDetailClientProps {
     title: string
     description: string
     descriptionHtml: string
+    productType?: string
     priceRange: {
       minVariantPrice: ShopifyMoney
     }
@@ -46,13 +59,23 @@ interface ProductDetailClientProps {
     variants: ProductVariant[]
     rarity: 'common' | 'rare' | 'legendary' | null
     personalization: boolean
+    rating?: ReviewRating | null
   }
 }
 
 export function ProductDetailClient({ universe, product }: ProductDetailClientProps) {
+  const t = useTranslations('product')
+  const tCommon = useTranslations('common')
   const config = UNIVERSE_CONFIG[universe as keyof typeof UNIVERSE_CONFIG]
   const themeColor = config?.color || '#00f5ff'
   const universeName = config?.name || universe.replace(/-/g, ' ')
+
+  // Size guide modal state
+  const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false)
+  const [isDescriptionOpen, setIsDescriptionOpen] = useState(false)
+  const [isShippingOpen, setIsShippingOpen] = useState(false)
+  const [isReturnsOpen, setIsReturnsOpen] = useState(false)
+  const [isShareOpen, setIsShareOpen] = useState(false)
 
   // Extract unique options
   const options = useMemo(() => {
@@ -73,6 +96,16 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
     }))
   }, [product.variants])
 
+  // Get size guide based on product type
+  const sizeGuide = useMemo(() => {
+    return getSizeGuide(product.productType || '')
+  }, [product.productType])
+
+  // Get 3D preview config for this product
+  const previewConfig = useMemo(() => {
+    return getPreviewConfig(product.handle)
+  }, [product.handle])
+
   // Selected options state
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {}
@@ -92,8 +125,29 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
   // Quantity state
   const [quantity, setQuantity] = useState(1)
 
+  // Gallery ref for programmatic 3D navigation
+  const galleryRef = useRef<ProductGalleryHandle>(null)
+
   // Personalization state
   const [personalizationName, setPersonalizationName] = useState('')
+  const personalizationInputRef = useRef<HTMLInputElement>(null)
+
+  const handlePersonalizationError = () => {
+    personalizationInputRef.current?.focus()
+    personalizationInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
+
+  // Track product view for recently viewed feature
+  useTrackProductView({
+    productId: product.id,
+    handle: product.handle,
+    title: product.title,
+    price: product.priceRange.minVariantPrice,
+    compareAtPrice: product.compareAtPriceRange?.minVariantPrice,
+    image: product.images[0] || null,
+    universe,
+    variantId: product.variants[0]?.id,
+  })
 
   // Find selected variant
   const selectedVariant = useMemo(() => {
@@ -132,15 +186,31 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
           )}
         >
           <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm">Back to {universeName}</span>
+          <span className="text-sm">{t('backTo', { name: universeName })}</span>
         </Link>
 
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 w-full overflow-hidden">
           {/* Gallery */}
           <div className="w-full min-w-0">
             <ProductGallery
+              ref={galleryRef}
               images={product.images}
               productTitle={product.title}
+              previewConfig={previewConfig}
+              previewText={personalizationName}
+              selectedVariantName={selectedOptions['Color'] || selectedOptions['color'] || ''}
+              onPreviewTextChange={product.personalization ? setPersonalizationName : undefined}
+              canvasCart={previewConfig ? {
+                variantId: selectedVariant?.id || '',
+                quantity,
+                available: selectedVariant?.availableForSale ?? false,
+                requiresPersonalization: product.personalization,
+                personalizationValue: personalizationName,
+                onPersonalizationError: handlePersonalizationError,
+                attributes: product.personalization && personalizationName.trim()
+                  ? [{ key: 'Personalization', value: personalizationName.trim() }]
+                  : undefined,
+              } : undefined}
             />
           </div>
 
@@ -159,7 +229,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 </Badge>
               )}
               {hasDiscount && (
-                <Badge variant="pink">SALE</Badge>
+                <Badge variant="pink">{tCommon('sale').toUpperCase()}</Badge>
               )}
             </div>
 
@@ -167,6 +237,11 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             <h1 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-wide">
               {product.title}
             </h1>
+
+            {/* Reviews/Rating */}
+            {product.rating && (
+              <ReviewSummary rating={product.rating} size="md" />
+            )}
 
             {/* Price */}
             <div className="flex items-baseline gap-3">
@@ -189,20 +264,31 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               )}
             </div>
 
+            {/* Size Guide Button - only for apparel (not personalizable/3D products) */}
+            {!previewConfig && (
+              <div className="flex justify-end">
+                <SizeGuideButton onClick={() => setIsSizeGuideOpen(true)} />
+              </div>
+            )}
+
             {/* Variant Selector */}
             {options.length > 0 && (
-              <VariantSelector
-                options={options}
-                variants={product.variants}
-                selectedOptions={selectedOptions}
-                onOptionChange={handleOptionChange}
-              />
+              <div className="space-y-3">
+                <VariantSelector
+                  options={options}
+                  variants={product.variants}
+                  selectedOptions={selectedOptions}
+                  onOptionChange={handleOptionChange}
+                  optionImages={previewConfig?.variantImages}
+                  imageOptionName={previewConfig?.variantImages ? 'Color' : undefined}
+                />
+              </div>
             )}
 
             {/* Quantity */}
             <div>
               <label className="block text-sm font-medium text-white/70 mb-2">
-                Quantity
+                {t('quantity')}
               </label>
               <QuantitySelector
                 quantity={quantity}
@@ -216,19 +302,51 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             {product.personalization && (
               <div>
                 <label className="block text-sm font-medium text-white/70 mb-2">
-                  Personalization Name
+                  {t('personalizationName')} <span className="text-neon-pink">*</span>
                 </label>
-                <input
-                  type="text"
-                  value={personalizationName}
-                  onChange={(e) => setPersonalizationName(e.target.value)}
-                  placeholder="Enter name for personalization"
-                  className="w-full px-4 py-3 bg-black/80 border border-border-subtle rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-neon-cyan transition-colors"
-                />
+                <div className="flex gap-2">
+                  <input
+                    ref={personalizationInputRef}
+                    type="text"
+                    value={personalizationName}
+                    onChange={(e) => setPersonalizationName(e.target.value.toUpperCase())}
+                    placeholder="Your Name Here"
+                    className={cn(
+                      'flex-1 min-w-0 px-4 py-3 bg-black/80 border rounded-lg text-white placeholder-white/40 focus:outline-none transition-colors',
+                      personalizationName.trim()
+                        ? 'border-neon-green/50 focus:border-neon-green'
+                        : 'border-border-subtle focus:border-neon-cyan'
+                    )}
+                  />
+                  {previewConfig && (
+                    <button
+                      type="button"
+                      onClick={() => galleryRef.current?.goTo3D()}
+                      className={cn(
+                        'flex-shrink-0 flex items-center gap-1.5 px-3 py-3 rounded-lg',
+                        'bg-neon-cyan/10 border border-neon-cyan/30',
+                        'text-neon-cyan text-sm font-medium',
+                        'hover:bg-neon-cyan/20 hover:border-neon-cyan/50',
+                        'transition-colors'
+                      )}
+                    >
+                      <Box className="w-4 h-4" />
+                      3D
+                    </button>
+                  )}
+                </div>
                 <p className="mt-1 text-xs text-white/50">
                   This name will be added to your custom item
                 </p>
               </div>
+            )}
+
+            {/* Stock Indicator (hidden for personalized products) */}
+            {selectedVariant && !product.personalization && (
+              <StockIndicator
+                availableForSale={selectedVariant.availableForSale}
+                quantityAvailable={selectedVariant.quantityAvailable}
+              />
             )}
 
             {/* Add to Cart & Wishlist */}
@@ -238,6 +356,9 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   variantId={selectedVariant?.id || ''}
                   quantity={quantity}
                   available={selectedVariant?.availableForSale ?? false}
+                  requiresPersonalization={product.personalization}
+                  personalizationValue={personalizationName}
+                  onPersonalizationError={handlePersonalizationError}
                   attributes={
                     product.personalization && personalizationName.trim()
                       ? [{ key: 'Personalization', value: personalizationName.trim() }]
@@ -261,17 +382,127 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               />
             </div>
 
-            {/* Description */}
+            {/* Description (collapsible) */}
             <div className="pt-6 border-t border-border-subtle">
-              <h2 className="font-display text-lg text-white mb-3">Description</h2>
+              <button
+                type="button"
+                onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
+                className="w-full flex items-center justify-between py-1 group"
+              >
+                <h2 className="font-display text-lg text-white">{t('description')}</h2>
+                <ChevronDown className={cn(
+                  'w-5 h-5 text-white/50 transition-transform duration-300',
+                  isDescriptionOpen && 'rotate-180'
+                )} />
+              </button>
               <div
-                className="prose prose-invert prose-sm max-w-none text-white [&_*]:!bg-transparent [&_*]:!text-inherit"
-                dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
-              />
+                className={cn(
+                  'overflow-hidden transition-all duration-300',
+                  isDescriptionOpen ? 'max-h-[500px] opacity-100 mt-3' : 'max-h-0 opacity-0'
+                )}
+              >
+                <div
+                  className="prose prose-invert prose-sm max-w-none text-white [&_*]:!bg-transparent [&_*]:!text-inherit"
+                  dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+                />
+              </div>
+            </div>
+
+            {/* Shipping */}
+            <div className="border-t border-border-subtle">
+              <button
+                type="button"
+                onClick={() => setIsShippingOpen(!isShippingOpen)}
+                className="w-full flex items-center justify-between py-4 group"
+              >
+                <h2 className="font-display text-lg text-white">Shipping</h2>
+                <ChevronDown className={cn(
+                  'w-5 h-5 text-white/50 transition-transform duration-300',
+                  isShippingOpen && 'rotate-180'
+                )} />
+              </button>
+              <div
+                className={cn(
+                  'overflow-hidden transition-all duration-300',
+                  isShippingOpen ? 'max-h-[500px] opacity-100 pb-4' : 'max-h-0 opacity-0'
+                )}
+              >
+                <div className="space-y-2 text-sm text-white/60">
+                  <p>Orders are processed within 1-3 business days.</p>
+                  <p>Europe: 5-12 business days — Free over €45</p>
+                  <p>UK: 5-10 business days — Free over £40</p>
+                  <p>Canada: 7-14 business days — Free over $73 CAD</p>
+                  <p>Australia: 10-20 business days — Free over $80 AUD</p>
+                  <p className="text-white/40 text-xs pt-1">Customs and duties may apply for international orders.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Returns & Exchanges */}
+            <div className="border-t border-border-subtle">
+              <button
+                type="button"
+                onClick={() => setIsReturnsOpen(!isReturnsOpen)}
+                className="w-full flex items-center justify-between py-4 group"
+              >
+                <h2 className="font-display text-lg text-white">Returns & Exchanges</h2>
+                <ChevronDown className={cn(
+                  'w-5 h-5 text-white/50 transition-transform duration-300',
+                  isReturnsOpen && 'rotate-180'
+                )} />
+              </button>
+              <div
+                className={cn(
+                  'overflow-hidden transition-all duration-300',
+                  isReturnsOpen ? 'max-h-[500px] opacity-100 pb-4' : 'max-h-0 opacity-0'
+                )}
+              >
+                <div className="space-y-2 text-sm text-white/60">
+                  <p>30-day return policy for unused items in original packaging.</p>
+                  <p>Exchanges available for different sizes or colors, subject to availability.</p>
+                  <p>Refunds processed within 5-7 business days after receiving your return.</p>
+                  <p className="text-white/40 text-xs pt-1">Personalized and limited edition items are final sale.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Share */}
+            <div className="border-t border-border-subtle">
+              <button
+                type="button"
+                onClick={() => setIsShareOpen(!isShareOpen)}
+                className="w-full flex items-center justify-between py-4 group"
+              >
+                <h2 className="font-display text-lg text-white">Share</h2>
+                <ChevronDown className={cn(
+                  'w-5 h-5 text-white/50 transition-transform duration-300',
+                  isShareOpen && 'rotate-180'
+                )} />
+              </button>
+              <div
+                className={cn(
+                  'overflow-hidden transition-all duration-300',
+                  isShareOpen ? 'max-h-[200px] opacity-100 pb-4' : 'max-h-0 opacity-0'
+                )}
+              >
+                <ShareButtons
+                  title={product.title}
+                  handle={product.handle}
+                  universe={universe}
+                  image={product.images[0]?.url}
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Size Guide Modal */}
+      <SizeGuideModal
+        isOpen={isSizeGuideOpen}
+        onClose={() => setIsSizeGuideOpen(false)}
+        sizeGuide={sizeGuide}
+      />
     </div>
   )
 }

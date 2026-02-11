@@ -24,11 +24,12 @@ interface Product {
   productType?: string
   tags?: string[]
   createdAt?: string
+  universe?: string | null
 }
 
 interface CollectionGridProps {
   products: Product[]
-  universe: string
+  universe?: string
   filters: FilterState
   themeColor: string
 }
@@ -43,7 +44,7 @@ export function CollectionGrid({
 }: CollectionGridProps) {
   const gridColumns = useUIStore((state) => state.gridColumns)
 
-  // 3-column grid automatically hides product info
+  // Grid option 3 = compact mode (4 columns, no details)
   const compactMode = gridColumns === 3
 
   // Filter and sort products
@@ -95,12 +96,17 @@ export function CollectionGrid({
   const hasMore = displayCount < filteredProducts.length
   const hasFiltersActive = hasActiveFilters(filters)
 
-  // Grid column classes
+  // Grid column classes:
+  // Option 1: 2 columns (larger cards)
+  // Option 2: 4 columns (default)
+  // Option 3: 4 columns compact (no details)
   const gridClasses = cn(
     'grid gap-4',
-    gridColumns === 1 && 'grid-cols-1',
-    gridColumns === 2 && 'grid-cols-2',
-    gridColumns === 3 && 'grid-cols-3'
+    gridColumns === 1 && 'grid-cols-2',
+    gridColumns === 2 && 'grid-cols-2 lg:grid-cols-4',
+    gridColumns === 3 && 'grid-cols-2 lg:grid-cols-4',
+    // Default to option 2 (4 columns)
+    !gridColumns && 'grid-cols-2 lg:grid-cols-4'
   )
 
   // Empty state
@@ -155,8 +161,8 @@ export function CollectionGrid({
             >
               <ProductCard
                 product={product}
-                universe={universe}
-                showQuickAdd={!!product.variantId}
+                universe={universe || product.universe || undefined}
+                showQuickView={!!product.variantId}
                 compactMode={compactMode}
               />
             </motion.div>

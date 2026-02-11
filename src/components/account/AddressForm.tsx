@@ -1,22 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Button } from '@/components/ui/Button'
 import type { ShopifyCustomerAddress, AddressFormData } from '@/types/customer'
-
-// Common countries for the select
-const COUNTRIES = [
-  { value: 'US', label: 'United States' },
-  { value: 'CA', label: 'Canada' },
-  { value: 'GB', label: 'United Kingdom' },
-  { value: 'AU', label: 'Australia' },
-  { value: 'DE', label: 'Germany' },
-  { value: 'FR', label: 'France' },
-  { value: 'JP', label: 'Japan' },
-  { value: 'MX', label: 'Mexico' },
-]
 
 interface AddressFormProps {
   initialData?: ShopifyCustomerAddress | null
@@ -31,6 +20,22 @@ export function AddressForm({
   onCancel,
   isSubmitting,
 }: AddressFormProps) {
+  const t = useTranslations('address')
+  const tCommon = useTranslations('common')
+
+  // Common countries for the select
+  const COUNTRIES = [
+    { value: 'US', label: t('unitedStates') },
+    { value: 'CA', label: t('canada') },
+    { value: 'GB', label: t('unitedKingdom') },
+    { value: 'AU', label: t('australia') },
+    { value: 'DE', label: t('germany') },
+    { value: 'FR', label: t('france') },
+    { value: 'JP', label: t('japan') },
+    { value: 'MX', label: t('mexico') },
+    { value: 'ES', label: t('spain') },
+    { value: 'PT', label: t('portugal') },
+  ]
   const [formData, setFormData] = useState<AddressFormData>({
     firstName: initialData?.firstName || '',
     lastName: initialData?.lastName || '',
@@ -61,12 +66,12 @@ export function AddressForm({
 
     const newErrors: Partial<AddressFormData> = {}
 
-    if (!formData.firstName.trim()) newErrors.firstName = 'First name is required'
-    if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required'
-    if (!formData.address1.trim()) newErrors.address1 = 'Address is required'
-    if (!formData.city.trim()) newErrors.city = 'City is required'
-    if (!formData.country) newErrors.country = 'Country is required'
-    if (!formData.zip.trim()) newErrors.zip = 'ZIP code is required'
+    if (!formData.firstName.trim()) newErrors.firstName = t('firstNameRequired')
+    if (!formData.lastName.trim()) newErrors.lastName = t('lastNameRequired')
+    if (!formData.address1.trim()) newErrors.address1 = t('addressRequired')
+    if (!formData.city.trim()) newErrors.city = t('cityRequired')
+    if (!formData.country) newErrors.country = t('countryRequired')
+    if (!formData.zip.trim()) newErrors.zip = t('zipRequired')
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
@@ -80,7 +85,7 @@ export function AddressForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <Input
-          label="First Name"
+          label={t('firstName')}
           name="firstName"
           value={formData.firstName}
           onChange={handleChange}
@@ -89,7 +94,7 @@ export function AddressForm({
           autoComplete="given-name"
         />
         <Input
-          label="Last Name"
+          label={t('lastName')}
           name="lastName"
           value={formData.lastName}
           onChange={handleChange}
@@ -100,7 +105,7 @@ export function AddressForm({
       </div>
 
       <Input
-        label="Company (Optional)"
+        label={t('company')}
         name="company"
         value={formData.company}
         onChange={handleChange}
@@ -109,7 +114,7 @@ export function AddressForm({
       />
 
       <Input
-        label="Address"
+        label={t('address')}
         name="address1"
         value={formData.address1}
         onChange={handleChange}
@@ -119,7 +124,7 @@ export function AddressForm({
       />
 
       <Input
-        label="Apartment, suite, etc. (Optional)"
+        label={t('address2')}
         name="address2"
         value={formData.address2}
         onChange={handleChange}
@@ -129,7 +134,7 @@ export function AddressForm({
 
       <div className="grid grid-cols-2 gap-4">
         <Input
-          label="City"
+          label={t('city')}
           name="city"
           value={formData.city}
           onChange={handleChange}
@@ -138,7 +143,7 @@ export function AddressForm({
           autoComplete="address-level2"
         />
         <Input
-          label="State / Province"
+          label={t('province')}
           name="province"
           value={formData.province}
           onChange={handleChange}
@@ -149,7 +154,7 @@ export function AddressForm({
 
       <div className="grid grid-cols-2 gap-4">
         <Select
-          label="Country"
+          label={t('country')}
           name="country"
           value={formData.country}
           onChange={handleChange}
@@ -158,7 +163,7 @@ export function AddressForm({
           disabled={isSubmitting}
         />
         <Input
-          label="ZIP / Postal Code"
+          label={t('zip')}
           name="zip"
           value={formData.zip}
           onChange={handleChange}
@@ -169,7 +174,7 @@ export function AddressForm({
       </div>
 
       <Input
-        label="Phone (Optional)"
+        label={t('phone')}
         name="phone"
         type="tel"
         value={formData.phone}
@@ -180,10 +185,10 @@ export function AddressForm({
 
       <div className="flex justify-end gap-3 pt-4">
         <Button type="button" variant="ghost" onClick={onCancel} disabled={isSubmitting}>
-          Cancel
+          {tCommon('cancel')}
         </Button>
         <Button type="submit" variant="primary" glow="cyan" isLoading={isSubmitting}>
-          {initialData ? 'Update Address' : 'Add Address'}
+          {initialData ? t('updateAddress') : t('addAddress')}
         </Button>
       </div>
     </form>

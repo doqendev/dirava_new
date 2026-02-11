@@ -1,0 +1,18 @@
+{
+  "runId": "run-20260211-120000",
+  "summary": "Execution plan summary",
+  "tasks": [
+    {
+      "title": "Task title",
+      "description": "Task outcome description",
+      "acceptanceCriteria": [
+        "criterion 1",
+        "criterion 2"
+      ],
+      "tests": [
+        "pnpm test --filter example"
+      ],
+      "dependencies": []
+    }
+  ]
+}

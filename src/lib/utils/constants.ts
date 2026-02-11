@@ -2,8 +2,8 @@
  * Application-wide constants
  */
 
-export const SITE_NAME = 'Neo-Stage Collective'
-export const SITE_TAGLINE = 'Drops, bundles, and collectibles — tap a universe.'
+export const SITE_NAME = 'Tamashii'
+export const SITE_TAGLINE = 'Your Anime Spirit'
 
 /**
  * Universe configuration with theme colors and metadata

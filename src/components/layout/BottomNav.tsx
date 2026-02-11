@@ -2,45 +2,10 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
 import { Home, Globe, Package, User, Star } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
-
-interface NavItem {
-  icon: React.ReactNode
-  activeIcon: React.ReactNode
-  label: string
-  href: string
-  hasBadge?: boolean
-}
-
-const navItems: NavItem[] = [
-  {
-    icon: <Home className="w-5 h-5" strokeWidth={1.5} />,
-    activeIcon: <Home className="w-5 h-5" strokeWidth={2} />,
-    label: 'HOME',
-    href: '/'
-  },
-  {
-    icon: <Globe className="w-5 h-5" strokeWidth={1.5} />,
-    activeIcon: <Globe className="w-5 h-5" strokeWidth={2} />,
-    label: 'WORLDS',
-    href: '/worlds'
-  },
-  {
-    icon: <Package className="w-5 h-5" strokeWidth={1.5} />,
-    activeIcon: <Package className="w-5 h-5" strokeWidth={2} />,
-    label: 'DROPS',
-    href: '/drops'
-  },
-  {
-    icon: <User className="w-5 h-5" strokeWidth={1.5} />,
-    activeIcon: <User className="w-5 h-5" strokeWidth={2} />,
-    label: 'PROFILE',
-    href: '/profile',
-    hasBadge: true
-  },
-]
 
 interface BottomNavProps {
   className?: string
@@ -48,6 +13,35 @@ interface BottomNavProps {
 
 export function BottomNav({ className }: BottomNavProps) {
   const pathname = usePathname()
+  const t = useTranslations('nav')
+
+  const navItems = [
+    {
+      icon: <Home className="w-5 h-5" strokeWidth={1.5} />,
+      activeIcon: <Home className="w-5 h-5" strokeWidth={2} />,
+      label: t('home').toUpperCase(),
+      href: '/'
+    },
+    {
+      icon: <Globe className="w-5 h-5" strokeWidth={1.5} />,
+      activeIcon: <Globe className="w-5 h-5" strokeWidth={2} />,
+      label: t('worlds').toUpperCase(),
+      href: '/worlds'
+    },
+    {
+      icon: <Package className="w-5 h-5" strokeWidth={1.5} />,
+      activeIcon: <Package className="w-5 h-5" strokeWidth={2} />,
+      label: t('drops').toUpperCase(),
+      href: '/drops'
+    },
+    {
+      icon: <User className="w-5 h-5" strokeWidth={1.5} />,
+      activeIcon: <User className="w-5 h-5" strokeWidth={2} />,
+      label: t('profile').toUpperCase(),
+      href: '/profile',
+      hasBadge: true
+    },
+  ]
 
   const isActive = (href: string) => {
     if (href === '/') {

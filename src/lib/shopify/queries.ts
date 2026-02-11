@@ -214,6 +214,16 @@ export const GET_CART = gql`
           currencyCode
         }
       }
+      discountCodes {
+        code
+        applicable
+      }
+      discountAllocations {
+        discountedAmount {
+          amount
+          currencyCode
+        }
+      }
       lines(first: 100) {
         edges {
           node {
@@ -267,6 +277,16 @@ export const SEARCH_PRODUCTS = gql`
       edges {
         node {
           ...ProductFields
+          variants(first: 1) {
+            edges {
+              node {
+                id
+              }
+            }
+          }
+          universe: metafield(namespace: "custom", key: "universe") {
+            value
+          }
         }
       }
     }
@@ -292,6 +312,142 @@ export const PREDICTIVE_SEARCH = gql`
         featuredImage {
           url
           altText
+        }
+      }
+    }
+  }
+`
+
+/**
+ * Get related products from the same collection
+ */
+export const GET_RELATED_PRODUCTS = gql`
+  query GetRelatedProducts($collectionHandle: String!, $first: Int!) {
+    collection(handle: $collectionHandle) {
+      products(first: $first) {
+        edges {
+          node {
+            id
+            handle
+            title
+            priceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            compareAtPriceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            featuredImage {
+              url
+              altText
+            }
+            variants(first: 1) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+            metafield(namespace: "custom", key: "rarity") {
+              value
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
+/**
+ * Get new arrivals (latest products sorted by created date)
+ */
+export const GET_NEW_ARRIVALS = gql`
+  ${PRODUCT_FRAGMENT}
+  query GetNewArrivals($first: Int!) {
+    products(first: $first, sortKey: CREATED_AT, reverse: true) {
+      edges {
+        node {
+          ...ProductFields
+          universe: metafield(namespace: "custom", key: "universe") {
+            value
+          }
+        }
+      }
+    }
+  }
+`
+
+/**
+ * Get best sellers (products with is_bestseller metafield)
+ */
+export const GET_BEST_SELLERS = gql`
+  ${PRODUCT_FRAGMENT}
+  query GetBestSellers($first: Int!) {
+    products(first: $first, sortKey: BEST_SELLING) {
+      edges {
+        node {
+          ...ProductFields
+          isBestseller: metafield(namespace: "custom", key: "is_bestseller") {
+            value
+          }
+          universe: metafield(namespace: "custom", key: "universe") {
+            value
+          }
+        }
+      }
+    }
+  }
+`
+
+/**
+ * Get all products (for filtering on sale items client-side)
+ */
+export const GET_ALL_PRODUCTS = gql`
+  ${PRODUCT_FRAGMENT}
+  query GetAllProducts($first: Int!) {
+    products(first: $first, sortKey: CREATED_AT, reverse: true) {
+      edges {
+        node {
+          ...ProductFields
+          universe: metafield(namespace: "custom", key: "universe") {
+            value
+          }
+        }
+      }
+    }
+  }
+`
+
+/**
+ * Get all products for sitemap (with collection handles and update timestamps)
+ */
+export const GET_SITEMAP_PRODUCTS = gql`
+  query GetSitemapProducts($first: Int!, $after: String) {
+    products(first: $first, after: $after) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          id
+          handle
+          updatedAt
+          collections(first: 10) {
+            edges {
+              node {
+                handle
+                metafield(namespace: "custom", key: "universe") {
+                  value
+                }
+              }
+            }
+          }
         }
       }
     }

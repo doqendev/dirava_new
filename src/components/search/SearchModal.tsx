@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, X, Loader2, Clock, ArrowRight, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
@@ -34,7 +35,7 @@ interface PredictiveSearchResponse {
   }
 }
 
-const RECENT_SEARCHES_KEY = 'neo-stage-recent-searches'
+const RECENT_SEARCHES_KEY = 'tamashii-recent-searches'
 const MAX_RECENT_SEARCHES = 5
 
 // Get recent searches from localStorage
@@ -85,6 +86,8 @@ function clearRecentSearches(): void {
 }
 
 export function SearchModal() {
+  const t = useTranslations('search')
+  const tCommon = useTranslations('common')
   const { isSearchOpen, closeSearch } = useUIStore()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<PredictiveProduct[]>([])
@@ -255,7 +258,7 @@ export function SearchModal() {
                     type="text"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search products..."
+                    placeholder={t('placeholder')}
                     className={cn(
                       'w-full pl-12 pr-20 py-4',
                       'bg-transparent border-b border-border-subtle',
@@ -271,7 +274,7 @@ export function SearchModal() {
                       type="button"
                       onClick={handleClose}
                       className="p-1.5 text-white/50 hover:text-white transition-colors"
-                      aria-label="Close search"
+                      aria-label={tCommon('close')}
                     >
                       <X className="w-5 h-5" />
                     </button>
@@ -286,15 +289,15 @@ export function SearchModal() {
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="text-sm font-medium text-white/70 uppercase tracking-wider flex items-center gap-2">
                           <Clock className="w-4 h-4" />
-                          Recent Searches
+                          {t('recentSearches')}
                         </h3>
                         <button
                           onClick={handleClearAllRecent}
                           className="text-xs text-white/40 hover:text-neon-cyan transition-colors flex items-center gap-1"
-                          aria-label="Clear all recent searches"
+                          aria-label={t('clearAll')}
                         >
                           <Trash2 className="w-3 h-3" />
-                          Clear all
+                          {t('clearAll')}
                         </button>
                       </div>
                       <div className="space-y-1">
@@ -323,7 +326,7 @@ export function SearchModal() {
                     <div className="p-8 text-center">
                       <Search className="w-10 h-10 text-white/20 mx-auto mb-3" />
                       <p className="text-white/50 text-sm">
-                        Search for products, collections, and more
+                        {t('placeholder')}
                       </p>
                     </div>
                   )}
@@ -332,7 +335,7 @@ export function SearchModal() {
                   {query.trim() && !isLoading && results.length > 0 && (
                     <div className="p-4">
                       <h3 className="text-sm font-medium text-white/70 uppercase tracking-wider mb-3">
-                        Products
+                        {t('products')}
                       </h3>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         {results.slice(0, 8).map((product) => (
@@ -377,7 +380,7 @@ export function SearchModal() {
                         className="w-full mt-4 py-3 flex items-center justify-center gap-2 text-neon-cyan hover:bg-neon-cyan/10 rounded-lg transition-colors"
                       >
                         <span className="text-sm font-medium">
-                          View all results for &quot;{query}&quot;
+                          {t('viewAllResults', { query })}
                         </span>
                         <ArrowRight className="w-4 h-4" />
                       </button>
@@ -388,14 +391,14 @@ export function SearchModal() {
                   {query.trim() && !isLoading && results.length === 0 && (
                     <div className="p-8 text-center">
                       <p className="text-white/50 text-sm mb-2">
-                        No products found for &quot;{query}&quot;
+                        {t('noResults', { query })}
                       </p>
                       <button
                         type="button"
                         onClick={handleViewAllResults}
                         className="text-neon-cyan text-sm hover:underline"
                       >
-                        Search anyway →
+                        {t('searchAnyway')} →
                       </button>
                     </div>
                   )}
@@ -411,9 +414,9 @@ export function SearchModal() {
                 {/* Footer hint */}
                 <div className="px-4 py-3 border-t border-border-subtle bg-bg-secondary/50">
                   <p className="text-xs text-white/30 text-center">
-                    Press <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white/50">Enter</kbd> to search
+                    {t('pressEnter')}
                     {' · '}
-                    <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white/50">Esc</kbd> to close
+                    {t('pressEsc')}
                   </p>
                 </div>
               </div>

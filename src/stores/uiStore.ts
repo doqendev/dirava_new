@@ -3,6 +3,11 @@ import { persist } from 'zustand/middleware'
 
 export type GridColumns = 1 | 2 | 3
 
+interface QuickViewProduct {
+  handle: string
+  universe?: string
+}
+
 interface UIState {
   // Cart drawer
   isCartOpen: boolean
@@ -14,6 +19,11 @@ interface UIState {
   isSearchOpen: boolean
   openSearch: () => void
   closeSearch: () => void
+
+  // Quick view modal
+  quickViewProduct: QuickViewProduct | null
+  openQuickView: (product: QuickViewProduct) => void
+  closeQuickView: () => void
 
   // Mobile menu
   isMobileMenuOpen: boolean
@@ -51,6 +61,11 @@ export const useUIStore = create<UIState>()(
       openSearch: () => set({ isSearchOpen: true }),
       closeSearch: () => set({ isSearchOpen: false }),
 
+      // Quick view modal
+      quickViewProduct: null,
+      openQuickView: (product) => set({ quickViewProduct: product }),
+      closeQuickView: () => set({ quickViewProduct: null }),
+
       // Mobile menu
       isMobileMenuOpen: false,
       openMobileMenu: () => set({ isMobileMenuOpen: true }),
@@ -73,7 +88,7 @@ export const useUIStore = create<UIState>()(
       toggleProductInfo: () => set((state) => ({ showProductInfo: !state.showProductInfo })),
     }),
     {
-      name: 'neo-stage-ui',
+      name: 'tamashii-ui',
       partialize: (state) => ({
         gridColumns: state.gridColumns,
         showProductInfo: state.showProductInfo,

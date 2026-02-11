@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ChevronDown, Check, SlidersHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
@@ -116,12 +117,14 @@ function PriceRangeSlider({
   value,
   onChange,
   themeColor,
+  t,
 }: {
   min: number
   max: number
   value: [number, number]
   onChange: (value: [number, number]) => void
   themeColor: string
+  t: ReturnType<typeof useTranslations>
 }) {
   const [localMin, setLocalMin] = useState(value[0])
   const [localMax, setLocalMax] = useState(value[1])
@@ -151,7 +154,7 @@ function PriceRangeSlider({
       {/* Price Inputs */}
       <div className="flex items-center gap-3">
         <div className="flex-1">
-          <label className="text-xs text-white/50 mb-1 block">Min</label>
+          <label className="text-xs text-white/50 mb-1 block">{t('min')}</label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50 text-sm">
               $
@@ -169,7 +172,7 @@ function PriceRangeSlider({
         </div>
         <span className="text-white/30 mt-5">—</span>
         <div className="flex-1">
-          <label className="text-xs text-white/50 mb-1 block">Max</label>
+          <label className="text-xs text-white/50 mb-1 block">{t('max')}</label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50 text-sm">
               $
@@ -211,6 +214,7 @@ function DesktopFilters({
   productCount,
   onFilterChange,
   onClearFilters,
+  t,
 }: {
   filters: FilterState
   priceRange: { min: number; max: number }
@@ -218,6 +222,7 @@ function DesktopFilters({
   productCount: number
   onFilterChange: (key: string, value: unknown) => void
   onClearFilters: () => void
+  t: ReturnType<typeof useTranslations>
 }) {
   const toggleProductType = (type: ProductTypeFilter) => {
     const current = filters.productTypes
@@ -237,29 +242,29 @@ function DesktopFilters({
           <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/10">
             <div className="flex items-center gap-2">
               <SlidersHorizontal className="w-4 h-4 text-white/70" />
-              <span className="font-medium text-white">Filters</span>
+              <span className="font-medium text-white">{t('title')}</span>
             </div>
             {hasFilters && (
               <button
                 onClick={onClearFilters}
                 className="text-xs text-white/50 hover:text-neon-cyan transition-colors"
               >
-                Clear all
+                {t('clearAll')}
               </button>
             )}
           </div>
 
           {/* Product count */}
           <p className="text-sm text-white/50 mb-4">
-            {productCount} {productCount === 1 ? 'product' : 'products'}
+            {productCount} {productCount === 1 ? t('product') : t('products')}
           </p>
 
           {/* Product Type */}
-          <FilterSection title="Product Type">
+          <FilterSection title={t('productType')}>
             <div className="space-y-1">
               {/* Apparel Group */}
               <p className="text-xs text-white/40 uppercase tracking-wider mt-2 mb-1">
-                Apparel
+                {t('apparel')}
               </p>
               {PRODUCT_TYPE_OPTIONS.filter((opt) => opt.group === 'Apparel').map(
                 (option) => (
@@ -275,7 +280,7 @@ function DesktopFilters({
 
               {/* Other Products */}
               <p className="text-xs text-white/40 uppercase tracking-wider mt-4 mb-1">
-                Accessories
+                {t('accessories')}
               </p>
               {PRODUCT_TYPE_OPTIONS.filter((opt) => !opt.group).map((option) => (
                 <FilterCheckbox
@@ -290,7 +295,7 @@ function DesktopFilters({
           </FilterSection>
 
           {/* Price Range */}
-          <FilterSection title="Price Range">
+          <FilterSection title={t('priceRange')}>
             <PriceRangeSlider
               min={priceRange.min}
               max={priceRange.max}
@@ -300,6 +305,7 @@ function DesktopFilters({
                 onFilterChange('priceMax', max < priceRange.max ? String(max) : null)
               }}
               themeColor={themeColor}
+              t={t}
             />
           </FilterSection>
         </div>
@@ -317,6 +323,7 @@ function MobileFilterDrawer({
   onFilterChange,
   onClearFilters,
   onClose,
+  t,
 }: {
   filters: FilterState
   priceRange: { min: number; max: number }
@@ -325,6 +332,7 @@ function MobileFilterDrawer({
   onFilterChange: (key: string, value: unknown) => void
   onClearFilters: () => void
   onClose: () => void
+  t: ReturnType<typeof useTranslations>
 }) {
   const toggleProductType = (type: ProductTypeFilter) => {
     const current = filters.productTypes
@@ -360,7 +368,7 @@ function MobileFilterDrawer({
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
               <SlidersHorizontal className="w-5 h-5" style={{ color: themeColor }} />
-              <span className="font-display text-lg text-white">Filters</span>
+              <span className="font-display text-lg text-white">{t('title')}</span>
             </div>
             <button
               onClick={onClose}
@@ -372,7 +380,7 @@ function MobileFilterDrawer({
 
           {/* Product count */}
           <p className="text-sm text-white/50 mb-4">
-            {productCount} {productCount === 1 ? 'product' : 'products'}
+            {productCount} {productCount === 1 ? t('product') : t('products')}
           </p>
 
           {/* Clear filters */}
@@ -381,15 +389,15 @@ function MobileFilterDrawer({
               onClick={onClearFilters}
               className="text-sm text-neon-cyan hover:text-neon-cyan/80 mb-4 transition-colors"
             >
-              Clear all filters
+              {t('clearAllFilters')}
             </button>
           )}
 
           {/* Product Type */}
-          <FilterSection title="Product Type">
+          <FilterSection title={t('productType')}>
             <div className="space-y-1">
               <p className="text-xs text-white/40 uppercase tracking-wider mt-2 mb-1">
-                Apparel
+                {t('apparel')}
               </p>
               {PRODUCT_TYPE_OPTIONS.filter((opt) => opt.group === 'Apparel').map(
                 (option) => (
@@ -404,7 +412,7 @@ function MobileFilterDrawer({
               )}
 
               <p className="text-xs text-white/40 uppercase tracking-wider mt-4 mb-1">
-                Accessories
+                {t('accessories')}
               </p>
               {PRODUCT_TYPE_OPTIONS.filter((opt) => !opt.group).map((option) => (
                 <FilterCheckbox
@@ -419,7 +427,7 @@ function MobileFilterDrawer({
           </FilterSection>
 
           {/* Price Range */}
-          <FilterSection title="Price Range">
+          <FilterSection title={t('priceRange')}>
             <PriceRangeSlider
               min={priceRange.min}
               max={priceRange.max}
@@ -429,6 +437,7 @@ function MobileFilterDrawer({
                 onFilterChange('priceMax', max < priceRange.max ? String(max) : null)
               }}
               themeColor={themeColor}
+              t={t}
             />
           </FilterSection>
 
@@ -441,7 +450,7 @@ function MobileFilterDrawer({
               color: 'black',
             }}
           >
-            APPLY FILTERS
+            {t('applyFilters')}
           </button>
         </div>
       </motion.div>
@@ -457,6 +466,7 @@ export function CollectionFilters({
   basePath,
   currentParams,
 }: CollectionFiltersProps) {
+  const t = useTranslations('filters')
   const { isFilterDrawerOpen, closeFilterDrawer } = useUIStore()
 
   const updateFilters = (key: string, value: unknown) => {
@@ -486,6 +496,7 @@ export function CollectionFilters({
         productCount={productCount}
         onFilterChange={updateFilters}
         onClearFilters={clearFilters}
+        t={t}
       />
 
       {/* Mobile Filter Drawer */}
@@ -499,6 +510,7 @@ export function CollectionFilters({
             onFilterChange={updateFilters}
             onClearFilters={clearFilters}
             onClose={closeFilterDrawer}
+            t={t}
           />
         )}
       </AnimatePresence>
@@ -514,6 +526,7 @@ export function MobileFilterButton({
   themeColor: string
   hasFilters: boolean
 }) {
+  const t = useTranslations('filters')
   const { openFilterDrawer } = useUIStore()
 
   return (
@@ -531,7 +544,7 @@ export function MobileFilterButton({
       }}
     >
       <SlidersHorizontal className="w-4 h-4" />
-      <span>Filters</span>
+      <span>{t('title')}</span>
       {hasFilters && (
         <span
           className="w-2 h-2 rounded-full"

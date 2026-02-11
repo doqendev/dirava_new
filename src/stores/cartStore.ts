@@ -1,9 +1,9 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { shopifyClient } from '@/lib/shopify/client'
-import { CREATE_CART, ADD_TO_CART, UPDATE_CART_LINE, REMOVE_FROM_CART } from '@/lib/shopify/mutations'
+import { CREATE_CART, ADD_TO_CART, UPDATE_CART_LINE, REMOVE_FROM_CART, CART_DISCOUNT_CODES_UPDATE } from '@/lib/shopify/mutations'
 import { GET_CART } from '@/lib/shopify/queries'
-import type { ShopifyCartLine, ShopifyMoney } from '@/types/shopify'
+import type { ShopifyCartLine, ShopifyMoney, ShopifyDiscountCode } from '@/types/shopify'
 
 interface CartState {
   cartId: string | null
@@ -11,7 +11,11 @@ interface CartState {
   lines: ShopifyCartLine[]
   totalQuantity: number
   subtotal: ShopifyMoney | null
+  discountCodes: ShopifyDiscountCode[]
+  discountAmount: ShopifyMoney | null
+  total: ShopifyMoney | null
   isLoading: boolean
+  isApplyingDiscount: boolean
   error: string | null
 
   // Actions
@@ -19,6 +23,8 @@ interface CartState {
   addItem: (variantId: string, quantity?: number, attributes?: Array<{ key: string; value: string }>) => Promise<void>
   updateItem: (lineId: string, quantity: number) => Promise<void>
   removeItem: (lineId: string) => Promise<void>
+  applyDiscount: (code: string) => Promise<{ success: boolean; error?: string }>
+  removeDiscount: () => Promise<void>
   clearCart: () => void
   setError: (error: string | null) => void
 }
@@ -31,7 +37,11 @@ export const useCartStore = create<CartState>()(
       lines: [],
       totalQuantity: 0,
       subtotal: null,
+      discountCodes: [],
+      discountAmount: null,
+      total: null,
       isLoading: false,
+      isApplyingDiscount: false,
       error: null,
 
       initializeCart: async () => {
@@ -46,16 +56,26 @@ export const useCartStore = create<CartState>()(
                 id: string
                 checkoutUrl: string
                 totalQuantity: number
-                cost: { subtotalAmount: ShopifyMoney }
+                cost: { subtotalAmount: ShopifyMoney; totalAmount: ShopifyMoney }
+                discountCodes: ShopifyDiscountCode[]
+                discountAllocations: Array<{ discountedAmount: ShopifyMoney }>
                 lines: { edges: Array<{ node: ShopifyCartLine }> }
               } | null
             }>(GET_CART, { cartId })
 
             if (response.cart) {
+              const discountTotal = response.cart.discountAllocations?.reduce(
+                (sum: number, a: { discountedAmount: ShopifyMoney }) => sum + parseFloat(a.discountedAmount.amount),
+                0
+              ) || 0
+
               set({
                 lines: response.cart.lines.edges.map((edge) => edge.node),
                 totalQuantity: response.cart.totalQuantity,
                 subtotal: response.cart.cost.subtotalAmount,
+                discountCodes: response.cart.discountCodes || [],
+                discountAmount: discountTotal > 0 ? { amount: discountTotal.toString(), currencyCode: response.cart.cost.subtotalAmount.currencyCode } : null,
+                total: response.cart.cost.totalAmount || null,
                 checkoutUrl: response.cart.checkoutUrl,
                 isLoading: false,
               })
@@ -106,7 +126,9 @@ export const useCartStore = create<CartState>()(
               cart: {
                 id: string
                 totalQuantity: number
-                cost: { subtotalAmount: ShopifyMoney }
+                cost: { subtotalAmount: ShopifyMoney; totalAmount: ShopifyMoney }
+                discountCodes: ShopifyDiscountCode[]
+                discountAllocations: Array<{ discountedAmount: ShopifyMoney }>
                 checkoutUrl: string
                 lines: { edges: Array<{ node: ShopifyCartLine }> }
               }
@@ -117,10 +139,18 @@ export const useCartStore = create<CartState>()(
           })
 
           const cart = response.cartLinesAdd.cart
+          const discountTotal = cart.discountAllocations?.reduce(
+            (sum: number, a: { discountedAmount: ShopifyMoney }) => sum + parseFloat(a.discountedAmount.amount),
+            0
+          ) || 0
+
           set({
             lines: cart.lines.edges.map((edge) => edge.node),
             totalQuantity: cart.totalQuantity,
             subtotal: cart.cost.subtotalAmount,
+            discountCodes: cart.discountCodes || [],
+            discountAmount: discountTotal > 0 ? { amount: discountTotal.toString(), currencyCode: cart.cost.subtotalAmount.currencyCode } : null,
+            total: cart.cost.totalAmount || null,
             checkoutUrl: cart.checkoutUrl,
             isLoading: false,
           })
@@ -151,7 +181,9 @@ export const useCartStore = create<CartState>()(
               cart: {
                 id: string
                 totalQuantity: number
-                cost: { subtotalAmount: ShopifyMoney }
+                cost: { subtotalAmount: ShopifyMoney; totalAmount: ShopifyMoney }
+                discountCodes: ShopifyDiscountCode[]
+                discountAllocations: Array<{ discountedAmount: ShopifyMoney }>
                 lines: { edges: Array<{ node: ShopifyCartLine }> }
               }
             }
@@ -161,10 +193,18 @@ export const useCartStore = create<CartState>()(
           })
 
           const cart = response.cartLinesUpdate.cart
+          const discountTotal = cart.discountAllocations?.reduce(
+            (sum: number, a: { discountedAmount: ShopifyMoney }) => sum + parseFloat(a.discountedAmount.amount),
+            0
+          ) || 0
+
           set({
             lines: cart.lines.edges.map((edge) => edge.node),
             totalQuantity: cart.totalQuantity,
             subtotal: cart.cost.subtotalAmount,
+            discountCodes: cart.discountCodes || [],
+            discountAmount: discountTotal > 0 ? { amount: discountTotal.toString(), currencyCode: cart.cost.subtotalAmount.currencyCode } : null,
+            total: cart.cost.totalAmount || null,
             isLoading: false,
           })
         } catch (error) {
@@ -188,7 +228,9 @@ export const useCartStore = create<CartState>()(
               cart: {
                 id: string
                 totalQuantity: number
-                cost: { subtotalAmount: ShopifyMoney }
+                cost: { subtotalAmount: ShopifyMoney; totalAmount: ShopifyMoney }
+                discountCodes: ShopifyDiscountCode[]
+                discountAllocations: Array<{ discountedAmount: ShopifyMoney }>
                 lines: { edges: Array<{ node: ShopifyCartLine }> }
               }
             }
@@ -198,10 +240,18 @@ export const useCartStore = create<CartState>()(
           })
 
           const cart = response.cartLinesRemove.cart
+          const discountTotal = cart.discountAllocations?.reduce(
+            (sum: number, a: { discountedAmount: ShopifyMoney }) => sum + parseFloat(a.discountedAmount.amount),
+            0
+          ) || 0
+
           set({
             lines: cart.lines.edges.map((edge) => edge.node),
             totalQuantity: cart.totalQuantity,
             subtotal: cart.cost.subtotalAmount,
+            discountCodes: cart.discountCodes || [],
+            discountAmount: discountTotal > 0 ? { amount: discountTotal.toString(), currencyCode: cart.cost.subtotalAmount.currencyCode } : null,
+            total: cart.cost.totalAmount || null,
             isLoading: false,
           })
         } catch (error) {
@@ -213,6 +263,107 @@ export const useCartStore = create<CartState>()(
         }
       },
 
+      applyDiscount: async (code) => {
+        const { cartId } = get()
+        if (!cartId) {
+          return { success: false, error: 'No cart found' }
+        }
+
+        set({ isApplyingDiscount: true, error: null })
+
+        try {
+          const response = await shopifyClient.request<{
+            cartDiscountCodesUpdate: {
+              cart: {
+                id: string
+                checkoutUrl: string
+                totalQuantity: number
+                cost: { subtotalAmount: ShopifyMoney; totalAmount: ShopifyMoney }
+                discountCodes: ShopifyDiscountCode[]
+                discountAllocations: Array<{ discountedAmount: ShopifyMoney }>
+                lines: { edges: Array<{ node: ShopifyCartLine }> }
+              }
+              userErrors: Array<{ field: string[]; message: string }>
+            }
+          }>(CART_DISCOUNT_CODES_UPDATE, {
+            cartId,
+            discountCodes: [code],
+          })
+
+          if (response.cartDiscountCodesUpdate.userErrors.length > 0) {
+            const errorMessage = response.cartDiscountCodesUpdate.userErrors[0]?.message || 'Invalid discount code'
+            set({ isApplyingDiscount: false, error: errorMessage })
+            return { success: false, error: errorMessage }
+          }
+
+          const cart = response.cartDiscountCodesUpdate.cart
+          const discountTotal = cart.discountAllocations?.reduce(
+            (sum: number, a: { discountedAmount: ShopifyMoney }) => sum + parseFloat(a.discountedAmount.amount),
+            0
+          ) || 0
+
+          set({
+            lines: cart.lines.edges.map((edge) => edge.node),
+            totalQuantity: cart.totalQuantity,
+            subtotal: cart.cost.subtotalAmount,
+            discountCodes: cart.discountCodes || [],
+            discountAmount: discountTotal > 0 ? { amount: discountTotal.toString(), currencyCode: cart.cost.subtotalAmount.currencyCode } : null,
+            total: cart.cost.totalAmount || null,
+            checkoutUrl: cart.checkoutUrl,
+            isApplyingDiscount: false,
+          })
+
+          return { success: true }
+        } catch (error) {
+          console.error('Failed to apply discount:', error)
+          const errorMessage = 'Failed to apply discount code'
+          set({ error: errorMessage, isApplyingDiscount: false })
+          return { success: false, error: errorMessage }
+        }
+      },
+
+      removeDiscount: async () => {
+        const { cartId } = get()
+        if (!cartId) return
+
+        set({ isApplyingDiscount: true, error: null })
+
+        try {
+          const response = await shopifyClient.request<{
+            cartDiscountCodesUpdate: {
+              cart: {
+                id: string
+                checkoutUrl: string
+                totalQuantity: number
+                cost: { subtotalAmount: ShopifyMoney; totalAmount: ShopifyMoney }
+                discountCodes: ShopifyDiscountCode[]
+                discountAllocations: Array<{ discountedAmount: ShopifyMoney }>
+                lines: { edges: Array<{ node: ShopifyCartLine }> }
+              }
+              userErrors: Array<{ field: string[]; message: string }>
+            }
+          }>(CART_DISCOUNT_CODES_UPDATE, {
+            cartId,
+            discountCodes: [],
+          })
+
+          const cart = response.cartDiscountCodesUpdate.cart
+          set({
+            lines: cart.lines.edges.map((edge) => edge.node),
+            totalQuantity: cart.totalQuantity,
+            subtotal: cart.cost.subtotalAmount,
+            discountCodes: [],
+            discountAmount: null,
+            total: cart.cost.totalAmount || null,
+            checkoutUrl: cart.checkoutUrl,
+            isApplyingDiscount: false,
+          })
+        } catch (error) {
+          console.error('Failed to remove discount:', error)
+          set({ error: 'Failed to remove discount code', isApplyingDiscount: false })
+        }
+      },
+
       clearCart: () => {
         set({
           cartId: null,
@@ -220,7 +371,11 @@ export const useCartStore = create<CartState>()(
           lines: [],
           totalQuantity: 0,
           subtotal: null,
+          discountCodes: [],
+          discountAmount: null,
+          total: null,
           isLoading: false,
+          isApplyingDiscount: false,
           error: null,
         })
       },
@@ -228,7 +383,7 @@ export const useCartStore = create<CartState>()(
       setError: (error) => set({ error }),
     }),
     {
-      name: 'neo-stage-cart',
+      name: 'tamashii-cart',
       partialize: (state) => ({ cartId: state.cartId }),
     }
   )

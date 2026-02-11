@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils/cn'
 
@@ -8,6 +9,8 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ className }: HeroSectionProps) {
+  const t = useTranslations('home')
+
   return (
     <section className={cn('relative py-8 lg:py-12 overflow-visible', className)}>
       <div className="px-4 max-w-7xl mx-auto text-center">
@@ -33,8 +36,8 @@ export function HeroSection({ className }: HeroSectionProps) {
             'text-white'
           )}
         >
-          CHOOSE YOUR{' '}
-          <span className="text-neon-cyan text-glow-cyan">WORLD</span>
+          {t('chooseYour')}{' '}
+          <span className="text-neon-cyan text-glow-cyan">{t('world')}</span>
         </motion.h1>
 
         {/* Tagline */}
@@ -49,7 +52,7 @@ export function HeroSection({ className }: HeroSectionProps) {
             'max-w-md mx-auto'
           )}
         >
-          Drops, bundles, and collectibles — tap a universe.
+          {t('heroTagline')}
         </motion.p>
 
         {/* Decorative line */}

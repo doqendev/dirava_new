@@ -10,7 +10,6 @@ import {
   CUSTOMER_UPDATE,
 } from '@/lib/shopify/customerMutations'
 import { GET_CUSTOMER } from '@/lib/shopify/customerQueries'
-import { UPDATE_CART_BUYER } from '@/lib/shopify/mutations'
 import type {
   ShopifyCustomer,
   ShopifyCustomerAccessToken,
@@ -29,7 +28,7 @@ const MOCK_CUSTOMER: ShopifyCustomer = {
     id: 'gid://shopify/MailingAddress/dev-addr-1',
     firstName: 'Test',
     lastName: 'User',
-    company: 'Neo-Stage Collective',
+    company: 'Tamashii',
     address1: '123 Test Street',
     address2: 'Suite 100',
     city: 'Los Angeles',
@@ -48,7 +47,7 @@ const MOCK_CUSTOMER: ShopifyCustomer = {
           id: 'gid://shopify/MailingAddress/dev-addr-1',
           firstName: 'Test',
           lastName: 'User',
-          company: 'Neo-Stage Collective',
+          company: 'Tamashii',
           address1: '123 Test Street',
           address2: 'Suite 100',
           city: 'Los Angeles',
@@ -158,9 +157,6 @@ export const useAuthStore = create<AuthState>()(
 
           // Fetch customer data
           await get().fetchCustomer()
-
-          // Associate cart with customer
-          await associateCartWithCustomer(customerAccessToken.accessToken)
 
           set({ isLoading: false })
           return { success: true }
@@ -396,7 +392,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'neo-stage-auth',
+      name: 'tamashii-auth',
       partialize: (state) => ({
         customer: state.customer,
         accessToken: state.accessToken,
@@ -406,22 +402,3 @@ export const useAuthStore = create<AuthState>()(
   )
 )
 
-// Helper function to associate cart with customer
-async function associateCartWithCustomer(customerAccessToken: string) {
-  try {
-    // Check if we're in browser environment
-    if (typeof window === 'undefined') return
-
-    // Import cartStore dynamically to avoid circular dependencies
-    const { useCartStore } = await import('./cartStore')
-    const cartId = useCartStore.getState().cartId
-    if (!cartId) return
-
-    await shopifyClient.request(UPDATE_CART_BUYER, {
-      cartId,
-      buyerIdentity: { customerAccessToken },
-    })
-  } catch (error) {
-    console.error('Failed to associate cart with customer:', error)
-  }
-}

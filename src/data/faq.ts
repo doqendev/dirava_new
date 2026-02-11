@@ -4,12 +4,12 @@ export const faqs: FAQItem[] = [
   {
     question: 'How long does shipping take?',
     answer:
-      'Domestic orders typically arrive within 5-7 business days with standard shipping. Express shipping (2-3 days) and overnight options are available at checkout. International shipping times vary by region, ranging from 7-35 business days. All orders are processed within 1-3 business days before shipping.',
+      'European orders typically arrive within 5-12 business days. UK orders take 5-10 days, Canada 7-14 days, Australia 10-20 days, and other international destinations 14-35 days. Free shipping is available in most regions above certain order values. All orders are processed within 1-3 business days before shipping.',
   },
   {
     question: 'Do you ship internationally?',
     answer:
-      'Yes! We ship to most countries worldwide. International shipping rates are calculated at checkout based on your location and order weight. Please note that international orders may be subject to customs fees and import duties, which are the responsibility of the recipient.',
+      'Yes! We ship to most countries worldwide. International shipping rates are calculated at checkout based on your location and order weight. Please note that international orders may be subject to customs fees and import duties, which are the responsibility of the recipient. Note: Shipping to the United States is currently suspended due to tariff changes.',
   },
   {
     question: 'What is your return policy?',
@@ -24,7 +24,7 @@ export const faqs: FAQItem[] = [
   {
     question: 'Are your products officially licensed?',
     answer:
-      'Yes, all products sold on Neo-Stage Collective are officially licensed merchandise. We work directly with licensors and authorized distributors to ensure authenticity. Each product includes proper licensing information and meets quality standards.',
+      'Yes, all products sold on Tamashii are officially licensed merchandise. We work directly with licensors and authorized distributors to ensure authenticity. Each product includes proper licensing information and meets quality standards.',
   },
   {
     question: 'What payment methods do you accept?',
@@ -44,7 +44,7 @@ export const faqs: FAQItem[] = [
   {
     question: 'Do you offer size exchanges?',
     answer:
-      'Yes, we offer free size exchanges within 30 days of delivery, subject to availability. Simply initiate a return through your account and select "Exchange" as your reason. If your preferred size is unavailable, you can choose a refund instead.',
+      'Yes, we offer size exchanges within 30 days of delivery, subject to availability. Simply initiate a return through your account and select "Exchange" as your reason. Return shipping costs are paid by the customer. If your preferred size is unavailable, you can choose a refund instead.',
   },
   {
     question: 'How do I know what size to order?',
@@ -59,6 +59,6 @@ export const faqs: FAQItem[] = [
   {
     question: 'How can I contact customer support?',
     answer:
-      'You can reach our customer support team through our Contact page, by emailing support@neo-stage.com, or through our social media channels. Our team typically responds within 24-48 hours during business days. For urgent order issues, please include your order number in your message.',
+      'You can reach our customer support team through our Contact page, by emailing support@tamashii.com, or through our social media channels. Our team typically responds within 24-48 hours during business days. For urgent order issues, please include your order number in your message.',
   },
 ]

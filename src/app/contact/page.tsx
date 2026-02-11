@@ -1,20 +1,18 @@
+'use client'
+
+import { useTranslations } from 'next-intl'
 import { ContentPageLayout } from '@/components/content/ContentPageLayout'
 import { ContactForm } from './ContactForm'
 import { Mail, MessageCircle, Clock } from 'lucide-react'
-import type { Metadata } from 'next'
-
-export const metadata: Metadata = {
-  title: 'Contact Us',
-  description: 'Get in touch with our customer support team. We\'re here to help with orders, products, and any questions.',
-}
 
 export default function ContactPage() {
-  const breadcrumbs = [{ label: 'Contact', href: '/contact' }]
+  const t = useTranslations('contact')
+  const breadcrumbs = [{ label: t('title'), href: '/contact' }]
 
   return (
     <ContentPageLayout
-      title="Contact Us"
-      description="Have a question or need help? We're here for you."
+      title={t('title')}
+      description={t('description')}
       breadcrumbs={breadcrumbs}
       glowColor="cyan"
     >
@@ -23,7 +21,7 @@ export default function ContactPage() {
         <div className="lg:col-span-2">
           <div className="bg-bg-card/50 backdrop-blur-sm border border-border-subtle rounded-xl p-6">
             <h2 className="font-display text-xl font-semibold text-white mb-6">
-              Send us a message
+              {t('sendMessage')}
             </h2>
             <ContactForm />
           </div>
@@ -37,16 +35,16 @@ export default function ContactPage() {
               <div className="w-10 h-10 rounded-lg bg-neon-cyan/10 flex items-center justify-center">
                 <Mail className="w-5 h-5 text-neon-cyan" />
               </div>
-              <h3 className="font-display text-white font-semibold">Email</h3>
+              <h3 className="font-display text-white font-semibold">{t('email')}</h3>
             </div>
             <p className="text-white/70 text-sm">
-              For general inquiries:
+              {t('forGeneralInquiries')}
             </p>
             <a
-              href="mailto:support@neo-stage.com"
+              href="mailto:support@tamashii.com"
               className="text-neon-cyan hover:underline"
             >
-              support@neo-stage.com
+              support@tamashii.com
             </a>
           </div>
 
@@ -56,10 +54,10 @@ export default function ContactPage() {
               <div className="w-10 h-10 rounded-lg bg-neon-cyan/10 flex items-center justify-center">
                 <MessageCircle className="w-5 h-5 text-neon-cyan" />
               </div>
-              <h3 className="font-display text-white font-semibold">Social</h3>
+              <h3 className="font-display text-white font-semibold">{t('social')}</h3>
             </div>
             <p className="text-white/70 text-sm mb-2">
-              Connect with us on social media for updates and support.
+              {t('socialDescription')}
             </p>
             <div className="flex gap-3">
               <a
@@ -95,10 +93,10 @@ export default function ContactPage() {
               <div className="w-10 h-10 rounded-lg bg-neon-cyan/10 flex items-center justify-center">
                 <Clock className="w-5 h-5 text-neon-cyan" />
               </div>
-              <h3 className="font-display text-white font-semibold">Response Time</h3>
+              <h3 className="font-display text-white font-semibold">{t('responseTime')}</h3>
             </div>
             <p className="text-white/70 text-sm">
-              We typically respond within 24-48 hours during business days (Monday-Friday).
+              {t('responseTimeDescription')}
             </p>
           </div>
         </div>

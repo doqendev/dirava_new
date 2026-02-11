@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -19,15 +20,16 @@ interface DropProduct {
 
 interface DropRunwayProps {
   products: DropProduct[]
-  title?: string
+  titleKey?: 'newArrivals' | 'dropRunway' | 'bestSellers'
   className?: string
 }
 
 export function DropRunway({
   products,
-  title = 'DROP RUNWAY',
+  titleKey = 'dropRunway',
   className,
 }: DropRunwayProps) {
+  const t = useTranslations('home')
   const scrollRef = useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
@@ -67,7 +69,7 @@ export function DropRunway({
         {/* Header */}
         <div className="flex items-center justify-between px-4 mb-4">
           <h2 className="font-display text-sm tracking-[3px] text-white/60 uppercase">
-            {title}
+            {t(titleKey)}
           </h2>
 
           {/* Navigation arrows */}
@@ -119,7 +121,7 @@ export function DropRunway({
               transition={{ duration: 0.3, delay: index * 0.05 }}
               className="flex-shrink-0 w-40 snap-start"
             >
-              <ProductCard product={product} />
+              <ProductCard product={product} t={t} />
             </motion.div>
           ))}
         </div>
@@ -140,8 +142,9 @@ export function DropRunway({
 }
 
 // Product Card Component
-function ProductCard({ product }: { product: DropProduct }) {
+function ProductCard({ product, t }: { product: DropProduct; t: ReturnType<typeof useTranslations> }) {
   const [isHovered, setIsHovered] = useState(false)
+  const tProduct = useTranslations('product')
 
   // Build the product URL - use universe path if available, otherwise fallback to /products
   const productUrl = product.universe
@@ -174,7 +177,7 @@ function ProductCard({ product }: { product: DropProduct }) {
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center text-white/20">
-            No Image
+            {tProduct('noImage')}
           </div>
         )}
 
@@ -200,7 +203,7 @@ function ProductCard({ product }: { product: DropProduct }) {
           }}
         >
           <Plus className="w-3 h-3" />
-          ADD
+          {t('add')}
         </motion.button>
 
         {/* Holographic overlay */}

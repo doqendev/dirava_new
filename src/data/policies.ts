@@ -51,7 +51,7 @@ export const policies: Policy[] = [
       {
         heading: 'Contact Us',
         content:
-          'If you have questions about this Privacy Policy or wish to exercise your rights, please contact us at privacy@neo-stage.com or through our Contact page.',
+          'If you have questions about this Privacy Policy or wish to exercise your rights, please contact us at privacy@tamashii.com or through our Contact page.',
       },
     ],
   },
@@ -64,7 +64,7 @@ export const policies: Policy[] = [
       {
         heading: 'Acceptance of Terms',
         content:
-          'By accessing and using Neo-Stage Collective, you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our website or services.',
+          'By accessing and using Tamashii, you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our website or services.',
       },
       {
         heading: 'Use of Website',
@@ -93,12 +93,12 @@ export const policies: Policy[] = [
       {
         heading: 'Intellectual Property',
         content:
-          'All content on this website, including images, text, logos, and designs, is the property of Neo-Stage Collective or our licensors. You may not reproduce, distribute, or use any content without our express written permission. Anime characters and franchises are trademarks of their respective owners.',
+          'All content on this website, including images, text, logos, and designs, is the property of Tamashii or our licensors. You may not reproduce, distribute, or use any content without our express written permission. Anime characters and franchises are trademarks of their respective owners.',
       },
       {
         heading: 'Limitation of Liability',
         content:
-          'Neo-Stage Collective shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of our website or products. Our total liability shall not exceed the amount you paid for the products in question.',
+          'Tamashii shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of our website or products. Our total liability shall not exceed the amount you paid for the products in question.',
       },
       {
         heading: 'Changes to Terms',
@@ -119,21 +119,34 @@ export const policies: Policy[] = [
           'Orders are typically processed within 1-3 business days. During high-volume periods or special drops, processing may take up to 5 business days. Pre-order items will be shipped according to their estimated release dates.',
       },
       {
-        heading: 'Domestic Shipping (United States)',
-        content: [
-          'Standard Shipping (5-7 business days): $5.99 or FREE on orders over $75',
-          'Express Shipping (2-3 business days): $12.99',
-          'Overnight Shipping (1 business day): $24.99',
-        ],
+        heading: 'Europe (Domestic)',
+        content:
+          'Standard Shipping (5-12 business days): €5.99 or FREE on orders over €45',
       },
       {
-        heading: 'International Shipping',
-        content: [
-          'Canada (7-14 business days): Starting at $14.99',
-          'Europe (10-21 business days): Starting at $19.99',
-          'Asia Pacific (14-28 business days): Starting at $24.99',
-          'Rest of World (14-35 business days): Starting at $29.99',
-        ],
+        heading: 'United Kingdom',
+        content:
+          'Standard Shipping (5-10 business days): £4.99 or FREE on orders over £40',
+      },
+      {
+        heading: 'Canada',
+        content:
+          'Standard Shipping (7-14 business days): $9.99 CAD or FREE on orders over $73 CAD',
+      },
+      {
+        heading: 'Australia',
+        content:
+          'Standard Shipping (10-20 business days): $11 AUD or FREE on orders over $80 AUD',
+      },
+      {
+        heading: 'Rest of World',
+        content:
+          'Asia Pacific: 14-28 business days. Other regions: 14-35 business days. Shipping costs vary by country and are calculated at checkout based on your location and order weight.',
+      },
+      {
+        heading: 'United States',
+        content:
+          'Shipping to the United States is currently suspended due to ongoing tariff changes. We apologize for any inconvenience and are monitoring the situation closely. Please check back for updates or sign up for our newsletter to be notified when US shipping resumes.',
       },
       {
         heading: 'Customs and Duties',
@@ -184,8 +197,8 @@ export const policies: Policy[] = [
           'Log into your account and go to Order History',
           'Select the order and items you wish to return',
           'Choose your reason for return and submit the request',
-          'You will receive a return shipping label via email',
-          'Pack items securely and drop off at the designated carrier',
+          'You will receive the return address and instructions via email',
+          'Pack items securely and ship using a tracked service at your own cost',
         ],
       },
       {
@@ -201,7 +214,7 @@ export const policies: Policy[] = [
       {
         heading: 'Return Shipping',
         content:
-          'For domestic returns, we provide a prepaid return label for a flat fee of $5.99, which will be deducted from your refund. If the return is due to our error (wrong item, defective product), return shipping is free. International return shipping is the responsibility of the customer.',
+          'Return shipping costs are the responsibility of the customer. We recommend using a tracked shipping service to ensure your return reaches us safely. If the return is due to our error (wrong item, defective product), we will cover the return shipping costs.',
       },
       {
         heading: 'Damaged or Defective Items',
@@ -219,7 +232,7 @@ export const policies: Policy[] = [
       {
         heading: 'Our Commitment',
         content:
-          'Neo-Stage Collective is committed to ensuring digital accessibility for people of all abilities. We are continually improving the user experience for everyone and applying relevant accessibility standards to guarantee we provide equal access to all users.',
+          'Tamashii is committed to ensuring digital accessibility for people of all abilities. We are continually improving the user experience for everyone and applying relevant accessibility standards to guarantee we provide equal access to all users.',
       },
       {
         heading: 'Accessibility Standards',
@@ -252,7 +265,7 @@ export const policies: Policy[] = [
       {
         heading: 'Feedback',
         content:
-          'We welcome your feedback on the accessibility of Neo-Stage Collective. If you encounter any accessibility barriers or have suggestions for improvement, please contact us at accessibility@neo-stage.com or use our Contact page. We take all feedback seriously and will work to address any issues.',
+          'We welcome your feedback on the accessibility of Tamashii. If you encounter any accessibility barriers or have suggestions for improvement, please contact us at accessibility@tamashii.com or use our Contact page. We take all feedback seriously and will work to address any issues.',
       },
       {
         heading: 'Alternative Access',

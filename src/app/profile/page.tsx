@@ -34,7 +34,7 @@ export default function ProfilePage() {
         </div>
 
         <h1 className="font-display text-2xl text-white mb-2">
-          Welcome to <span className="text-neon-cyan">Neo-Stage</span>
+          Welcome to <span className="text-neon-cyan">Tamashii</span>
         </h1>
         <p className="text-white/60 mb-8">
           Sign in to track orders, save your wishlist, and get exclusive access to drops.

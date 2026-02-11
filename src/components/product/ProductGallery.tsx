@@ -1,180 +1,380 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, lazy, Suspense, forwardRef, useImperativeHandle, useCallback } from 'react'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ZoomIn, Box, X } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
+import { AddToCartButton } from '@/components/product/AddToCartButton'
+import type { PreviewConfig } from '@/lib/preview/types'
+
+const Preview3DCanvas = lazy(() =>
+  import('@/components/product/preview3d/Preview3DCanvas').then((mod) => ({
+    default: mod.Preview3DCanvas,
+  }))
+)
 
 interface ProductImage {
   url: string
   altText: string | null
 }
 
+interface CanvasCartProps {
+  variantId: string
+  quantity: number
+  available: boolean
+  requiresPersonalization: boolean
+  personalizationValue: string
+  onPersonalizationError: () => void
+  attributes?: Array<{ key: string; value: string }>
+}
+
 interface ProductGalleryProps {
   images: ProductImage[]
   productTitle: string
   className?: string
+  previewConfig?: PreviewConfig | null
+  previewText?: string
+  selectedVariantName?: string
+  onPreviewTextChange?: (text: string) => void
+  canvasCart?: CanvasCartProps
 }
 
-export function ProductGallery({
-  images,
-  productTitle,
-  className,
-}: ProductGalleryProps) {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [isZoomed, setIsZoomed] = useState(false)
+export interface ProductGalleryHandle {
+  goTo3D: () => void
+}
 
-  const hasMultipleImages = images.length > 1
+export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryProps>(
+  function ProductGallery(
+    {
+      images,
+      productTitle,
+      className,
+      previewConfig,
+      previewText,
+      selectedVariantName,
+      onPreviewTextChange,
+      canvasCart,
+    },
+    ref
+  ) {
+    const t = useTranslations('gallery')
+    const containerRef = useRef<HTMLDivElement>(null)
+    const [currentIndex, setCurrentIndex] = useState(0)
+    const [isZoomed, setIsZoomed] = useState(false)
 
-  const goToNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % images.length)
-  }
+    const hasMultipleImages = images.length > 1
+    const isSvgPreview = previewConfig?.type === 'svg-extrusion' || previewConfig?.type === 'composite-sign'
+    const hasVariantSvg = isSvgPreview && !!selectedVariantName && !!previewConfig?.variantSvgs?.[selectedVariantName]
+    const hasSingleSvg = isSvgPreview && !!previewConfig?.svg
+    const isComposite = previewConfig?.type === 'composite-sign' && !!previewConfig?.barParts
 
-  const goToPrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length)
-  }
+    // 3D tab is available when we have a preview config with SVG/composite content
+    const show3DTab = !!previewConfig && (hasVariantSvg || hasSingleSvg || isComposite)
 
-  const goToIndex = (index: number) => {
-    setCurrentIndex(index)
-  }
+    // 3D is the last slide (index = images.length)
+    const preview3DIndex = images.length
+    const is3DActive = currentIndex === preview3DIndex
 
-  if (images.length === 0) {
-    return (
-      <div
-        className={cn(
-          'aspect-square bg-bg-secondary rounded-xl',
-          'flex items-center justify-center text-white/20',
-          className
-        )}
-      >
-        No Image Available
-      </div>
-    )
-  }
+    const goTo3D = useCallback(() => {
+      setCurrentIndex(preview3DIndex)
+      setIsZoomed(false)
+      // Scroll with offset for fixed header (h-16 = 64px + 8px breathing room)
+      if (containerRef.current) {
+        const top = containerRef.current.getBoundingClientRect().top + window.scrollY - 80
+        window.scrollTo({ top, behavior: 'smooth' })
+      }
+    }, [preview3DIndex])
 
-  return (
-    <div className={cn('space-y-4', className)}>
-      {/* Main Image */}
-      <div className="relative aspect-square bg-bg-secondary rounded-xl overflow-hidden group">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentIndex}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="absolute inset-0"
-          >
-            <Image
-              src={images[currentIndex]?.url || ''}
-              alt={images[currentIndex]?.altText || `${productTitle} - Image ${currentIndex + 1}`}
-              fill
-              className={cn(
-                'object-cover transition-transform duration-300',
-                isZoomed && 'scale-150 cursor-zoom-out'
-              )}
-              onClick={() => setIsZoomed(!isZoomed)}
-              priority={currentIndex === 0}
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
-          </motion.div>
-        </AnimatePresence>
+    useImperativeHandle(ref, () => ({ goTo3D }), [goTo3D])
 
-        {/* Zoom indicator */}
-        <button
-          onClick={() => setIsZoomed(!isZoomed)}
+    const goToNext = () => {
+      const nextIndex = currentIndex + 1
+      const maxIndex = show3DTab ? images.length : images.length - 1
+      if (nextIndex > maxIndex) {
+        setCurrentIndex(0)
+      } else {
+        setCurrentIndex(nextIndex)
+      }
+    }
+
+    const goToPrev = () => {
+      if (currentIndex === 0) {
+        setCurrentIndex(show3DTab ? images.length : images.length - 1)
+      } else {
+        setCurrentIndex(currentIndex - 1)
+      }
+    }
+
+    const goToIndex = (index: number) => {
+      setCurrentIndex(index)
+      if (index !== preview3DIndex) {
+        setIsZoomed(false)
+      }
+    }
+
+    // If 3D tab disappears while viewing it (e.g. variant changed to one without SVG), go back
+    if (!show3DTab && is3DActive) {
+      setCurrentIndex(0)
+    }
+
+    const totalSlides = images.length + (show3DTab ? 1 : 0)
+    const displayIndex = is3DActive ? totalSlides : currentIndex + 1
+
+    if (images.length === 0 && !show3DTab) {
+      return (
+        <div
           className={cn(
-            'absolute top-4 right-4 z-10',
-            'w-10 h-10 rounded-lg',
-            'bg-black/50 backdrop-blur-sm',
-            'flex items-center justify-center',
-            'text-white/70 hover:text-white',
-            'opacity-0 group-hover:opacity-100',
-            'transition-all duration-200'
+            'aspect-square bg-bg-secondary rounded-xl',
+            'flex items-center justify-center text-white/20',
+            className
           )}
-          aria-label={isZoomed ? 'Zoom out' : 'Zoom in'}
         >
-          <ZoomIn className="w-5 h-5" />
-        </button>
+          {t('noImage')}
+        </div>
+      )
+    }
 
-        {/* Navigation arrows */}
-        {hasMultipleImages && (
-          <>
+    return (
+      <div ref={containerRef} className={cn('space-y-4', className)}>
+        {/* Main Image / 3D Preview */}
+        <div className="relative aspect-square bg-bg-secondary rounded-xl overflow-hidden group">
+          <AnimatePresence mode="wait">
+            {is3DActive && previewConfig ? (
+              <motion.div
+                key="3d-preview"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="absolute inset-0"
+              >
+                <Suspense
+                  fallback={
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0a12]">
+                      <Box className="w-8 h-8 text-neon-cyan animate-pulse mb-3" />
+                      <p className="text-sm text-white/50">Loading 3D preview...</p>
+                    </div>
+                  }
+                >
+                  <Preview3DCanvas config={previewConfig} text={(previewText?.trim() ? previewText.toUpperCase() : 'NAME')} selectedVariantName={selectedVariantName} />
+                </Suspense>
+
+                {/* Bottom bar: input + Add to Cart */}
+                {(onPreviewTextChange || canvasCart) && (
+                  <div className="absolute bottom-0 inset-x-0 z-20">
+                    <div className="bg-gradient-to-t from-black/90 via-black/70 to-transparent pt-8 pb-3 px-3">
+                      <div className="flex gap-2 items-center">
+                        {onPreviewTextChange && (
+                          <input
+                            type="text"
+                            value={(previewText || '').toUpperCase()}
+                            onChange={(e) => onPreviewTextChange(e.target.value.toUpperCase())}
+                            placeholder="NAME"
+                            className={cn(
+                              'flex-1 min-w-0 px-3 py-2.5 rounded-lg text-sm text-white placeholder-white/40',
+                              'bg-white/10 backdrop-blur-md border border-white/20',
+                              'focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan/50',
+                              'transition-colors text-center uppercase'
+                            )}
+                          />
+                        )}
+                        {canvasCart && (
+                          <div className="flex-shrink-0">
+                            <AddToCartButton
+                              variantId={canvasCart.variantId}
+                              quantity={canvasCart.quantity}
+                              available={canvasCart.available}
+                              requiresPersonalization={canvasCart.requiresPersonalization}
+                              personalizationValue={canvasCart.personalizationValue}
+                              onPersonalizationError={canvasCart.onPersonalizationError}
+                              attributes={canvasCart.attributes}
+                              label="Add"
+                              className="!py-2.5 !px-3 !text-xs !w-auto"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            ) : (
+              <motion.div
+                key={currentIndex}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="absolute inset-0"
+              >
+                <Image
+                  src={images[currentIndex]?.url || ''}
+                  alt={images[currentIndex]?.altText || `${productTitle} - Image ${currentIndex + 1}`}
+                  fill
+                  className={cn(
+                    'object-cover transition-transform duration-300',
+                    isZoomed && 'scale-150 cursor-zoom-out'
+                  )}
+                  onClick={() => setIsZoomed(!isZoomed)}
+                  priority={currentIndex === 0}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Zoom indicator (only for images, not 3D) */}
+          {!is3DActive && (
             <button
-              onClick={goToPrev}
+              onClick={() => setIsZoomed(!isZoomed)}
               className={cn(
-                'absolute left-2 top-1/2 -translate-y-1/2 z-10',
-                'w-10 h-10 rounded-full',
+                'absolute top-4 right-4 z-10',
+                'w-10 h-10 rounded-lg',
                 'bg-black/50 backdrop-blur-sm',
                 'flex items-center justify-center',
                 'text-white/70 hover:text-white',
                 'opacity-0 group-hover:opacity-100',
-                'transition-all duration-200',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan'
+                'transition-all duration-200'
               )}
-              aria-label="Previous image"
+              aria-label={isZoomed ? t('zoomOut') : t('zoomIn')}
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ZoomIn className="w-5 h-5" />
             </button>
+          )}
+
+          {/* Navigation arrows (hidden in 3D mode) */}
+          {totalSlides > 1 && !is3DActive && (
+            <>
+              <button
+                onClick={goToPrev}
+                className={cn(
+                  'absolute left-2 top-1/2 -translate-y-1/2 z-10',
+                  'w-10 h-10 rounded-full',
+                  'bg-black/50 backdrop-blur-sm',
+                  'flex items-center justify-center',
+                  'text-white/70 hover:text-white',
+                  'opacity-0 group-hover:opacity-100',
+                  'transition-all duration-200',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan'
+                )}
+                aria-label={t('previousImage')}
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button
+                onClick={goToNext}
+                className={cn(
+                  'absolute right-2 top-1/2 -translate-y-1/2 z-10',
+                  'w-10 h-10 rounded-full',
+                  'bg-black/50 backdrop-blur-sm',
+                  'flex items-center justify-center',
+                  'text-white/70 hover:text-white',
+                  'opacity-0 group-hover:opacity-100',
+                  'transition-all duration-200',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan'
+                )}
+                aria-label={t('nextImage')}
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </>
+          )}
+
+          {/* Close button for 3D preview */}
+          {is3DActive && (
             <button
-              onClick={goToNext}
+              onClick={() => setCurrentIndex(0)}
               className={cn(
-                'absolute right-2 top-1/2 -translate-y-1/2 z-10',
-                'w-10 h-10 rounded-full',
+                'absolute top-3 right-3 z-10',
+                'w-9 h-9 rounded-lg',
                 'bg-black/50 backdrop-blur-sm',
                 'flex items-center justify-center',
                 'text-white/70 hover:text-white',
-                'opacity-0 group-hover:opacity-100',
                 'transition-all duration-200',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan'
               )}
-              aria-label="Next image"
+              aria-label="Close 3D preview"
             >
-              <ChevronRight className="w-6 h-6" />
+              <X className="w-5 h-5" />
             </button>
-          </>
-        )}
+          )}
 
-        {/* Image counter */}
-        {hasMultipleImages && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
-            <div className="px-3 py-1 rounded-full bg-black/50 backdrop-blur-sm text-white/70 text-sm">
-              {currentIndex + 1} / {images.length}
+          {/* Slide counter — moves to top-left in 3D mode to avoid bottom bar */}
+          {totalSlides > 1 && (
+            <div className={cn(
+              'absolute z-10',
+              is3DActive ? 'top-3 left-3' : 'bottom-4 left-1/2 -translate-x-1/2'
+            )}>
+              <div className="px-3 py-1 rounded-full bg-black/50 backdrop-blur-sm text-white/70 text-sm">
+                {is3DActive ? '3D' : `${displayIndex} / ${totalSlides}`}
+              </div>
             </div>
+          )}
+        </div>
+
+        {/* Thumbnails */}
+        {(hasMultipleImages || show3DTab) && (
+          <div className="flex gap-2 overflow-x-auto hide-scrollbar">
+            {images.map((image, index) => (
+              <button
+                key={index}
+                onClick={() => goToIndex(index)}
+                className={cn(
+                  'relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden',
+                  'border-2 transition-all duration-200',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan',
+                  index === currentIndex
+                    ? 'border-neon-cyan shadow-glow-sm-cyan'
+                    : 'border-transparent opacity-60 hover:opacity-100'
+                )}
+                aria-label={t('viewImage', { number: index + 1 })}
+                aria-current={index === currentIndex ? 'true' : undefined}
+              >
+                <Image
+                  src={image.url}
+                  alt={image.altText || `Thumbnail ${index + 1}`}
+                  fill
+                  className="object-cover"
+                  sizes="64px"
+                />
+              </button>
+            ))}
+
+            {/* 3D Preview thumbnail — last in sequence */}
+            {show3DTab && (
+              <button
+                onClick={() => goToIndex(preview3DIndex)}
+                className={cn(
+                  'relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden',
+                  'border-2 transition-all duration-200',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan',
+                  'flex items-center justify-center',
+                  is3DActive
+                    ? 'border-neon-cyan shadow-glow-sm-cyan bg-neon-cyan/10'
+                    : 'border-transparent opacity-60 hover:opacity-100 bg-white/5'
+                )}
+                aria-label="3D Preview"
+                aria-current={is3DActive ? 'true' : undefined}
+              >
+                <div className="flex flex-col items-center gap-0.5">
+                  <Box className={cn(
+                    'w-5 h-5 transition-colors',
+                    is3DActive ? 'text-neon-cyan' : 'text-white/60'
+                  )} />
+                  <span className={cn(
+                    'text-[9px] font-bold tracking-wide transition-colors',
+                    is3DActive ? 'text-neon-cyan' : 'text-white/60'
+                  )}>
+                    3D
+                  </span>
+                </div>
+              </button>
+            )}
           </div>
         )}
       </div>
-
-      {/* Thumbnails */}
-      {hasMultipleImages && (
-        <div className="flex gap-2 overflow-x-auto hide-scrollbar">
-          {images.map((image, index) => (
-            <button
-              key={index}
-              onClick={() => goToIndex(index)}
-              className={cn(
-                'relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden',
-                'border-2 transition-all duration-200',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan',
-                index === currentIndex
-                  ? 'border-neon-cyan shadow-glow-sm-cyan'
-                  : 'border-transparent opacity-60 hover:opacity-100'
-              )}
-              aria-label={`View image ${index + 1}`}
-              aria-current={index === currentIndex ? 'true' : undefined}
-            >
-              <Image
-                src={image.url}
-                alt={image.altText || `Thumbnail ${index + 1}`}
-                fill
-                className="object-cover"
-                sizes="64px"
-              />
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
+    )
+  }
+)

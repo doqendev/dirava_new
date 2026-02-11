@@ -1,0 +1,14 @@
+{
+  "runId": "run-20260211-120000",
+  "taskId": "T001",
+  "fixedFindings": [
+    "finding 1"
+  ],
+  "filesTouched": [
+    "src/example.ts"
+  ],
+  "commandsRun": [
+    "pnpm test --filter example"
+  ],
+  "remainingIssues": []
+}

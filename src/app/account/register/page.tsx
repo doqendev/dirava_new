@@ -5,7 +5,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Create Account',
-  description: 'Create a Neo-Stage Collective account to track orders and save your wishlist.',
+  description: 'Create a Tamashii account to track orders and save your wishlist.',
 }
 
 export default function RegisterPage() {
@@ -19,7 +19,7 @@ export default function RegisterPage() {
 
         {/* Title */}
         <h1 className="font-display text-2xl text-center text-white mb-2">
-          Join the Collective
+          Join the Spirit
         </h1>
         <p className="text-center text-white/60 mb-8">
           Create an account to track orders and get exclusive access
