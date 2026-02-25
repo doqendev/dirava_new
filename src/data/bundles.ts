@@ -6,7 +6,7 @@ export const BUNDLES: BundleConfig[] = [
     discountCode: 'BUNDLE-SIGN-TEE-10',
     discountPercent: 10,
     products: [
-      { handle: 'anime-custom-sign' },
+      { handle: 'one-piece-custom-sign' },
       { handle: 'anime-custom-t-shirt-4' },
     ],
     featured: true,

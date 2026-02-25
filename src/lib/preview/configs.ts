@@ -75,7 +75,7 @@ const previewConfigs: Record<string, PreviewConfig> = {
     background: '#0a0a12',
   },
 
-  'anime-custom-sign': {
+  'one-piece-custom-sign': {
     type: 'composite-sign',
     font: '/fonts/preview/ONEPIECE_IL_FINAL.ttf',
     forceUppercase: true,

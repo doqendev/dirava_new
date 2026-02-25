@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 // Known product URL from the debug tests
 const PRODUCT_URL = '/worlds/one-piece-1/gear-5-luffy-hoodie'
-const ALTERNATIVE_PRODUCT_URL = '/worlds/one-piece-1/anime-custom-sign'
+const ALTERNATIVE_PRODUCT_URL = '/worlds/one-piece-1/one-piece-custom-sign'
 
 test.describe('Product Page Features', () => {
   test('Size Guide button is visible and modal opens', async ({ page }) => {
