@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
@@ -21,7 +21,7 @@ export function CartDrawer() {
   const tProduct = useTranslations('product')
   const { isCartOpen, closeCart } = useUIStore()
   const tDiscount = useTranslations('discount')
-  const { lines, totalQuantity, subtotal, total, discountAmount, checkoutUrl, updateItem, removeItem, isLoading } =
+  const { lines, totalQuantity, subtotal, total, discountAmount, checkoutUrl, updateItem, removeItem, loadingItems } =
     useCartStore()
   const { addItem: addToWishlist, isInWishlist } = useWishlistStore()
 
@@ -40,22 +40,74 @@ export function CartDrawer() {
     removeItem(line.id)
   }
 
-  // Close on escape key
+  const drawerRef = useRef<HTMLDivElement>(null)
+  const previousFocusRef = useRef<HTMLElement | null>(null)
+  const [liveMessage, setLiveMessage] = useState('')
+
+  // Focus trap and keyboard handling
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeCart()
+    if (!isCartOpen) return
+
+    // Save the element that had focus before the drawer opened
+    previousFocusRef.current = document.activeElement as HTMLElement
+    document.body.style.overflow = 'hidden'
+
+    // Focus the drawer after animation starts
+    const focusTimer = setTimeout(() => {
+      drawerRef.current?.focus()
+    }, 100)
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeCart()
+        return
+      }
+
+      if (e.key !== 'Tab' || !drawerRef.current) return
+
+      const focusableElements = drawerRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+
+      if (focusableElements.length === 0) return
+
+      const firstElement = focusableElements[0]!
+      const lastElement = focusableElements[focusableElements.length - 1]!
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          e.preventDefault()
+          lastElement.focus()
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          e.preventDefault()
+          firstElement.focus()
+        }
+      }
     }
 
-    if (isCartOpen) {
-      document.addEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'hidden'
-    }
+    document.addEventListener('keydown', handleKeyDown)
 
     return () => {
-      document.removeEventListener('keydown', handleEscape)
+      clearTimeout(focusTimer)
+      document.removeEventListener('keydown', handleKeyDown)
       document.body.style.overflow = ''
+      // Restore focus to the element that was focused before the drawer opened
+      previousFocusRef.current?.focus()
     }
   }, [isCartOpen, closeCart])
+
+  // ARIA live announcements for cart quantity changes
+  useEffect(() => {
+    if (isCartOpen && totalQuantity >= 0) {
+      setLiveMessage(
+        totalQuantity === 0
+          ? 'Cart is empty'
+          : `Cart updated: ${totalQuantity} ${totalQuantity === 1 ? 'item' : 'items'}`
+      )
+    }
+  }, [totalQuantity, isCartOpen])
 
   return (
     <AnimatePresence>
@@ -84,6 +136,8 @@ export function CartDrawer() {
               'bg-bg-primary border-l border-border-subtle',
               'flex flex-col'
             )}
+            ref={drawerRef}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-label="Shopping cart"
@@ -142,6 +196,7 @@ export function CartDrawer() {
                                 line.merchandise.product.title
                               }
                               fill
+                              sizes="80px"
                               className="object-cover"
                             />
                           )}
@@ -181,7 +236,7 @@ export function CartDrawer() {
                                 onClick={() =>
                                   updateItem(line.id, Math.max(0, line.quantity - 1))
                                 }
-                                disabled={isLoading}
+                                disabled={loadingItems.has(line.id)}
                                 className={cn(
                                   'w-8 h-8 flex items-center justify-center',
                                   'text-white/50 hover:text-white',
@@ -197,7 +252,7 @@ export function CartDrawer() {
                               </span>
                               <button
                                 onClick={() => updateItem(line.id, line.quantity + 1)}
-                                disabled={isLoading}
+                                disabled={loadingItems.has(line.id)}
                                 className={cn(
                                   'w-8 h-8 flex items-center justify-center',
                                   'text-white/50 hover:text-white',
@@ -219,7 +274,7 @@ export function CartDrawer() {
                               </span>
                               <button
                                 onClick={() => handleSaveForLater(line)}
-                                disabled={isLoading || isInWishlist(line.merchandise.product.id)}
+                                disabled={loadingItems.has(line.id) || isInWishlist(line.merchandise.product.id)}
                                 className={cn(
                                   'w-8 h-8 flex items-center justify-center',
                                   isInWishlist(line.merchandise.product.id)
@@ -235,7 +290,7 @@ export function CartDrawer() {
                               </button>
                               <button
                                 onClick={() => removeItem(line.id)}
-                                disabled={isLoading}
+                                disabled={loadingItems.has(line.id)}
                                 className={cn(
                                   'w-8 h-8 flex items-center justify-center',
                                   'text-white/30 hover:text-red-500',
@@ -317,6 +372,16 @@ export function CartDrawer() {
                 </button>
               </div>
             )}
+
+            {/* Screen reader announcements */}
+            <div
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+              className="sr-only"
+            >
+              {liveMessage}
+            </div>
           </motion.div>
         </>
       )}

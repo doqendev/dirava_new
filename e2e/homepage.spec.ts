@@ -9,7 +9,7 @@ test.describe('Homepage', () => {
     expect(page.url()).toBe('http://localhost:3000/')
 
     // Hero section should be visible
-    const heroHeading = page.getByRole('heading', { name: /tamashii|your anime spirit/i }).first()
+    const heroHeading = page.getByRole('heading', { name: /mizoke|your anime universe/i }).first()
     await expect(heroHeading).toBeVisible({ timeout: 10000 })
 
     // Page should have loaded content
@@ -20,8 +20,8 @@ test.describe('Homepage', () => {
     await page.goto('/')
     await page.waitForLoadState('networkidle')
 
-    // Logo should be visible (TAMASHII text)
-    const logo = page.getByRole('link').filter({ hasText: /^TAMASHII/ })
+    // Logo should be visible (MIZOKE text)
+    const logo = page.getByRole('link').filter({ hasText: /^MIZOKE/ })
     await expect(logo).toBeVisible()
   })
 
@@ -112,7 +112,7 @@ test.describe('Homepage', () => {
 
     // Footer should contain copyright or brand name
     const footerText = await footer.textContent()
-    expect(footerText).toContain('TAMASHII')
+    expect(footerText).toContain('MIZOKE')
   })
 
   test('page is responsive on mobile viewport', async ({ page }) => {
@@ -123,7 +123,7 @@ test.describe('Homepage', () => {
     await page.waitForLoadState('networkidle')
 
     // Mobile logo should be visible (centered)
-    const mobileLogo = page.getByRole('link').filter({ hasText: /^TAMASHII/ }).nth(1)
+    const mobileLogo = page.getByRole('link').filter({ hasText: /^MIZOKE/ }).nth(1)
     await expect(mobileLogo).toBeVisible()
 
     // Bottom nav should be visible on mobile

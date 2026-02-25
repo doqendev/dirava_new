@@ -11,7 +11,7 @@ test.describe('Mobile Responsiveness', () => {
     await expect(page.locator('body')).toBeVisible()
 
     // Mobile logo should be visible (centered)
-    const logo = page.getByRole('link').filter({ hasText: /^TAMASHII/ })
+    const logo = page.getByRole('link').filter({ hasText: /^MIZOKE/ })
     await expect(logo.first()).toBeVisible()
   })
 
@@ -43,7 +43,7 @@ test.describe('Mobile Responsiveness', () => {
     await page.waitForLoadState('networkidle')
 
     // Logo should be centered on mobile
-    const mobileLogo = page.getByRole('link').filter({ hasText: /^TAMASHII/ }).nth(1)
+    const mobileLogo = page.getByRole('link').filter({ hasText: /^MIZOKE/ }).nth(1)
     await expect(mobileLogo).toBeVisible()
 
     // Icons should be compact
@@ -175,7 +175,7 @@ test.describe('Mobile Responsiveness', () => {
     await expect(page.locator('body')).toBeVisible()
 
     // Logo should be visible
-    const logo = page.getByRole('link').filter({ hasText: /^TAMASHII/ })
+    const logo = page.getByRole('link').filter({ hasText: /^MIZOKE/ })
     await expect(logo.first()).toBeVisible()
 
     // Navigation should work

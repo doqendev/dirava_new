@@ -7,7 +7,7 @@ test.describe('Navigation and Routing', () => {
     await page.waitForLoadState('networkidle')
 
     // Click logo
-    const logo = page.getByRole('link').filter({ hasText: /^TAMASHII/ }).first()
+    const logo = page.getByRole('link').filter({ hasText: /^MIZOKE/ }).first()
     await logo.click()
     await page.waitForLoadState('networkidle')
 

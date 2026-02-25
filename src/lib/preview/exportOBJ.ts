@@ -12,7 +12,7 @@ interface ExportResult {
 export function exportGroupToOBJ(group: THREE.Object3D, name = 'model'): ExportResult {
   const mtlName = `${name}.mtl`
   const materials: Map<string, THREE.Color> = new Map()
-  let objStr = `# Exported from Tamashii 3D Preview\nmtllib ${mtlName}\n\n`
+  let objStr = `# Exported from Mizoke 3D Preview\nmtllib ${mtlName}\n\n`
   let vertexOffset = 0
   let normalOffset = 0
   let meshIndex = 0
@@ -105,7 +105,7 @@ export function exportGroupToOBJ(group: THREE.Object3D, name = 'model'): ExportR
   })
 
   // Build MTL
-  let mtlStr = '# Exported from Tamashii 3D Preview\n\n'
+  let mtlStr = '# Exported from Mizoke 3D Preview\n\n'
   for (const [matName, color] of Array.from(materials)) {
     mtlStr += `newmtl ${matName}\n`
     mtlStr += `Kd ${color.r.toFixed(4)} ${color.g.toFixed(4)} ${color.b.toFixed(4)}\n`

@@ -10,7 +10,7 @@
 import { NextResponse } from 'next/server'
 import { setupMetaobjectDefinition } from '@/lib/gacha/metaobjects'
 
-const SETUP_SECRET = process.env.GACHA_SETUP_SECRET || 'dev-setup-secret'
+const SETUP_SECRET = process.env.GACHA_SETUP_SECRET
 
 export async function POST(request: Request) {
   try {
@@ -18,6 +18,13 @@ export async function POST(request: Request) {
     const isDev = process.env.NODE_ENV === 'development'
 
     if (!isDev) {
+      if (!SETUP_SECRET) {
+        return NextResponse.json(
+          { success: false, error: 'GACHA_SETUP_SECRET environment variable is not configured' },
+          { status: 500 }
+        )
+      }
+
       const body = await request.json().catch(() => ({}))
       const secret = body?.secret
 

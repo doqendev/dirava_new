@@ -28,7 +28,7 @@ const MOCK_CUSTOMER: ShopifyCustomer = {
     id: 'gid://shopify/MailingAddress/dev-addr-1',
     firstName: 'Test',
     lastName: 'User',
-    company: 'Tamashii',
+    company: 'Mizoke',
     address1: '123 Test Street',
     address2: 'Suite 100',
     city: 'Los Angeles',
@@ -47,7 +47,7 @@ const MOCK_CUSTOMER: ShopifyCustomer = {
           id: 'gid://shopify/MailingAddress/dev-addr-1',
           firstName: 'Test',
           lastName: 'User',
-          company: 'Tamashii',
+          company: 'Mizoke',
           address1: '123 Test Street',
           address2: 'Suite 100',
           city: 'Los Angeles',
@@ -392,7 +392,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'tamashii-auth',
+      name: 'mizoke-auth',
       partialize: (state) => ({
         customer: state.customer,
         accessToken: state.accessToken,

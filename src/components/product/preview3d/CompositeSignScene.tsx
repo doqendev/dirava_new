@@ -1,15 +1,18 @@
 'use client'
 
-import { useMemo, useState, useEffect, useRef } from 'react'
+import { useMemo, useState, useEffect, useRef, useCallback } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
+import { OrbitControls, Html, ContactShadows, PresentationControls } from '@react-three/drei'
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import ClipperLib from 'clipper-lib'
 import { StudioLighting } from './StudioLighting'
+import { Preview3DLoadingIndicator } from './LoadingSpinner'
+import { useReducedMotion } from '@/lib/hooks/useMediaQuery'
 import { expandShapes } from '@/lib/preview/expandShapes'
 import type { PreviewConfig, LayerConfig } from '@/lib/preview/types'
+import { getPreviewDisplayText } from '@/lib/preview/textTransform'
 
 interface CompositeSignSceneProps {
   config: PreviewConfig
@@ -36,19 +39,82 @@ const BOTTOM_BAR_Y = 250
 const TILE_OVERLAP = 105
 // Extra X nudge for the final piece
 const FINAL_X_NUDGE = 95
+const INTRO_DURATION = 1.1
+const INTRO_START_ROTATION: [number, number, number] = [0, 0, 0]
+const INTRO_END_ROTATION: [number, number, number] = [0, 0, 0]
+const INTRO_START_POSITION: [number, number, number] = [0, 0, 0]
+const INTRO_END_POSITION: [number, number, number] = [0, 0, 0]
+const INTRO_START_SCALE_MULTIPLIER = 1
+const INTRO_END_SCALE_MULTIPLIER = 1
+const PRESENTATION_BASE_ROTATION: [number, number, number] = [0, 0, 0]
+
+function easeOutCubic(t: number): number {
+  return 1 - Math.pow(1 - t, 3)
+}
+
+function easeOutBack(t: number): number {
+  const c1 = 1.70158
+  const c3 = c1 + 1
+  return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2)
+}
 
 function colorMatch(svgColor: THREE.Color, targetHex: string): boolean {
   return '#' + svgColor.getHexString() === targetHex.toLowerCase()
+}
+
+function extractShapes(path: ParsedSvg['paths'][number]): THREE.Shape[] {
+  const direct = SVGLoader.createShapes(path)
+  if (direct.length > 0) return direct
+
+  // Fallback for paths where createShapes may return empty (complex/self-intersecting contours).
+  const withToShapes = typeof path.toShapes === 'function'
+    ? (path.toShapes(true) as THREE.Shape[])
+    : []
+  if (withToShapes.length > 0) return withToShapes
+
+  const fromSubPaths: THREE.Shape[] = []
+  for (const subPath of path.subPaths) {
+    const pts = subPath.getPoints(48)
+    if (pts.length >= 3) {
+      fromSubPaths.push(new THREE.Shape(pts))
+    }
+  }
+  return fromSubPaths
 }
 
 function getShapesForColor(svgData: ParsedSvg, colorHex: string): THREE.Shape[] {
   const shapes: THREE.Shape[] = []
   for (const path of svgData.paths) {
     if (colorMatch(path.color, colorHex)) {
-      shapes.push(...SVGLoader.createShapes(path))
+      shapes.push(...extractShapes(path))
     }
   }
   return shapes
+}
+
+function expandBoundsWithGeometry(
+  bounds: THREE.Box3,
+  geometry: THREE.BufferGeometry,
+  position: [number, number, number],
+  scale: [number, number, number] = [1, 1, 1],
+) {
+  if (!geometry.boundingBox) geometry.computeBoundingBox()
+  if (!geometry.boundingBox) return false
+
+  const transformed = geometry.boundingBox.clone()
+  const matrix = new THREE.Matrix4().compose(
+    new THREE.Vector3(position[0], position[1], position[2]),
+    new THREE.Quaternion(),
+    new THREE.Vector3(scale[0], scale[1], scale[2]),
+  )
+  transformed.applyMatrix4(matrix)
+
+  if (bounds.isEmpty()) {
+    bounds.copy(transformed)
+  } else {
+    bounds.union(transformed)
+  }
+  return true
 }
 
 /** Compute the X-axis bounding box of all paths in an SVG */
@@ -146,82 +212,66 @@ function buildTiledBarGeometry(
   return merged
 }
 
-/** Floating particle sparkles */
-function FloatingParticles({ count = 60, spread = 30 }: { count?: number; spread?: number }) {
-  const meshRef = useRef<THREE.Points>(null)
-
-  const [positions, sizes] = useMemo(() => {
-    const pos = new Float32Array(count * 3)
-    const sz = new Float32Array(count)
-    for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * spread
-      pos[i * 3 + 1] = (Math.random() - 0.5) * spread
-      pos[i * 3 + 2] = (Math.random() - 0.5) * spread * 0.5
-      sz[i] = Math.random() * 0.8 + 0.2
-    }
-    return [pos, sz]
-  }, [count, spread])
-
-  useFrame((_, delta) => {
-    if (!meshRef.current) return
-    const posAttr = meshRef.current.geometry.attributes.position
-    if (!posAttr) return
-    const arr = posAttr.array as Float32Array
-    for (let i = 0; i < count; i++) {
-      // Slow upward drift with slight sine wobble
-      const yi = i * 3 + 1
-      const xi = i * 3
-      arr[yi] = (arr[yi] ?? 0) + delta * ((sizes[i] ?? 0.5) * 0.3 + 0.1)
-      arr[xi] = (arr[xi] ?? 0) + Math.sin(Date.now() * 0.001 + i) * delta * 0.15
-      // Reset particles that drift too high
-      if ((arr[yi] ?? 0) > spread / 2) {
-        arr[yi] = -spread / 2
-        arr[xi] = (Math.random() - 0.5) * spread
-      }
-    }
-    posAttr.needsUpdate = true
-  })
-
+function SceneLoadingSpinner({ label }: { label: string }) {
   return (
-    <points ref={meshRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          args={[positions, 3]}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        color="#ffffff"
-        size={0.08}
-        transparent
-        opacity={0.25}
-        sizeAttenuation
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-      />
-    </points>
+    <Html center>
+      <Preview3DLoadingIndicator label={label} />
+    </Html>
   )
 }
 
 export function CompositeSignScene({ config, svgPath, text, selectedVariantName, sceneRef }: CompositeSignSceneProps) {
+  const barParts = config.barParts
+  const groupRef = useRef<THREE.Group>(null!)
+  const introProgressRef = useRef(0)
+  const introFinishedRef = useRef(false)
+  const hasPlayedIntroRef = useRef(false)
+  const shouldReduceMotion = useReducedMotion()
   const [barSvgs, setBarSvgs] = useState<{
     start: ParsedSvg; middle: ParsedSvg; final: ParsedSvg; top: ParsedSvg
   } | null>(null)
   const [jollyData, setJollyData] = useState<ParsedSvg | null>(null)
   const [font, setFont] = useState<OpentypeFont | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [fontLoading, setFontLoading] = useState<boolean>(Boolean(config.font))
+  const [barLoading, setBarLoading] = useState<boolean>(!!barParts)
+  const [jollyLoading, setJollyLoading] = useState<boolean>(!!svgPath)
 
-  const barParts = config.barParts
+  const setGroupRefs = useCallback((node: THREE.Group | null) => {
+    if (node) {
+      groupRef.current = node
+    }
+    if (!sceneRef) return
+    if (typeof sceneRef === 'function') {
+      sceneRef(node)
+    } else {
+      (sceneRef as React.MutableRefObject<THREE.Group | null>).current = node
+    }
+  }, [sceneRef])
+
   const barLayers = (selectedVariantName && config.variantBarLayers?.[selectedVariantName]) || config.barLayers || []
+  const barBaseLayer = barLayers.find(l => (l.svgColor || l.color).toLowerCase() === '#000000')
   const textLayers = config.textLayers ?? []
   const variantTextColors = selectedVariantName ? config.variantTextColors?.[selectedVariantName] : undefined
+  const jollyScale = selectedVariantName ? (config.variantJollyScale?.[selectedVariantName] ?? 1) : 1
+  const jollyOffsetX = selectedVariantName ? (config.variantJollyOffsetX?.[selectedVariantName] ?? 0) : 0
+  const jollyOffsetY = selectedVariantName ? (config.variantJollyOffsetY?.[selectedVariantName] ?? 0) : 0
+  const textOffsetX = selectedVariantName ? (config.variantTextOffsetX?.[selectedVariantName] ?? 0) : 0
+  const jollyX = -200 + jollyOffsetX
+  const jollyY = -120 + jollyOffsetY
+  const textX = 280 + textOffsetX
   const TEXT_SIZE_SCALE = 1.07 // larger to fill space between bars
   const textFontSize = (config.textFontSize ?? 150) * TEXT_SIZE_SCALE
 
   // Load font for custom text
   useEffect(() => {
-    if (!config.font) return
+    if (!config.font) {
+      setFont(null)
+      setFontLoading(false)
+      return
+    }
     let cancelled = false
+    setFont(null)
+    setFontLoading(true)
 
     async function loadFont() {
       try {
@@ -229,9 +279,17 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
         const response = await fetch(config.font!)
         const arrayBuffer = await response.arrayBuffer()
         const loadedFont = opentype.parse(arrayBuffer)
-        if (!cancelled) setFont(loadedFont)
+        if (!cancelled) {
+          setFont(loadedFont)
+          setFontLoading(false)
+        }
       } catch (err) {
         console.error('Failed to load font:', err)
+        if (!cancelled) {
+          // Keep rendering functional even if text font fails to load
+          setFont(null)
+          setFontLoading(false)
+        }
       }
     }
 
@@ -241,8 +299,13 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
 
   // Load bar SVGs
   useEffect(() => {
-    if (!barParts) { setLoading(false); return }
+    if (!barParts) {
+      setBarSvgs(null)
+      setBarLoading(false)
+      return
+    }
     let cancelled = false
+    setBarLoading(true)
 
     async function load() {
       try {
@@ -260,11 +323,11 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
             final: loader.parse(f),
             top: loader.parse(t),
           })
-          setLoading(false)
+          setBarLoading(false)
         }
       } catch (err) {
         console.error('Failed to load bar SVGs:', err)
-        if (!cancelled) setLoading(false)
+        if (!cancelled) setBarLoading(false)
       }
     }
 
@@ -274,17 +337,30 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
 
   // Load jolly roger SVG separately
   useEffect(() => {
-    if (!svgPath) return
+    if (!svgPath) {
+      setJollyData(null)
+      setJollyLoading(false)
+      return
+    }
     let cancelled = false
+    setJollyData(null)
+    setJollyLoading(true)
 
     async function loadJolly() {
       try {
         const response = await fetch(svgPath!)
         const text = await response.text()
         const loader = new SVGLoader()
-        if (!cancelled) setJollyData(loader.parse(text))
+        if (!cancelled) {
+          setJollyData(loader.parse(text))
+          setJollyLoading(false)
+        }
       } catch (err) {
         console.error('Failed to load jolly roger SVG:', err)
+        if (!cancelled) {
+          setJollyData(null)
+          setJollyLoading(false)
+        }
       }
     }
 
@@ -294,11 +370,8 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
 
   // Build text geometries for custom name
   const displayText = useMemo(() => {
-    const trimmed = (text ?? '').trim()
-    if (!trimmed) return 'Name'
-    if (config.maxChars) return trimmed.slice(0, config.maxChars)
-    return trimmed
-  }, [text, config.maxChars])
+    return getPreviewDisplayText(text, config, 'Name')
+  }, [text, config])
 
   // Parse text into classified contour shapes (shared between textData and textCutShapes)
   const textShapes = useMemo(() => {
@@ -514,8 +587,8 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
     const strokeW = textLayers.find(l => l.strokeWidth)?.strokeWidth ?? 0
     const TEXT_PADDING = 20 // small padding beyond text+stroke right edge
 
-    // Text right in parent space (text group at x=280)
-    const textRight = 280 + textWidth + strokeW + TEXT_PADDING
+    // Text right in parent space (text group at textX)
+    const textRight = textX + textWidth + strokeW + TEXT_PADDING
     // Desired bar width in parent space (bar left = BOTTOM_BAR_X)
     const barWidthParent = textRight - BOTTOM_BAR_X
     // Convert to bar-local (bar has scale barScaleFactor)
@@ -526,7 +599,7 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
     // Use round (not ceil) so bar stays closest to text width
     const needed = (desiredBarLocal - tilingBase.fixedWidth) / tilingBase.middleStep
     return Math.max(1, Math.round(needed))
-  }, [tilingBase, textWidth, textLayers, config.barScale, config.tileCount])
+  }, [tilingBase, textWidth, textLayers, textX, config.barScale, config.tileCount])
 
   // Compute tiling metrics from actual SVG content bounds
   const metrics = useMemo(() => {
@@ -542,12 +615,12 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
     if (!metrics || textWidth === 0) return 1
     const strokeW = textLayers.find(l => l.strokeWidth)?.strokeWidth ?? 0
     const TEXT_PADDING = 20
-    const textRight = 280 + textWidth + strokeW + TEXT_PADDING
+    const textRight = textX + textWidth + strokeW + TEXT_PADDING
     const barWidthParent = textRight - BOTTOM_BAR_X
     const bsf = config.barScale ?? 1
     const desiredBarLocal = barWidthParent / bsf
     return desiredBarLocal / metrics.totalWidth
-  }, [metrics, textWidth, textLayers, config.barScale])
+  }, [metrics, textWidth, textLayers, textX, config.barScale])
 
   // Build text mask geometry — black shape covering text+stroke area at overlay Z level
   // Sits between bar overlay (pushed back) and text white overlay (in front) via polygonOffset
@@ -619,7 +692,12 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
         merged.computeVertexNormals()
         result.push({
           geo: merged,
-          layer: { color: '#111111', depth: BASE_DEPTH, metalness: 0.1, roughness: 0.8 },
+          layer: {
+            color: barBaseLayer?.color ?? '#111111',
+            depth: BASE_DEPTH,
+            metalness: barBaseLayer?.metalness ?? 0.1,
+            roughness: barBaseLayer?.roughness ?? 0.8,
+          },
         })
       }
     }
@@ -647,7 +725,7 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
     }
 
     return result
-  }, [barSvgs, barLayers, tileCount, metrics])
+  }, [barSvgs, barLayers, barBaseLayer, tileCount, metrics])
 
   // Build top bar geometries (scaled to match bottom bar width) — unified base + overlay
   const topBarData = useMemo(() => {
@@ -681,7 +759,12 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
         merged.computeVertexNormals()
         result.push({
           geo: merged,
-          layer: { color: '#111111', depth: BASE_DEPTH, metalness: 0.1, roughness: 0.8 },
+          layer: {
+            color: barBaseLayer?.color ?? '#111111',
+            depth: BASE_DEPTH,
+            metalness: barBaseLayer?.metalness ?? 0.1,
+            roughness: barBaseLayer?.roughness ?? 0.8,
+          },
         })
       }
     }
@@ -711,7 +794,7 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
     }
 
     return result
-  }, [barSvgs, barLayers, tileCount, metrics])
+  }, [barSvgs, barLayers, barBaseLayer, tileCount, metrics])
 
   // Build jolly roger geometries
   const jollyData_ = useMemo(() => {
@@ -723,13 +806,19 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
 
     // Collect cut shapes grouped by cutGroup
     const cutShapesByGroup: Record<string, THREE.Shape[]> = {}
+    const cutThroughAllShapes: THREE.Shape[] = []
     for (const cl of cutLayers) {
       const group = cl.cutGroup ?? '_default'
       const matchHex = (cl.svgColor || cl.color).toLowerCase()
-      if (!cutShapesByGroup[group]) cutShapesByGroup[group] = []
       for (const svgPath of jollyData.paths) {
         if (colorMatch(svgPath.color, matchHex)) {
-          cutShapesByGroup[group]!.push(...SVGLoader.createShapes(svgPath))
+          const cutShapes = extractShapes(svgPath)
+          if (cl.cutThroughAll) {
+            cutThroughAllShapes.push(...cutShapes)
+          } else {
+            if (!cutShapesByGroup[group]) cutShapesByGroup[group] = []
+            cutShapesByGroup[group]!.push(...cutShapes)
+          }
         }
       }
     }
@@ -739,14 +828,19 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
       let shapes = getShapesForColor(jollyData, colorHex)
       if (shapes.length === 0) return null
 
-      // Use Clipper polygon difference to subtract matching cut group shapes
-      if ((layer.offsetZ ?? 0) > 0 && !layer.noCut) {
+      // Use Clipper polygon difference to subtract matching cut group shapes.
+      // Group cuts affect overlays (offset layers), while "cutThroughAll" cuts also affect base layers.
+      if (!layer.noCut && (layer.offsetZ ?? 0) > 0) {
         const group = layer.cutGroup ?? '_default'
         const cuts = cutShapesByGroup[group]
         if (cuts && cuts.length > 0) {
           shapes = clipDifference(shapes, cuts)
           if (shapes.length === 0) return null
         }
+      }
+      if (!layer.noCut && cutThroughAllShapes.length > 0) {
+        shapes = clipDifference(shapes, cutThroughAllShapes)
+        if (shapes.length === 0) return null
       }
 
       const extrudeSettings: THREE.ExtrudeGeometryOptions = {
@@ -763,6 +857,8 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
   // Build text geometries for rendering (colored letters + one special letter)
   const TEXT_COLOR_MAIN = variantTextColors?.text ?? '#339af0'
   const TEXT_COLOR_SPECIAL = variantTextColors?.special ?? '#cc0000'
+  const TEXT_COLOR_STROKE = variantTextColors?.stroke
+  const TEXT_MASK_COLOR = variantTextColors?.stroke ?? '#111111'
 
   const textData = useMemo(() => {
     if (!textShapes || textLayers.length === 0) return []
@@ -792,7 +888,7 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
         }
         const geo = new THREE.ExtrudeGeometry(expanded, extrudeSettings)
         geo.computeVertexNormals()
-        result.push({ geo, layer })
+        result.push({ geo, layer, colorOverride: TEXT_COLOR_STROKE })
       } else {
         // Fill layer: split into blue (normal) and red (special letter)
         const blueShapes: THREE.Shape[] = []
@@ -827,46 +923,179 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
     }
 
     return result
-  }, [textShapes, textLayers, redLetterIndex, TEXT_COLOR_MAIN, TEXT_COLOR_SPECIAL])
+  }, [textShapes, textLayers, redLetterIndex, TEXT_COLOR_MAIN, TEXT_COLOR_SPECIAL, TEXT_COLOR_STROKE])
 
   // Compute text position: right of jolly roger, vertically between bars
   const textPosition = useMemo<[number, number, number]>(() => {
-    // X: right of jolly roger (jolly is at x=-200, roughly 500 wide)
-    const textX = 280
+    // X: right of jolly roger (base at 280, plus per-variant offset)
     // Y: midpoint between top and bottom bars
     const textY = (TOP_BAR_Y + BOTTOM_BAR_Y) / 2 + 183
     return [textX, textY, 0]
-  }, [])
-
-  // Center of the entire composition including jolly roger
-  const totalBarWidth = (metrics?.totalWidth ?? 2000) * barXCorrection
-  // In centering group space: jolly is at x=-200, bars extend from BOTTOM_BAR_X to BOTTOM_BAR_X + barWidth * barScaleFactor * barXCorrection
-  const jollyLeft = -200
-  const barRight = BOTTOM_BAR_X + totalBarWidth * (config.barScale ?? 1) * barXCorrection
-  const compositionCenterX = (jollyLeft + barRight) / 2
-  // Vertical center: midpoint between top bar and bottom bar
-  const compositionCenterY = (TOP_BAR_Y + BOTTOM_BAR_Y + 100) / 2
+  }, [textX])
 
   const scale = config.scale ?? 0.02
   const barScaleFactor = config.barScale ?? 1
+  const compositionCenter = useMemo<[number, number]>(() => {
+    const bounds = new THREE.Box3()
 
-  if (loading || !barSvgs) {
+    for (const { geo, layer } of topBarData) {
+      expandBoundsWithGeometry(
+        bounds,
+        geo,
+        [TOP_BAR_X, TOP_BAR_Y, (layer.offsetZ ?? 0) * DEPTH_SCALE],
+        [barScaleFactor * barXCorrection, barScaleFactor, 1],
+      )
+    }
+
+    for (const { geo, layer } of bottomBarData) {
+      expandBoundsWithGeometry(
+        bounds,
+        geo,
+        [BOTTOM_BAR_X, BOTTOM_BAR_Y, (layer.offsetZ ?? 0) * DEPTH_SCALE],
+        [barScaleFactor * barXCorrection, barScaleFactor, 1],
+      )
+    }
+
+    for (const { geo, layer } of jollyData_) {
+      expandBoundsWithGeometry(
+        bounds,
+        geo,
+        [jollyX, jollyY, (layer.offsetZ ?? 0) * DEPTH_SCALE],
+        [jollyScale, jollyScale, 1],
+      )
+    }
+
+    if (textMaskGeo) {
+      expandBoundsWithGeometry(
+        bounds,
+        textMaskGeo,
+        [textPosition[0], textPosition[1], 11 * DEPTH_SCALE],
+      )
+    }
+
+    for (const { geo, layer } of textData) {
+      expandBoundsWithGeometry(
+        bounds,
+        geo,
+        [textPosition[0], textPosition[1], (layer.offsetZ ?? 0) * DEPTH_SCALE],
+      )
+    }
+
+    if (bounds.isEmpty()) return [0, 0]
+    const center = bounds.getCenter(new THREE.Vector3())
+    return [center.x, center.y]
+  }, [
+    topBarData,
+    bottomBarData,
+    jollyData_,
+    textData,
+    textMaskGeo,
+    textPosition,
+    jollyX,
+    jollyY,
+    jollyScale,
+    barScaleFactor,
+    barXCorrection,
+  ])
+  const shouldAnimateIntro = !shouldReduceMotion && !hasPlayedIntroRef.current
+  const initialScaleMultiplier = shouldAnimateIntro ? INTRO_START_SCALE_MULTIPLIER : INTRO_END_SCALE_MULTIPLIER
+  const initialRotation = shouldAnimateIntro ? INTRO_START_ROTATION : INTRO_END_ROTATION
+  const initialPosition = shouldAnimateIntro ? INTRO_START_POSITION : INTRO_END_POSITION
+
+  useEffect(() => {
+    if (shouldReduceMotion) {
+      hasPlayedIntroRef.current = true
+      introProgressRef.current = 1
+      introFinishedRef.current = true
+      return
+    }
+
+    if (hasPlayedIntroRef.current) {
+      introProgressRef.current = 1
+      introFinishedRef.current = true
+      return
+    }
+
+    introProgressRef.current = 0
+    introFinishedRef.current = false
+  }, [shouldReduceMotion])
+
+  useFrame((_, delta) => {
+    const group = groupRef.current
+    if (!group) return
+
+    if (shouldReduceMotion) {
+      group.rotation.set(...INTRO_END_ROTATION)
+      group.position.set(...INTRO_END_POSITION)
+      group.scale.set(scale, -scale, 1)
+      return
+    }
+
+    if (introFinishedRef.current) return
+
+    introProgressRef.current = Math.min(1, introProgressRef.current + delta / INTRO_DURATION)
+    const t = introProgressRef.current
+    const rotationT = easeOutCubic(t)
+    const positionT = easeOutCubic(t)
+    const scaleT = easeOutBack(t)
+
+    group.rotation.set(
+      THREE.MathUtils.lerp(INTRO_START_ROTATION[0], INTRO_END_ROTATION[0], rotationT),
+      THREE.MathUtils.lerp(INTRO_START_ROTATION[1], INTRO_END_ROTATION[1], rotationT),
+      THREE.MathUtils.lerp(INTRO_START_ROTATION[2], INTRO_END_ROTATION[2], rotationT),
+    )
+    group.position.set(
+      THREE.MathUtils.lerp(INTRO_START_POSITION[0], INTRO_END_POSITION[0], positionT),
+      THREE.MathUtils.lerp(INTRO_START_POSITION[1], INTRO_END_POSITION[1], positionT),
+      THREE.MathUtils.lerp(INTRO_START_POSITION[2], INTRO_END_POSITION[2], positionT),
+    )
+
+    const scaleMultiplier = THREE.MathUtils.lerp(INTRO_START_SCALE_MULTIPLIER, INTRO_END_SCALE_MULTIPLIER, scaleT)
+    group.scale.set(scale * scaleMultiplier, -scale * scaleMultiplier, 1)
+
+    if (t >= 1) {
+      introFinishedRef.current = true
+      hasPlayedIntroRef.current = true
+    }
+  })
+
+  const requiresFontForText = Boolean(config.font) && textLayers.length > 0
+  const sceneLoading =
+    barLoading ||
+    !barSvgs ||
+    (Boolean(svgPath) && (jollyLoading || !jollyData)) ||
+    (requiresFontForText && fontLoading)
+  if (sceneLoading) {
     return (
       <>
         <color attach="background" args={[config.background || '#0a0a12']} />
         <StudioLighting />
+        <SceneLoadingSpinner label="Loading..." />
       </>
     )
   }
 
   return (
     <>
-      <color attach="background" args={[config.background || '#0a0a12']} />
+      <color attach="background" args={[config.background || '#0a1022']} />
       <StudioLighting />
-      <FloatingParticles />
 
-      <group ref={sceneRef} scale={[scale, -scale, 1]} rotation={[0.1, 0, 0]}>
-        <group position={[-compositionCenterX, -compositionCenterY, 0]}>
+      <PresentationControls
+        global
+        cursor
+        speed={1}
+        zoom={1}
+        rotation={PRESENTATION_BASE_ROTATION}
+        polar={[-0.35, 0.35]}
+        azimuth={[-0.85, 0.85]}
+      >
+        <group
+          ref={setGroupRefs}
+          scale={[scale * initialScaleMultiplier, -scale * initialScaleMultiplier, 1]}
+          rotation={initialRotation}
+          position={initialPosition}
+        >
+          <group position={[-compositionCenter[0], -compositionCenter[1], 0]}>
 
           {/* Top bar */}
           <group scale={[barScaleFactor * barXCorrection, barScaleFactor, 1]} position={[TOP_BAR_X, TOP_BAR_Y, 0]}>
@@ -875,6 +1104,8 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
                 key={`top-${i}`}
                 geometry={geo}
                 position={[0, 0, (layer.offsetZ ?? 0) * DEPTH_SCALE]}
+                castShadow
+                receiveShadow
               >
                 <meshStandardMaterial
                   color={layer.color}
@@ -895,6 +1126,8 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
                 key={`bottom-${i}`}
                 geometry={geo}
                 position={[0, 0, (layer.offsetZ ?? 0) * DEPTH_SCALE]}
+                castShadow
+                receiveShadow
               >
                 <meshStandardMaterial
                   color={layer.color}
@@ -910,12 +1143,14 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
 
           {/* Jolly roger */}
           {jollyData_.length > 0 && (
-            <group position={[-200, -120, 0]}>
+            <group position={[jollyX, jollyY, 0]} scale={[jollyScale, jollyScale, 1]}>
               {jollyData_.map(({ geo, layer }, i) => (
                 <mesh
                   key={`jolly-${i}`}
                   geometry={geo}
                   position={[0, 0, (layer.offsetZ ?? 0) * DEPTH_SCALE]}
+                  castShadow
+                  receiveShadow
                 >
                   <meshStandardMaterial
                     color={layer.color}
@@ -936,9 +1171,11 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
               <mesh
                 geometry={textMaskGeo}
                 position={[0, 0, 11 * DEPTH_SCALE]}
+                castShadow
+                receiveShadow
               >
                 <meshStandardMaterial
-                  color="#111111"
+                  color={TEXT_MASK_COLOR}
                   metalness={0.1}
                   roughness={0.8}
                   polygonOffset
@@ -957,6 +1194,8 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
                   key={`text-${i}-${displayText}`}
                   geometry={geo}
                   position={[0, 0, (layer.offsetZ ?? 0) * DEPTH_SCALE]}
+                  castShadow
+                  receiveShadow
                 >
                   <meshStandardMaterial
                     color={colorOverride ?? layer.color}
@@ -968,15 +1207,25 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
             </group>
           )}
 
+          </group>
         </group>
-      </group>
+      </PresentationControls>
+
+      <ContactShadows
+        position={[0, -9.85, 0]}
+        opacity={0.2}
+        scale={72}
+        blur={2.8}
+        far={20}
+      />
 
       <OrbitControls
         enablePan={false}
+        enableRotate={false}
         minDistance={5}
         maxDistance={40}
-        autoRotate={config.camera.autoRotate ?? true}
-        autoRotateSpeed={config.camera.autoRotateSpeed ?? 1}
+        autoRotate={false}
+        autoRotateSpeed={0}
         maxPolarAngle={Math.PI * 0.7}
         minPolarAngle={Math.PI * 0.3}
         target={[0, 0, 0]}

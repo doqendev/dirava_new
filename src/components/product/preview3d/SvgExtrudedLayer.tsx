@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 import * as THREE from 'three'
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js'
+import { Brush, Evaluator, SUBTRACTION } from 'three-bvh-csg'
 import { expandShapes } from '@/lib/preview/expandShapes'
 import type { LayerConfig } from '@/lib/preview/types'
 
@@ -12,6 +13,8 @@ interface SvgExtrudedLayerProps {
   layer: LayerConfig
   depthScale: number
   cutShapes?: THREE.Shape[]
+  /** 3D geometry to subtract via CSG boolean operation */
+  subtractGeometry?: THREE.BufferGeometry
 }
 
 function colorMatch(svgColor: THREE.Color, targetHex: string): boolean {
@@ -38,7 +41,7 @@ function bboxOverlap(
   return a.minX <= b.maxX && a.maxX >= b.minX && a.minY <= b.maxY && a.maxY >= b.minY
 }
 
-export function SvgExtrudedLayer({ svgData, matchColor, layer, depthScale, cutShapes }: SvgExtrudedLayerProps) {
+export function SvgExtrudedLayer({ svgData, matchColor, layer, depthScale, cutShapes, subtractGeometry }: SvgExtrudedLayerProps) {
   const geometry = useMemo(() => {
     // Filter SVG paths by fill color
     const allShapes: THREE.Shape[] = []
@@ -78,10 +81,32 @@ export function SvgExtrudedLayer({ svgData, matchColor, layer, depthScale, cutSh
       steps: 1,
     }
 
-    const geo = new THREE.ExtrudeGeometry(finalShapes, extrudeSettings)
+    let geo: THREE.BufferGeometry = new THREE.ExtrudeGeometry(finalShapes, extrudeSettings)
+
+    // CSG subtraction: cut the subtractGeometry from this layer
+    if (subtractGeometry) {
+      try {
+        const baseBrush = new Brush(geo)
+        baseBrush.position.set(0, 0, (layer.offsetZ ?? 0) * depthScale)
+        baseBrush.updateMatrixWorld()
+
+        const cutBrush = new Brush(subtractGeometry.clone())
+        cutBrush.updateMatrixWorld()
+
+        const evaluator = new Evaluator()
+        const result = evaluator.evaluate(baseBrush, cutBrush, SUBTRACTION)
+        // The result includes the offsetZ transform, so we need to undo it
+        // since the mesh position will apply it again
+        result.geometry.translate(0, 0, -(layer.offsetZ ?? 0) * depthScale)
+        geo = result.geometry
+      } catch (e) {
+        console.warn('CSG subtraction failed, using original geometry:', e)
+      }
+    }
+
     geo.computeVertexNormals()
     return geo
-  }, [svgData, matchColor, layer.depth, layer.strokeWidth, depthScale, cutShapes])
+  }, [svgData, matchColor, layer.depth, layer.offsetZ, layer.strokeWidth, depthScale, cutShapes, subtractGeometry])
 
   const material = useMemo(() => {
     return new THREE.MeshStandardMaterial({
@@ -100,6 +125,8 @@ export function SvgExtrudedLayer({ svgData, matchColor, layer, depthScale, cutSh
       geometry={geometry}
       material={material}
       position={[0, 0, scaledOffset]}
+      castShadow
+      receiveShadow
     />
   )
 }

@@ -94,10 +94,26 @@ export function ContactForm() {
     setErrors({})
 
     try {
-      // Simulate API call (replace with actual API endpoint)
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+        }),
+      })
 
-      // Success
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        if (res.status === 400 && data.error) {
+          setErrors({ message: data.error })
+        }
+        setStatus('error')
+        return
+      }
+
       setStatus('success')
       setFormData({
         name: '',

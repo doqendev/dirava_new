@@ -1,6 +1,6 @@
-# Shopify Setup Guide for Neo-Stage Collective
+﻿# Shopify Setup Guide for Mizoke
 
-This guide walks you through setting up your Shopify store for the Neo-Stage Collective headless e-commerce platform.
+This guide walks you through setting up your Shopify store for the Mizoke headless e-commerce platform.
 
 ---
 
@@ -29,10 +29,10 @@ Before starting, ensure you have:
 
 ### Step 1: Create a Custom App
 
-1. Go to your Shopify Admin → **Settings** → **Apps and sales channels**
+1. Go to your Shopify Admin â†’ **Settings** â†’ **Apps and sales channels**
 2. Click **Develop apps** (you may need to enable custom app development)
 3. Click **Create an app**
-4. Name it: `Neo-Stage Storefront`
+4. Name it: `Mizoke Storefront`
 5. Click **Create app**
 
 ### Step 2: Configure Storefront API Access
@@ -76,7 +76,7 @@ Metafields allow us to store custom data on products and collections. We'll crea
 
 ### Product Metafields
 
-Go to **Settings** → **Custom data** → **Products** → **Add definition**
+Go to **Settings** â†’ **Custom data** â†’ **Products** â†’ **Add definition**
 
 #### 1. Universe Metafield
 
@@ -134,7 +134,7 @@ Go to **Settings** → **Custom data** → **Products** → **Add definition**
 
 ### Collection Metafields
 
-Go to **Settings** → **Custom data** → **Collections** → **Add definition**
+Go to **Settings** â†’ **Custom data** â†’ **Collections** â†’ **Add definition**
 
 #### 1. Universe Metafield (Collection)
 
@@ -173,7 +173,7 @@ Create collections for each anime universe.
 
 ### Create Universe Collections
 
-Go to **Products** → **Collections** → **Create collection**
+Go to **Products** â†’ **Collections** â†’ **Create collection**
 
 #### One Piece Collection
 
@@ -246,9 +246,9 @@ OR
 
 When creating or editing products:
 
-1. Go to **Products** → Select or create a product
+1. Go to **Products** â†’ Select or create a product
 2. Scroll down to **Metafields** section
-3. Fill in the Neo-Stage metafields:
+3. Fill in the Mizoke metafields:
    - **Universe**: Select the appropriate universe
    - **Rarity**: Set to `common`, `rare`, or `legendary`
    - **Is Drop**: Set to `true` for limited drops
@@ -258,7 +258,7 @@ When creating or editing products:
 
 For existing products:
 
-1. Go to **Products** → **All products**
+1. Go to **Products** â†’ **All products**
 2. Select multiple products
 3. Click **Edit products**
 4. Add the metafield columns you need
@@ -416,3 +416,4 @@ Once your Shopify store is configured:
 | `neo_stage` | `rarity` | text | Products |
 | `neo_stage` | `theme_color` | color | Collections |
 | `neo_stage` | `card_background_image` | file | Collections |
+

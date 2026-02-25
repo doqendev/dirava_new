@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import { getTranslations } from 'next-intl/server'
 import { HeroSection } from '@/components/home/HeroSection'
 import { UniverseGrid, UniverseGridSkeleton } from '@/components/home/UniverseGrid'
 import { DropRunway, DropRunwaySkeleton } from '@/components/home/DropRunway'
@@ -11,6 +12,18 @@ import { extractNodes, getCollectionUniverse, getCollectionProductCount } from '
 import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
 import type { ShopifyCollection, ShopifyProduct } from '@/types/shopify'
 import type { UniverseColorName } from '@/types/universe'
+
+export async function generateMetadata() {
+  const t = await getTranslations('seo')
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mizoke.com'
+  return {
+    title: t('homeTitle'),
+    description: t('homeDescription'),
+    alternates: {
+      canonical: siteUrl,
+    },
+  }
+}
 
 // Revalidate every 60 seconds
 export const revalidate = 60

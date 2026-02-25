@@ -88,7 +88,7 @@ export const useUIStore = create<UIState>()(
       toggleProductInfo: () => set((state) => ({ showProductInfo: !state.showProductInfo })),
     }),
     {
-      name: 'tamashii-ui',
+      name: 'mizoke-ui',
       partialize: (state) => ({
         gridColumns: state.gridColumns,
         showProductInfo: state.showProductInfo,

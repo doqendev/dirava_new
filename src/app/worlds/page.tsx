@@ -6,11 +6,14 @@ import { extractNodes, getCollectionUniverse, getCollectionProductCount } from '
 import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
 import type { ShopifyCollection } from '@/types/shopify'
 import type { UniverseColorName } from '@/types/universe'
-import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 
-export const metadata: Metadata = {
-  title: 'Worlds',
-  description: 'Explore anime universes and discover exclusive merchandise from One Piece, Demon Slayer, Dragon Ball, Hunter x Hunter, and more.',
+export async function generateMetadata() {
+  const t = await getTranslations('seo')
+  return {
+    title: t('worldsTitle'),
+    description: t('worldsDescription'),
+  }
 }
 
 export const revalidate = 60

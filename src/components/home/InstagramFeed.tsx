@@ -13,7 +13,7 @@ const instagramPosts = [
   {
     id: '1',
     image: '/instagram/post-1.jpg',
-    alt: 'Customer wearing Tamashii anime hoodie',
+    alt: 'Customer wearing Mizoke anime hoodie',
   },
   {
     id: '2',
@@ -115,8 +115,8 @@ function InstagramPost({ post, instagramUrl }: InstagramPostProps) {
 
 export function InstagramFeed() {
   const t = useTranslations('home')
-  const instagramHandle = '@tamashii.shop'
-  const instagramUrl = 'https://instagram.com/tamashii.shop'
+  const instagramHandle = '@mizoke.store'
+  const instagramUrl = 'https://instagram.com/mizoke.store'
 
   return (
     <section className="py-12 md:py-16">

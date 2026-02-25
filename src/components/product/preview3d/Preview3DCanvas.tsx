@@ -1,13 +1,13 @@
 'use client'
 
-import { Suspense, useState, useEffect, useRef, Component, type ReactNode, useCallback } from 'react'
+import { Suspense, useState, useEffect, useRef, Component, type ReactNode } from 'react'
 import { Canvas } from '@react-three/fiber'
 import * as THREE from 'three'
-import { Loader2, Box, Hand, Search, Download } from 'lucide-react'
+import { Box, Hand, Search } from 'lucide-react'
 import { TextExtrusionScene } from './TextExtrusionScene'
 import { SvgExtrusionScene } from './SvgExtrusionScene'
 import { CompositeSignScene } from './CompositeSignScene'
-import { downloadOBJ } from '@/lib/preview/exportOBJ'
+import { Preview3DLoadingIndicator } from './LoadingSpinner'
 import type { PreviewConfig } from '@/lib/preview/types'
 
 interface Preview3DCanvasProps {
@@ -19,8 +19,7 @@ interface Preview3DCanvasProps {
 function LoadingFallback() {
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0a12]">
-      <Loader2 className="w-8 h-8 text-neon-cyan animate-spin mb-3" />
-      <p className="text-sm text-white/50">Loading 3D preview...</p>
+      <Preview3DLoadingIndicator label="Loading..." />
     </div>
   )
 }
@@ -90,7 +89,7 @@ function SceneRouter({ config, text, selectedVariantName, sceneRef }: SceneRoute
       // Resolve SVG path: variant-specific or single SVG
       const svgPath = (selectedVariantName && config.variantSvgs?.[selectedVariantName]) || config.svg
       if (!svgPath) return null
-      return <SvgExtrusionScene config={config} svgPath={svgPath} />
+      return <SvgExtrusionScene config={config} svgPath={svgPath} text={text} />
     }
     case 'composite-sign': {
       const jollySvgPath = (selectedVariantName && config.variantSvgs?.[selectedVariantName]) || config.svg
@@ -106,11 +105,6 @@ export function Preview3DCanvas({ config, text, selectedVariantName }: Preview3D
   const [debouncedText, setDebouncedText] = useState(text)
   const [showHint, setShowHint] = useState(true)
   const sceneRef = useRef<THREE.Group>(null)
-
-  const handleDownloadOBJ = useCallback(() => {
-    if (!sceneRef.current) return
-    downloadOBJ(sceneRef.current, 'tamashii-preview')
-  }, [])
 
   // Check WebGL support on mount
   useEffect(() => {
@@ -128,7 +122,7 @@ export function Preview3DCanvas({ config, text, selectedVariantName }: Preview3D
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedText(text)
-    }, 300)
+    }, 500)
     return () => clearTimeout(timer)
   }, [text])
 
@@ -160,6 +154,7 @@ export function Preview3DCanvas({ config, text, selectedVariantName }: Preview3D
         }
       >
         <Canvas
+          shadows
           camera={{
             position: config.camera.position,
             fov: config.camera.fov ?? 50,
@@ -167,7 +162,7 @@ export function Preview3DCanvas({ config, text, selectedVariantName }: Preview3D
             far: config.camera.far ?? 1000,
           }}
           dpr={[1, 1.5]}
-          gl={{ antialias: true, alpha: false }}
+          gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
         >
           <Suspense fallback={null}>
             <SceneRouter config={config} text={debouncedText} selectedVariantName={selectedVariantName} sceneRef={sceneRef} />
@@ -175,15 +170,13 @@ export function Preview3DCanvas({ config, text, selectedVariantName }: Preview3D
         </Canvas>
       </WebGLErrorBoundary>
 
-      {/* Download OBJ test button */}
-      <button
-        onClick={handleDownloadOBJ}
-        className="absolute top-3 left-3 z-30 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-white/80 hover:text-white bg-black/50 hover:bg-black/70 border border-white/10 hover:border-white/20 transition-all backdrop-blur-sm"
-        title="Download OBJ"
-      >
-        <Download className="w-4 h-4" />
-        OBJ
-      </button>
+      {/* Updating spinner — shows while text is debouncing */}
+      {text !== debouncedText && (
+        <div className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center">
+          <div className="absolute inset-0 bg-[#0a0a12]/40" />
+          <Preview3DLoadingIndicator label="Updating..." className="relative z-10" />
+        </div>
+      )}
 
       {/* Interaction hints — animated, fades out after 4s */}
       <div

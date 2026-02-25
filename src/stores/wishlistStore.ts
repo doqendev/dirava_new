@@ -89,16 +89,13 @@ export const useWishlistStore = create<WishlistState>()(
 
       // Fetch wishlist from Shopify and merge with local
       syncFromShopify: async (accessToken) => {
-        console.log('[Wishlist] syncFromShopify called')
         if (!accessToken) {
-          console.log('[Wishlist] No access token, skipping sync')
           return
         }
 
         set({ isSyncing: true })
 
         try {
-          console.log('[Wishlist] Fetching from API...')
           const response = await fetch('/api/wishlist', {
             headers: {
               'X-Customer-Access-Token': accessToken,
@@ -111,13 +108,9 @@ export const useWishlistStore = create<WishlistState>()(
 
           const data = await response.json()
           const remoteItems: WishlistItem[] = data.items || []
-          console.log('[Wishlist] Received items from Shopify:', remoteItems.length)
 
           // Merge remote with local
-          const localItems = get().items
-          console.log('[Wishlist] Local items before merge:', localItems.length)
           get().mergeWithRemote(remoteItems)
-          console.log('[Wishlist] Items after merge:', get().items.length)
 
           set({
             isSyncing: false,
@@ -134,14 +127,11 @@ export const useWishlistStore = create<WishlistState>()(
 
       // Save current wishlist to Shopify
       syncToShopify: async (accessToken) => {
-        console.log('[Wishlist] syncToShopify called with token:', accessToken ? accessToken.substring(0, 20) + '...' : 'none')
         if (!accessToken) {
-          console.log('[Wishlist] No token, skipping sync')
           return
         }
 
         const { items } = get()
-        console.log('[Wishlist] Saving', items.length, 'items to Shopify')
 
         try {
           const response = await fetch('/api/wishlist', {
@@ -153,8 +143,6 @@ export const useWishlistStore = create<WishlistState>()(
             body: JSON.stringify({ items }),
           })
 
-          console.log('[Wishlist] Save response status:', response.status)
-
           if (!response.ok) {
             const errorData = await response.json().catch(() => ({}))
             console.error('[Wishlist] Save failed:', errorData)
@@ -162,7 +150,6 @@ export const useWishlistStore = create<WishlistState>()(
           }
 
           set({ lastSyncedAt: new Date().toISOString() })
-          console.log('[Wishlist] Saved successfully')
         } catch (error) {
           console.error('Failed to sync wishlist to Shopify:', error)
         }
@@ -207,7 +194,7 @@ export const useWishlistStore = create<WishlistState>()(
       },
     }),
     {
-      name: 'tamashii-wishlist',
+      name: 'mizoke-wishlist',
       partialize: (state) => ({
         items: state.items,
         lastSyncedAt: state.lastSyncedAt,
@@ -244,14 +231,8 @@ function debouncedSync() {
       const accessToken = authState.accessToken
       const isAuth = authState.isAuthenticated()
 
-      console.log('[Wishlist] Debounced sync - accessToken:', accessToken ? 'present' : 'missing')
-      console.log('[Wishlist] Debounced sync - isAuthenticated:', isAuth)
-
       if (accessToken && isAuth) {
-        console.log('[Wishlist] Debounced sync - syncing to Shopify')
         await useWishlistStore.getState().syncToShopify(accessToken)
-      } else {
-        console.log('[Wishlist] Debounced sync - skipping (not authenticated)')
       }
     } catch (err) {
       console.error('[Wishlist] Debounced sync error:', err)

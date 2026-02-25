@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from 'next'
 import { Orbitron, Inter, JetBrains_Mono } from 'next/font/google'
+import { MotionProvider } from '@/components/providers/MotionProvider'
 import { NextIntlClientProvider } from 'next-intl'
 import { getTranslations } from 'next-intl/server'
 import { getLocale, getCurrency } from '@/i18n/request'
 import { getMessages } from '@/i18n/messages'
+import { SOCIAL_LINKS } from '@/lib/utils/constants'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { BottomNav } from '@/components/layout/BottomNav'
@@ -11,6 +13,7 @@ import { CartDrawer } from '@/components/layout/CartDrawer'
 import { SearchModal } from '@/components/search/SearchModal'
 import { QuickViewModal } from '@/components/product/QuickViewModal'
 import { CookieConsent } from '@/components/layout/CookieConsent'
+import { ToastContainer } from '@/components/ui/Toast'
 import { LocaleProvider } from '@/components/providers/LocaleProvider'
 import { AnalyticsProvider } from '@/components/providers/AnalyticsProvider'
 import './globals.css'
@@ -47,6 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://mizoke.com'),
     title: {
       default: t('homeTitle'),
       template: `%s | ${t('siteName')}`,
@@ -85,7 +89,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
+  maximumScale: 5,
   themeColor: '#0a0a12',
 }
 
@@ -98,14 +102,21 @@ export default async function RootLayout({
   const currency = await getCurrency()
   const messages = getMessages(locale)
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tamashii.store'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mizoke.com'
 
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Tamashii',
+    name: 'Mizoke',
     description: 'Your Anime Spirit - Premium anime merchandise',
     url: siteUrl,
+    logo: `${siteUrl}/logo.png`,
+    sameAs: SOCIAL_LINKS.map((link) => link.href),
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer service',
+      url: `${siteUrl}/contact`,
+    },
   }
 
   return (
@@ -124,21 +135,24 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <LocaleProvider initialLocale={locale} initialCurrency={currency}>
-            <Header />
-            <main id="main-content" className="pt-16 pb-20 lg:pb-0 overflow-visible">
-              {children}
-            </main>
-            <Footer />
-            <BottomNav />
-            <CartDrawer />
-            <SearchModal />
-            <QuickViewModal />
-            <CookieConsent />
-            <AnalyticsProvider />
-          </LocaleProvider>
-        </NextIntlClientProvider>
+        <MotionProvider>
+          <NextIntlClientProvider locale={locale} messages={messages}>
+            <LocaleProvider initialLocale={locale} initialCurrency={currency}>
+              <Header />
+              <main id="main-content" className="pt-16 pb-20 lg:pb-0 overflow-visible">
+                {children}
+              </main>
+              <Footer />
+              <BottomNav />
+              <CartDrawer />
+              <SearchModal />
+              <QuickViewModal />
+              <CookieConsent />
+              <ToastContainer />
+              <AnalyticsProvider />
+            </LocaleProvider>
+          </NextIntlClientProvider>
+        </MotionProvider>
       </body>
     </html>
   )

@@ -48,7 +48,7 @@ export function Header({ className }: HeaderProps) {
               }}
               whileHover={{ scale: 1.02 }}
             >
-              TAMASHII
+              MIZOKE
             </motion.span>
             <span
               className={cn(
@@ -78,7 +78,7 @@ export function Header({ className }: HeaderProps) {
             }}
             whileHover={{ scale: 1.02 }}
           >
-            TAMASHII
+            MIZOKE
           </motion.span>
           <span
             className={cn(
@@ -201,7 +201,7 @@ export function Header({ className }: HeaderProps) {
             {/* Profile - Desktop only (mobile has bottom nav) */}
             <Link
               href={isAuthenticated ? '/account/dashboard' : '/account/login'}
-              className="hidden lg:block"
+              className=""
               title={isAuthenticated ? tCommon('account') : tCommon('login')}
             >
               <motion.div

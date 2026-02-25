@@ -28,10 +28,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { universe } = await params
   const config = UNIVERSE_CONFIG[universe as keyof typeof UNIVERSE_CONFIG]
   const name = config?.name || universe
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mizoke.com'
 
   return {
-    title: name,
-    description: `Shop exclusive ${name} merchandise. Apparel, collectibles, and limited drops.`,
+    title: `${name} – Anime Merch & Collectibles | Mizoke`,
+    description: `Shop exclusive ${name} merchandise. Premium apparel, collectibles, and limited edition drops from the ${name} universe.`,
+    alternates: {
+      canonical: `${siteUrl}/worlds/${universe}`,
+    },
+    openGraph: {
+      title: `${name} – Anime Merch & Collectibles | Mizoke`,
+      description: `Shop exclusive ${name} merchandise. Premium apparel, collectibles, and limited edition drops.`,
+    },
   }
 }
 
@@ -190,8 +198,40 @@ export default async function UniversePage({ params, searchParams }: Props) {
   const universeName = config?.name || cleanUniverse.replace(/-/g, ' ')
   const themeColor = config?.color || '#00f5ff'
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mizoke.com'
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: siteUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Worlds',
+        item: `${siteUrl}/worlds`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: universeName,
+        item: `${siteUrl}/worlds/${universe}`,
+      },
+    ],
+  }
+
   return (
-    <div className="min-h-screen">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <div className="min-h-screen">
       {/* Header Section */}
       <section className="pt-6 px-4 max-w-7xl mx-auto">
         {/* Breadcrumb */}
@@ -235,5 +275,6 @@ export default async function UniversePage({ params, searchParams }: Props) {
         </Suspense>
       </section>
     </div>
+    </>
   )
 }

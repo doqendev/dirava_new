@@ -27,6 +27,8 @@ export interface LayerConfig {
   /** Named cut group — cut layers with a cutGroup only affect normal layers with the same cutGroup.
    *  Layers/cuts without cutGroup belong to the default group. */
   cutGroup?: string
+  /** If true on a cut layer, this cut is applied to all non-`noCut` layers, including the base layer. */
+  cutThroughAll?: boolean
 }
 
 export interface CameraConfig {
@@ -75,6 +77,27 @@ export interface PreviewConfig {
   variantLayers?: Record<string, LayerConfig[]>
   /** Per-variant bar layer overrides (variant name → layers) */
   variantBarLayers?: Record<string, LayerConfig[]>
-  /** Per-variant text color overrides (variant name → { text, special }) */
-  variantTextColors?: Record<string, { text: string; special: string }>
+  /** Per-variant text color overrides (variant name → { text, special, stroke? }) */
+  variantTextColors?: Record<string, { text: string; special: string; stroke?: string }>
+  /** Per-variant jolly roger scale overrides */
+  variantJollyScale?: Record<string, number>
+  /** Per-variant jolly roger X position offsets (negative moves left) */
+  variantJollyOffsetX?: Record<string, number>
+  /** Per-variant jolly roger Y position offsets (positive moves down in SVG space) */
+  variantJollyOffsetY?: Record<string, number>
+  /** Per-variant text X offsets in composite-sign (positive moves text right) */
+  variantTextOffsetX?: Record<string, number>
+  /** Force text input to uppercase (defaults to true) */
+  forceUppercase?: boolean
+  /** Capitalize only the first letter, leave the rest as typed (defaults to false) */
+  capitalizeFirst?: boolean
+  /** Ratio of SVG width the text should fill (0-1, default 0.8). Text font size
+   *  auto-scales so text width matches svgWidth * this ratio. */
+  textMaxWidthRatio?: number
+  /** Additional overlap between letters for text-extrusion (fraction of font size, default 0.1). */
+  textCharOverlap?: number
+  /** Text spacing strategy for text-extrusion. `advance` uses glyph advance widths (combo-independent). */
+  textSpacingMode?: 'shape-overlap' | 'advance'
+  /** Extra letter spacing in font-size units when textSpacingMode is `advance` (e.g. 0.05). */
+  textLetterSpacing?: number
 }

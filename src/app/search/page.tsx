@@ -19,6 +19,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     description: query
       ? `Search results for "${query}" - Find anime merchandise, collectibles, and more.`
       : 'Search for anime merchandise, collectibles, and more.',
+    robots: { index: false, follow: true },
   }
 }
 

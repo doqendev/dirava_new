@@ -35,7 +35,7 @@ interface PredictiveSearchResponse {
   }
 }
 
-const RECENT_SEARCHES_KEY = 'tamashii-recent-searches'
+const RECENT_SEARCHES_KEY = 'mizoke-recent-searches'
 const MAX_RECENT_SEARCHES = 5
 
 // Get recent searches from localStorage

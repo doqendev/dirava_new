@@ -51,7 +51,20 @@
       "mcp__plugin_oh-my-claudecode_t__lsp_document_symbols",
       "Bash(node --max-old-space-size=4096 ./node_modules/.bin/tsc:*)",
       "Bash(npx --yes tsc:*)",
-      "Bash(npx next build:*)"
+      "Bash(npx next build:*)",
+      "Bash(error:*)",
+      "Bash(not-found \")",
+      "Bash(python3:*)",
+      "Bash(xargs:*)",
+      "Bash(xargs -I {} sh -c 'ls -1 {}/error.tsx {}/loading.tsx 2>/dev/null || echo \"\"{}: MISSING\"\"')",
+      "Bash(pnpm type-check:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(grep:*)",
+      "Bash(NEXT_TELEMETRY_DISABLED=1 pnpm build:*)",
+      "Bash(tee:*)",
+      "WebFetch(domain:neonloot.com)",
+      "Bash(vercel:*)"
     ]
   }
 }

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
-import { Home, Globe, Package, User, Star } from 'lucide-react'
+import { Home, Globe, Package, Gift, User } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 
 interface BottomNavProps {
@@ -29,6 +29,12 @@ export function BottomNav({ className }: BottomNavProps) {
       href: '/worlds'
     },
     {
+      icon: <Gift className="w-5 h-5" strokeWidth={1.5} />,
+      activeIcon: <Gift className="w-5 h-5" strokeWidth={2} />,
+      label: 'GACHA',
+      href: '/gacha'
+    },
+    {
       icon: <Package className="w-5 h-5" strokeWidth={1.5} />,
       activeIcon: <Package className="w-5 h-5" strokeWidth={2} />,
       label: t('drops').toUpperCase(),
@@ -37,9 +43,8 @@ export function BottomNav({ className }: BottomNavProps) {
     {
       icon: <User className="w-5 h-5" strokeWidth={1.5} />,
       activeIcon: <User className="w-5 h-5" strokeWidth={2} />,
-      label: t('profile').toUpperCase(),
-      href: '/profile',
-      hasBadge: true
+      label: 'ACCOUNT',
+      href: '/account'
     },
   ]
 
@@ -103,14 +108,6 @@ export function BottomNav({ className }: BottomNavProps) {
                 >
                   {active ? item.activeIcon : item.icon}
                 </motion.div>
-
-                {/* Star badge for profile */}
-                {item.hasBadge && (
-                  <Star
-                    className="absolute -top-1 -right-2 w-3 h-3 text-white/50 fill-white/30"
-                    strokeWidth={1.5}
-                  />
-                )}
               </div>
 
               {/* Label */}

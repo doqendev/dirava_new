@@ -1,13 +1,15 @@
 'use client'
 
-import { useState, useRef, lazy, Suspense, forwardRef, useImperativeHandle, useCallback } from 'react'
+import { useState, useRef, lazy, Suspense, forwardRef, useImperativeHandle, useCallback, useMemo } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, ZoomIn, Box, X } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { AddToCartButton } from '@/components/product/AddToCartButton'
+import { Preview3DLoadingIndicator } from '@/components/product/preview3d/LoadingSpinner'
 import type { PreviewConfig } from '@/lib/preview/types'
+import { getPreviewDisplayText } from '@/lib/preview/textTransform'
 
 const Preview3DCanvas = lazy(() =>
   import('@/components/product/preview3d/Preview3DCanvas').then((mod) => ({
@@ -65,13 +67,22 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
     const [isZoomed, setIsZoomed] = useState(false)
 
     const hasMultipleImages = images.length > 1
+    const isTextExtrusion = previewConfig?.type === 'text-extrusion'
     const isSvgPreview = previewConfig?.type === 'svg-extrusion' || previewConfig?.type === 'composite-sign'
     const hasVariantSvg = isSvgPreview && !!selectedVariantName && !!previewConfig?.variantSvgs?.[selectedVariantName]
     const hasSingleSvg = isSvgPreview && !!previewConfig?.svg
     const isComposite = previewConfig?.type === 'composite-sign' && !!previewConfig?.barParts
+    const normalizedPreviewText = useMemo(
+      () => (previewConfig ? getPreviewDisplayText(previewText, previewConfig, '') : (previewText ?? '')),
+      [previewText, previewConfig]
+    )
+    const previewCanvasText = useMemo(
+      () => (previewConfig ? getPreviewDisplayText(previewText, previewConfig, 'Name') : 'Name'),
+      [previewText, previewConfig]
+    )
 
-    // 3D tab is available when we have a preview config with SVG/composite content
-    const show3DTab = !!previewConfig && (hasVariantSvg || hasSingleSvg || isComposite)
+    // 3D tab is available for text-extrusion (always) or SVG/composite types with content
+    const show3DTab = !!previewConfig && (isTextExtrusion || hasVariantSvg || hasSingleSvg || isComposite)
 
     // 3D is the last slide (index = images.length)
     const preview3DIndex = images.length
@@ -153,12 +164,11 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                 <Suspense
                   fallback={
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0a12]">
-                      <Box className="w-8 h-8 text-neon-cyan animate-pulse mb-3" />
-                      <p className="text-sm text-white/50">Loading 3D preview...</p>
+                      <Preview3DLoadingIndicator label="Loading..." />
                     </div>
                   }
                 >
-                  <Preview3DCanvas config={previewConfig} text={(previewText?.trim() ? previewText.toUpperCase() : 'NAME')} selectedVariantName={selectedVariantName} />
+                  <Preview3DCanvas config={previewConfig} text={previewCanvasText} selectedVariantName={selectedVariantName} />
                 </Suspense>
 
                 {/* Bottom bar: input + Add to Cart */}
@@ -169,14 +179,14 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                         {onPreviewTextChange && (
                           <input
                             type="text"
-                            value={(previewText || '').toUpperCase()}
-                            onChange={(e) => onPreviewTextChange(e.target.value.toUpperCase())}
-                            placeholder="NAME"
+                            value={normalizedPreviewText}
+                            onChange={(e) => onPreviewTextChange(previewConfig ? getPreviewDisplayText(e.target.value, previewConfig, '') : e.target.value)}
+                            placeholder="Name"
                             className={cn(
                               'flex-1 min-w-0 px-3 py-2.5 rounded-lg text-sm text-white placeholder-white/40',
                               'bg-white/10 backdrop-blur-md border border-white/20',
                               'focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan/50',
-                              'transition-colors text-center uppercase'
+                              'transition-colors text-center'
                             )}
                           />
                         )}

@@ -1,56 +1,46 @@
 import { NextResponse } from 'next/server'
 import { createReview } from '@/lib/reviews/metaobjects'
+import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimit'
+import { validateReview } from '@/lib/utils/validation'
 
 export async function POST(request: Request) {
   try {
+    // Rate limit: 3 requests per minute per IP
+    const ip = getClientIp(request)
+    const rl = checkRateLimit(`review:${ip}`, { maxRequests: 3, windowSeconds: 60 })
+    if (rl.limited) {
+      return NextResponse.json(
+        { success: false, error: 'Too many requests. Please try again later.' },
+        { status: 429 }
+      )
+    }
+
     const body = await request.json()
 
-    const { productHandle, authorName, authorEmail, rating, title, content } = body
-
-    // Validation
-    if (!productHandle || !authorName || !authorEmail || !rating || !content) {
+    // Validate and sanitize
+    const result = validateReview(body)
+    if (!result.valid) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
+        { success: false, error: result.error },
         { status: 400 }
       )
     }
 
-    if (rating < 1 || rating > 5) {
-      return NextResponse.json(
-        { success: false, error: 'Rating must be between 1 and 5' },
-        { status: 400 }
-      )
-    }
-
-    if (content.length < 10) {
-      return NextResponse.json(
-        { success: false, error: 'Review must be at least 10 characters' },
-        { status: 400 }
-      )
-    }
-
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(authorEmail)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid email address' },
-        { status: 400 }
-      )
-    }
+    const { productHandle, authorName, authorEmail, rating, title, content } = result.sanitized!
 
     const review = await createReview({
       productHandle,
       authorName,
       authorEmail,
-      rating: Math.round(rating),
-      title: title || undefined,
+      rating,
+      title,
       content,
     })
 
-    return NextResponse.json({
-      success: true,
-      review,
-    })
+    return NextResponse.json(
+      { success: true, review },
+      { headers: { 'Cache-Control': 'no-store' } }
+    )
   } catch (error) {
     console.error('Failed to submit review:', error)
     return NextResponse.json(

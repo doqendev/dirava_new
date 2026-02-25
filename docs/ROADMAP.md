@@ -1,6 +1,6 @@
-# Neo-Stage Collective — Implementation Roadmap
+﻿# Mizoke – Implementation Roadmap
 
-This document outlines the phased development approach for building the Neo-Stage Collective e-commerce platform.
+This document outlines the phased development approach for building the Mizoke e-commerce platform.
 
 ---
 
@@ -355,3 +355,4 @@ pnpm type-check
 - [Shopify Storefront API](https://shopify.dev/api/storefront)
 - [Zustand](https://github.com/pmndrs/zustand)
 - [Three.js](https://threejs.org/docs/)
+

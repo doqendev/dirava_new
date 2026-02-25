@@ -25,7 +25,7 @@ export const useLocaleStore = create<LocaleState>()(
         if (locales.includes(locale)) {
           set({ locale })
           // Also set cookie for server-side access
-          document.cookie = `tamashii-locale=${locale};path=/;max-age=31536000;SameSite=Lax`
+          document.cookie = `mizoke-locale=${locale};path=/;max-age=31536000;SameSite=Lax`
         }
       },
 
@@ -33,7 +33,7 @@ export const useLocaleStore = create<LocaleState>()(
         if (currencies.includes(currency)) {
           set({ currency })
           // Also set cookie for server-side access
-          document.cookie = `tamashii-currency=${currency};path=/;max-age=31536000;SameSite=Lax`
+          document.cookie = `mizoke-currency=${currency};path=/;max-age=31536000;SameSite=Lax`
         }
       },
 
@@ -46,7 +46,7 @@ export const useLocaleStore = create<LocaleState>()(
       },
     }),
     {
-      name: 'tamashii-locale',
+      name: 'mizoke-locale',
       partialize: (state) => ({
         locale: state.locale,
         currency: state.currency,

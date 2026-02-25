@@ -22,6 +22,7 @@ import { ReviewSummary } from '@/components/product/ReviewSummary'
 import { useTrackProductView } from '@/hooks/useTrackProductView'
 import { getSizeGuide } from '@/data/sizeGuides'
 import { getPreviewConfig } from '@/lib/preview'
+import { getPreviewDisplayText } from '@/lib/preview/textTransform'
 import type { ShopifyMoney, ShopifySelectedOption } from '@/types/shopify'
 import type { ReviewRating } from '@/types/reviews'
 
@@ -77,7 +78,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
   const [isReturnsOpen, setIsReturnsOpen] = useState(false)
   const [isShareOpen, setIsShareOpen] = useState(false)
 
-  // Extract unique options
+  // Extract unique options — skip Shopify's default "Title: Default Title"
   const options = useMemo(() => {
     const optionMap = new Map<string, Set<string>>()
 
@@ -90,10 +91,16 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
       })
     })
 
-    return Array.from(optionMap.entries()).map(([name, values]) => ({
-      name,
-      values: Array.from(values),
-    }))
+    return Array.from(optionMap.entries())
+      .filter(([name, values]) => {
+        // Hide the default variant that Shopify creates for products without real variants
+        if (name === 'Title' && values.size === 1 && values.has('Default Title')) return false
+        return true
+      })
+      .map(([name, values]) => ({
+        name,
+        values: Array.from(values),
+      }))
   }, [product.variants])
 
   // Get size guide based on product type
@@ -309,7 +316,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                     ref={personalizationInputRef}
                     type="text"
                     value={personalizationName}
-                    onChange={(e) => setPersonalizationName(e.target.value.toUpperCase())}
+                    onChange={(e) => setPersonalizationName(previewConfig ? getPreviewDisplayText(e.target.value, previewConfig, '') : e.target.value)}
                     placeholder="Your Name Here"
                     className={cn(
                       'flex-1 min-w-0 px-4 py-3 bg-black/80 border rounded-lg text-white placeholder-white/40 focus:outline-none transition-colors',

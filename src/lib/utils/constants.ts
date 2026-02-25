@@ -2,7 +2,7 @@
  * Application-wide constants
  */
 
-export const SITE_NAME = 'Tamashii'
+export const SITE_NAME = 'Mizoke'
 export const SITE_TAGLINE = 'Your Anime Spirit'
 
 /**
@@ -112,3 +112,13 @@ export const RARITY_LEVELS = {
   rare: { label: 'Rare', color: '#a855f7' },
   legendary: { label: 'Legendary', color: '#ffd700' },
 } as const
+
+/**
+ * Social media links (shared between Footer and Organization schema)
+ */
+export const SOCIAL_LINKS = [
+  { label: 'Instagram', href: 'https://instagram.com/mizoke' },
+  { label: 'Twitter', href: 'https://twitter.com/mizoke' },
+  { label: 'TikTok', href: 'https://tiktok.com/@mizoke' },
+  { label: 'Discord', href: 'https://discord.gg/mizoke' },
+] as const

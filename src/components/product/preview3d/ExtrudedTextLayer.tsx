@@ -2,51 +2,59 @@
 
 import { useMemo } from 'react'
 import * as THREE from 'three'
-import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js'
 import { expandShapes } from '@/lib/preview/expandShapes'
 import type { LayerConfig } from '@/lib/preview/types'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type OpentypeFont = any
-
 interface ExtrudedTextLayerProps {
-  text: string
-  font: OpentypeFont
+  /** Pre-computed text shapes with proper hole classification */
+  shapes: THREE.Shape[]
   layer: LayerConfig
   depthScale: number
-  fontSize: number
 }
 
-export function ExtrudedTextLayer({ text, font, layer, depthScale, fontSize }: ExtrudedTextLayerProps) {
+/** Shrink a contour toward its centroid by a given amount */
+function shrinkContour(points: THREE.Vector2[], amount: number): THREE.Vector2[] {
+  let cx = 0, cy = 0
+  for (const p of points) { cx += p.x; cy += p.y }
+  cx /= points.length
+  cy /= points.length
+
+  return points.map(p => {
+    const dx = p.x - cx
+    const dy = p.y - cy
+    const dist = Math.sqrt(dx * dx + dy * dy)
+    if (dist === 0) return p.clone()
+    const scale = Math.max(0, (dist - amount) / dist)
+    return new THREE.Vector2(cx + dx * scale, cy + dy * scale)
+  })
+}
+
+export function ExtrudedTextLayer({ shapes, layer, depthScale }: ExtrudedTextLayerProps) {
   const geometry = useMemo(() => {
-    // Use opentype.js to get the full text path (handles kerning, spacing, etc.)
-    const path = font.getPath(text, 0, 0, fontSize)
-    const pathData = path.toPathData() as string
+    if (shapes.length === 0) return null
 
-    if (!pathData) return null
-
-    // Wrap in minimal SVG for SVGLoader
-    const svgString = `<svg xmlns="http://www.w3.org/2000/svg"><path d="${pathData}"/></svg>`
-
-    // Parse with Three.js SVGLoader (handles holes/winding correctly)
-    const loader = new SVGLoader()
-    const svgData = loader.parse(svgString)
-
-    if (svgData.paths.length === 0) return null
-
-    // Collect all shapes from all parsed paths
-    const allShapes: THREE.Shape[] = []
-    for (const svgPath of svgData.paths) {
-      const shapes = SVGLoader.createShapes(svgPath)
-      allShapes.push(...shapes)
+    // If strokeWidth is set, expand shapes then manually re-add shrunk holes
+    let finalShapes: THREE.Shape[]
+    if (layer.strokeWidth) {
+      const solidShapes = shapes
+        .map(s => { const pts = s.getPoints(); return pts.length > 0 ? new THREE.Shape(pts) : null })
+        .filter((s): s is THREE.Shape => s !== null)
+      if (solidShapes.length === 0) return null
+      const expanded = expandShapes(solidShapes, layer.strokeWidth)
+      // Re-add shrunk holes from original shapes after expansion
+      for (let i = 0; i < expanded.length && i < shapes.length; i++) {
+        const src = shapes[i]
+        const dst = expanded[i]
+        if (!src || !dst) continue
+        for (const hole of src.holes) {
+          const shrunk = shrinkContour(hole.getPoints(), layer.strokeWidth)
+          dst.holes.push(new THREE.Path(shrunk))
+        }
+      }
+      finalShapes = expanded
+    } else {
+      finalShapes = shapes
     }
-
-    if (allShapes.length === 0) return null
-
-    // If strokeWidth is set, expand shapes using Clipper polygon offset
-    const finalShapes = layer.strokeWidth
-      ? expandShapes(allShapes, layer.strokeWidth)
-      : allShapes
 
     if (finalShapes.length === 0) return null
 
@@ -69,7 +77,7 @@ export function ExtrudedTextLayer({ text, font, layer, depthScale, fontSize }: E
 
     geo.computeVertexNormals()
     return geo
-  }, [text, font, layer.depth, layer.strokeWidth, depthScale, fontSize])
+  }, [shapes, layer.depth, layer.strokeWidth, depthScale])
 
   const material = useMemo(() => {
     return new THREE.MeshStandardMaterial({
@@ -90,6 +98,8 @@ export function ExtrudedTextLayer({ text, font, layer, depthScale, fontSize }: E
       material={material}
       position={[0, 0, scaledOffset]}
       scale={[1, -1, 1]}
+      castShadow
+      receiveShadow
     />
   )
 }

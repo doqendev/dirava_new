@@ -75,7 +75,7 @@ export const useCookieConsentStore = create<CookieConsentState>()(
         }),
     }),
     {
-      name: 'tamashii-cookie-consent',
+      name: 'mizoke-cookie-consent',
     }
   )
 )

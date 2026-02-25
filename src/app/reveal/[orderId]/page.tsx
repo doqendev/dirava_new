@@ -1,11 +1,15 @@
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import { RevealClient } from './RevealClient'
-import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 
-export const metadata: Metadata = {
-  title: 'Reveal Your Mystery Box',
-  description: 'Open your mystery box and discover what awaits inside!',
+export async function generateMetadata() {
+  const t = await getTranslations('seo')
+  return {
+    title: t('revealOrderTitle'),
+    description: t('revealOrderDescription'),
+    robots: { index: false, follow: false },
+  }
 }
 
 interface RevealPageProps {

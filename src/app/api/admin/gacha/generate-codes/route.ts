@@ -6,6 +6,7 @@
  */
 
 import { NextResponse } from 'next/server'
+import crypto from 'crypto'
 import { generateCodes } from '@/lib/gacha/codeGenerator'
 import { createRedemptionCode } from '@/lib/gacha/metaobjects'
 
@@ -36,10 +37,25 @@ function isAuthorized(request: Request): boolean {
   if (!authHeader) return false
 
   const token = authHeader.replace('Bearer ', '')
-  return token === adminSecret
+
+  // Use timing-safe comparison to prevent timing attacks
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(token),
+      Buffer.from(adminSecret)
+    )
+  } catch {
+    return false
+  }
 }
 
 export async function POST(request: Request) {
+  // Hard fail in production if ADMIN_SECRET is not configured
+  if (process.env.NODE_ENV === 'production' && !process.env.ADMIN_SECRET) {
+    console.error('CRITICAL: ADMIN_SECRET is not set in production')
+    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 })
+  }
+
   // Check authorization
   if (!isAuthorized(request)) {
     return NextResponse.json<GenerateCodesResponse>(

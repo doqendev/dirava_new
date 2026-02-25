@@ -12,8 +12,8 @@ import {
 import { getMessages } from './messages'
 
 // Cookie names for storing user preferences
-export const LOCALE_COOKIE = 'tamashii-locale'
-export const CURRENCY_COOKIE = 'tamashii-currency'
+export const LOCALE_COOKIE = 'mizoke-locale'
+export const CURRENCY_COOKIE = 'mizoke-currency'
 
 // Get country code from Cloudflare or Vercel headers
 async function getCountryFromHeaders(): Promise<string | null> {

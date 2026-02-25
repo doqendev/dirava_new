@@ -4,17 +4,23 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
-import { Instagram, Twitter, Music2, MessageCircle, Send, CheckCircle } from 'lucide-react'
+import { Instagram, Twitter, Music2, MessageCircle, Send, CheckCircle, type LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { Button } from '@/components/ui/Button'
+import { SOCIAL_LINKS } from '@/lib/utils/constants'
 import { LocaleSwitcher } from './LocaleSwitcher'
 
-const socialLinks = [
-  { label: 'Instagram', href: 'https://instagram.com', icon: Instagram },
-  { label: 'Twitter', href: 'https://twitter.com', icon: Twitter },
-  { label: 'TikTok', href: 'https://tiktok.com', icon: Music2 },
-  { label: 'Discord', href: 'https://discord.com', icon: MessageCircle },
-]
+const socialIcons: Record<string, LucideIcon> = {
+  Instagram,
+  Twitter,
+  TikTok: Music2,
+  Discord: MessageCircle,
+}
+
+const socialLinks = SOCIAL_LINKS.map((link) => ({
+  ...link,
+  icon: socialIcons[link.label] || MessageCircle,
+}))
 
 // Footer link column component
 function FooterLinkColumn({
@@ -273,7 +279,7 @@ export function Footer() {
                   textShadow: '0 0 15px rgba(0, 245, 255, 0.4)',
                 }}
               >
-                TAMASHII
+                MIZOKE
               </span>
               <span className="text-[9px] text-neon-cyan/60 tracking-[2px]">
                 {tHeader('tagline')}

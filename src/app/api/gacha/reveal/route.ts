@@ -23,9 +23,20 @@ import type {
   GachaRevealResult,
   RevealApiResponse,
 } from '@/types/gacha'
+import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimit'
 
 export async function POST(request: Request) {
   try {
+    // Rate limit: 10 requests per minute per IP
+    const ip = getClientIp(request)
+    const rl = checkRateLimit(`reveal:${ip}`, { maxRequests: 10, windowSeconds: 60 })
+    if (rl.limited) {
+      return NextResponse.json<RevealApiResponse>(
+        { success: false, error: 'Too many requests. Please try again later.' },
+        { status: 429 }
+      )
+    }
+
     const body = await request.json()
     const { code: rawCode } = body
 
@@ -71,27 +82,30 @@ export async function POST(request: Request) {
             { handle: redemptionCode.boxHandle }
           )
 
-          return NextResponse.json<RevealApiResponse>({
-            success: true,
-            alreadyRevealed: true,
-            result: {
-              code: redemptionCode.code,
-              boxHandle: redemptionCode.boxHandle,
-              boxTitle: boxResponse.product?.title || 'Mystery Box',
-              revealedProduct: {
-                id: productResponse.product.id,
-                handle: productResponse.product.handle,
-                title: productResponse.product.title,
-                description: productResponse.product.description,
-                image: productResponse.product.featuredImage,
-                price: productResponse.product.priceRange.minVariantPrice,
-                variantId: redemptionCode.revealedVariantId,
+          return NextResponse.json<RevealApiResponse>(
+            {
+              success: true,
+              alreadyRevealed: true,
+              result: {
+                code: redemptionCode.code,
+                boxHandle: redemptionCode.boxHandle,
+                boxTitle: boxResponse.product?.title || 'Mystery Box',
+                revealedProduct: {
+                  id: productResponse.product.id,
+                  handle: productResponse.product.handle,
+                  title: productResponse.product.title,
+                  description: productResponse.product.description,
+                  image: productResponse.product.featuredImage,
+                  price: productResponse.product.priceRange.minVariantPrice,
+                  variantId: redemptionCode.revealedVariantId,
+                },
+                rarity: redemptionCode.revealedRarity!,
+                revealedAt: redemptionCode.revealedAt!,
+                seed: redemptionCode.seed!,
               },
-              rarity: redemptionCode.revealedRarity!,
-              revealedAt: redemptionCode.revealedAt!,
-              seed: redemptionCode.seed!,
             },
-          })
+            { headers: { 'Cache-Control': 'no-store' } }
+          )
         }
       }
 
@@ -189,11 +203,10 @@ export async function POST(request: Request) {
       seed: selection.seed,
     }
 
-    return NextResponse.json<RevealApiResponse>({
-      success: true,
-      alreadyRevealed: false,
-      result,
-    })
+    return NextResponse.json<RevealApiResponse>(
+      { success: true, alreadyRevealed: false, result },
+      { headers: { 'Cache-Control': 'no-store' } }
+    )
   } catch (error) {
     console.error('Reveal error:', error)
     return NextResponse.json<RevealApiResponse>(

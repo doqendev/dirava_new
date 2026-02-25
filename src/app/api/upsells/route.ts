@@ -87,7 +87,9 @@ export async function GET(request: Request) {
         }))
     }
 
-    return NextResponse.json(upsellProducts)
+    return NextResponse.json(upsellProducts, {
+      headers: { 'Cache-Control': 's-maxage=60, stale-while-revalidate=300' },
+    })
   } catch (error) {
     console.error('Failed to fetch upsells:', error)
     return NextResponse.json([], { status: 500 })

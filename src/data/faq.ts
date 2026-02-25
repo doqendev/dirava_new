@@ -24,7 +24,7 @@ export const faqs: FAQItem[] = [
   {
     question: 'Are your products officially licensed?',
     answer:
-      'Yes, all products sold on Tamashii are officially licensed merchandise. We work directly with licensors and authorized distributors to ensure authenticity. Each product includes proper licensing information and meets quality standards.',
+      'Yes, all products sold on Mizoke are officially licensed merchandise. We work directly with licensors and authorized distributors to ensure authenticity. Each product includes proper licensing information and meets quality standards.',
   },
   {
     question: 'What payment methods do you accept?',
@@ -59,6 +59,6 @@ export const faqs: FAQItem[] = [
   {
     question: 'How can I contact customer support?',
     answer:
-      'You can reach our customer support team through our Contact page, by emailing support@tamashii.com, or through our social media channels. Our team typically responds within 24-48 hours during business days. For urgent order issues, please include your order number in your message.',
+      'You can reach our customer support team through our Contact page, by emailing support@mizoke.com, or through our social media channels. Our team typically responds within 24-48 hours during business days. For urgent order issues, please include your order number in your message.',
   },
 ]

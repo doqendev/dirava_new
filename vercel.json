@@ -1,0 +1,16 @@
+{
+  "functions": {
+    "src/app/api/webhooks/**": {
+      "maxDuration": 30
+    },
+    "src/app/api/gacha/reveal/**": {
+      "maxDuration": 15
+    },
+    "src/app/api/gacha/claim/**": {
+      "maxDuration": 15
+    },
+    "src/app/api/admin/**": {
+      "maxDuration": 30
+    }
+  }
+}

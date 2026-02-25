@@ -51,7 +51,7 @@ export const policies: Policy[] = [
       {
         heading: 'Contact Us',
         content:
-          'If you have questions about this Privacy Policy or wish to exercise your rights, please contact us at privacy@tamashii.com or through our Contact page.',
+          'If you have questions about this Privacy Policy or wish to exercise your rights, please contact us at privacy@mizoke.com or through our Contact page.',
       },
     ],
   },
@@ -64,7 +64,7 @@ export const policies: Policy[] = [
       {
         heading: 'Acceptance of Terms',
         content:
-          'By accessing and using Tamashii, you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our website or services.',
+          'By accessing and using Mizoke, you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our website or services.',
       },
       {
         heading: 'Use of Website',
@@ -93,12 +93,12 @@ export const policies: Policy[] = [
       {
         heading: 'Intellectual Property',
         content:
-          'All content on this website, including images, text, logos, and designs, is the property of Tamashii or our licensors. You may not reproduce, distribute, or use any content without our express written permission. Anime characters and franchises are trademarks of their respective owners.',
+          'All content on this website, including images, text, logos, and designs, is the property of Mizoke or our licensors. You may not reproduce, distribute, or use any content without our express written permission. Anime characters and franchises are trademarks of their respective owners.',
       },
       {
         heading: 'Limitation of Liability',
         content:
-          'Tamashii shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of our website or products. Our total liability shall not exceed the amount you paid for the products in question.',
+          'Mizoke shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of our website or products. Our total liability shall not exceed the amount you paid for the products in question.',
       },
       {
         heading: 'Changes to Terms',
@@ -232,7 +232,7 @@ export const policies: Policy[] = [
       {
         heading: 'Our Commitment',
         content:
-          'Tamashii is committed to ensuring digital accessibility for people of all abilities. We are continually improving the user experience for everyone and applying relevant accessibility standards to guarantee we provide equal access to all users.',
+          'Mizoke is committed to ensuring digital accessibility for people of all abilities. We are continually improving the user experience for everyone and applying relevant accessibility standards to guarantee we provide equal access to all users.',
       },
       {
         heading: 'Accessibility Standards',
@@ -265,7 +265,7 @@ export const policies: Policy[] = [
       {
         heading: 'Feedback',
         content:
-          'We welcome your feedback on the accessibility of Tamashii. If you encounter any accessibility barriers or have suggestions for improvement, please contact us at accessibility@tamashii.com or use our Contact page. We take all feedback seriously and will work to address any issues.',
+          'We welcome your feedback on the accessibility of Mizoke. If you encounter any accessibility barriers or have suggestions for improvement, please contact us at accessibility@mizoke.com or use our Contact page. We take all feedback seriously and will work to address any issues.',
       },
       {
         heading: 'Alternative Access',

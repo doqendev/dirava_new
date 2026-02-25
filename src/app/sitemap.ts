@@ -3,7 +3,7 @@ import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_UNIVERSES, GET_SITEMAP_PRODUCTS } from '@/lib/shopify/queries'
 import { locales } from '@/i18n/config'
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tamashii.store'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mizoke.com'
 
 interface UniverseNode {
   handle: string
@@ -88,7 +88,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/drops', priority: 0.9, changeFrequency: 'daily' as const },
     { path: '/sale', priority: 0.9, changeFrequency: 'daily' as const },
     { path: '/new', priority: 0.9, changeFrequency: 'daily' as const },
-{ path: '/contact', priority: 0.6, changeFrequency: 'monthly' as const },
+    { path: '/worlds', priority: 0.9, changeFrequency: 'weekly' as const },
+    { path: '/bundles', priority: 0.8, changeFrequency: 'weekly' as const },
+    { path: '/gacha', priority: 0.7, changeFrequency: 'weekly' as const },
+    { path: '/contact', priority: 0.6, changeFrequency: 'monthly' as const },
+    { path: '/faq', priority: 0.5, changeFrequency: 'monthly' as const },
     { path: '/search', priority: 0.7, changeFrequency: 'weekly' as const },
   ]
 

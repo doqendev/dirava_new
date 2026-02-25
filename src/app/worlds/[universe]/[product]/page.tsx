@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_PRODUCT, GET_RELATED_PRODUCTS } from '@/lib/shopify/queries'
 import { getProductRarity } from '@/lib/shopify/utils'
@@ -6,8 +7,10 @@ import { ProductDetailClient } from '@/components/product/ProductDetailClient'
 import { RelatedProducts } from '@/components/product/RelatedProducts'
 import { RecentlyViewed } from '@/components/product/RecentlyViewed'
 import ReviewList from '@/components/product/ReviewList'
+import { getReviewsByProduct, getReviewStats } from '@/lib/reviews/metaobjects'
 import type { ShopifyProduct, ShopifyCollection } from '@/types/shopify'
 import type { Rarity } from '@/types/common'
+import type { Review } from '@/types/reviews'
 
 // Revalidate every 60 seconds
 export const revalidate = 60
@@ -146,12 +149,16 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     notFound()
   }
 
-  // Fetch related products if we have a collection
-  const relatedProducts = product.collectionHandle
-    ? await getRelatedProducts(product.collectionHandle, product.id)
-    : []
+  // Fetch related products and review data in parallel
+  const [relatedProducts, reviewStats, approvedReviews] = await Promise.all([
+    product.collectionHandle
+      ? getRelatedProducts(product.collectionHandle, product.id)
+      : Promise.resolve([]),
+    getReviewStats(productHandle),
+    getReviewsByProduct(productHandle, 'approved'),
+  ])
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tamashii.store'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mizoke.com'
 
   // Product JSON-LD schema
   const productSchema = {
@@ -162,7 +169,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     image: product.images.length > 0 ? product.images[0]?.url : '',
     brand: {
       '@type': 'Brand',
-      name: 'Tamashii',
+      name: 'Mizoke',
     },
     offers: {
       '@type': 'Offer',
@@ -173,6 +180,33 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         : 'https://schema.org/OutOfStock',
       url: `${siteUrl}/worlds/${universe}/${product.handle}`,
     },
+    ...(reviewStats.reviewCount > 0 && {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: reviewStats.averageRating.toFixed(1),
+        reviewCount: reviewStats.reviewCount,
+        bestRating: 5,
+        worstRating: 1,
+      },
+    }),
+    ...(approvedReviews.length > 0 && {
+      review: approvedReviews.slice(0, 10).map((review: Review) => ({
+        '@type': 'Review',
+        author: {
+          '@type': 'Person',
+          name: review.author,
+        },
+        datePublished: review.createdAt,
+        reviewRating: {
+          '@type': 'Rating',
+          ratingValue: review.rating,
+          bestRating: 5,
+          worstRating: 1,
+        },
+        reviewBody: review.content,
+        ...(review.title && { name: review.title }),
+      })),
+    }),
   }
 
   // BreadcrumbList JSON-LD schema
@@ -238,18 +272,32 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 }
 
 // Generate metadata for SEO
-export async function generateMetadata({ params }: ProductPageProps) {
-  const { product: productHandle } = await params
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+  const { universe, product: productHandle } = await params
   const product = await getProduct(productHandle)
 
   if (!product) {
     return {
-      title: 'Product Not Found',
+      title: 'Product Not Found | Mizoke',
     }
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mizoke.com'
+  const title = `${product.title} | Mizoke`
+  const description = product.description
+    ? product.description.slice(0, 160)
+    : `Shop ${product.title} at Mizoke. Premium anime merchandise.`
+
   return {
-    title: `${product.title} | Tamashii`,
-    description: product.description,
+    title,
+    description,
+    alternates: {
+      canonical: `${siteUrl}/worlds/${universe}/${product.handle}`,
+    },
+    openGraph: {
+      title,
+      description,
+      images: product.images.length > 0 && product.images[0]?.url ? [{ url: product.images[0].url }] : [],
+    },
   }
 }

@@ -1,8 +1,8 @@
-# MASTER PROMPT: Neo-Stage Collective — Complete Technical Specification Request
+﻿# MASTER PROMPT: Mizoke â€” Complete Technical Specification Request
 
 ## PROJECT CONTEXT
 
-I am building **Neo-Stage Collective**, an anime merchandise e-commerce platform with an immersive, gaming-inspired UI. The platform sells apparel, collectibles, accessories, and limited "drops" organized by anime universes (One Piece, Demon Slayer, Dragon Ball, Hunter x Hunter, etc.).
+I am building **Mizoke**, an anime merchandise e-commerce platform with an immersive, gaming-inspired UI. The platform sells apparel, collectibles, accessories, and limited "drops" organized by anime universes (One Piece, Demon Slayer, Dragon Ball, Hunter x Hunter, etc.).
 
 I need you to generate a **complete, production-ready `agents.md`** file and full technical specification that will serve as the single source of truth for AI coding agents and developers building this project.
 
@@ -29,8 +29,8 @@ Language:        TypeScript (strict mode)
 ## DESIGN SYSTEM SPECIFICATION
 
 ### Brand Identity
-- **Name:** Neo-Stage Collective
-- **Tagline:** "Drops, bundles, and collectibles — tap a universe."
+- **Name:** Mizoke
+- **Tagline:** "Drops, bundles, and collectibles â€” tap a universe."
 - **Aesthetic:** Cyberpunk/gaming meets anime culture. Neon glows, dark immersive backgrounds, card-based UI, portal/dimensional gateway motifs.
 
 ### Color Palette (Extract exact values)
@@ -107,15 +107,15 @@ Language:        TypeScript (strict mode)
 
 ---
 
-## UI COMPONENTS — EXACT SPECIFICATIONS
+## UI COMPONENTS â€” EXACT SPECIFICATIONS
 
 ### 1. TOP NAVIGATION BAR (Header)
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  [👤]          NEO-STAGE                    [🔍]  [🛒]     │
-│                COLLECTIVE                                   │
-└─────────────────────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  [ðŸ‘¤]          MIZOKE                    [ðŸ”]  [ðŸ›’]     â”‚
+â”‚                COLLECTIVE                                   â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 **Specifications:**
@@ -126,7 +126,7 @@ Language:        TypeScript (strict mode)
 
 **Left Section:**
 - Profile avatar button
-- Size: 40px × 40px
+- Size: 40px Ã— 40px
 - Border: 2px solid `var(--neon-cyan)`
 - Border-radius: 50%
 - Background: `var(--bg-secondary)`
@@ -134,7 +134,7 @@ Language:        TypeScript (strict mode)
 - Glow on hover: `var(--glow-cyan)`
 
 **Center Section:**
-- Logo text "NEO-STAGE" (primary, larger)
+- Logo text "MIZOKE" (primary, larger)
 - Subtitle "COLLECTIVE" (smaller, letter-spaced)
 - Font: `var(--font-display)`
 - Color: `var(--neon-cyan)` with subtle text-shadow glow
@@ -152,13 +152,13 @@ Language:        TypeScript (strict mode)
 ### 2. BOTTOM NAVIGATION BAR (Mobile Tab Bar)
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                                                             │
-│    🏠          🌐          📦          👤                   │
-│   HOME       WORLDS       DROPS      PROFILE      ✦        │
-│   ────                                                      │
-│  (active)                                                   │
-└─────────────────────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚                                                             â”‚
+â”‚    ðŸ           ðŸŒ          ðŸ“¦          ðŸ‘¤                   â”‚
+â”‚   HOME       WORLDS       DROPS      PROFILE      âœ¦        â”‚
+â”‚   â”€â”€â”€â”€                                                      â”‚
+â”‚  (active)                                                   â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 **Specifications:**
@@ -188,7 +188,7 @@ Language:        TypeScript (strict mode)
 - Label color: `var(--text-muted)`
 
 **Floating Accent Element:**
-- Small decorative star/sparkle icon (✦) positioned near Profile
+- Small decorative star/sparkle icon (âœ¦) positioned near Profile
 - Color: `var(--text-muted)`
 - Size: 16px
 - Subtle floating animation
@@ -209,23 +209,23 @@ Language:        TypeScript (strict mode)
 **Individual Card Specs:**
 
 ```
-┌──────────────────────────────┐
-│ ┌──────────────────────────┐ │
-│ │                          │ │  ← Themed background
-│ │      [PORTAL EFFECT]     │ │     (unique per universe)
-│ │                          │ │
-│ │      ╔═══════════╗       │ │
-│ │      ║  ONE      ║       │ │  ← Title (display font)
-│ │      ║  PIECE    ║       │ │
-│ │      ╚═══════════╝       │ │
-│ │                          │ │
-│ │      (12 items)          │ │  ← Item count badge
-│ │                          │ │
-│ │      [ ENTER ]           │ │  ← CTA button
-│ │                          │ │
-│ └──────────────────────────┘ │
-│         GLOW BORDER          │  ← Animated border glow
-└──────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”‚
+â”‚ â”‚                          â”‚ â”‚  â† Themed background
+â”‚ â”‚      [PORTAL EFFECT]     â”‚ â”‚     (unique per universe)
+â”‚ â”‚                          â”‚ â”‚
+â”‚ â”‚      â•”â•â•â•â•â•â•â•â•â•â•â•â•—       â”‚ â”‚
+â”‚ â”‚      â•‘  ONE      â•‘       â”‚ â”‚  â† Title (display font)
+â”‚ â”‚      â•‘  PIECE    â•‘       â”‚ â”‚
+â”‚ â”‚      â•šâ•â•â•â•â•â•â•â•â•â•â•â•       â”‚ â”‚
+â”‚ â”‚                          â”‚ â”‚
+â”‚ â”‚      (12 items)          â”‚ â”‚  â† Item count badge
+â”‚ â”‚                          â”‚ â”‚
+â”‚ â”‚      [ ENTER ]           â”‚ â”‚  â† CTA button
+â”‚ â”‚                          â”‚ â”‚
+â”‚ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â”‚
+â”‚         GLOW BORDER          â”‚  â† Animated border glow
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 **Card Container:**
@@ -282,14 +282,14 @@ Language:        TypeScript (strict mode)
 
 ```
 DROP RUNWAY                                        < >
-┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐
-│ [IMAGE] │ │ [IMAGE] │ │ [IMAGE] │ │ [IMAGE] │ ...
-│         │ │         │ │         │ │         │
-│ Name    │ │ Name    │ │ Name    │ │ Name    │
-│ $XX.XX  │ │ $XX.XX  │ │ $XX.XX  │ │ $XX.XX  │
-│  +ADD   │ │         │ │         │ │         │
-└─────────┘ └─────────┘ └─────────┘ └─────────┘
-═══════════
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ [IMAGE] â”‚ â”‚ [IMAGE] â”‚ â”‚ [IMAGE] â”‚ â”‚ [IMAGE] â”‚ ...
+â”‚         â”‚ â”‚         â”‚ â”‚         â”‚ â”‚         â”‚
+â”‚ Name    â”‚ â”‚ Name    â”‚ â”‚ Name    â”‚ â”‚ Name    â”‚
+â”‚ $XX.XX  â”‚ â”‚ $XX.XX  â”‚ â”‚ $XX.XX  â”‚ â”‚ $XX.XX  â”‚
+â”‚  +ADD   â”‚ â”‚         â”‚ â”‚         â”‚ â”‚         â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+â•â•â•â•â•â•â•â•â•â•â•
 (progress indicator)
 ```
 
@@ -383,21 +383,21 @@ DROP RUNWAY                                        < >
 ## PAGE STRUCTURE & ROUTES
 
 ```
-/                           → Home (Universe selection + Drop Runway)
-/worlds                     → All universes grid view
-/worlds/[universe-slug]     → Universe landing page (e.g., /worlds/one-piece)
-/worlds/[universe]/[product]→ Product detail page
-/drops                      → Limited drops / new releases
-/drops/[drop-slug]          → Individual drop detail
-/collections/[handle]       → Shopify collection page
-/products/[handle]          → Product detail (alternate route)
-/cart                       → Full cart page (fallback for drawer)
-/checkout                   → Shopify checkout (redirect)
-/profile                    → User profile (requires auth)
-/profile/orders             → Order history
-/profile/wishlist           → Saved items
-/search                     → Search results page
-/search?q=[query]           → Search with query
+/                           â†’ Home (Universe selection + Drop Runway)
+/worlds                     â†’ All universes grid view
+/worlds/[universe-slug]     â†’ Universe landing page (e.g., /worlds/one-piece)
+/worlds/[universe]/[product]â†’ Product detail page
+/drops                      â†’ Limited drops / new releases
+/drops/[drop-slug]          â†’ Individual drop detail
+/collections/[handle]       â†’ Shopify collection page
+/products/[handle]          â†’ Product detail (alternate route)
+/cart                       â†’ Full cart page (fallback for drawer)
+/checkout                   â†’ Shopify checkout (redirect)
+/profile                    â†’ User profile (requires auth)
+/profile/orders             â†’ Order history
+/profile/wishlist           â†’ Saved items
+/search                     â†’ Search results page
+/search?q=[query]           â†’ Search with query
 ```
 
 ---
@@ -481,7 +481,7 @@ namespace: neo_stage
 
 - Skeleton screens with shimmer effect (gradient animation)
 - Universe cards: Pulsing glow while loading
-- Images: Blur-up technique (tiny placeholder → full image)
+- Images: Blur-up technique (tiny placeholder â†’ full image)
 
 ### Special Effects
 
@@ -511,107 +511,107 @@ namespace: neo_stage
 
 ```
 src/
-├── app/
-│   ├── layout.tsx                 # Root layout with providers
-│   ├── page.tsx                   # Home page
-│   ├── worlds/
-│   │   ├── page.tsx               # Worlds listing
-│   │   └── [universe]/
-│   │       ├── page.tsx           # Universe products
-│   │       └── [product]/
-│   │           └── page.tsx       # Product detail
-│   ├── drops/
-│   │   ├── page.tsx               # Drops listing
-│   │   └── [slug]/
-│   │       └── page.tsx           # Drop detail
-│   ├── cart/
-│   │   └── page.tsx               # Cart page
-│   ├── profile/
-│   │   ├── page.tsx               # Profile
-│   │   └── orders/
-│   │       └── page.tsx           # Order history
-│   └── search/
-│       └── page.tsx               # Search results
-│
-├── components/
-│   ├── layout/
-│   │   ├── Header.tsx             # Top navigation
-│   │   ├── BottomNav.tsx          # Mobile bottom navigation
-│   │   ├── CartDrawer.tsx         # Slide-out cart
-│   │   └── MobileMenu.tsx         # Mobile menu (if needed)
-│   │
-│   ├── home/
-│   │   ├── HeroSection.tsx        # "Choose Your World" header
-│   │   ├── UniverseGrid.tsx       # Grid of universe cards
-│   │   ├── UniverseCard.tsx       # Individual universe card
-│   │   └── DropRunway.tsx         # Horizontal product carousel
-│   │
-│   ├── product/
-│   │   ├── ProductCard.tsx        # Standard product card
-│   │   ├── ProductQuickAdd.tsx    # Quick add button
-│   │   ├── ProductGallery.tsx     # Image gallery
-│   │   ├── ProductInfo.tsx        # Title, price, variants
-│   │   ├── VariantSelector.tsx    # Size/color pills
-│   │   ├── QuantitySelector.tsx   # +/- buttons
-│   │   └── AddToCartButton.tsx    # Add to cart CTA
-│   │
-│   ├── cart/
-│   │   ├── CartItem.tsx           # Individual cart line
-│   │   ├── CartSummary.tsx        # Subtotal, checkout button
-│   │   └── CartEmpty.tsx          # Empty cart state
-│   │
-│   ├── ui/
-│   │   ├── Button.tsx             # Base button with variants
-│   │   ├── Badge.tsx              # Count badges, labels
-│   │   ├── Icon.tsx               # Icon wrapper
-│   │   ├── Skeleton.tsx           # Loading skeleton
-│   │   ├── Input.tsx              # Form inputs
-│   │   └── Modal.tsx              # Base modal
-│   │
-│   ├── effects/
-│   │   ├── PortalEffect.tsx       # Three.js portal animation
-│   │   ├── LightningEffect.tsx    # SVG lightning
-│   │   ├── EmberParticles.tsx     # Floating particles
-│   │   ├── NenPattern.tsx         # Geometric pattern
-│   │   └── GlowBorder.tsx         # Animated glow border
-│   │
-│   └── search/
-│       ├── SearchBar.tsx          # Search input
-│       ├── SearchResults.tsx      # Results grid
-│       └── SearchFilters.tsx      # Filter sidebar
-│
-├── lib/
-│   ├── shopify/
-│   │   ├── client.ts              # Storefront API client
-│   │   ├── queries.ts             # GraphQL queries
-│   │   ├── mutations.ts           # GraphQL mutations
-│   │   ├── types.ts               # TypeScript types
-│   │   └── utils.ts               # Helper functions
-│   │
-│   ├── hooks/
-│   │   ├── useCart.ts             # Cart state and operations
-│   │   ├── useProduct.ts          # Product data fetching
-│   │   ├── useUniverse.ts         # Universe theming
-│   │   └── useMediaQuery.ts       # Responsive hooks
-│   │
-│   └── utils/
-│       ├── cn.ts                  # Class name utility
-│       ├── formatPrice.ts         # Currency formatting
-│       └── constants.ts           # App constants
-│
-├── stores/
-│   ├── cartStore.ts               # Zustand cart store
-│   └── uiStore.ts                 # UI state (drawers, modals)
-│
-├── styles/
-│   ├── globals.css                # Global styles, CSS variables
-│   ├── fonts.css                  # Font imports
-│   └── animations.css             # Keyframe animations
-│
-└── types/
-    ├── shopify.ts                 # Shopify types
-    ├── universe.ts                # Universe types
-    └── common.ts                  # Common types
+â”œâ”€â”€ app/
+â”‚   â”œâ”€â”€ layout.tsx                 # Root layout with providers
+â”‚   â”œâ”€â”€ page.tsx                   # Home page
+â”‚   â”œâ”€â”€ worlds/
+â”‚   â”‚   â”œâ”€â”€ page.tsx               # Worlds listing
+â”‚   â”‚   â””â”€â”€ [universe]/
+â”‚   â”‚       â”œâ”€â”€ page.tsx           # Universe products
+â”‚   â”‚       â””â”€â”€ [product]/
+â”‚   â”‚           â””â”€â”€ page.tsx       # Product detail
+â”‚   â”œâ”€â”€ drops/
+â”‚   â”‚   â”œâ”€â”€ page.tsx               # Drops listing
+â”‚   â”‚   â””â”€â”€ [slug]/
+â”‚   â”‚       â””â”€â”€ page.tsx           # Drop detail
+â”‚   â”œâ”€â”€ cart/
+â”‚   â”‚   â””â”€â”€ page.tsx               # Cart page
+â”‚   â”œâ”€â”€ profile/
+â”‚   â”‚   â”œâ”€â”€ page.tsx               # Profile
+â”‚   â”‚   â””â”€â”€ orders/
+â”‚   â”‚       â””â”€â”€ page.tsx           # Order history
+â”‚   â””â”€â”€ search/
+â”‚       â””â”€â”€ page.tsx               # Search results
+â”‚
+â”œâ”€â”€ components/
+â”‚   â”œâ”€â”€ layout/
+â”‚   â”‚   â”œâ”€â”€ Header.tsx             # Top navigation
+â”‚   â”‚   â”œâ”€â”€ BottomNav.tsx          # Mobile bottom navigation
+â”‚   â”‚   â”œâ”€â”€ CartDrawer.tsx         # Slide-out cart
+â”‚   â”‚   â””â”€â”€ MobileMenu.tsx         # Mobile menu (if needed)
+â”‚   â”‚
+â”‚   â”œâ”€â”€ home/
+â”‚   â”‚   â”œâ”€â”€ HeroSection.tsx        # "Choose Your World" header
+â”‚   â”‚   â”œâ”€â”€ UniverseGrid.tsx       # Grid of universe cards
+â”‚   â”‚   â”œâ”€â”€ UniverseCard.tsx       # Individual universe card
+â”‚   â”‚   â””â”€â”€ DropRunway.tsx         # Horizontal product carousel
+â”‚   â”‚
+â”‚   â”œâ”€â”€ product/
+â”‚   â”‚   â”œâ”€â”€ ProductCard.tsx        # Standard product card
+â”‚   â”‚   â”œâ”€â”€ ProductQuickAdd.tsx    # Quick add button
+â”‚   â”‚   â”œâ”€â”€ ProductGallery.tsx     # Image gallery
+â”‚   â”‚   â”œâ”€â”€ ProductInfo.tsx        # Title, price, variants
+â”‚   â”‚   â”œâ”€â”€ VariantSelector.tsx    # Size/color pills
+â”‚   â”‚   â”œâ”€â”€ QuantitySelector.tsx   # +/- buttons
+â”‚   â”‚   â””â”€â”€ AddToCartButton.tsx    # Add to cart CTA
+â”‚   â”‚
+â”‚   â”œâ”€â”€ cart/
+â”‚   â”‚   â”œâ”€â”€ CartItem.tsx           # Individual cart line
+â”‚   â”‚   â”œâ”€â”€ CartSummary.tsx        # Subtotal, checkout button
+â”‚   â”‚   â””â”€â”€ CartEmpty.tsx          # Empty cart state
+â”‚   â”‚
+â”‚   â”œâ”€â”€ ui/
+â”‚   â”‚   â”œâ”€â”€ Button.tsx             # Base button with variants
+â”‚   â”‚   â”œâ”€â”€ Badge.tsx              # Count badges, labels
+â”‚   â”‚   â”œâ”€â”€ Icon.tsx               # Icon wrapper
+â”‚   â”‚   â”œâ”€â”€ Skeleton.tsx           # Loading skeleton
+â”‚   â”‚   â”œâ”€â”€ Input.tsx              # Form inputs
+â”‚   â”‚   â””â”€â”€ Modal.tsx              # Base modal
+â”‚   â”‚
+â”‚   â”œâ”€â”€ effects/
+â”‚   â”‚   â”œâ”€â”€ PortalEffect.tsx       # Three.js portal animation
+â”‚   â”‚   â”œâ”€â”€ LightningEffect.tsx    # SVG lightning
+â”‚   â”‚   â”œâ”€â”€ EmberParticles.tsx     # Floating particles
+â”‚   â”‚   â”œâ”€â”€ NenPattern.tsx         # Geometric pattern
+â”‚   â”‚   â””â”€â”€ GlowBorder.tsx         # Animated glow border
+â”‚   â”‚
+â”‚   â””â”€â”€ search/
+â”‚       â”œâ”€â”€ SearchBar.tsx          # Search input
+â”‚       â”œâ”€â”€ SearchResults.tsx      # Results grid
+â”‚       â””â”€â”€ SearchFilters.tsx      # Filter sidebar
+â”‚
+â”œâ”€â”€ lib/
+â”‚   â”œâ”€â”€ shopify/
+â”‚   â”‚   â”œâ”€â”€ client.ts              # Storefront API client
+â”‚   â”‚   â”œâ”€â”€ queries.ts             # GraphQL queries
+â”‚   â”‚   â”œâ”€â”€ mutations.ts           # GraphQL mutations
+â”‚   â”‚   â”œâ”€â”€ types.ts               # TypeScript types
+â”‚   â”‚   â””â”€â”€ utils.ts               # Helper functions
+â”‚   â”‚
+â”‚   â”œâ”€â”€ hooks/
+â”‚   â”‚   â”œâ”€â”€ useCart.ts             # Cart state and operations
+â”‚   â”‚   â”œâ”€â”€ useProduct.ts          # Product data fetching
+â”‚   â”‚   â”œâ”€â”€ useUniverse.ts         # Universe theming
+â”‚   â”‚   â””â”€â”€ useMediaQuery.ts       # Responsive hooks
+â”‚   â”‚
+â”‚   â””â”€â”€ utils/
+â”‚       â”œâ”€â”€ cn.ts                  # Class name utility
+â”‚       â”œâ”€â”€ formatPrice.ts         # Currency formatting
+â”‚       â””â”€â”€ constants.ts           # App constants
+â”‚
+â”œâ”€â”€ stores/
+â”‚   â”œâ”€â”€ cartStore.ts               # Zustand cart store
+â”‚   â””â”€â”€ uiStore.ts                 # UI state (drawers, modals)
+â”‚
+â”œâ”€â”€ styles/
+â”‚   â”œâ”€â”€ globals.css                # Global styles, CSS variables
+â”‚   â”œâ”€â”€ fonts.css                  # Font imports
+â”‚   â””â”€â”€ animations.css             # Keyframe animations
+â”‚
+â””â”€â”€ types/
+    â”œâ”€â”€ shopify.ts                 # Shopify types
+    â”œâ”€â”€ universe.ts                # Universe types
+    â””â”€â”€ common.ts                  # Common types
 ```
 
 ---
@@ -627,8 +627,8 @@ NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN=xxxxx
 SHOPIFY_ADMIN_ACCESS_TOKEN=xxxxx
 
 # App
-NEXT_PUBLIC_SITE_URL=https://neo-stage.com
-NEXT_PUBLIC_SITE_NAME="Neo-Stage Collective"
+NEXT_PUBLIC_SITE_URL=https://mizoke.store
+NEXT_PUBLIC_SITE_NAME="Mizoke"
 
 # Analytics (optional)
 NEXT_PUBLIC_GA_ID=G-XXXXX
@@ -679,7 +679,7 @@ NEXT_PUBLIC_GA_ID=G-XXXXX
 
 Please generate the following in your response:
 
-1. **Complete `agents.md` file** — A comprehensive instruction file for AI coding agents that includes:
+1. **Complete `agents.md` file** â€” A comprehensive instruction file for AI coding agents that includes:
    - Project overview and goals
    - Complete tech stack with versions
    - File-by-file implementation instructions
@@ -691,15 +691,15 @@ Please generate the following in your response:
    - Testing requirements
    - Deployment checklist
 
-2. **Initial file scaffolding** — The exact files to create first and their contents
+2. **Initial file scaffolding** â€” The exact files to create first and their contents
 
-3. **Shopify setup instructions** — Step-by-step guide for:
+3. **Shopify setup instructions** â€” Step-by-step guide for:
    - Storefront API setup
    - Required metafields creation
    - Collection structure
    - Product organization
 
-4. **Implementation phases** — Ordered development roadmap:
+4. **Implementation phases** â€” Ordered development roadmap:
    - Phase 1: Core setup, layout, navigation
    - Phase 2: Home page, universe cards
    - Phase 3: Product pages, cart
@@ -733,3 +733,4 @@ The implementation must match this design as closely as possible.
 ---
 
 **Generate the complete `agents.md` now, structured for maximum clarity and usability by AI coding agents and human developers alike.**
+

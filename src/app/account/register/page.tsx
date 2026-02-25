@@ -5,7 +5,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Create Account',
-  description: 'Create a Tamashii account to track orders and save your wishlist.',
+  description: 'Create a Mizoke account to track orders and save your wishlist.',
 }
 
 export default function RegisterPage() {

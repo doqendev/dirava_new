@@ -19,9 +19,21 @@ import {
   type DraftOrderCompleteResponse,
 } from '@/lib/gacha/queries'
 import type { ClaimApiResponse, ShippingAddress } from '@/types/gacha'
+import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimit'
+import { validateShippingAddress } from '@/lib/utils/validation'
 
 export async function POST(request: Request) {
   try {
+    // Rate limit: 5 requests per minute per IP
+    const ip = getClientIp(request)
+    const rl = checkRateLimit(`claim:${ip}`, { maxRequests: 5, windowSeconds: 60 })
+    if (rl.limited) {
+      return NextResponse.json<ClaimApiResponse>(
+        { success: false, error: 'Too many requests. Please try again later.' },
+        { status: 429 }
+      )
+    }
+
     const body = await request.json()
     const { code: rawCode, shippingAddress, variantId: requestedVariantId } = body as {
       code: string
@@ -37,9 +49,11 @@ export async function POST(request: Request) {
       )
     }
 
-    if (!shippingAddress || !shippingAddress.firstName || !shippingAddress.address1) {
+    // Validate and sanitize shipping address
+    const addressResult = validateShippingAddress(shippingAddress)
+    if (!addressResult.valid) {
       return NextResponse.json<ClaimApiResponse>(
-        { success: false, error: 'Valid shipping address is required' },
+        { success: false, error: addressResult.error! },
         { status: 400 }
       )
     }
@@ -89,6 +103,8 @@ export async function POST(request: Request) {
       )
     }
 
+    const sanitizedAddress = addressResult.sanitized!
+
     // Create draft order for fulfillment
     const draftOrderInput = {
       lineItems: [
@@ -98,15 +114,15 @@ export async function POST(request: Request) {
         },
       ],
       shippingAddress: {
-        firstName: shippingAddress.firstName,
-        lastName: shippingAddress.lastName,
-        address1: shippingAddress.address1,
-        address2: shippingAddress.address2 || null,
-        city: shippingAddress.city,
-        province: shippingAddress.province || null,
-        country: shippingAddress.country,
-        zip: shippingAddress.zip,
-        phone: shippingAddress.phone || null,
+        firstName: sanitizedAddress.firstName,
+        lastName: sanitizedAddress.lastName,
+        address1: sanitizedAddress.address1,
+        address2: sanitizedAddress.address2,
+        city: sanitizedAddress.city,
+        province: sanitizedAddress.province,
+        country: sanitizedAddress.country,
+        zip: sanitizedAddress.zip,
+        phone: sanitizedAddress.phone,
       },
       note: `Mystery Box Claim - Code: ${code} | Original Order: ${redemptionCode.purchaseOrderName || redemptionCode.purchaseOrderId}`,
       tags: ['mystery-box-claim', `code:${code}`],
@@ -154,9 +170,22 @@ export async function POST(request: Request) {
     const fulfillmentOrderId = completeResponse.draftOrderComplete.draftOrder?.order?.id || draftOrder.id
 
     // Mark code as claimed (pass variant if user selected a different size)
+    const claimAddress: ShippingAddress = {
+      firstName: sanitizedAddress.firstName,
+      lastName: sanitizedAddress.lastName,
+      address1: sanitizedAddress.address1,
+      address2: sanitizedAddress.address2 ?? undefined,
+      city: sanitizedAddress.city,
+      province: sanitizedAddress.province ?? undefined,
+      provinceCode: sanitizedAddress.provinceCode ?? undefined,
+      country: sanitizedAddress.country,
+      countryCode: sanitizedAddress.countryCode,
+      zip: sanitizedAddress.zip,
+      phone: sanitizedAddress.phone ?? undefined,
+    }
     const updatedCode = await markCodeClaimed(
       redemptionCode.id,
-      shippingAddress,
+      claimAddress,
       fulfillmentOrderId,
       requestedVariantId // Pass the user-selected variant if provided
     )
@@ -167,10 +196,10 @@ export async function POST(request: Request) {
       // This is not critical, but should be logged
     }
 
-    return NextResponse.json<ClaimApiResponse>({
-      success: true,
-      fulfillmentOrderId,
-    })
+    return NextResponse.json<ClaimApiResponse>(
+      { success: true, fulfillmentOrderId },
+      { headers: { 'Cache-Control': 'no-store' } }
+    )
   } catch (error) {
     console.error('Claim error:', error)
     return NextResponse.json<ClaimApiResponse>(

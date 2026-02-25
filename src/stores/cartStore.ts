@@ -3,7 +3,22 @@ import { persist } from 'zustand/middleware'
 import { shopifyClient } from '@/lib/shopify/client'
 import { CREATE_CART, ADD_TO_CART, UPDATE_CART_LINE, REMOVE_FROM_CART, CART_DISCOUNT_CODES_UPDATE } from '@/lib/shopify/mutations'
 import { GET_CART } from '@/lib/shopify/queries'
+import { useToastStore } from '@/stores/toastStore'
 import type { ShopifyCartLine, ShopifyMoney, ShopifyDiscountCode } from '@/types/shopify'
+
+// Debounce tracking for rapid quantity changes
+const debounceTimers = new Map<string, ReturnType<typeof setTimeout>>()
+const pendingSnapshots = new Map<string, ShopifyCartLine[]>()
+
+interface ShopifyCartResponse {
+  id: string
+  checkoutUrl: string
+  totalQuantity: number
+  cost: { subtotalAmount: ShopifyMoney; totalAmount: ShopifyMoney }
+  discountCodes: ShopifyDiscountCode[]
+  discountAllocations: Array<{ discountedAmount: ShopifyMoney }>
+  lines: { edges: Array<{ node: ShopifyCartLine }> }
+}
 
 interface CartState {
   cartId: string | null
@@ -15,6 +30,7 @@ interface CartState {
   discountAmount: ShopifyMoney | null
   total: ShopifyMoney | null
   isLoading: boolean
+  loadingItems: Set<string>
   isApplyingDiscount: boolean
   error: string | null
 
@@ -24,9 +40,35 @@ interface CartState {
   updateItem: (lineId: string, quantity: number) => Promise<void>
   removeItem: (lineId: string) => Promise<void>
   applyDiscount: (code: string) => Promise<{ success: boolean; error?: string }>
+  addBundle: (items: Array<{ variantId: string; quantity?: number }>, discountCode: string, bundleId: string) => Promise<{ success: boolean; error?: string }>
   removeDiscount: () => Promise<void>
   clearCart: () => void
   setError: (error: string | null) => void
+}
+
+function applyCartResponse(
+  set: (state: Partial<CartState>) => void,
+  cart: ShopifyCartResponse,
+  extraState?: Partial<CartState>
+) {
+  const discountTotal = cart.discountAllocations?.reduce(
+    (sum: number, a: { discountedAmount: ShopifyMoney }) => sum + parseFloat(a.discountedAmount.amount),
+    0
+  ) || 0
+
+  set({
+    lines: cart.lines.edges.map((edge) => edge.node),
+    totalQuantity: cart.totalQuantity,
+    subtotal: cart.cost.subtotalAmount,
+    discountCodes: cart.discountCodes || [],
+    discountAmount: discountTotal > 0
+      ? { amount: discountTotal.toString(), currencyCode: cart.cost.subtotalAmount.currencyCode }
+      : null,
+    total: cart.cost.totalAmount || null,
+    checkoutUrl: cart.checkoutUrl,
+    isLoading: false,
+    ...extraState,
+  })
 }
 
 export const useCartStore = create<CartState>()(
@@ -41,6 +83,7 @@ export const useCartStore = create<CartState>()(
       discountAmount: null,
       total: null,
       isLoading: false,
+      loadingItems: new Set<string>(),
       isApplyingDiscount: false,
       error: null,
 
@@ -52,33 +95,11 @@ export const useCartStore = create<CartState>()(
           try {
             set({ isLoading: true, error: null })
             const response = await shopifyClient.request<{
-              cart: {
-                id: string
-                checkoutUrl: string
-                totalQuantity: number
-                cost: { subtotalAmount: ShopifyMoney; totalAmount: ShopifyMoney }
-                discountCodes: ShopifyDiscountCode[]
-                discountAllocations: Array<{ discountedAmount: ShopifyMoney }>
-                lines: { edges: Array<{ node: ShopifyCartLine }> }
-              } | null
+              cart: ShopifyCartResponse | null
             }>(GET_CART, { cartId })
 
             if (response.cart) {
-              const discountTotal = response.cart.discountAllocations?.reduce(
-                (sum: number, a: { discountedAmount: ShopifyMoney }) => sum + parseFloat(a.discountedAmount.amount),
-                0
-              ) || 0
-
-              set({
-                lines: response.cart.lines.edges.map((edge) => edge.node),
-                totalQuantity: response.cart.totalQuantity,
-                subtotal: response.cart.cost.subtotalAmount,
-                discountCodes: response.cart.discountCodes || [],
-                discountAmount: discountTotal > 0 ? { amount: discountTotal.toString(), currencyCode: response.cart.cost.subtotalAmount.currencyCode } : null,
-                total: response.cart.cost.totalAmount || null,
-                checkoutUrl: response.cart.checkoutUrl,
-                isLoading: false,
-              })
+              applyCartResponse(set, response.cart)
             } else {
               // Cart expired, create new one
               get().clearCart()
@@ -122,44 +143,75 @@ export const useCartStore = create<CartState>()(
 
           // Add item to cart
           const response = await shopifyClient.request<{
-            cartLinesAdd: {
-              cart: {
-                id: string
-                totalQuantity: number
-                cost: { subtotalAmount: ShopifyMoney; totalAmount: ShopifyMoney }
-                discountCodes: ShopifyDiscountCode[]
-                discountAllocations: Array<{ discountedAmount: ShopifyMoney }>
-                checkoutUrl: string
-                lines: { edges: Array<{ node: ShopifyCartLine }> }
-              }
-            }
+            cartLinesAdd: { cart: ShopifyCartResponse }
           }>(ADD_TO_CART, {
             cartId: currentCartId,
             lines: [lineItem],
           })
 
           const cart = response.cartLinesAdd.cart
-          const discountTotal = cart.discountAllocations?.reduce(
-            (sum: number, a: { discountedAmount: ShopifyMoney }) => sum + parseFloat(a.discountedAmount.amount),
-            0
-          ) || 0
-
-          set({
-            lines: cart.lines.edges.map((edge) => edge.node),
-            totalQuantity: cart.totalQuantity,
-            subtotal: cart.cost.subtotalAmount,
-            discountCodes: cart.discountCodes || [],
-            discountAmount: discountTotal > 0 ? { amount: discountTotal.toString(), currencyCode: cart.cost.subtotalAmount.currencyCode } : null,
-            total: cart.cost.totalAmount || null,
-            checkoutUrl: cart.checkoutUrl,
-            isLoading: false,
-          })
+          applyCartResponse(set, cart)
+          useToastStore.getState().add({ type: 'success', message: 'Item added to cart' })
         } catch (error) {
           console.error('Failed to add item:', error)
           set({
             error: 'Failed to add item to cart',
             isLoading: false,
           })
+          useToastStore.getState().add({ type: 'error', message: 'Failed to add item to cart' })
+        }
+      },
+
+      addBundle: async (items, discountCode, bundleId) => {
+        const { cartId } = get()
+        set({ isLoading: true, error: null })
+
+        try {
+          let currentCartId = cartId
+
+          // Create cart if doesn't exist
+          if (!currentCartId) {
+            const createResponse = await shopifyClient.request<{
+              cartCreate: { cart: { id: string; checkoutUrl: string } }
+            }>(CREATE_CART)
+
+            currentCartId = createResponse.cartCreate.cart.id
+            set({
+              cartId: currentCartId,
+              checkoutUrl: createResponse.cartCreate.cart.checkoutUrl,
+            })
+          }
+
+          // Build line items with bundle attribute
+          const lines = items.map((item) => ({
+            merchandiseId: item.variantId,
+            quantity: item.quantity || 1,
+            attributes: [{ key: '_bundle', value: bundleId }],
+          }))
+
+          // Add all items to cart
+          const response = await shopifyClient.request<{
+            cartLinesAdd: { cart: ShopifyCartResponse }
+          }>(ADD_TO_CART, {
+            cartId: currentCartId,
+            lines,
+          })
+
+          const cart = response.cartLinesAdd.cart
+          applyCartResponse(set, cart)
+
+          // Auto-apply discount code
+          const discountResult = await get().applyDiscount(discountCode)
+          return discountResult
+
+        } catch (error) {
+          console.error('Failed to add bundle:', error)
+          set({
+            error: 'Failed to add bundle to cart',
+            isLoading: false,
+          })
+          useToastStore.getState().add({ type: 'error', message: 'Failed to add bundle to cart' })
+          return { success: false, error: 'Failed to add bundle to cart' }
         }
       },
 
@@ -167,99 +219,100 @@ export const useCartStore = create<CartState>()(
         const { cartId } = get()
         if (!cartId) return
 
-        set({ isLoading: true, error: null })
-
-        try {
-          if (quantity === 0) {
-            // Remove item if quantity is 0
-            await get().removeItem(lineId)
-            return
-          }
-
-          const response = await shopifyClient.request<{
-            cartLinesUpdate: {
-              cart: {
-                id: string
-                totalQuantity: number
-                cost: { subtotalAmount: ShopifyMoney; totalAmount: ShopifyMoney }
-                discountCodes: ShopifyDiscountCode[]
-                discountAllocations: Array<{ discountedAmount: ShopifyMoney }>
-                lines: { edges: Array<{ node: ShopifyCartLine }> }
-              }
-            }
-          }>(UPDATE_CART_LINE, {
-            cartId,
-            lines: [{ id: lineId, quantity }],
-          })
-
-          const cart = response.cartLinesUpdate.cart
-          const discountTotal = cart.discountAllocations?.reduce(
-            (sum: number, a: { discountedAmount: ShopifyMoney }) => sum + parseFloat(a.discountedAmount.amount),
-            0
-          ) || 0
-
-          set({
-            lines: cart.lines.edges.map((edge) => edge.node),
-            totalQuantity: cart.totalQuantity,
-            subtotal: cart.cost.subtotalAmount,
-            discountCodes: cart.discountCodes || [],
-            discountAmount: discountTotal > 0 ? { amount: discountTotal.toString(), currencyCode: cart.cost.subtotalAmount.currencyCode } : null,
-            total: cart.cost.totalAmount || null,
-            isLoading: false,
-          })
-        } catch (error) {
-          console.error('Failed to update item:', error)
-          set({
-            error: 'Failed to update item',
-            isLoading: false,
-          })
+        if (quantity === 0) {
+          await get().removeItem(lineId)
+          return
         }
+
+        // Capture original snapshot for rollback (only on first rapid change)
+        if (!pendingSnapshots.has(lineId)) {
+          pendingSnapshots.set(lineId, [...get().lines])
+        }
+
+        // Optimistic update — immediately reflect new quantity
+        const newLines = get().lines.map((l) => l.id === lineId ? { ...l, quantity } : l)
+        const newTotal = newLines.reduce((sum, l) => sum + l.quantity, 0)
+        set({
+          lines: newLines,
+          totalQuantity: newTotal,
+          loadingItems: new Set([...Array.from(get().loadingItems), lineId]),
+          error: null,
+        })
+
+        // Debounce API call (300ms)
+        const existing = debounceTimers.get(lineId)
+        if (existing) clearTimeout(existing)
+
+        debounceTimers.set(lineId, setTimeout(async () => {
+          debounceTimers.delete(lineId)
+          try {
+            const response = await shopifyClient.request<{
+              cartLinesUpdate: { cart: ShopifyCartResponse }
+            }>(UPDATE_CART_LINE, {
+              cartId,
+              lines: [{ id: lineId, quantity: get().lines.find((l) => l.id === lineId)?.quantity ?? quantity }],
+            })
+
+            const cart = response.cartLinesUpdate.cart
+            pendingSnapshots.delete(lineId)
+            const nextLoading = new Set(get().loadingItems)
+            nextLoading.delete(lineId)
+            applyCartResponse(set, cart, { loadingItems: nextLoading })
+          } catch (error) {
+            console.error('Failed to update item:', error)
+            const snapshot = pendingSnapshots.get(lineId)
+            const nextLoading = new Set(get().loadingItems)
+            nextLoading.delete(lineId)
+            if (snapshot) {
+              const snapshotTotal = snapshot.reduce((sum, l) => sum + l.quantity, 0)
+              set({ lines: snapshot, totalQuantity: snapshotTotal, loadingItems: nextLoading })
+              pendingSnapshots.delete(lineId)
+            } else {
+              set({ loadingItems: nextLoading })
+            }
+            useToastStore.getState().add({ type: 'error', message: 'Failed to update item' })
+          }
+        }, 300))
       },
 
       removeItem: async (lineId) => {
         const { cartId } = get()
         if (!cartId) return
 
-        set({ isLoading: true, error: null })
+        // Cancel any pending debounce for this item
+        const timer = debounceTimers.get(lineId)
+        if (timer) {
+          clearTimeout(timer)
+          debounceTimers.delete(lineId)
+          pendingSnapshots.delete(lineId)
+        }
+
+        // Optimistic remove
+        const previousLines = [...get().lines]
+        const previousTotal = get().totalQuantity
+        const newLines = get().lines.filter((l) => l.id !== lineId)
+        const newTotal = newLines.reduce((sum, l) => sum + l.quantity, 0)
+        const nextLoading = new Set([...Array.from(get().loadingItems), lineId])
+        set({ lines: newLines, totalQuantity: newTotal, loadingItems: nextLoading, error: null })
 
         try {
           const response = await shopifyClient.request<{
-            cartLinesRemove: {
-              cart: {
-                id: string
-                totalQuantity: number
-                cost: { subtotalAmount: ShopifyMoney; totalAmount: ShopifyMoney }
-                discountCodes: ShopifyDiscountCode[]
-                discountAllocations: Array<{ discountedAmount: ShopifyMoney }>
-                lines: { edges: Array<{ node: ShopifyCartLine }> }
-              }
-            }
+            cartLinesRemove: { cart: ShopifyCartResponse }
           }>(REMOVE_FROM_CART, {
             cartId,
             lineIds: [lineId],
           })
 
           const cart = response.cartLinesRemove.cart
-          const discountTotal = cart.discountAllocations?.reduce(
-            (sum: number, a: { discountedAmount: ShopifyMoney }) => sum + parseFloat(a.discountedAmount.amount),
-            0
-          ) || 0
-
-          set({
-            lines: cart.lines.edges.map((edge) => edge.node),
-            totalQuantity: cart.totalQuantity,
-            subtotal: cart.cost.subtotalAmount,
-            discountCodes: cart.discountCodes || [],
-            discountAmount: discountTotal > 0 ? { amount: discountTotal.toString(), currencyCode: cart.cost.subtotalAmount.currencyCode } : null,
-            total: cart.cost.totalAmount || null,
-            isLoading: false,
-          })
+          const doneLoading = new Set(get().loadingItems)
+          doneLoading.delete(lineId)
+          applyCartResponse(set, cart, { loadingItems: doneLoading })
         } catch (error) {
           console.error('Failed to remove item:', error)
-          set({
-            error: 'Failed to remove item',
-            isLoading: false,
-          })
+          const doneLoading = new Set(get().loadingItems)
+          doneLoading.delete(lineId)
+          set({ lines: previousLines, totalQuantity: previousTotal, loadingItems: doneLoading })
+          useToastStore.getState().add({ type: 'error', message: 'Failed to remove item' })
         }
       },
 
@@ -274,15 +327,7 @@ export const useCartStore = create<CartState>()(
         try {
           const response = await shopifyClient.request<{
             cartDiscountCodesUpdate: {
-              cart: {
-                id: string
-                checkoutUrl: string
-                totalQuantity: number
-                cost: { subtotalAmount: ShopifyMoney; totalAmount: ShopifyMoney }
-                discountCodes: ShopifyDiscountCode[]
-                discountAllocations: Array<{ discountedAmount: ShopifyMoney }>
-                lines: { edges: Array<{ node: ShopifyCartLine }> }
-              }
+              cart: ShopifyCartResponse
               userErrors: Array<{ field: string[]; message: string }>
             }
           }>(CART_DISCOUNT_CODES_UPDATE, {
@@ -297,21 +342,7 @@ export const useCartStore = create<CartState>()(
           }
 
           const cart = response.cartDiscountCodesUpdate.cart
-          const discountTotal = cart.discountAllocations?.reduce(
-            (sum: number, a: { discountedAmount: ShopifyMoney }) => sum + parseFloat(a.discountedAmount.amount),
-            0
-          ) || 0
-
-          set({
-            lines: cart.lines.edges.map((edge) => edge.node),
-            totalQuantity: cart.totalQuantity,
-            subtotal: cart.cost.subtotalAmount,
-            discountCodes: cart.discountCodes || [],
-            discountAmount: discountTotal > 0 ? { amount: discountTotal.toString(), currencyCode: cart.cost.subtotalAmount.currencyCode } : null,
-            total: cart.cost.totalAmount || null,
-            checkoutUrl: cart.checkoutUrl,
-            isApplyingDiscount: false,
-          })
+          applyCartResponse(set, cart, { isApplyingDiscount: false })
 
           return { success: true }
         } catch (error) {
@@ -331,15 +362,7 @@ export const useCartStore = create<CartState>()(
         try {
           const response = await shopifyClient.request<{
             cartDiscountCodesUpdate: {
-              cart: {
-                id: string
-                checkoutUrl: string
-                totalQuantity: number
-                cost: { subtotalAmount: ShopifyMoney; totalAmount: ShopifyMoney }
-                discountCodes: ShopifyDiscountCode[]
-                discountAllocations: Array<{ discountedAmount: ShopifyMoney }>
-                lines: { edges: Array<{ node: ShopifyCartLine }> }
-              }
+              cart: ShopifyCartResponse
               userErrors: Array<{ field: string[]; message: string }>
             }
           }>(CART_DISCOUNT_CODES_UPDATE, {
@@ -348,16 +371,7 @@ export const useCartStore = create<CartState>()(
           })
 
           const cart = response.cartDiscountCodesUpdate.cart
-          set({
-            lines: cart.lines.edges.map((edge) => edge.node),
-            totalQuantity: cart.totalQuantity,
-            subtotal: cart.cost.subtotalAmount,
-            discountCodes: [],
-            discountAmount: null,
-            total: cart.cost.totalAmount || null,
-            checkoutUrl: cart.checkoutUrl,
-            isApplyingDiscount: false,
-          })
+          applyCartResponse(set, cart, { isApplyingDiscount: false, discountCodes: [], discountAmount: null })
         } catch (error) {
           console.error('Failed to remove discount:', error)
           set({ error: 'Failed to remove discount code', isApplyingDiscount: false })
@@ -365,6 +379,9 @@ export const useCartStore = create<CartState>()(
       },
 
       clearCart: () => {
+        debounceTimers.forEach((timer) => clearTimeout(timer))
+        debounceTimers.clear()
+        pendingSnapshots.clear()
         set({
           cartId: null,
           checkoutUrl: null,
@@ -375,6 +392,7 @@ export const useCartStore = create<CartState>()(
           discountAmount: null,
           total: null,
           isLoading: false,
+          loadingItems: new Set<string>(),
           isApplyingDiscount: false,
           error: null,
         })
@@ -383,7 +401,7 @@ export const useCartStore = create<CartState>()(
       setError: (error) => set({ error }),
     }),
     {
-      name: 'tamashii-cart',
+      name: 'mizoke-cart',
       partialize: (state) => ({ cartId: state.cartId }),
     }
   )

@@ -49,12 +49,10 @@ const SET_CUSTOMER_METAFIELD = gql`
 // Helper to validate customer and get their ID
 async function getCustomerIdFromToken(accessToken: string): Promise<string | null> {
   try {
-    console.log('Validating customer token:', accessToken.substring(0, 20) + '...')
     const response = await shopifyClient.request<{
       customer: { id: string } | null
     }>(GET_CUSTOMER_ID, { customerAccessToken: accessToken })
 
-    console.log('Customer lookup response:', response)
     return response.customer?.id || null
   } catch (error) {
     console.error('Failed to validate customer token:', error)
@@ -84,8 +82,6 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    console.log('Fetching wishlist for customer:', customerId)
-
     // Fetch wishlist metafield using Admin API
     const response = await adminFetch<{
       customer: {
@@ -93,12 +89,9 @@ export async function GET(request: NextRequest) {
       } | null
     }>(GET_CUSTOMER_METAFIELD, { customerId })
 
-    console.log('Metafield fetch response:', JSON.stringify(response, null, 2))
-
     const metafieldValue = response.customer?.metafield?.value
 
     if (!metafieldValue) {
-      console.log('No wishlist metafield found, returning empty')
       return NextResponse.json({ items: [] })
     }
 
@@ -143,9 +136,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const items: WishlistItem[] = body.items || []
 
-    console.log('Saving wishlist for customer:', customerId)
-    console.log('Items to save:', items.length)
-
     // Save wishlist to metafield using Admin API
     const response = await adminFetch<{
       metafieldsSet: {
@@ -163,8 +153,6 @@ export async function POST(request: NextRequest) {
         },
       ],
     })
-
-    console.log('Metafield response:', JSON.stringify(response, null, 2))
 
     if (response.metafieldsSet.userErrors.length > 0) {
       console.error('Metafield update errors:', response.metafieldsSet.userErrors)
