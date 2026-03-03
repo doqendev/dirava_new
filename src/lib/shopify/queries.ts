@@ -119,7 +119,7 @@ export const GET_PRODUCT = gql`
           currencyCode
         }
       }
-      images(first: 10) {
+      images(first: 50) {
         edges {
           node {
             url
