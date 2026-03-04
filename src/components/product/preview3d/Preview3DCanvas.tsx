@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect, useRef, Component, type ReactNode } from
 import { Canvas } from '@react-three/fiber'
 import * as THREE from 'three'
 import { Box, Hand, Search } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { TextExtrusionScene } from './TextExtrusionScene'
 import { SvgExtrusionScene } from './SvgExtrusionScene'
 import { CompositeSignScene } from './CompositeSignScene'
@@ -16,20 +17,20 @@ interface Preview3DCanvasProps {
   selectedVariantName?: string
 }
 
-function LoadingFallback() {
+function LoadingFallback({ label }: { label: string }) {
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0a12]">
-      <Preview3DLoadingIndicator label="Loading..." />
+      <Preview3DLoadingIndicator label={label} />
     </div>
   )
 }
 
-function ErrorFallback() {
+function ErrorFallback({ notAvailable, webglHint }: { notAvailable: string; webglHint: string }) {
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0a12]">
       <Box className="w-8 h-8 text-white/30 mb-3" />
-      <p className="text-sm text-white/40">3D preview not available</p>
-      <p className="text-xs text-white/20 mt-1">WebGL may not be supported</p>
+      <p className="text-sm text-white/40">{notAvailable}</p>
+      <p className="text-xs text-white/20 mt-1">{webglHint}</p>
     </div>
   )
 }
@@ -101,6 +102,7 @@ function SceneRouter({ config, text, selectedVariantName, sceneRef }: SceneRoute
 }
 
 export function Preview3DCanvas({ config, text, selectedVariantName }: Preview3DCanvasProps) {
+  const t = useTranslations('product')
   const [webGLSupported, setWebGLSupported] = useState<boolean | null>(null)
   const [debouncedText, setDebouncedText] = useState(text)
   const [showHint, setShowHint] = useState(true)
@@ -130,7 +132,7 @@ export function Preview3DCanvas({ config, text, selectedVariantName }: Preview3D
   if (webGLSupported === null) {
     return (
       <div className="relative w-full h-full bg-[#0a0a12]">
-        <LoadingFallback />
+        <LoadingFallback label={t('preview3dLoading')} />
       </div>
     )
   }
@@ -139,7 +141,7 @@ export function Preview3DCanvas({ config, text, selectedVariantName }: Preview3D
   if (!webGLSupported) {
     return (
       <div className="relative w-full h-full bg-[#0a0a12]">
-        <ErrorFallback />
+        <ErrorFallback notAvailable={t('preview3dNotAvailable')} webglHint={t('preview3dWebglHint')} />
       </div>
     )
   }
@@ -149,7 +151,7 @@ export function Preview3DCanvas({ config, text, selectedVariantName }: Preview3D
       <WebGLErrorBoundary
         fallback={
           <div className="relative w-full h-full bg-[#0a0a12]">
-            <ErrorFallback />
+            <ErrorFallback notAvailable={t('preview3dNotAvailable')} webglHint={t('preview3dWebglHint')} />
           </div>
         }
       >
@@ -174,7 +176,7 @@ export function Preview3DCanvas({ config, text, selectedVariantName }: Preview3D
       {text !== debouncedText && (
         <div className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center">
           <div className="absolute inset-0 bg-[#0a0a12]/40" />
-          <Preview3DLoadingIndicator label="Updating..." className="relative z-10" />
+          <Preview3DLoadingIndicator label={t('preview3dUpdating')} className="relative z-10" />
         </div>
       )}
 
@@ -197,12 +199,12 @@ export function Preview3DCanvas({ config, text, selectedVariantName }: Preview3D
         >
           <span className="flex items-center gap-2">
             <Hand className="w-4 h-4" />
-            Drag to rotate
+            {t('preview3dDragToRotate')}
           </span>
           <span className="text-neon-cyan/30">|</span>
           <span className="flex items-center gap-2">
             <Search className="w-4 h-4" />
-            Pinch to zoom
+            {t('preview3dPinchToZoom')}
           </span>
         </div>
       </div>

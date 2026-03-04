@@ -14,6 +14,7 @@ interface FormErrors {
   lastName?: string
   email?: string
   password?: string
+  acceptTerms?: string
 }
 
 function validateForm(data: RegisterFormData): FormErrors {
@@ -57,6 +58,7 @@ export function RegisterForm() {
     password: '',
   })
   const [errors, setErrors] = useState<FormErrors>({})
+  const [acceptTerms, setAcceptTerms] = useState(false)
   const [requiresActivation, setRequiresActivation] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,6 +75,11 @@ export function RegisterForm() {
     const validationErrors = validateForm(formData)
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors)
+      return
+    }
+
+    if (!acceptTerms) {
+      setErrors((prev) => ({ ...prev, acceptTerms: 'You must agree to the terms to create an account' }))
       return
     }
 
@@ -168,6 +175,38 @@ export function RegisterForm() {
         disabled={isLoading}
         autoComplete="new-password"
       />
+
+      {/* Terms Consent */}
+      <label className="flex items-start gap-3 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={acceptTerms}
+          onChange={(e) => {
+            setAcceptTerms(e.target.checked)
+            if (errors.acceptTerms) {
+              setErrors((prev) => ({ ...prev, acceptTerms: undefined }))
+            }
+          }}
+          className="mt-1 rounded border-white/20 bg-white/5 text-neon-cyan focus:ring-neon-cyan focus:ring-offset-0"
+          disabled={isLoading}
+        />
+        <span className="text-sm text-white/60">
+          I have read and agree to the{' '}
+          <Link href="/policies/terms" className="text-neon-cyan hover:underline" target="_blank">
+            Terms of Service
+          </Link>{' '}
+          and{' '}
+          <Link href="/policies/privacy" className="text-neon-cyan hover:underline" target="_blank">
+            Privacy Policy
+          </Link>
+        </span>
+      </label>
+      {errors.acceptTerms && (
+        <p className="text-sm text-red-500 flex items-center gap-1">
+          <AlertCircle className="w-3 h-3" />
+          {errors.acceptTerms}
+        </p>
+      )}
 
       {/* Store Error */}
       {storeError && (

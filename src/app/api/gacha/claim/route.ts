@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   try {
     // Rate limit: 5 requests per minute per IP
     const ip = getClientIp(request)
-    const rl = checkRateLimit(`claim:${ip}`, { maxRequests: 5, windowSeconds: 60 })
+    const rl = await checkRateLimit(`claim:${ip}`, { maxRequests: 5, windowSeconds: 60 })
     if (rl.limited) {
       return NextResponse.json<ClaimApiResponse>(
         { success: false, error: 'Too many requests. Please try again later.' },

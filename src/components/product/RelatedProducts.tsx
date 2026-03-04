@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { ProductCard } from '@/components/product/ProductCard'
 import { cn } from '@/lib/utils/cn'
 
@@ -23,9 +24,11 @@ interface RelatedProductsProps {
 export function RelatedProducts({
   products,
   universe,
-  title = 'You May Also Like',
+  title,
   className,
 }: RelatedProductsProps) {
+  const t = useTranslations('product')
+
   if (!products || products.length === 0) {
     return null
   }
@@ -33,7 +36,7 @@ export function RelatedProducts({
   return (
     <section className={cn('w-full', className)}>
       <h2 className="font-display text-xl md:text-2xl text-white mb-6 tracking-wide">
-        {title}
+        {title ?? t('relatedProducts')}
       </h2>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">

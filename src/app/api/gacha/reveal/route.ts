@@ -29,7 +29,7 @@ export async function POST(request: Request) {
   try {
     // Rate limit: 10 requests per minute per IP
     const ip = getClientIp(request)
-    const rl = checkRateLimit(`reveal:${ip}`, { maxRequests: 10, windowSeconds: 60 })
+    const rl = await checkRateLimit(`reveal:${ip}`, { maxRequests: 10, windowSeconds: 60 })
     if (rl.limited) {
       return NextResponse.json<RevealApiResponse>(
         { success: false, error: 'Too many requests. Please try again later.' },
@@ -99,9 +99,9 @@ export async function POST(request: Request) {
                   price: productResponse.product.priceRange.minVariantPrice,
                   variantId: redemptionCode.revealedVariantId,
                 },
-                rarity: redemptionCode.revealedRarity!,
-                revealedAt: redemptionCode.revealedAt!,
-                seed: redemptionCode.seed!,
+                rarity: redemptionCode.revealedRarity ?? 'common',
+                revealedAt: redemptionCode.revealedAt ?? new Date().toISOString(),
+                seed: redemptionCode.seed ?? '0',
               },
             },
             { headers: { 'Cache-Control': 'no-store' } }
@@ -199,7 +199,7 @@ export async function POST(request: Request) {
         variantId: selection.item.variantId,
       },
       rarity: selection.rarity,
-      revealedAt: updatedCode.revealedAt!,
+      revealedAt: updatedCode.revealedAt ?? new Date().toISOString(),
       seed: selection.seed,
     }
 

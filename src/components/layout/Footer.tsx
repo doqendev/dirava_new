@@ -56,11 +56,19 @@ function NewsletterForm() {
   const t = useTranslations('footer')
   const tErrors = useTranslations('errors')
   const [email, setEmail] = useState('')
+  const [consent, setConsent] = useState(false)
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Consent check
+    if (!consent) {
+      setStatus('error')
+      setErrorMessage(t('consentRequired'))
+      return
+    }
 
     // Basic email validation
     if (!email.trim()) {
@@ -89,6 +97,7 @@ function NewsletterForm() {
 
       setStatus('success')
       setEmail('')
+      setConsent(false)
 
       // Reset after 3 seconds
       setTimeout(() => setStatus('idle'), 3000)
@@ -99,52 +108,72 @@ function NewsletterForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="relative flex flex-col sm:flex-row gap-3 max-w-md">
-      <div className="flex-1 relative">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-md">
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex-1 relative">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value)
+              if (status === 'error') setStatus('idle')
+            }}
+            placeholder={t('emailPlaceholder')}
+            disabled={status === 'loading' || status === 'success'}
+            className={cn(
+              'w-full px-4 py-3',
+              'bg-black/40 border border-white/20 rounded-lg',
+              'text-white placeholder:text-white/30',
+              'transition-all duration-200',
+              'focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan',
+              'disabled:opacity-50 disabled:cursor-not-allowed',
+              status === 'error' && 'border-red-500 focus:border-red-500 focus:ring-red-500'
+            )}
+            aria-label={t('emailPlaceholder')}
+          />
+        </div>
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          glow="cyan"
+          isLoading={status === 'loading'}
+          disabled={status === 'success'}
+          className="whitespace-nowrap"
+        >
+          {status === 'success' ? (
+            <>
+              <CheckCircle className="w-4 h-4 mr-2" />
+              {t('subscribed')}
+            </>
+          ) : (
+            <>
+              <Send className="w-4 h-4 mr-2" />
+              {t('subscribe')}
+            </>
+          )}
+        </Button>
+      </div>
+      <label className="flex items-start gap-2 text-xs text-white/50 cursor-pointer">
         <input
-          type="email"
-          value={email}
+          type="checkbox"
+          checked={consent}
           onChange={(e) => {
-            setEmail(e.target.value)
+            setConsent(e.target.checked)
             if (status === 'error') setStatus('idle')
           }}
-          placeholder={t('emailPlaceholder')}
+          className="mt-0.5 rounded border-white/20 bg-black/40 text-neon-cyan focus:ring-neon-cyan"
           disabled={status === 'loading' || status === 'success'}
-          className={cn(
-            'w-full px-4 py-3',
-            'bg-black/40 border border-white/20 rounded-lg',
-            'text-white placeholder:text-white/30',
-            'transition-all duration-200',
-            'focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan',
-            'disabled:opacity-50 disabled:cursor-not-allowed',
-            status === 'error' && 'border-red-500 focus:border-red-500 focus:ring-red-500'
-          )}
-          aria-label={t('emailPlaceholder')}
         />
-      </div>
-      <Button
-        type="submit"
-        variant="primary"
-        size="lg"
-        glow="cyan"
-        isLoading={status === 'loading'}
-        disabled={status === 'success'}
-        className="whitespace-nowrap"
-      >
-        {status === 'success' ? (
-          <>
-            <CheckCircle className="w-4 h-4 mr-2" />
-            {t('subscribed')}
-          </>
-        ) : (
-          <>
-            <Send className="w-4 h-4 mr-2" />
-            {t('subscribe')}
-          </>
-        )}
-      </Button>
+        <span>
+          {t('newsletterConsent')}{' '}
+          <Link href="/policies/privacy" className="text-neon-cyan hover:underline">
+            {t('privacyPolicy')}
+          </Link>
+        </span>
+      </label>
       {status === 'error' && (
-        <p className="absolute -bottom-6 left-0 text-xs text-red-500">
+        <p className="text-xs text-red-500">
           {errorMessage}
         </p>
       )}
@@ -176,6 +205,7 @@ export function Footer() {
     { label: t('termsOfService'), href: '/policies/terms' },
     { label: t('shippingPolicy'), href: '/policies/shipping' },
     { label: t('returnsRefunds'), href: '/policies/returns' },
+    { label: t('imprint'), href: '/policies/imprint' },
     { label: t('faq'), href: '/faq' },
     { label: t('contactUs'), href: '/contact' },
   ]

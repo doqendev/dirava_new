@@ -17,7 +17,7 @@ import type { Review, ReviewRating } from '@/types/reviews'
 export const CREATE_REVIEW_METAOBJECT_DEFINITION = `
   mutation CreateReviewDefinition {
     metaobjectDefinitionCreate(definition: {
-      type: "product_review"
+      type: "shop_review"
       name: "Product Review"
       fieldDefinitions: [
         { key: "product_handle", name: "Product Handle", type: "single_line_text_field", required: true }
@@ -49,7 +49,7 @@ export const CREATE_REVIEW_METAOBJECT_DEFINITION = `
 const CREATE_REVIEW = `
   mutation CreateReview($handle: String!, $fields: [MetaobjectFieldInput!]!) {
     metaobjectCreate(metaobject: {
-      type: "product_review"
+      type: "shop_review"
       handle: $handle
       fields: $fields
     }) {
@@ -74,7 +74,7 @@ const CREATE_REVIEW = `
  */
 const GET_REVIEWS = `
   query GetReviews($query: String!, $first: Int!) {
-    metaobjects(type: "product_review", query: $query, first: $first, sortKey: "id", reverse: true) {
+    metaobjects(type: "shop_review", query: $query, first: $first, sortKey: "id", reverse: true) {
       nodes {
         id
         handle
@@ -416,7 +416,7 @@ export async function getReviewsByEmail(email: string): Promise<Review[]> {
     // Fetch all reviews and filter by email
     const response = await adminFetch<GetMetaobjectsResponse>(
       GET_ALL_REVIEWS,
-      { type: 'product_review', first: 100 }
+      { type: 'shop_review', first: 100 }
     )
 
     // Filter by exact email match

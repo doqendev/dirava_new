@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     const signature = request.headers.get('x-shopify-hmac-sha256')
 
     // Verify webhook signature in production
-    if (process.env.NODE_ENV === 'production' && !verifyWebhook(body, signature)) {
+    if (SHOPIFY_WEBHOOK_SECRET && !verifyWebhook(body, signature)) {
       console.error('Invalid webhook signature')
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
     }
@@ -138,7 +138,6 @@ export async function POST(request: Request) {
       orderId,
       orderName,
       codesGenerated: generatedCodes.length,
-      codes: generatedCodes, // Useful for testing, remove in production if needed
     })
   } catch (error) {
     console.error('Webhook error:', error)

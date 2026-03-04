@@ -16,6 +16,7 @@ import {
   CollectionToolbar,
 } from '@/components/collection'
 import { SkeletonProductGrid } from '@/components/ui/Skeleton'
+import { getTranslations } from 'next-intl/server'
 import type { ShopifyCollection, ShopifyProduct } from '@/types/shopify'
 import type { Metadata } from 'next'
 
@@ -191,6 +192,7 @@ function UniverseContentSkeleton() {
 export default async function UniversePage({ params, searchParams }: Props) {
   const { universe } = await params
   const resolvedSearchParams = await searchParams
+  const t = await getTranslations('worlds')
 
   // Remove trailing "-1", "-2", etc. that Shopify adds for duplicate handles
   const cleanUniverse = universe.replace(/-\d+$/, '')
@@ -207,13 +209,13 @@ export default async function UniversePage({ params, searchParams }: Props) {
       {
         '@type': 'ListItem',
         position: 1,
-        name: 'Home',
+        name: t('home'),
         item: siteUrl,
       },
       {
         '@type': 'ListItem',
         position: 2,
-        name: 'Worlds',
+        name: t('worlds'),
         item: `${siteUrl}/worlds`,
       },
       {
@@ -240,14 +242,14 @@ export default async function UniversePage({ params, searchParams }: Props) {
             href="/"
             className="text-white/50 hover:text-white transition-colors"
           >
-            Home
+            {t('home')}
           </Link>
           <ChevronRight className="w-4 h-4 text-white/30" />
           <Link
             href="/worlds"
             className="text-white/50 hover:text-white transition-colors"
           >
-            Worlds
+            {t('worlds')}
           </Link>
           <ChevronRight className="w-4 h-4 text-white/30" />
           <span style={{ color: themeColor }}>{universeName}</span>

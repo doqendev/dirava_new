@@ -275,6 +275,24 @@ export function TextExtrusionScene({ text, config }: TextExtrusionSceneProps) {
     }
   })
 
+  // Dispose Three.js geometries/materials on unmount to prevent WebGL memory leaks
+  useEffect(() => {
+    return () => {
+      if (groupRef.current) {
+        groupRef.current.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            child.geometry?.dispose()
+            if (Array.isArray(child.material)) {
+              child.material.forEach((m) => m.dispose())
+            } else if (child.material) {
+              child.material.dispose()
+            }
+          }
+        })
+      }
+    }
+  }, [])
+
   if (loading || !font || !textShapes) {
     return (
       <>

@@ -16,6 +16,8 @@ export async function GET(
       success: true,
       reviews,
       stats,
+    }, {
+      headers: { 'Cache-Control': 's-maxage=30, stale-while-revalidate=120' },
     })
   } catch (error) {
     console.error('Failed to fetch reviews:', error)

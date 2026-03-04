@@ -343,7 +343,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   )}
                 </div>
                 <p className="mt-1 text-xs text-white/50">
-                  This name will be added to your custom item
+                  {t('personalizationHint')}
                 </p>
               </div>
             )}
@@ -422,7 +422,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 onClick={() => setIsShippingOpen(!isShippingOpen)}
                 className="w-full flex items-center justify-between py-4 group"
               >
-                <h2 className="font-display text-lg text-white">Shipping</h2>
+                <h2 className="font-display text-lg text-white">{t('shippingTitle')}</h2>
                 <ChevronDown className={cn(
                   'w-5 h-5 text-white/50 transition-transform duration-300',
                   isShippingOpen && 'rotate-180'
@@ -435,12 +435,12 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 )}
               >
                 <div className="space-y-2 text-sm text-white/60">
-                  <p>Orders are processed within 1-3 business days.</p>
-                  <p>Europe: 5-12 business days — Free over €45</p>
-                  <p>UK: 5-10 business days — Free over £40</p>
-                  <p>Canada: 7-14 business days — Free over $73 CAD</p>
-                  <p>Australia: 10-20 business days — Free over $80 AUD</p>
-                  <p className="text-white/40 text-xs pt-1">Customs and duties may apply for international orders.</p>
+                  <p>{t('shippingProcessing')}</p>
+                  <p>{t('shippingEurope')}</p>
+                  <p>{t('shippingUK')}</p>
+                  <p>{t('shippingCanada')}</p>
+                  <p>{t('shippingAustralia')}</p>
+                  <p className="text-white/40 text-xs pt-1">{t('shippingCustoms')}</p>
                 </div>
               </div>
             </div>
@@ -452,7 +452,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 onClick={() => setIsReturnsOpen(!isReturnsOpen)}
                 className="w-full flex items-center justify-between py-4 group"
               >
-                <h2 className="font-display text-lg text-white">Returns & Exchanges</h2>
+                <h2 className="font-display text-lg text-white">{t('returnsTitle')}</h2>
                 <ChevronDown className={cn(
                   'w-5 h-5 text-white/50 transition-transform duration-300',
                   isReturnsOpen && 'rotate-180'
@@ -465,10 +465,10 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 )}
               >
                 <div className="space-y-2 text-sm text-white/60">
-                  <p>30-day return policy for unused items in original packaging.</p>
-                  <p>Exchanges available for different sizes or colors, subject to availability.</p>
-                  <p>Refunds processed within 5-7 business days after receiving your return.</p>
-                  <p className="text-white/40 text-xs pt-1">Personalized and limited edition items are final sale.</p>
+                  <p>{t('returnsPolicy')}</p>
+                  <p>{t('returnsExchanges')}</p>
+                  <p>{t('returnsRefund')}</p>
+                  <p className="text-white/40 text-xs pt-1">{t('returnsFinalSale')}</p>
                 </div>
               </div>
             </div>
@@ -480,7 +480,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 onClick={() => setIsShareOpen(!isShareOpen)}
                 className="w-full flex items-center justify-between py-4 group"
               >
-                <h2 className="font-display text-lg text-white">Share</h2>
+                <h2 className="font-display text-lg text-white">{t('share')}</h2>
                 <ChevronDown className={cn(
                   'w-5 h-5 text-white/50 transition-transform duration-300',
                   isShareOpen && 'rotate-180'

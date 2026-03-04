@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { ArrowLeft, Ticket, Loader2, Package, Sparkles, AlertCircle, Copy, Check, ExternalLink } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { cn } from '@/lib/utils/cn'
@@ -11,15 +12,23 @@ import type { RedemptionCode, CodeStatus } from '@/types/gacha'
 
 type PageState = 'loading' | 'ready' | 'error' | 'unauthenticated'
 
-const STATUS_CONFIG: Record<CodeStatus, { label: string; color: string; bgColor: string }> = {
-  unused: { label: 'Ready to Reveal', color: 'text-neon-cyan', bgColor: 'bg-neon-cyan/10' },
-  revealed: { label: 'Revealed', color: 'text-neon-purple', bgColor: 'bg-neon-purple/10' },
-  claimed: { label: 'Claimed', color: 'text-neon-green', bgColor: 'bg-neon-green/10' },
-  shipped: { label: 'Shipped', color: 'text-neon-yellow', bgColor: 'bg-neon-yellow/10' },
+const STATUS_CONFIG: Record<CodeStatus, { color: string; bgColor: string }> = {
+  unused: { color: 'text-neon-cyan', bgColor: 'bg-neon-cyan/10' },
+  revealed: { color: 'text-neon-purple', bgColor: 'bg-neon-purple/10' },
+  claimed: { color: 'text-neon-green', bgColor: 'bg-neon-green/10' },
+  shipped: { color: 'text-neon-yellow', bgColor: 'bg-neon-yellow/10' },
 }
 
 export default function AccountCodesPage() {
-  const { customer, isAuthenticated } = useAuthStore()
+  const t = useTranslations('codes')
+  const { customer, accessToken, isAuthenticated } = useAuthStore()
+
+  const statusLabels: Record<CodeStatus, string> = {
+    unused: t('statusUnused'),
+    revealed: t('statusRevealed'),
+    claimed: t('statusClaimed'),
+    shipped: t('statusShipped'),
+  }
 
   const [pageState, setPageState] = useState<PageState>('loading')
   const [codes, setCodes] = useState<RedemptionCode[]>([])
@@ -39,7 +48,9 @@ export default function AccountCodesPage() {
 
     async function fetchCodes() {
       try {
-        const response = await fetch(`/api/gacha/user-codes?email=${encodeURIComponent(customer!.email)}`)
+        const response = await fetch(`/api/gacha/user-codes?email=${encodeURIComponent(customer!.email)}`, {
+          headers: accessToken ? { 'X-Customer-Access-Token': accessToken } : {},
+        })
         const data = await response.json()
 
         if (!data.success) {
@@ -55,7 +66,7 @@ export default function AccountCodesPage() {
     }
 
     fetchCodes()
-  }, [customer, isAuthenticated])
+  }, [customer, accessToken, isAuthenticated])
 
   const handleCopyCode = async (code: string) => {
     try {
@@ -76,7 +87,7 @@ export default function AccountCodesPage() {
             className="flex items-center gap-2 px-4 py-2 bg-neon-cyan text-black font-medium rounded-lg text-sm"
           >
             <Sparkles className="w-4 h-4" />
-            Reveal Now
+            {t('revealNow')}
           </Link>
         )
       case 'revealed':
@@ -86,7 +97,7 @@ export default function AccountCodesPage() {
             className="flex items-center gap-2 px-4 py-2 bg-neon-purple text-white font-medium rounded-lg text-sm"
           >
             <Package className="w-4 h-4" />
-            Claim Prize
+            {t('claimPrize')}
           </Link>
         )
       case 'claimed':
@@ -97,7 +108,7 @@ export default function AccountCodesPage() {
             className="flex items-center gap-2 px-4 py-2 bg-white/10 text-white/80 font-medium rounded-lg text-sm"
           >
             <ExternalLink className="w-4 h-4" />
-            View Details
+            {t('viewDetails')}
           </Link>
         )
     }
@@ -113,7 +124,7 @@ export default function AccountCodesPage() {
             className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back</span>
+            <span>{t('back')}</span>
           </Link>
         </div>
 
@@ -121,15 +132,15 @@ export default function AccountCodesPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 mb-4">
             <Ticket className="w-8 h-8 text-white/30" />
           </div>
-          <h1 className="font-display text-2xl text-white mb-2">Sign In Required</h1>
+          <h1 className="font-display text-2xl text-white mb-2">{t('signInRequired')}</h1>
           <p className="text-white/60 mb-6">
-            Please sign in to view your redemption codes.
+            {t('signInToView')}
           </p>
           <Link
             href="/account/login"
             className="inline-flex items-center gap-2 px-6 py-3 bg-neon-cyan text-black font-medium rounded-xl"
           >
-            Sign In
+            {t('signIn')}
           </Link>
         </div>
       </div>
@@ -142,7 +153,7 @@ export default function AccountCodesPage() {
       <div className="min-h-screen bg-bg-primary flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-neon-cyan animate-spin mx-auto mb-4" />
-          <p className="text-white/60">Loading your codes...</p>
+          <p className="text-white/60">{t('loadingCodes')}</p>
         </div>
       </div>
     )
@@ -158,7 +169,7 @@ export default function AccountCodesPage() {
             className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back</span>
+            <span>{t('back')}</span>
           </Link>
         </div>
 
@@ -166,15 +177,15 @@ export default function AccountCodesPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/20 mb-4">
             <AlertCircle className="w-8 h-8 text-red-400" />
           </div>
-          <h1 className="font-display text-2xl text-white mb-2">Something Went Wrong</h1>
+          <h1 className="font-display text-2xl text-white mb-2">{t('somethingWrong')}</h1>
           <p className="text-white/60 mb-6">
-            We couldn&apos;t load your codes. Please try again.
+            {t('loadError')}
           </p>
           <button
             onClick={() => window.location.reload()}
             className="inline-flex items-center gap-2 px-6 py-3 bg-neon-cyan text-black font-medium rounded-xl"
           >
-            Try Again
+            {t('tryAgain')}
           </button>
         </div>
       </div>
@@ -191,16 +202,16 @@ export default function AccountCodesPage() {
           className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Account</span>
+          <span>{t('back')}</span>
         </Link>
       </div>
 
       <div className="px-4 max-w-2xl mx-auto">
         {/* Title */}
         <div className="mb-6">
-          <h1 className="font-display text-2xl md:text-3xl text-white mb-1">My Redemption Codes</h1>
+          <h1 className="font-display text-2xl md:text-3xl text-white mb-1">{t('myRedemptionCodes')}</h1>
           <p className="text-white/60 text-sm">
-            {codes.length} {codes.length === 1 ? 'code' : 'codes'} total
+            {t('codesTotal', { count: codes.length })}
           </p>
         </div>
 
@@ -210,16 +221,16 @@ export default function AccountCodesPage() {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 mb-4">
               <Ticket className="w-8 h-8 text-white/30" />
             </div>
-            <h2 className="font-display text-xl text-white mb-2">No Codes Yet</h2>
+            <h2 className="font-display text-xl text-white mb-2">{t('noCodesYet')}</h2>
             <p className="text-white/60 mb-6">
-              Purchase a mystery box to get your first redemption code!
+              {t('noCodesDescription')}
             </p>
             <Link
               href="/gacha"
               className="inline-flex items-center gap-2 px-6 py-3 bg-neon-cyan text-black font-medium rounded-xl"
             >
               <Package className="w-5 h-5" />
-              Browse Mystery Boxes
+              {t('browseMysteryBoxes')}
             </Link>
           </div>
         )}
@@ -267,7 +278,7 @@ export default function AccountCodesPage() {
                           statusConfig.color
                         )}
                       >
-                        {statusConfig.label}
+                        {statusLabels[code.status]}
                       </div>
                     </div>
 
@@ -313,16 +324,16 @@ export default function AccountCodesPage() {
 
         {/* Redeem another code */}
         <div className="mt-8 p-4 rounded-xl bg-white/5 border border-white/10">
-          <h3 className="text-white font-medium mb-2">Have a code to redeem?</h3>
+          <h3 className="text-white font-medium mb-2">{t('haveCode')}</h3>
           <p className="text-white/60 text-sm mb-4">
-            If someone shared a code with you, enter it to reveal the mystery.
+            {t('haveCodeDescription')}
           </p>
           <Link
             href="/gacha/reveal"
             className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 text-white font-medium rounded-lg text-sm hover:bg-white/20 transition-colors"
           >
             <Ticket className="w-4 h-4" />
-            Enter a Code
+            {t('enterCode')}
           </Link>
         </div>
       </div>

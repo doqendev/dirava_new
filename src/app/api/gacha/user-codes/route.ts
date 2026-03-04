@@ -1,10 +1,14 @@
 /**
  * GET /api/gacha/user-codes
  *
- * Get all redemption codes for a user by email
+ * Get all redemption codes for a user by email.
+ * Requires X-Customer-Access-Token header; the token's email must match
+ * the requested email to prevent IDOR enumeration.
  */
 
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { gql } from 'graphql-request'
+import { shopifyClient } from '@/lib/shopify/client'
 import { getRedemptionCodesByEmail } from '@/lib/gacha/metaobjects'
 import type { RedemptionCode } from '@/types/gacha'
 
@@ -14,27 +18,59 @@ export interface UserCodesResponse {
   error?: string
 }
 
-export async function GET(request: Request) {
+const GET_CUSTOMER_EMAIL = gql`
+  query GetCustomerEmail($customerAccessToken: String!) {
+    customer(customerAccessToken: $customerAccessToken) {
+      email
+    }
+  }
+`
+
+async function getCustomerEmailFromToken(accessToken: string): Promise<string | null> {
+  try {
+    const response = await shopifyClient.request<{
+      customer: { email: string } | null
+    }>(GET_CUSTOMER_EMAIL, { customerAccessToken: accessToken })
+    return response.customer?.email ?? null
+  } catch (error) {
+    console.error('Failed to validate customer token:', error)
+    return null
+  }
+}
+
+export async function GET(request: NextRequest) {
+  const accessToken = request.headers.get('X-Customer-Access-Token')
+
+  if (!accessToken) {
+    return NextResponse.json<UserCodesResponse>(
+      { success: false, error: 'Unauthorized' },
+      { status: 401 }
+    )
+  }
+
+  const customerEmail = await getCustomerEmailFromToken(accessToken)
+
+  if (!customerEmail) {
+    return NextResponse.json<UserCodesResponse>(
+      { success: false, error: 'Invalid or expired token' },
+      { status: 401 }
+    )
+  }
+
   try {
     const { searchParams } = new URL(request.url)
     const email = searchParams.get('email')
 
-    if (!email) {
+    // If email param provided, verify it matches the authenticated customer
+    if (email && email.toLowerCase() !== customerEmail.toLowerCase()) {
       return NextResponse.json<UserCodesResponse>(
-        { success: false, error: 'Email is required' },
-        { status: 400 }
+        { success: false, error: 'Forbidden' },
+        { status: 403 }
       )
     }
 
-    // Basic email validation
-    if (!email.includes('@')) {
-      return NextResponse.json<UserCodesResponse>(
-        { success: false, error: 'Invalid email format' },
-        { status: 400 }
-      )
-    }
-
-    const codes = await getRedemptionCodesByEmail(email)
+    // Always use the verified email from the token
+    const codes = await getRedemptionCodesByEmail(customerEmail)
 
     // Sort by creation date (newest first)
     codes.sort((a, b) => {

@@ -11,7 +11,9 @@ export async function generateMetadata() {
   }
 }
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const t = await getTranslations('account')
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
@@ -22,10 +24,10 @@ export default function LoginPage() {
 
         {/* Title */}
         <h1 className="font-display text-2xl text-center text-white mb-2">
-          Welcome Back
+          {t('loginWelcome')}
         </h1>
         <p className="text-center text-white/60 mb-8">
-          Sign in to access your account
+          {t('signInDescription')}
         </p>
 
         {/* Form */}
@@ -35,12 +37,12 @@ export default function LoginPage() {
 
         {/* Create Account Link */}
         <p className="text-center text-white/50 text-sm mt-6">
-          Don&apos;t have an account?{' '}
+          {t('noAccount')}{' '}
           <Link
             href="/account/register"
             className="text-neon-cyan hover:underline"
           >
-            Create one
+            {t('createOne')}
           </Link>
         </p>
       </div>

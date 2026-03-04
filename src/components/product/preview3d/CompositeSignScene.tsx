@@ -236,6 +236,24 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
   const [barLoading, setBarLoading] = useState<boolean>(!!barParts)
   const [jollyLoading, setJollyLoading] = useState<boolean>(!!svgPath)
 
+  // Dispose geometries/materials on unmount to prevent WebGL memory leaks
+  useEffect(() => {
+    return () => {
+      const group = groupRef.current
+      if (!group) return
+      group.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          child.geometry?.dispose()
+          if (Array.isArray(child.material)) {
+            child.material.forEach((m) => m.dispose())
+          } else {
+            child.material?.dispose()
+          }
+        }
+      })
+    }
+  }, [])
+
   const setGroupRefs = useCallback((node: THREE.Group | null) => {
     if (node) {
       groupRef.current = node

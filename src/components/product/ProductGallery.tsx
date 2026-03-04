@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, lazy, Suspense, forwardRef, useImperativeHandle, useCallback, useMemo } from 'react'
+import { useState, useEffect, useRef, lazy, Suspense, forwardRef, useImperativeHandle, useCallback, useMemo } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -126,9 +126,11 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
     }
 
     // If 3D tab disappears while viewing it (e.g. variant changed to one without SVG), go back
-    if (!show3DTab && is3DActive) {
-      setCurrentIndex(0)
-    }
+    useEffect(() => {
+      if (!show3DTab && is3DActive) {
+        setCurrentIndex(0)
+      }
+    }, [show3DTab, is3DActive])
 
     const totalSlides = images.length + (show3DTab ? 1 : 0)
     const displayIndex = is3DActive ? totalSlides : currentIndex + 1

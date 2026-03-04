@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { useRecentlyViewedStore } from '@/stores/recentlyViewedStore'
 import { ProductCard } from '@/components/product/ProductCard'
 import { cn } from '@/lib/utils/cn'
@@ -15,9 +16,10 @@ interface RecentlyViewedProps {
 export function RecentlyViewed({
   excludeProductId,
   maxItems = 8,
-  title = 'Recently Viewed',
+  title,
   className,
 }: RecentlyViewedProps) {
+  const t = useTranslations('product')
   const [mounted, setMounted] = useState(false)
   const items = useRecentlyViewedStore((state) => state.items)
 
@@ -38,7 +40,7 @@ export function RecentlyViewed({
   return (
     <section className={cn('w-full', className)}>
       <h2 className="font-display text-xl md:text-2xl text-white mb-6 tracking-wide">
-        {title}
+        {title ?? t('recentlyViewed')}
       </h2>
 
       <div className="relative">

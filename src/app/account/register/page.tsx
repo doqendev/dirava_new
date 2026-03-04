@@ -38,17 +38,6 @@ export default function RegisterPage() {
           </Link>
         </p>
 
-        {/* Terms */}
-        <p className="text-center text-white/30 text-xs mt-4">
-          By creating an account, you agree to our{' '}
-          <Link href="/policies/terms" className="underline hover:text-white/50">
-            Terms of Service
-          </Link>{' '}
-          and{' '}
-          <Link href="/policies/privacy" className="underline hover:text-white/50">
-            Privacy Policy
-          </Link>
-        </p>
       </div>
     </div>
   )

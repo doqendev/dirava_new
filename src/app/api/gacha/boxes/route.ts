@@ -57,6 +57,8 @@ export async function GET() {
     return NextResponse.json<BoxesApiResponse>({
       success: true,
       boxes,
+    }, {
+      headers: { 'Cache-Control': 's-maxage=60, stale-while-revalidate=300' },
     })
   } catch (error) {
     console.error('Boxes API error:', error)

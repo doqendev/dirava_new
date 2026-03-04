@@ -132,6 +132,7 @@ export function CookieConsent() {
                     <CookieToggle
                       label={t('necessary')}
                       description={t('necessaryDesc')}
+                      cookies={t('necessaryCookies')}
                       enabled={true}
                       disabled={true}
                       onChange={() => {}}
@@ -141,6 +142,7 @@ export function CookieConsent() {
                     <CookieToggle
                       label={t('analytics')}
                       description={t('analyticsDesc')}
+                      cookies={t('analyticsCookies')}
                       enabled={localPreferences.analytics}
                       onChange={() => togglePreference('analytics')}
                     />
@@ -149,6 +151,7 @@ export function CookieConsent() {
                     <CookieToggle
                       label={t('marketing')}
                       description={t('marketingDesc')}
+                      cookies={t('marketingCookies')}
                       enabled={localPreferences.marketing}
                       onChange={() => togglePreference('marketing')}
                     />
@@ -179,6 +182,7 @@ export function CookieConsent() {
 interface CookieToggleProps {
   label: string
   description: string
+  cookies?: string
   enabled: boolean
   disabled?: boolean
   onChange: () => void
@@ -187,6 +191,7 @@ interface CookieToggleProps {
 function CookieToggle({
   label,
   description,
+  cookies,
   enabled,
   disabled = false,
   onChange,
@@ -196,6 +201,9 @@ function CookieToggle({
       <div className="flex-1">
         <h4 className="text-sm font-medium text-white mb-1">{label}</h4>
         <p className="text-xs text-white/60">{description}</p>
+        {cookies && (
+          <p className="text-[10px] text-white/30 mt-1">{cookies}</p>
+        )}
       </div>
 
       {/* Custom Toggle Switch */}

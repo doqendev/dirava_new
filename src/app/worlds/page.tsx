@@ -58,17 +58,19 @@ async function UniversesContent() {
   return <UniverseGrid universes={universes} />
 }
 
-export default function WorldsPage() {
+export default async function WorldsPage() {
+  const t = await getTranslations('worlds')
+
   return (
     <div className="min-h-screen">
       {/* Header */}
       <section className="py-8 lg:py-12">
         <div className="px-4 max-w-7xl mx-auto text-center">
           <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-wider">
-            EXPLORE <span className="text-neon-cyan text-glow-cyan">WORLDS</span>
+            {t('exploreTitle')} <span className="text-neon-cyan text-glow-cyan">{t('worldsHighlight')}</span>
           </h1>
           <p className="mt-4 text-white/60 max-w-md mx-auto">
-            Choose your universe and discover exclusive merchandise from your favorite anime.
+            {t('exploreDescription')}
           </p>
         </div>
       </section>

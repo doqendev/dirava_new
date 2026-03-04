@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
             customerId: existingCustomer.id,
             emailMarketingConsent: {
               marketingState: 'SUBSCRIBED',
-              marketingOptInLevel: 'SINGLE_OPT_IN',
+              marketingOptInLevel: 'CONFIRMED_OPT_IN',
             },
           },
         }
@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
           email: normalizedEmail,
           emailMarketingConsent: {
             marketingState: 'SUBSCRIBED',
-            marketingOptInLevel: 'SINGLE_OPT_IN',
+            marketingOptInLevel: 'CONFIRMED_OPT_IN',
           },
         },
       }

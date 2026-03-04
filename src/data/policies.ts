@@ -274,6 +274,55 @@ export const policies: Policy[] = [
       },
     ],
   },
+  {
+    slug: 'imprint',
+    title: 'Imprint (Impressum)',
+    description: 'Legal information about the company operating this website.',
+    lastUpdated: '2026-02-26',
+    sections: [
+      {
+        heading: 'Company Information',
+        content: [
+          'Neo Stage Collective',
+          'Managing Director: [Name to be added]',
+          'Email: info@mizoke.com',
+          'Website: https://mizoke.com',
+        ],
+      },
+      {
+        heading: 'Address',
+        content: '[Company address to be added before launch]',
+      },
+      {
+        heading: 'VAT Identification Number',
+        content: 'VAT ID: [To be added before launch]',
+      },
+      {
+        heading: 'Responsible for Content',
+        content: 'Responsible according to § 55 Abs. 2 RStV: [Name to be added]',
+      },
+      {
+        heading: 'EU Online Dispute Resolution',
+        content:
+          'The European Commission provides a platform for online dispute resolution (ODR): https://ec.europa.eu/consumers/odr. Our email address can be found above. We are not willing or obliged to participate in dispute resolution proceedings before a consumer arbitration board.',
+      },
+      {
+        heading: 'Liability for Content',
+        content:
+          'As a service provider, we are responsible for our own content on these pages according to general laws (§ 7 Abs. 1 TMG). According to §§ 8 to 10 TMG, however, we are not obligated to monitor transmitted or stored third-party information or to investigate circumstances that indicate illegal activity.',
+      },
+      {
+        heading: 'Liability for Links',
+        content:
+          'Our website contains links to external third-party websites over whose content we have no influence. Therefore, we cannot accept any liability for this external content. The respective provider or operator of the linked pages is always responsible for the content of the linked pages.',
+      },
+      {
+        heading: 'Copyright',
+        content:
+          'The content and works on these pages created by the site operators are subject to copyright law. Duplication, processing, distribution, and any kind of use beyond the limits of copyright law require the written consent of the respective author or creator. Anime characters and franchises are trademarks of their respective owners.',
+      },
+    ],
+  },
 ]
 
 export function getPolicyBySlug(slug: string): Policy | undefined {
