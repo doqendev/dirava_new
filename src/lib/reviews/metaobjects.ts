@@ -82,7 +82,7 @@ const GET_ALL_REVIEWS = `
           key
           value
         }
-        createdAt
+        updatedAt
       }
     }
   }
@@ -101,7 +101,7 @@ const UPDATE_REVIEW = `
           key
           value
         }
-        createdAt
+        updatedAt
       }
       userErrors {
         field
@@ -124,7 +124,7 @@ interface MetaobjectNode {
   id: string
   handle: string
   fields: MetaobjectField[]
-  createdAt?: string
+  updatedAt?: string
 }
 
 interface CreateMetaobjectResponse {
@@ -163,7 +163,7 @@ function parseReviewFromMetaobject(node: MetaobjectNode): Review {
     rating: parseInt(getField('rating')) || 5,
     title: getField('title') || undefined,
     content: getField('content'),
-    createdAt: node.createdAt || new Date().toISOString(),
+    createdAt: node.updatedAt || new Date().toISOString(),
     verified: getField('verified_purchase') === 'true',
   }
 }
