@@ -53,6 +53,7 @@ const definitionMutation = `
         { key: "status", name: "Status", type: "single_line_text_field", required: true }
         { key: "verified_purchase", name: "Verified Purchase", type: "single_line_text_field" }
         { key: "order_id", name: "Order ID", type: "single_line_text_field" }
+        { key: "review_images", name: "Review Images", type: "single_line_text_field" }
       ]
     }) {
       metaobjectDefinition { id type }

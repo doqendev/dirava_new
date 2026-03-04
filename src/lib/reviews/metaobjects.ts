@@ -5,7 +5,7 @@
  */
 
 import { adminFetch } from '@/lib/shopify/adminClient'
-import type { Review, ReviewRating } from '@/types/reviews'
+import type { Review, ReviewRating, AdminReview } from '@/types/reviews'
 
 // ============================================================================
 // GraphQL Queries & Mutations
@@ -29,6 +29,7 @@ export const CREATE_REVIEW_METAOBJECT_DEFINITION = `
         { key: "status", name: "Status", type: "single_line_text_field", required: true }
         { key: "verified_purchase", name: "Verified Purchase", type: "single_line_text_field" }
         { key: "order_id", name: "Order ID", type: "single_line_text_field" }
+        { key: "review_images", name: "Review Images", type: "single_line_text_field" }
       ]
     }) {
       metaobjectDefinition {
@@ -157,12 +158,27 @@ interface UpdateMetaobjectResponse {
 function parseReviewFromMetaobject(node: MetaobjectNode): Review {
   const getField = (key: string) => node.fields.find(f => f.key === key)?.value || ''
 
+  // Parse review_images JSON array, fallback to empty array
+  let images: string[] | undefined
+  const imagesRaw = getField('review_images')
+  if (imagesRaw) {
+    try {
+      const parsed: unknown = JSON.parse(imagesRaw)
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        images = parsed.filter((u): u is string => typeof u === 'string' && u.length > 0)
+      }
+    } catch {
+      // Ignore malformed JSON
+    }
+  }
+
   return {
     id: node.id,
     author: getField('author_name'),
     rating: parseInt(getField('rating')) || 5,
     title: getField('title') || undefined,
     content: getField('content'),
+    images: images && images.length > 0 ? images : undefined,
     createdAt: node.updatedAt || new Date().toISOString(),
     verified: getField('verified_purchase') === 'true',
   }
@@ -177,7 +193,8 @@ function toReviewFields(data: {
   authorEmail: string
   rating: number
   title?: string
-  content: string
+  content?: string
+  images?: string[]
   status: string
   verifiedPurchase?: boolean
   orderId?: string
@@ -187,12 +204,16 @@ function toReviewFields(data: {
     { key: 'author_name', value: data.authorName },
     { key: 'author_email', value: data.authorEmail },
     { key: 'rating', value: data.rating.toString() },
-    { key: 'content', value: data.content },
+    { key: 'content', value: data.content || '' },
     { key: 'status', value: data.status },
   ]
 
   if (data.title) {
     fields.push({ key: 'title', value: data.title })
+  }
+
+  if (data.images && data.images.length > 0) {
+    fields.push({ key: 'review_images', value: JSON.stringify(data.images) })
   }
 
   if (data.verifiedPurchase !== undefined) {
@@ -204,6 +225,25 @@ function toReviewFields(data: {
   }
 
   return fields
+}
+
+/**
+ * Parse metaobject fields into AdminReview (includes status, productHandle, authorEmail)
+ */
+function parseAdminReviewFromMetaobject(node: MetaobjectNode): AdminReview {
+  const review = parseReviewFromMetaobject(node)
+  const getField = (key: string) => node.fields.find(f => f.key === key)?.value || ''
+
+  const rawStatus = getField('status')
+  const status: AdminReview['status'] =
+    rawStatus === 'approved' || rawStatus === 'rejected' ? rawStatus : 'pending'
+
+  return {
+    ...review,
+    status,
+    productHandle: getField('product_handle'),
+    authorEmail: getField('author_email'),
+  }
 }
 
 // ============================================================================
@@ -247,6 +287,30 @@ export async function setupReviewMetaobjectDefinition(): Promise<boolean> {
 }
 
 /**
+ * Get all reviews, optionally filtered by status (for admin moderation)
+ */
+export async function getAllReviews(status?: string): Promise<AdminReview[]> {
+  try {
+    const response = await adminFetch<GetMetaobjectsResponse>(
+      GET_ALL_REVIEWS,
+      { type: 'shop_review', first: 250 }
+    )
+
+    const getField = (node: MetaobjectNode, key: string) =>
+      node.fields.find(f => f.key === key)?.value || ''
+
+    const filtered = status
+      ? response.metaobjects.nodes.filter(node => getField(node, 'status') === status)
+      : response.metaobjects.nodes
+
+    return filtered.map(parseAdminReviewFromMetaobject)
+  } catch (error) {
+    console.error('Error fetching all reviews:', error)
+    return []
+  }
+}
+
+/**
  * Create a new review
  */
 export async function createReview(data: {
@@ -255,7 +319,8 @@ export async function createReview(data: {
   authorEmail: string
   rating: number
   title?: string
-  content: string
+  content?: string
+  images?: string[]
   verifiedPurchase?: boolean
   orderId?: string
 }): Promise<Review | null> {

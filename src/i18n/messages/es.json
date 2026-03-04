@@ -460,8 +460,15 @@
     "submitted": "¡Opinión enviada!",
     "submittedDescription": "¡Gracias! Tu opinión aparecerá después de la moderación.",
     "ratingRequired": "Por favor selecciona una valoración",
+    "nameRequired": "Por favor ingresa tu nombre",
+    "anonymous": "Publicar anónimamente",
     "review": "opinión",
-    "reviewsPlural": "opiniones"
+    "reviewsPlural": "opiniones",
+    "addPhotos": "Agregar fotos",
+    "maxPhotos": "Máximo 3 fotos",
+    "uploading": "Subiendo imágenes...",
+    "photoTooLarge": "La imagen debe pesar menos de 5 MB",
+    "invalidPhotoType": "Solo se permiten imágenes JPG, PNG y WebP"
   },
   "share": {
     "label": "Compartir:",

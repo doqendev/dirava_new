@@ -16,6 +16,13 @@ export interface Review {
   rating: number // 1-5
   title?: string
   content: string
+  images?: string[]
   createdAt: string
   verified?: boolean
+}
+
+export interface AdminReview extends Review {
+  status: 'pending' | 'approved' | 'rejected'
+  productHandle: string
+  authorEmail: string
 }

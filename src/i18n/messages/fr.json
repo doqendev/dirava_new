@@ -460,8 +460,15 @@
     "submitted": "Avis soumis !",
     "submittedDescription": "Merci ! Votre avis apparaîtra après modération.",
     "ratingRequired": "Veuillez sélectionner une note",
+    "nameRequired": "Veuillez entrer votre nom",
+    "anonymous": "Publier anonymement",
     "review": "avis",
-    "reviewsPlural": "avis"
+    "reviewsPlural": "avis",
+    "addPhotos": "Ajouter des photos",
+    "maxPhotos": "3 photos maximum",
+    "uploading": "Envoi des images...",
+    "photoTooLarge": "L'image doit faire moins de 5 Mo",
+    "invalidPhotoType": "Seuls les formats JPG, PNG et WebP sont acceptés"
   },
   "share": {
     "label": "Partager :",

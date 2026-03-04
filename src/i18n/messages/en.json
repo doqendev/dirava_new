@@ -460,8 +460,15 @@
     "submitted": "Review Submitted!",
     "submittedDescription": "Thank you! Your review will appear after moderation.",
     "ratingRequired": "Please select a rating",
+    "nameRequired": "Please enter your name",
+    "anonymous": "Post anonymously",
     "review": "review",
-    "reviewsPlural": "reviews"
+    "reviewsPlural": "reviews",
+    "addPhotos": "Add photos",
+    "maxPhotos": "Maximum 3 photos",
+    "uploading": "Uploading images...",
+    "photoTooLarge": "Image must be under 5MB",
+    "invalidPhotoType": "Only JPG, PNG, and WebP images allowed"
   },
   "share": {
     "label": "Share:",

@@ -79,6 +79,7 @@ export function validateShippingAddress(address: unknown): {
 
 /**
  * Validate a review submission body.
+ * Supports anonymous reviews (no name/email) and rating-only reviews (no content).
  */
 export function validateReview(body: unknown): {
   valid: boolean
@@ -90,6 +91,7 @@ export function validateReview(body: unknown): {
     rating: number
     title: string | undefined
     content: string
+    anonymous: boolean
   }
 } {
   if (!body || typeof body !== 'object') {
@@ -99,20 +101,21 @@ export function validateReview(body: unknown): {
   const b = body as Record<string, unknown>
 
   const productHandle = sanitizeString(b.productHandle, 200)
-  const authorName = sanitizeString(b.authorName, 100)
-  const authorEmail = sanitizeString(b.authorEmail, 254)
+  const anonymous = b.anonymous === true
+  const authorName = anonymous ? 'Anonymous' : sanitizeString(b.authorName, 100)
+  const rawEmail = sanitizeString(b.authorEmail, 254)
+  const authorEmail = anonymous ? 'anonymous@review.local' : (rawEmail || 'noemail@review.local')
   const content = sanitizeString(b.content, 2000)
   const title = sanitizeString(b.title, 200) || undefined
   const rating = typeof b.rating === 'number' ? Math.round(b.rating) : NaN
 
   if (!productHandle) return { valid: false, error: 'Product handle is required' }
-  if (!authorName) return { valid: false, error: 'Author name is required' }
-  if (!authorEmail || !isValidEmail(authorEmail)) return { valid: false, error: 'Valid email is required' }
+  if (!anonymous && !authorName) return { valid: false, error: 'Name is required' }
+  if (!anonymous && authorEmail && !isValidEmail(authorEmail)) return { valid: false, error: 'Please enter a valid email' }
   if (isNaN(rating) || rating < 1 || rating > 5) return { valid: false, error: 'Rating must be between 1 and 5' }
-  if (content.length < 10) return { valid: false, error: 'Review must be at least 10 characters' }
 
   return {
     valid: true,
-    sanitized: { productHandle, authorName, authorEmail, rating, title, content },
+    sanitized: { productHandle, authorName, authorEmail, rating, title, content, anonymous },
   }
 }

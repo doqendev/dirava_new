@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
-import { CheckCircle2 } from 'lucide-react'
+import { CheckCircle2, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import Image from 'next/image'
 import { ReviewSummary } from '@/components/product/ReviewSummary'
 import { StarRating } from '@/components/product/StarRating'
 import ReviewForm from '@/components/product/ReviewForm'
@@ -18,6 +19,7 @@ export default function ReviewList({ productHandle }: ReviewListProps) {
   const [reviews, setReviews] = useState<Review[]>([])
   const [stats, setStats] = useState<ReviewRating | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null)
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -47,6 +49,37 @@ export default function ReviewList({ productHandle }: ReviewListProps) {
       day: 'numeric',
     }).format(date)
   }
+
+  const openLightbox = (images: string[], index: number) => {
+    setLightbox({ images, index })
+  }
+
+  const closeLightbox = useCallback(() => {
+    setLightbox(null)
+  }, [])
+
+  const navigateLightbox = useCallback((direction: 1 | -1) => {
+    setLightbox(prev => {
+      if (!prev) return null
+      const newIndex = prev.index + direction
+      if (newIndex < 0 || newIndex >= prev.images.length) return prev
+      return { ...prev, index: newIndex }
+    })
+  }, [])
+
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    if (!lightbox) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeLightbox()
+      else if (e.key === 'ArrowLeft') navigateLightbox(-1)
+      else if (e.key === 'ArrowRight') navigateLightbox(1)
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [lightbox, closeLightbox, navigateLightbox])
 
   if (isLoading) {
     return (
@@ -119,7 +152,31 @@ export default function ReviewList({ productHandle }: ReviewListProps) {
                 )}
 
                 {/* Content */}
-                <p className="text-white/70 leading-relaxed">{review.content}</p>
+                {review.content && (
+                  <p className="text-white/70 leading-relaxed">{review.content}</p>
+                )}
+
+                {/* Review Images */}
+                {review.images && review.images.length > 0 && (
+                  <div className="flex gap-2 mt-3 flex-wrap">
+                    {review.images.map((imageUrl, imgIndex) => (
+                      <button
+                        key={imageUrl}
+                        type="button"
+                        onClick={() => openLightbox(review.images!, imgIndex)}
+                        className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border border-white/10 hover:border-neon-cyan/50 transition-colors flex-shrink-0"
+                      >
+                        <Image
+                          src={imageUrl}
+                          alt={`${review.author} review photo ${imgIndex + 1}`}
+                          fill
+                          className="object-cover"
+                          sizes="80px"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -130,6 +187,67 @@ export default function ReviewList({ productHandle }: ReviewListProps) {
       <div>
         <ReviewForm productHandle={productHandle} />
       </div>
+
+      {/* Lightbox */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+          onClick={closeLightbox}
+        >
+          {/* Close button */}
+          <button
+            type="button"
+            onClick={closeLightbox}
+            className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors z-10"
+          >
+            <X className="w-5 h-5 text-white" />
+          </button>
+
+          {/* Previous button */}
+          {lightbox.index > 0 && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); navigateLightbox(-1) }}
+              className="absolute left-4 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors z-10"
+            >
+              <ChevronLeft className="w-5 h-5 text-white" />
+            </button>
+          )}
+
+          {/* Next button */}
+          {lightbox.index < lightbox.images.length - 1 && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); navigateLightbox(1) }}
+              className="absolute right-4 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors z-10"
+            >
+              <ChevronRight className="w-5 h-5 text-white" />
+            </button>
+          )}
+
+          {/* Image */}
+          <div
+            className="relative max-w-[90vw] max-h-[85vh] w-full h-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image
+              src={lightbox.images[lightbox.index]!}
+              alt="Review photo"
+              fill
+              className="object-contain"
+              sizes="90vw"
+              priority
+            />
+          </div>
+
+          {/* Image counter */}
+          {lightbox.images.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-white/10 text-sm text-white/70">
+              {lightbox.index + 1} / {lightbox.images.length}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

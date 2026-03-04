@@ -460,8 +460,15 @@
     "submitted": "Bewertung eingereicht!",
     "submittedDescription": "Vielen Dank! Ihre Bewertung wird nach Überprüfung angezeigt.",
     "ratingRequired": "Bitte wählen Sie eine Bewertung",
+    "nameRequired": "Bitte geben Sie Ihren Namen ein",
+    "anonymous": "Anonym posten",
     "review": "Bewertung",
-    "reviewsPlural": "Bewertungen"
+    "reviewsPlural": "Bewertungen",
+    "addPhotos": "Fotos hinzufügen",
+    "maxPhotos": "Maximal 3 Fotos",
+    "uploading": "Bilder werden hochgeladen...",
+    "photoTooLarge": "Bild muss unter 5 MB sein",
+    "invalidPhotoType": "Nur JPG, PNG und WebP Bilder erlaubt"
   },
   "share": {
     "label": "Teilen:",

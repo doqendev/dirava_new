@@ -246,8 +246,10 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             </h1>
 
             {/* Reviews/Rating */}
-            {product.rating && (
-              <ReviewSummary rating={product.rating} size="md" />
+            {product.rating && product.rating.reviewCount > 0 && (
+              <a href="#reviews" className="block w-fit hover:opacity-80 transition-opacity">
+                <ReviewSummary rating={product.rating} size="md" />
+              </a>
             )}
 
             {/* Price */}
