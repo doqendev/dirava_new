@@ -297,28 +297,23 @@ export async function getReviewsByProduct(
   productHandle: string,
   status?: string
 ): Promise<Review[]> {
-  try {
-    // Fetch all shop_review metaobjects and filter in-memory
-    // Shopify metaobject query filtering is unreliable for field values
-    const response = await adminFetch<GetMetaobjectsResponse>(
-      GET_ALL_REVIEWS,
-      { type: 'shop_review', first: 250 }
-    )
+  // Fetch all shop_review metaobjects and filter in-memory
+  // Shopify metaobject query filtering is unreliable for field values
+  const response = await adminFetch<GetMetaobjectsResponse>(
+    GET_ALL_REVIEWS,
+    { type: 'shop_review', first: 250 }
+  )
 
-    const getField = (node: MetaobjectNode, key: string) =>
-      node.fields.find(f => f.key === key)?.value || ''
+  const getField = (node: MetaobjectNode, key: string) =>
+    node.fields.find(f => f.key === key)?.value || ''
 
-    const filtered = response.metaobjects.nodes.filter((node) => {
-      if (getField(node, 'product_handle') !== productHandle) return false
-      if (status && getField(node, 'status') !== status) return false
-      return true
-    })
+  const filtered = response.metaobjects.nodes.filter((node) => {
+    if (getField(node, 'product_handle') !== productHandle) return false
+    if (status && getField(node, 'status') !== status) return false
+    return true
+  })
 
-    return filtered.map(parseReviewFromMetaobject)
-  } catch (error) {
-    console.error('Error fetching reviews by product:', error)
-    return []
-  }
+  return filtered.map(parseReviewFromMetaobject)
 }
 
 /**
