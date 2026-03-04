@@ -70,25 +70,6 @@ const CREATE_REVIEW = `
 `
 
 /**
- * Get reviews with query filter
- */
-const GET_REVIEWS = `
-  query GetReviews($query: String!, $first: Int!) {
-    metaobjects(type: "shop_review", query: $query, first: $first, sortKey: "id", reverse: true) {
-      nodes {
-        id
-        handle
-        fields {
-          key
-          value
-        }
-        createdAt
-      }
-    }
-  }
-`
-
-/**
  * Get all reviews by type
  */
 const GET_ALL_REVIEWS = `
@@ -317,18 +298,23 @@ export async function getReviewsByProduct(
   status?: string
 ): Promise<Review[]> {
   try {
-    let query = `product_handle:${productHandle}`
-
-    if (status) {
-      query += ` AND status:${status}`
-    }
-
+    // Fetch all shop_review metaobjects and filter in-memory
+    // Shopify metaobject query filtering is unreliable for field values
     const response = await adminFetch<GetMetaobjectsResponse>(
-      GET_REVIEWS,
-      { query, first: 100 }
+      GET_ALL_REVIEWS,
+      { type: 'shop_review', first: 250 }
     )
 
-    return response.metaobjects.nodes.map(parseReviewFromMetaobject)
+    const getField = (node: MetaobjectNode, key: string) =>
+      node.fields.find(f => f.key === key)?.value || ''
+
+    const filtered = response.metaobjects.nodes.filter((node) => {
+      if (getField(node, 'product_handle') !== productHandle) return false
+      if (status && getField(node, 'status') !== status) return false
+      return true
+    })
+
+    return filtered.map(parseReviewFromMetaobject)
   } catch (error) {
     console.error('Error fetching reviews by product:', error)
     return []
