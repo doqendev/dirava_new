@@ -41,6 +41,29 @@ export async function GET(
       }
     }
 
+    // debug=2: test getReviewsByProduct directly, surfacing errors
+    if (url.searchParams.get('debug') === '2') {
+      try {
+        const reviews = await getReviewsByProduct(handle, 'approved')
+        return NextResponse.json({ debug2: { count: reviews.length, reviews } })
+      } catch (e) {
+        return NextResponse.json({ debug2: { error: e instanceof Error ? e.message : String(e) } })
+      }
+    }
+
+    // debug=3: test GET_ALL_REVIEWS query with variable
+    if (url.searchParams.get('debug') === '3') {
+      try {
+        const raw = await adminFetch<{ metaobjects: { nodes: unknown[] } }>(
+          `query GetAllReviews($type: String!, $first: Int!) { metaobjects(type: $type, first: $first, sortKey: "id", reverse: true) { nodes { id handle fields { key value } } } }`,
+          { type: 'shop_review', first: 10 }
+        )
+        return NextResponse.json({ debug3: { count: raw.metaobjects.nodes.length, nodes: raw.metaobjects.nodes } })
+      } catch (e) {
+        return NextResponse.json({ debug3: { error: e instanceof Error ? e.message : String(e) } })
+      }
+    }
+
     const [reviews, stats] = await Promise.all([
       getReviewsByProduct(handle, 'approved'),
       getReviewStats(handle),
