@@ -115,7 +115,8 @@ export async function POST(request: Request) {
       }
     }
 
-    console.log('Creating review:', { productHandle, authorName, authorEmail, rating, title, hasContent: !!content, imageCount: imageUrls?.length ?? 0 })
+    // Detect country from Vercel geo headers
+    const countryCode = request.headers.get('x-vercel-ip-country') || undefined
 
     const review = await createReview({
       productHandle,
@@ -125,6 +126,7 @@ export async function POST(request: Request) {
       title,
       content: content || undefined,
       images: imageUrls,
+      countryCode,
     })
 
     if (!review) {

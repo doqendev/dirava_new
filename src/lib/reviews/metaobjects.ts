@@ -181,6 +181,7 @@ function parseReviewFromMetaobject(node: MetaobjectNode): Review {
     images: images && images.length > 0 ? images : undefined,
     createdAt: node.updatedAt || new Date().toISOString(),
     verified: getField('verified_purchase') === 'true',
+    countryCode: getField('country_code') || undefined,
   }
 }
 
@@ -198,6 +199,7 @@ function toReviewFields(data: {
   status: string
   verifiedPurchase?: boolean
   orderId?: string
+  countryCode?: string
 }): Array<{ key: string; value: string }> {
   const fields: Array<{ key: string; value: string }> = [
     { key: 'product_handle', value: data.productHandle },
@@ -222,6 +224,10 @@ function toReviewFields(data: {
 
   if (data.orderId) {
     fields.push({ key: 'order_id', value: data.orderId })
+  }
+
+  if (data.countryCode) {
+    fields.push({ key: 'country_code', value: data.countryCode })
   }
 
   return fields
@@ -323,6 +329,7 @@ export async function createReview(data: {
   images?: string[]
   verifiedPurchase?: boolean
   orderId?: string
+  countryCode?: string
 }): Promise<Review | null> {
   const handle = `review-${data.productHandle}-${Date.now()}`
   const fields = toReviewFields({

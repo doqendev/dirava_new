@@ -1,13 +1,25 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
-import { CheckCircle2, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { CheckCircle2, X, ChevronLeft, ChevronRight, Camera } from 'lucide-react'
 import Image from 'next/image'
+import { cn } from '@/lib/utils/cn'
 import { ReviewSummary } from '@/components/product/ReviewSummary'
 import { StarRating } from '@/components/product/StarRating'
 import ReviewForm from '@/components/product/ReviewForm'
 import type { Review, ReviewRating } from '@/types/reviews'
+
+/** Convert ISO 3166-1 alpha-2 country code to flag emoji */
+function countryCodeToFlag(code: string): string {
+  const upper = code.toUpperCase()
+  if (upper.length !== 2) return ''
+  const offset = 0x1F1E6 - 65 // 'A' char code
+  return String.fromCodePoint(
+    upper.charCodeAt(0) + offset,
+    upper.charCodeAt(1) + offset
+  )
+}
 
 interface ReviewListProps {
   productHandle: string
@@ -20,6 +32,17 @@ export default function ReviewList({ productHandle }: ReviewListProps) {
   const [stats, setStats] = useState<ReviewRating | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null)
+  const [photosOnly, setPhotosOnly] = useState(false)
+
+  const filteredReviews = useMemo(
+    () => photosOnly ? reviews.filter(r => r.images && r.images.length > 0) : reviews,
+    [reviews, photosOnly]
+  )
+
+  const hasPhotosReviews = useMemo(
+    () => reviews.some(r => r.images && r.images.length > 0),
+    [reviews]
+  )
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -113,7 +136,24 @@ export default function ReviewList({ productHandle }: ReviewListProps) {
 
       {/* Reviews List */}
       <div className="space-y-4">
-        <h3 className="text-xl font-display font-bold">{t('title')}</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-display font-bold">{t('title')}</h3>
+          {hasPhotosReviews && (
+            <button
+              type="button"
+              onClick={() => setPhotosOnly(!photosOnly)}
+              className={cn(
+                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border',
+                photosOnly
+                  ? 'bg-neon-cyan/10 text-neon-cyan border-neon-cyan/30'
+                  : 'bg-white/5 text-white/60 border-white/10 hover:text-white/80 hover:border-white/20'
+              )}
+            >
+              <Camera className="w-3.5 h-3.5" />
+              {t('withPhotos')}
+            </button>
+          )}
+        </div>
 
         {reviews.length === 0 ? (
           <div className="bg-bg-card/50 backdrop-blur-sm border border-border-subtle rounded-xl p-8 text-center">
@@ -122,7 +162,7 @@ export default function ReviewList({ productHandle }: ReviewListProps) {
           </div>
         ) : (
           <div className="space-y-4">
-            {reviews.map((review) => (
+            {filteredReviews.map((review) => (
               <div
                 key={review.id}
                 className="bg-bg-card/50 backdrop-blur-sm border border-border-subtle rounded-xl p-4"
@@ -132,6 +172,11 @@ export default function ReviewList({ productHandle }: ReviewListProps) {
                   <div>
                     <StarRating rating={review.rating} size="sm" />
                     <div className="flex items-center gap-2 mt-2">
+                      {review.countryCode && (
+                        <span className="text-sm" title={review.countryCode}>
+                          {countryCodeToFlag(review.countryCode)}
+                        </span>
+                      )}
                       <span className="font-medium">{review.author}</span>
                       {review.verified && (
                         <span className="inline-flex items-center gap-1 text-xs bg-neon-green/20 text-neon-green px-2 py-0.5 rounded-full">

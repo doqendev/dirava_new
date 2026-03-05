@@ -19,6 +19,7 @@ export interface Review {
   images?: string[]
   createdAt: string
   verified?: boolean
+  countryCode?: string
 }
 
 export interface AdminReview extends Review {
