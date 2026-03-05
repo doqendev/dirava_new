@@ -135,7 +135,21 @@
     "preview3dNotAvailable": "Vista previa 3D no disponible",
     "preview3dWebglHint": "Es posible que WebGL no sea compatible",
     "preview3dDragToRotate": "Arrastra para girar",
-    "preview3dPinchToZoom": "Pellizca para hacer zoom"
+    "preview3dPinchToZoom": "Pellizca para hacer zoom",
+    "trustFreeShipping": "Envío gratis",
+    "trustSecureCheckout": "Pago seguro",
+    "trustReturns": "Devoluciones en 30 días",
+    "trustLicensed": "Con licencia oficial",
+    "whatYouGet": "Lo que recibes",
+    "highlightLedSign": "Cartel LED neón personalizado con tu nombre",
+    "highlightAcrylicBase": "Base de acrílico de alta calidad",
+    "highlightUsbPowered": "Alimentado por USB-C — conecta y brilla",
+    "highlightDimensions": "Aprox. 20 cm x 15 cm",
+    "highlightJollyRoger": "Diseño Jolly Roger específico del personaje",
+    "faqTitle": "Preguntas frecuentes",
+    "socialProofRating": "Valoración media",
+    "socialProofCountries": "Países de envío",
+    "socialProofSatisfaction": "Satisfacción del cliente"
   },
   "cart": {
     "title": "Tu carrito",

@@ -15,6 +15,7 @@ interface AddToCartButtonProps {
   available?: boolean
   attributes?: Array<{ key: string; value: string }>
   className?: string
+  size?: 'sm' | 'md' | 'lg'
   requiresPersonalization?: boolean
   personalizationValue?: string
   onPersonalizationError?: () => void
@@ -30,6 +31,7 @@ export function AddToCartButton({
   available = true,
   attributes,
   className,
+  size = 'lg',
   requiresPersonalization = false,
   personalizationValue = '',
   onPersonalizationError,
@@ -103,7 +105,7 @@ export function AddToCartButton({
     return (
       <Button
         variant="outline"
-        size="lg"
+        size={size}
         disabled
         className={cn('w-full', className)}
       >
@@ -119,7 +121,7 @@ export function AddToCartButton({
     >
       <Button
         variant="primary"
-        size="lg"
+        size={size}
         glow="cyan"
         onClick={handleClick}
         disabled={state === 'loading'}

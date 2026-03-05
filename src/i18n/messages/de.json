@@ -135,7 +135,21 @@
     "preview3dNotAvailable": "3D-Vorschau nicht verfügbar",
     "preview3dWebglHint": "WebGL wird möglicherweise nicht unterstützt",
     "preview3dDragToRotate": "Ziehen zum Drehen",
-    "preview3dPinchToZoom": "Kneifen zum Zoomen"
+    "preview3dPinchToZoom": "Kneifen zum Zoomen",
+    "trustFreeShipping": "Kostenloser Versand",
+    "trustSecureCheckout": "Sicherer Checkout",
+    "trustReturns": "30 Tage Rückgabe",
+    "trustLicensed": "Offiziell lizenziert",
+    "whatYouGet": "Was du bekommst",
+    "highlightLedSign": "Individuelles LED-Neon-Schild mit deinem Namen",
+    "highlightAcrylicBase": "Hochwertige Acrylbasis",
+    "highlightUsbPowered": "USB-C betrieben — einstecken und leuchten",
+    "highlightDimensions": "Ca. 20 cm x 15 cm",
+    "highlightJollyRoger": "Charakterspezifisches Jolly-Roger-Design",
+    "faqTitle": "Häufig gestellte Fragen",
+    "socialProofRating": "Durchschnittliche Bewertung",
+    "socialProofCountries": "Lieferländer",
+    "socialProofSatisfaction": "Kundenzufriedenheit"
   },
   "cart": {
     "title": "Dein Warenkorb",

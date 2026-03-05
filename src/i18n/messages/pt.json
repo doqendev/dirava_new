@@ -135,7 +135,21 @@
     "preview3dNotAvailable": "Pré-visualização 3D não disponível",
     "preview3dWebglHint": "WebGL pode não ser suportado",
     "preview3dDragToRotate": "Arraste para girar",
-    "preview3dPinchToZoom": "Belisque para ampliar"
+    "preview3dPinchToZoom": "Belisque para ampliar",
+    "trustFreeShipping": "Envio grátis",
+    "trustSecureCheckout": "Pagamento seguro",
+    "trustReturns": "Devoluções em 30 dias",
+    "trustLicensed": "Licenciado oficialmente",
+    "whatYouGet": "O que recebes",
+    "highlightLedSign": "Letreiro LED néon personalizado com o teu nome",
+    "highlightAcrylicBase": "Base em acrílico de alta qualidade",
+    "highlightUsbPowered": "Alimentado por USB-C — liga e brilha",
+    "highlightDimensions": "Aprox. 20 cm x 15 cm",
+    "highlightJollyRoger": "Design Jolly Roger específico do personagem",
+    "faqTitle": "Perguntas frequentes",
+    "socialProofRating": "Classificação média",
+    "socialProofCountries": "Países de envio",
+    "socialProofSatisfaction": "Satisfação do cliente"
   },
   "cart": {
     "title": "O teu cesto",

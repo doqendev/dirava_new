@@ -135,7 +135,21 @@
     "preview3dNotAvailable": "Aperçu 3D non disponible",
     "preview3dWebglHint": "WebGL peut ne pas être pris en charge",
     "preview3dDragToRotate": "Glisser pour tourner",
-    "preview3dPinchToZoom": "Pincer pour zoomer"
+    "preview3dPinchToZoom": "Pincer pour zoomer",
+    "trustFreeShipping": "Livraison gratuite",
+    "trustSecureCheckout": "Paiement sécurisé",
+    "trustReturns": "Retours sous 30 jours",
+    "trustLicensed": "Licence officielle",
+    "whatYouGet": "Ce que tu reçois",
+    "highlightLedSign": "Enseigne LED néon personnalisée avec ton nom",
+    "highlightAcrylicBase": "Base en acrylique de haute qualité",
+    "highlightUsbPowered": "Alimenté par USB-C — branche et illumine",
+    "highlightDimensions": "Env. 20 cm x 15 cm",
+    "highlightJollyRoger": "Design Jolly Roger spécifique au personnage",
+    "faqTitle": "Questions fréquentes",
+    "socialProofRating": "Note moyenne",
+    "socialProofCountries": "Pays livrés",
+    "socialProofSatisfaction": "Satisfaction client"
   },
   "cart": {
     "title": "Ton panier",

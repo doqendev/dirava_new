@@ -135,7 +135,21 @@
     "preview3dNotAvailable": "3D preview not available",
     "preview3dWebglHint": "WebGL may not be supported",
     "preview3dDragToRotate": "Drag to rotate",
-    "preview3dPinchToZoom": "Pinch to zoom"
+    "preview3dPinchToZoom": "Pinch to zoom",
+    "trustFreeShipping": "Free Shipping",
+    "trustSecureCheckout": "Secure Checkout",
+    "trustReturns": "30-Day Returns",
+    "trustLicensed": "Official Licensed",
+    "whatYouGet": "What You Get",
+    "highlightLedSign": "Custom LED neon-style sign with your name",
+    "highlightAcrylicBase": "High-quality acrylic base",
+    "highlightUsbPowered": "USB-C powered — plug and glow",
+    "highlightDimensions": "Approx. 20cm x 15cm",
+    "highlightJollyRoger": "Character-specific Jolly Roger design",
+    "faqTitle": "Frequently Asked Questions",
+    "socialProofRating": "Average Rating",
+    "socialProofCountries": "Countries Shipped",
+    "socialProofSatisfaction": "Customer Satisfaction"
   },
   "cart": {
     "title": "Your Cart",

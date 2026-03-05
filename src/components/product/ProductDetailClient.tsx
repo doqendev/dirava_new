@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { ArrowLeft, Box, ChevronDown } from 'lucide-react'
+import { ArrowLeft, Box, ChevronDown, Truck, ShieldCheck, RotateCcw, Award } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { formatPrice } from '@/lib/utils/formatPrice'
 import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
@@ -19,8 +19,10 @@ import { ShareButtons } from '@/components/product/ShareButtons'
 import { SizeGuideButton } from '@/components/product/SizeGuideButton'
 import { SizeGuideModal } from '@/components/product/SizeGuideModal'
 import { ReviewSummary } from '@/components/product/ReviewSummary'
+import { StickyAddToCart } from '@/components/product/StickyAddToCart'
 import { useTrackProductView } from '@/hooks/useTrackProductView'
 import { getSizeGuide } from '@/data/sizeGuides'
+import { getProductHighlights } from '@/data/productHighlights'
 import { getPreviewConfig } from '@/lib/preview'
 import { getPreviewDisplayText } from '@/lib/preview/textTransform'
 import type { ShopifyMoney, ShopifySelectedOption } from '@/types/shopify'
@@ -73,6 +75,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
 
   // Size guide modal state
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false)
+  const [isHighlightsOpen, setIsHighlightsOpen] = useState(true)
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false)
   const [isShippingOpen, setIsShippingOpen] = useState(false)
   const [isReturnsOpen, setIsReturnsOpen] = useState(false)
@@ -131,6 +134,12 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
 
   // Quantity state
   const [quantity, setQuantity] = useState(1)
+
+  // Ref for sticky add-to-cart IntersectionObserver
+  const cartButtonRef = useRef<HTMLDivElement>(null)
+
+  // Product highlights for "What You Get" section
+  const highlights = useMemo(() => getProductHighlights(product.handle), [product.handle])
 
   // Gallery ref for programmatic 3D navigation
   const galleryRef = useRef<ProductGalleryHandle>(null)
@@ -359,7 +368,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             )}
 
             {/* Add to Cart & Wishlist */}
-            <div className="pt-4 flex flex-col sm:flex-row gap-3">
+            <div ref={cartButtonRef} className="pt-4 flex flex-col sm:flex-row gap-3">
               <div className="flex-1">
                 <AddToCartButton
                   variantId={selectedVariant?.id || ''}
@@ -390,6 +399,68 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 size="lg"
               />
             </div>
+
+            {/* Trust Badges */}
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              {[
+                { icon: Truck, key: 'trustFreeShipping' },
+                { icon: ShieldCheck, key: 'trustSecureCheckout' },
+                { icon: RotateCcw, key: 'trustReturns' },
+                { icon: Award, key: 'trustLicensed' },
+              ].map(({ icon: Icon, key }) => (
+                <div key={key} className="flex items-center gap-2 text-white/50">
+                  <Icon className="w-4 h-4 flex-shrink-0 text-white/40" />
+                  <span className="text-xs">{t(key)}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Payment Methods */}
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              {['Visa', 'Mastercard', 'PayPal', 'Apple Pay', 'Google Pay', 'Shop Pay'].map((method) => (
+                <span
+                  key={method}
+                  className="px-2 py-0.5 text-[10px] font-medium text-white/40 border border-white/10 rounded bg-white/[0.03]"
+                >
+                  {method}
+                </span>
+              ))}
+            </div>
+
+            {/* What You Get (collapsible) — only if highlights exist */}
+            {highlights && (
+              <div className="pt-6 border-t border-border-subtle">
+                <button
+                  type="button"
+                  onClick={() => setIsHighlightsOpen(!isHighlightsOpen)}
+                  className="w-full flex items-center justify-between py-1 group"
+                >
+                  <h2 className="font-display text-lg text-white">{t('whatYouGet')}</h2>
+                  <ChevronDown className={cn(
+                    'w-5 h-5 text-white/50 transition-transform duration-300',
+                    isHighlightsOpen && 'rotate-180'
+                  )} />
+                </button>
+                <div
+                  className={cn(
+                    'overflow-hidden transition-all duration-300',
+                    isHighlightsOpen ? 'max-h-[500px] opacity-100 mt-3' : 'max-h-0 opacity-0'
+                  )}
+                >
+                  <ul className="space-y-2.5">
+                    {highlights.map((highlight) => {
+                      const Icon = highlight.icon
+                      return (
+                        <li key={highlight.textKey} className="flex items-start gap-3">
+                          <Icon className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: themeColor }} />
+                          <span className="text-sm text-white/70">{t(highlight.textKey)}</span>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </div>
+              </div>
+            )}
 
             {/* Description (collapsible) */}
             <div className="pt-6 border-t border-border-subtle">
@@ -511,6 +582,23 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
         isOpen={isSizeGuideOpen}
         onClose={() => setIsSizeGuideOpen(false)}
         sizeGuide={sizeGuide}
+      />
+
+      {/* Sticky Mobile Add-to-Cart */}
+      <StickyAddToCart
+        productTitle={product.title}
+        price={selectedVariant?.price || product.priceRange.minVariantPrice}
+        variantId={selectedVariant?.id || ''}
+        available={selectedVariant?.availableForSale ?? false}
+        requiresPersonalization={product.personalization}
+        personalizationValue={personalizationName}
+        onPersonalizationError={handlePersonalizationError}
+        attributes={
+          product.personalization && personalizationName.trim()
+            ? [{ key: 'Personalization', value: personalizationName.trim() }]
+            : undefined
+        }
+        cartButtonRef={cartButtonRef}
       />
     </div>
   )
