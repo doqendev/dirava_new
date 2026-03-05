@@ -144,12 +144,13 @@
     "highlightLedSign": "Custom LED neon-style sign with your name",
     "highlightAcrylicBase": "High-quality acrylic base",
     "highlightUsbPowered": "USB-C powered — plug and glow",
-    "highlightDimensions": "Approx. 20cm x 15cm",
+    "highlightRaisedLettering": "Custom name with raised lettering",
+    "highlightPremiumPolymer": "Crafted from premium polymer with a smooth finish",
+    "highlightDeskWall": "Display on your desk or mount on the wall",
+    "highlightDimensions": "20–25 cm depending on name length",
     "highlightJollyRoger": "Character-specific Jolly Roger design",
     "faqTitle": "Frequently Asked Questions",
-    "socialProofRating": "Average Rating",
-    "socialProofCountries": "Countries Shipped",
-    "socialProofSatisfaction": "Customer Satisfaction"
+    "lifestyleGalleryTitle": "See It In Action"
   },
   "cart": {
     "title": "Your Cart",

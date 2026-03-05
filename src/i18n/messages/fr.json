@@ -144,12 +144,13 @@
     "highlightLedSign": "Enseigne LED néon personnalisée avec ton nom",
     "highlightAcrylicBase": "Base en acrylique de haute qualité",
     "highlightUsbPowered": "Alimenté par USB-C — branche et illumine",
-    "highlightDimensions": "Env. 20 cm x 15 cm",
+    "highlightRaisedLettering": "Nom personnalisé avec lettrage en relief",
+    "highlightPremiumPolymer": "Fabriqué en polymère premium avec une finition lisse",
+    "highlightDeskWall": "À poser sur le bureau ou à fixer au mur",
+    "highlightDimensions": "20–25 cm selon la longueur du nom",
     "highlightJollyRoger": "Design Jolly Roger spécifique au personnage",
     "faqTitle": "Questions fréquentes",
-    "socialProofRating": "Note moyenne",
-    "socialProofCountries": "Pays livrés",
-    "socialProofSatisfaction": "Satisfaction client"
+    "lifestyleGalleryTitle": "Voyez-le en action"
   },
   "cart": {
     "title": "Ton panier",

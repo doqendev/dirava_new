@@ -144,12 +144,13 @@
     "highlightLedSign": "Individuelles LED-Neon-Schild mit deinem Namen",
     "highlightAcrylicBase": "Hochwertige Acrylbasis",
     "highlightUsbPowered": "USB-C betrieben — einstecken und leuchten",
-    "highlightDimensions": "Ca. 20 cm x 15 cm",
+    "highlightRaisedLettering": "Individueller Name mit erhabener Schrift",
+    "highlightPremiumPolymer": "Aus hochwertigem Polymer mit glatter Oberfläche gefertigt",
+    "highlightDeskWall": "Auf dem Schreibtisch aufstellen oder an der Wand befestigen",
+    "highlightDimensions": "20–25 cm je nach Namenslänge",
     "highlightJollyRoger": "Charakterspezifisches Jolly-Roger-Design",
     "faqTitle": "Häufig gestellte Fragen",
-    "socialProofRating": "Durchschnittliche Bewertung",
-    "socialProofCountries": "Lieferländer",
-    "socialProofSatisfaction": "Kundenzufriedenheit"
+    "lifestyleGalleryTitle": "Erlebe es in Aktion"
   },
   "cart": {
     "title": "Dein Warenkorb",

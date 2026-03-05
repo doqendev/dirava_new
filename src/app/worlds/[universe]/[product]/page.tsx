@@ -7,7 +7,7 @@ import { ProductDetailClient } from '@/components/product/ProductDetailClient'
 import { RelatedProducts } from '@/components/product/RelatedProducts'
 import { RecentlyViewed } from '@/components/product/RecentlyViewed'
 import ReviewList from '@/components/product/ReviewList'
-import { SocialProofBanner } from '@/components/product/SocialProofBanner'
+import { ProductLifestyleGallery } from '@/components/product/ProductLifestyleGallery'
 import { ProductFAQ } from '@/components/product/ProductFAQ'
 import { getReviewsByProduct, getReviewStats } from '@/lib/reviews/metaobjects'
 import type { ShopifyProduct, ShopifyCollection } from '@/types/shopify'
@@ -250,12 +250,9 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
       <ProductDetailClient universe={universe} product={{ ...product, rating: reviewStats }} />
 
-      {/* Social Proof Banner */}
+      {/* Lifestyle Gallery */}
       <div className="px-4 py-8 max-w-7xl mx-auto">
-        <SocialProofBanner
-          averageRating={reviewStats.averageRating}
-          reviewCount={reviewStats.reviewCount}
-        />
+        <ProductLifestyleGallery productHandle={product.handle} />
       </div>
 
       {/* Reviews */}

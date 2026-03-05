@@ -144,12 +144,13 @@
     "highlightLedSign": "Letreiro LED néon personalizado com o teu nome",
     "highlightAcrylicBase": "Base em acrílico de alta qualidade",
     "highlightUsbPowered": "Alimentado por USB-C — liga e brilha",
-    "highlightDimensions": "Aprox. 20 cm x 15 cm",
+    "highlightRaisedLettering": "Nome personalizado com letras em relevo",
+    "highlightPremiumPolymer": "Fabricado em polímero premium com acabamento liso",
+    "highlightDeskWall": "Para colocar na secretária ou pendurar na parede",
+    "highlightDimensions": "20–25 cm dependendo do comprimento do nome",
     "highlightJollyRoger": "Design Jolly Roger específico do personagem",
     "faqTitle": "Perguntas frequentes",
-    "socialProofRating": "Classificação média",
-    "socialProofCountries": "Países de envio",
-    "socialProofSatisfaction": "Satisfação do cliente"
+    "lifestyleGalleryTitle": "Veja em ação"
   },
   "cart": {
     "title": "O teu cesto",

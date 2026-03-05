@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { Lightbulb, Layers, Usb, Ruler, Skull } from 'lucide-react'
+import { Type, Gem, Frame, Ruler, Skull } from 'lucide-react'
 
 export interface ProductHighlight {
   icon: LucideIcon
@@ -12,40 +12,40 @@ export interface ProductHighlight {
  */
 export const productHighlights: Record<string, ProductHighlight[]> = {
   'one-piece-custom-sign': [
-    { icon: Lightbulb, textKey: 'highlightLedSign' },
-    { icon: Layers, textKey: 'highlightAcrylicBase' },
-    { icon: Usb, textKey: 'highlightUsbPowered' },
+    { icon: Type, textKey: 'highlightRaisedLettering' },
+    { icon: Gem, textKey: 'highlightPremiumPolymer' },
+    { icon: Frame, textKey: 'highlightDeskWall' },
     { icon: Ruler, textKey: 'highlightDimensions' },
     { icon: Skull, textKey: 'highlightJollyRoger' },
   ],
   'demon-slayer-custom-sign': [
-    { icon: Lightbulb, textKey: 'highlightLedSign' },
-    { icon: Layers, textKey: 'highlightAcrylicBase' },
-    { icon: Usb, textKey: 'highlightUsbPowered' },
+    { icon: Type, textKey: 'highlightRaisedLettering' },
+    { icon: Gem, textKey: 'highlightPremiumPolymer' },
+    { icon: Frame, textKey: 'highlightDeskWall' },
     { icon: Ruler, textKey: 'highlightDimensions' },
   ],
   'dragon-ball-custom-sign': [
-    { icon: Lightbulb, textKey: 'highlightLedSign' },
-    { icon: Layers, textKey: 'highlightAcrylicBase' },
-    { icon: Usb, textKey: 'highlightUsbPowered' },
+    { icon: Type, textKey: 'highlightRaisedLettering' },
+    { icon: Gem, textKey: 'highlightPremiumPolymer' },
+    { icon: Frame, textKey: 'highlightDeskWall' },
     { icon: Ruler, textKey: 'highlightDimensions' },
   ],
   'hunter-x-hunter-custom-sign': [
-    { icon: Lightbulb, textKey: 'highlightLedSign' },
-    { icon: Layers, textKey: 'highlightAcrylicBase' },
-    { icon: Usb, textKey: 'highlightUsbPowered' },
+    { icon: Type, textKey: 'highlightRaisedLettering' },
+    { icon: Gem, textKey: 'highlightPremiumPolymer' },
+    { icon: Frame, textKey: 'highlightDeskWall' },
     { icon: Ruler, textKey: 'highlightDimensions' },
   ],
   'attack-on-titan-custom-sign': [
-    { icon: Lightbulb, textKey: 'highlightLedSign' },
-    { icon: Layers, textKey: 'highlightAcrylicBase' },
-    { icon: Usb, textKey: 'highlightUsbPowered' },
+    { icon: Type, textKey: 'highlightRaisedLettering' },
+    { icon: Gem, textKey: 'highlightPremiumPolymer' },
+    { icon: Frame, textKey: 'highlightDeskWall' },
     { icon: Ruler, textKey: 'highlightDimensions' },
   ],
   'digimon-custom-sign': [
-    { icon: Lightbulb, textKey: 'highlightLedSign' },
-    { icon: Layers, textKey: 'highlightAcrylicBase' },
-    { icon: Usb, textKey: 'highlightUsbPowered' },
+    { icon: Type, textKey: 'highlightRaisedLettering' },
+    { icon: Gem, textKey: 'highlightPremiumPolymer' },
+    { icon: Frame, textKey: 'highlightDeskWall' },
     { icon: Ruler, textKey: 'highlightDimensions' },
   ],
 }

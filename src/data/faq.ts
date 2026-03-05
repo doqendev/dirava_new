@@ -4,7 +4,7 @@ export const faqs: FAQItem[] = [
   {
     question: 'How long does shipping take?',
     answer:
-      'European orders typically arrive within 5-12 business days. UK orders take 5-10 days, Canada 7-14 days, Australia 10-20 days, and other international destinations 14-35 days. Free shipping is available in most regions above certain order values. All orders are processed within 1-3 business days before shipping.',
+      'European orders typically arrive within 5-12 business days. UK orders take 5-10 days, Canada 7-14 days, Australia 10-20 days, and other international destinations 14-35 days. Free shipping is available in most regions above certain order values. All orders are processed within 1-3 business days before shipping. Please note that shipping and manufacturing times may increase during high-demand seasons.',
   },
   {
     question: 'Do you ship internationally?',

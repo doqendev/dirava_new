@@ -144,12 +144,13 @@
     "highlightLedSign": "Cartel LED neón personalizado con tu nombre",
     "highlightAcrylicBase": "Base de acrílico de alta calidad",
     "highlightUsbPowered": "Alimentado por USB-C — conecta y brilla",
-    "highlightDimensions": "Aprox. 20 cm x 15 cm",
+    "highlightRaisedLettering": "Nombre personalizado con letras en relieve",
+    "highlightPremiumPolymer": "Fabricado en polímero premium con acabado liso",
+    "highlightDeskWall": "Para colocar en el escritorio o colgar en la pared",
+    "highlightDimensions": "20–25 cm según la longitud del nombre",
     "highlightJollyRoger": "Diseño Jolly Roger específico del personaje",
     "faqTitle": "Preguntas frecuentes",
-    "socialProofRating": "Valoración media",
-    "socialProofCountries": "Países de envío",
-    "socialProofSatisfaction": "Satisfacción del cliente"
+    "lifestyleGalleryTitle": "Míralo en acción"
   },
   "cart": {
     "title": "Tu carrito",
