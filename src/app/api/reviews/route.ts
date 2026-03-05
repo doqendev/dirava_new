@@ -115,6 +115,8 @@ export async function POST(request: Request) {
       }
     }
 
+    console.log('Creating review:', { productHandle, authorName, authorEmail, rating, title, hasContent: !!content, imageCount: imageUrls?.length ?? 0 })
+
     const review = await createReview({
       productHandle,
       authorName,
@@ -126,6 +128,7 @@ export async function POST(request: Request) {
     })
 
     if (!review) {
+      console.error('createReview returned null for:', { productHandle, authorName, rating })
       return NextResponse.json(
         { success: false, error: 'Failed to create review. Please try again.' },
         { status: 500 }
