@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
@@ -10,11 +11,12 @@ interface ErrorProps {
 }
 
 export default function GachaRevealError({ error, reset }: ErrorProps) {
+  const t = useTranslations('errors')
+
   useEffect(() => {
     import('@sentry/nextjs').then((Sentry) => {
       Sentry.captureException(error)
     })
-    console.error('Gacha reveal error:', error)
   }, [error])
 
   return (
@@ -25,20 +27,20 @@ export default function GachaRevealError({ error, reset }: ErrorProps) {
         </div>
 
         <h1 className="font-display text-2xl text-white mb-2">
-          Reveal Failed
+          {t('revealFailed')}
         </h1>
         <p className="text-white/60 mb-8">
-          Something went wrong while loading your gacha reveal. Please try again.
+          {t('revealFailedDescription')}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button onClick={reset} variant="primary" glow="cyan">
             <RefreshCw className="w-4 h-4 mr-2" />
-            Try Again
+            {t('tryAgain')}
           </Button>
           <Button as="a" href="/" variant="outline">
             <Home className="w-4 h-4 mr-2" />
-            Go Home
+            {t('goHome')}
           </Button>
         </div>
 

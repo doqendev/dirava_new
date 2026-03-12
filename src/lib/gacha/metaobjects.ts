@@ -232,15 +232,12 @@ function toMetaobjectFields(
  */
 export async function setupMetaobjectDefinition(): Promise<boolean> {
   try {
-    console.log('Setting up metaobject definition...')
     const response = await adminFetch<{
       metaobjectDefinitionCreate: {
         metaobjectDefinition: { id: string; type: string } | null
         userErrors: Array<{ field: string[]; message: string }>
       }
     }>(CREATE_METAOBJECT_DEFINITION)
-
-    console.log('Setup response:', JSON.stringify(response, null, 2))
 
     if (response.metaobjectDefinitionCreate.userErrors.length > 0) {
       console.error(
@@ -251,7 +248,6 @@ export async function setupMetaobjectDefinition(): Promise<boolean> {
     }
 
     if (response.metaobjectDefinitionCreate.metaobjectDefinition) {
-      console.log('Metaobject definition created:', response.metaobjectDefinitionCreate.metaobjectDefinition)
       return true
     }
 
@@ -304,16 +300,12 @@ export async function getRedemptionCodeByCode(
   code: string
 ): Promise<RedemptionCode | null> {
   try {
-    console.log('[getRedemptionCodeByCode] Searching for code:', code)
-
     // Fetch recent metaobjects and filter by exact code match
     // Shopify's query parameter does full-text search, not exact field match
     const response = await adminFetch<GetMetaobjectsResponse>(
       GET_REDEMPTION_CODE_BY_HANDLE,
       { type: 'redemption_code', first: 100 }
     )
-
-    console.log('[getRedemptionCodeByCode] Fetched nodes:', response.metaobjects.nodes.length)
 
     // Find the exact match by code field
     const matchingNode = response.metaobjects.nodes.find(node => {
@@ -322,11 +314,9 @@ export async function getRedemptionCodeByCode(
     })
 
     if (!matchingNode) {
-      console.log('[getRedemptionCodeByCode] No exact match found for:', code)
       return null
     }
 
-    console.log('[getRedemptionCodeByCode] Found exact match:', matchingNode.handle)
     return parseMetaobjectToCode(matchingNode)
   } catch (error) {
     console.error('Error fetching redemption code:', error)

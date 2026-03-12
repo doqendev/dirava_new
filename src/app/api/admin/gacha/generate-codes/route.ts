@@ -90,7 +90,6 @@ export async function POST(request: Request) {
     // Create metaobject for each code
     for (const code of codes) {
       try {
-        console.log('Creating code:', code, 'for box:', body.boxHandle)
         const redemptionCode = await createRedemptionCode({
           code,
           boxHandle: body.boxHandle,
@@ -102,7 +101,6 @@ export async function POST(request: Request) {
 
         if (redemptionCode) {
           createdCodes.push(code)
-          console.log('Code created successfully:', code)
         } else {
           console.error('createRedemptionCode returned null for:', code)
         }

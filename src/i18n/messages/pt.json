@@ -456,7 +456,16 @@
     "tryAgain": "Tentar novamente",
     "goHome": "Ir para o início",
     "returnHome": "Voltar ao início",
-    "exploreWorlds": "Explorar mundos"
+    "exploreWorlds": "Explorar mundos",
+    "revealFailed": "Revelação falhou",
+    "revealFailedDescription": "Algo correu mal ao carregar a tua revelação gacha. Por favor, tenta novamente.",
+    "claimFailed": "Resgate falhou",
+    "claimFailedDescription": "Algo correu mal ao processar o teu resgate. Por favor, tenta novamente."
+  },
+  "policyPage": {
+    "lastUpdated": "Última atualização: {date}",
+    "questionsPrefix": "Se tens dúvidas sobre esta política, por favor",
+    "contactUs": "contacta-nos"
   },
   "sizeGuide": {
     "title": "Guia de tamanhos {type}",

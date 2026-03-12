@@ -15,8 +15,8 @@ export function getPreviewDisplayText(
   config: PreviewConfig,
   fallback: string,
 ): string {
-  const normalized = normalizePreviewText(text ?? '')
-  let resolved = normalized || fallback
+  const raw = (text ?? '').trim() || fallback
+  let resolved = config.capitalizeFirst !== false ? normalizePreviewText(raw) : raw
   if (config.forceUppercase) resolved = resolved.toUpperCase()
   if (config.maxChars) return resolved.slice(0, config.maxChars)
   return resolved

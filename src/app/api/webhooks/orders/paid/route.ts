@@ -96,7 +96,6 @@ export async function POST(request: Request) {
 
     if (mysteryBoxItems.length === 0) {
       // No mystery boxes in this order
-      console.log('No mystery boxes in order:', orderName)
       return NextResponse.json({ success: true, codes: [] })
     }
 
@@ -119,7 +118,6 @@ export async function POST(request: Request) {
 
         if (redemptionCode) {
           generatedCodes.push(code)
-          console.log(`Generated code ${code} for ${item.handle} in order ${orderName}`)
         } else {
           console.error(`Failed to create redemption code for ${item.handle}`)
         }
@@ -138,8 +136,6 @@ export async function POST(request: Request) {
         // Don't fail the webhook for this
       }
     }
-
-    console.log(`Generated ${generatedCodes.length} codes for order ${orderName}`)
 
     return NextResponse.json({
       success: true,

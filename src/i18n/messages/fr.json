@@ -456,7 +456,16 @@
     "tryAgain": "Réessayer",
     "goHome": "Retour à l'accueil",
     "returnHome": "Retour à l'accueil",
-    "exploreWorlds": "Explorer les univers"
+    "exploreWorlds": "Explorer les univers",
+    "revealFailed": "Révélation échouée",
+    "revealFailedDescription": "Une erreur est survenue lors du chargement de ta révélation gacha. Réessaie s'il te plaît.",
+    "claimFailed": "Réclamation échouée",
+    "claimFailedDescription": "Une erreur est survenue lors du traitement de ta réclamation. Réessaie s'il te plaît."
+  },
+  "policyPage": {
+    "lastUpdated": "Dernière mise à jour : {date}",
+    "questionsPrefix": "Si tu as des questions sur cette politique, merci de",
+    "contactUs": "nous contacter"
   },
   "sizeGuide": {
     "title": "Guide des tailles {type}",

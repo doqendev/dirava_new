@@ -110,7 +110,7 @@ export default async function RootLayout({
     name: 'Mizoke',
     description: 'Your Anime Spirit - Premium anime merchandise',
     url: siteUrl,
-    logo: `${siteUrl}/logo.png`,
+    logo: `${siteUrl}/opengraph-image`,
     sameAs: SOCIAL_LINKS.map((link) => link.href),
     contactPoint: {
       '@type': 'ContactPoint',

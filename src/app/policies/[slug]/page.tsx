@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { ContentPageLayout } from '@/components/content/ContentPageLayout'
 import { getPolicyBySlug, getAllPolicySlugs } from '@/data/policies'
 import type { Metadata } from 'next'
@@ -48,6 +49,7 @@ function renderContent(content: string | string[]) {
 export default async function PolicyPage({ params }: Props) {
   const { slug } = await params
   const policy = getPolicyBySlug(slug)
+  const tPolicies = await getTranslations('policyPage')
 
   if (!policy) {
     notFound()
@@ -66,11 +68,11 @@ export default async function PolicyPage({ params }: Props) {
     >
       {/* Last Updated */}
       <p className="text-white/40 text-sm mb-8">
-        Last updated: {new Date(policy.lastUpdated).toLocaleDateString('en-US', {
+        {tPolicies('lastUpdated', { date: new Date(policy.lastUpdated).toLocaleDateString(undefined, {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
-        })}
+        }) })}
       </p>
 
       {/* Policy Sections */}
@@ -88,9 +90,9 @@ export default async function PolicyPage({ params }: Props) {
       {/* Bottom Navigation */}
       <div className="mt-12 pt-8 border-t border-border-subtle">
         <p className="text-white/50 text-sm">
-          If you have questions about this policy, please{' '}
+          {tPolicies('questionsPrefix')}{' '}
           <Link href="/contact" className="text-neon-cyan hover:underline">
-            contact us
+            {tPolicies('contactUs')}
           </Link>
           .
         </p>

@@ -261,15 +261,12 @@ function parseAdminReviewFromMetaobject(node: MetaobjectNode): AdminReview {
  */
 export async function setupReviewMetaobjectDefinition(): Promise<boolean> {
   try {
-    console.log('Setting up review metaobject definition...')
     const response = await adminFetch<{
       metaobjectDefinitionCreate: {
         metaobjectDefinition: { id: string; type: string } | null
         userErrors: Array<{ field: string[]; message: string }>
       }
     }>(CREATE_REVIEW_METAOBJECT_DEFINITION)
-
-    console.log('Setup response:', JSON.stringify(response, null, 2))
 
     if (response.metaobjectDefinitionCreate.userErrors.length > 0) {
       console.error(
@@ -280,7 +277,6 @@ export async function setupReviewMetaobjectDefinition(): Promise<boolean> {
     }
 
     if (response.metaobjectDefinitionCreate.metaobjectDefinition) {
-      console.log('Review metaobject definition created:', response.metaobjectDefinitionCreate.metaobjectDefinition)
       return true
     }
 

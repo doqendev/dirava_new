@@ -456,7 +456,16 @@
     "tryAgain": "Erneut versuchen",
     "goHome": "Zur Startseite",
     "returnHome": "Zurück zur Startseite",
-    "exploreWorlds": "Welten erkunden"
+    "exploreWorlds": "Welten erkunden",
+    "revealFailed": "Enthüllung fehlgeschlagen",
+    "revealFailedDescription": "Beim Laden deiner Gacha-Enthüllung ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+    "claimFailed": "Einlösung fehlgeschlagen",
+    "claimFailedDescription": "Beim Verarbeiten deiner Einlösung ist ein Fehler aufgetreten. Bitte versuche es erneut."
+  },
+  "policyPage": {
+    "lastUpdated": "Zuletzt aktualisiert: {date}",
+    "questionsPrefix": "Wenn du Fragen zu dieser Richtlinie hast, bitte",
+    "contactUs": "kontaktiere uns"
   },
   "sizeGuide": {
     "title": "{type} Größentabelle",

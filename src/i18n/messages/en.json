@@ -456,7 +456,16 @@
     "tryAgain": "Try Again",
     "goHome": "Go Home",
     "returnHome": "Return Home",
-    "exploreWorlds": "Explore Worlds"
+    "exploreWorlds": "Explore Worlds",
+    "revealFailed": "Reveal Failed",
+    "revealFailedDescription": "Something went wrong while loading your gacha reveal. Please try again.",
+    "claimFailed": "Claim Failed",
+    "claimFailedDescription": "Something went wrong while processing your claim. Please try again."
+  },
+  "policyPage": {
+    "lastUpdated": "Last updated: {date}",
+    "questionsPrefix": "If you have questions about this policy, please",
+    "contactUs": "contact us"
   },
   "sizeGuide": {
     "title": "{type} Size Guide",
