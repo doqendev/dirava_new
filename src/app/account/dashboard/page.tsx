@@ -5,41 +5,42 @@ import { Package, MapPin, Settings, ArrowRight } from 'lucide-react'
 import { AccountLayout } from '@/components/account/AccountLayout'
 import { useRequireAuth } from '@/hooks/useRequireAuth'
 import { cn } from '@/lib/utils/cn'
-
-const quickLinks = [
-  {
-    href: '/account/orders',
-    icon: Package,
-    label: 'View Orders',
-    description: 'Track and manage your orders',
-  },
-  {
-    href: '/account/addresses',
-    icon: MapPin,
-    label: 'Manage Addresses',
-    description: 'Add or edit shipping addresses',
-  },
-  {
-    href: '/account/settings',
-    icon: Settings,
-    label: 'Account Settings',
-    description: 'Update your profile and password',
-  },
-]
+import { useTranslations } from 'next-intl'
 
 export default function DashboardPage() {
   const { customer } = useRequireAuth()
+  const t = useTranslations('account')
+
+  const quickLinks = [
+    {
+      href: '/account/orders',
+      icon: Package,
+      label: t('viewOrders'),
+      description: t('viewOrdersDescription'),
+    },
+    {
+      href: '/account/addresses',
+      icon: MapPin,
+      label: t('manageAddresses'),
+      description: t('manageAddressesDescription'),
+    },
+    {
+      href: '/account/settings',
+      icon: Settings,
+      label: t('accountSettings'),
+      description: t('accountSettingsDescription'),
+    },
+  ]
 
   return (
-    <AccountLayout title="Dashboard" description="Welcome to your account">
+    <AccountLayout title={t('dashboard')} description={t('dashboardDescription')}>
       {/* Welcome Card */}
       <div className="bg-bg-card/50 backdrop-blur-sm border border-border-subtle rounded-xl p-6 mb-6">
         <h2 className="font-display text-xl text-white mb-2">
-          Welcome back, {customer?.firstName || 'there'}!
+          {t('welcomeBack', { name: customer?.firstName || 'there' })}
         </h2>
         <p className="text-white/60">
-          From your account dashboard you can view your recent orders, manage your shipping
-          addresses, and edit your account details.
+          {t('dashboardDescription')}
         </p>
       </div>
 
@@ -69,27 +70,27 @@ export default function DashboardPage() {
 
       {/* Account Summary */}
       <div className="mt-8 bg-bg-card/50 backdrop-blur-sm border border-border-subtle rounded-xl p-6">
-        <h3 className="font-display text-lg text-white mb-4">Account Details</h3>
+        <h3 className="font-display text-lg text-white mb-4">{t('accountDetails')}</h3>
         <dl className="grid sm:grid-cols-2 gap-4">
           <div>
-            <dt className="text-sm text-white/50">Name</dt>
+            <dt className="text-sm text-white/50">{t('name')}</dt>
             <dd className="text-white">
               {customer?.firstName} {customer?.lastName}
             </dd>
           </div>
           <div>
-            <dt className="text-sm text-white/50">Email</dt>
+            <dt className="text-sm text-white/50">{t('email')}</dt>
             <dd className="text-white">{customer?.email}</dd>
           </div>
           {customer?.phone && (
             <div>
-              <dt className="text-sm text-white/50">Phone</dt>
+              <dt className="text-sm text-white/50">{t('phone')}</dt>
               <dd className="text-white">{customer.phone}</dd>
             </div>
           )}
           {customer?.defaultAddress && (
             <div className="sm:col-span-2">
-              <dt className="text-sm text-white/50">Default Address</dt>
+              <dt className="text-sm text-white/50">{t('defaultAddress')}</dt>
               <dd className="text-white">
                 {customer.defaultAddress.formatted.join(', ')}
               </dd>

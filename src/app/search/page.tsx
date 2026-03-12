@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import { getTranslations } from 'next-intl/server'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { SEARCH_PRODUCTS } from '@/lib/shopify/queries'
 import { extractNodes } from '@/lib/shopify/utils'
@@ -13,9 +14,10 @@ interface Props {
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const { q: query } = await searchParams
+  const t = await getTranslations('search')
 
   return {
-    title: query ? `Search: ${query}` : 'Search',
+    title: query ? `${t('title')}: ${query}` : t('title'),
     description: query
       ? `Search results for "${query}" - Find anime merchandise, collectibles, and more.`
       : 'Search for anime merchandise, collectibles, and more.',
@@ -84,16 +86,17 @@ async function SearchResults({ query }: { query: string }) {
 
 export default async function SearchPage({ searchParams }: Props) {
   const { q: query = '' } = await searchParams
+  const t = await getTranslations('search')
 
   return (
     <div className="min-h-screen">
       {/* Header */}
       <section className="py-8">
         <div className="px-4 max-w-3xl mx-auto">
-          <h1 className="font-display text-2xl md:text-3xl text-white text-center mb-6">
-            <span className="text-neon-cyan">SEARCH</span> PRODUCTS
+          <h1 className="font-display text-2xl md:text-3xl text-neon-cyan text-center mb-6">
+            {t('searchProducts')}
           </h1>
-          <SearchBar autoFocus placeholder="Search for products, collections..." />
+          <SearchBar autoFocus placeholder={t('placeholder')} />
         </div>
       </section>
 

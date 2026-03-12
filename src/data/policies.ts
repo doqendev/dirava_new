@@ -285,8 +285,8 @@ export const policies: Policy[] = [
         content: [
           'Neo Stage Collective',
           'Managing Director: [Name to be added]',
-          'Email: info@mizoke.com',
-          'Website: https://mizoke.com',
+          'Email: contact@mizoke.com',
+          'Website: https://www.mizoke.com',
         ],
       },
       {

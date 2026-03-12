@@ -6,13 +6,24 @@ import { getTranslations } from 'next-intl/server'
 
 export async function generateMetadata() {
   const t = await getTranslations('seo')
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mizoke.com'
   return {
     title: t('faqTitle'),
     description: t('faqDescription'),
+    alternates: {
+      canonical: `${siteUrl}/faq`,
+    },
+    openGraph: {
+      title: t('faqTitle'),
+      description: t('faqDescription'),
+      images: [`${siteUrl}/opengraph-image`],
+    },
   }
 }
 
-export default function FAQPage() {
+export default async function FAQPage() {
+  const t = await getTranslations('faq')
+  const tCommon = await getTranslations('common')
   const breadcrumbs = [{ label: 'FAQ', href: '/faq' }]
 
   const faqSchema = {
@@ -34,7 +45,7 @@ export default function FAQPage() {
       {
         '@type': 'ListItem',
         position: 1,
-        name: 'Home',
+        name: tCommon('home'),
         item: siteUrl,
       },
       {
@@ -57,8 +68,8 @@ export default function FAQPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <ContentPageLayout
-        title="Frequently Asked Questions"
-        description="Find answers to common questions about orders, shipping, returns, and more."
+        title={t('title')}
+        description={t('subtitle')}
         breadcrumbs={breadcrumbs}
         glowColor="cyan"
       >
@@ -67,16 +78,16 @@ export default function FAQPage() {
         {/* Still have questions */}
         <div className="mt-12 pt-8 border-t border-border-subtle text-center">
           <h3 className="font-display text-lg text-white mb-2">
-            Still have questions?
+            {t('stillHaveQuestions')}
           </h3>
           <p className="text-white/50 text-sm mb-4">
-            Can&apos;t find the answer you&apos;re looking for? Our support team is here to help.
+            {t('supportDescription')}
           </p>
           <Link
             href="/contact"
             className="inline-flex items-center justify-center px-6 py-3 bg-neon-cyan text-black font-display font-semibold uppercase tracking-wider rounded-lg hover:bg-neon-cyan/90 transition-colors"
           >
-            Contact Us
+            {t('contactSupport')}
           </Link>
         </div>
       </ContentPageLayout>

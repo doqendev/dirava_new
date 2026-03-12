@@ -45,7 +45,8 @@ export async function checkRateLimit(
   key: string,
   opts: { maxRequests: number; windowSeconds: number }
 ): Promise<{ limited: boolean; retryAfter?: number }> {
-  const limiter = getLimiter('api', opts.maxRequests, opts.windowSeconds)
+  const prefix = key.split(':')[0] || 'api'
+  const limiter = getLimiter(prefix, opts.maxRequests, opts.windowSeconds)
 
   if (!limiter) {
     // Redis not configured - allow request but warn

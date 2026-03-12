@@ -135,7 +135,7 @@ function TestimonialCard({ testimonial, t }: { testimonial: Testimonial; t: Retu
           <p className="text-sm font-medium text-white">
             {testimonial.name}
           </p>
-          <p className="text-xs text-white/40">
+          <p className="text-xs text-white/60">
             {testimonial.location}
           </p>
         </div>
@@ -189,15 +189,15 @@ export function Testimonials() {
         >
           <div className="text-center">
             <p className="text-2xl md:text-3xl font-bold text-neon-cyan">10K+</p>
-            <p className="text-xs md:text-sm text-white/40">{t('happyCustomers')}</p>
+            <p className="text-xs md:text-sm text-white/60">{t('happyCustomers')}</p>
           </div>
           <div className="text-center">
             <p className="text-2xl md:text-3xl font-bold text-neon-cyan">4.9</p>
-            <p className="text-xs md:text-sm text-white/40">{t('averageRating')}</p>
+            <p className="text-xs md:text-sm text-white/60">{t('averageRating')}</p>
           </div>
           <div className="text-center">
             <p className="text-2xl md:text-3xl font-bold text-neon-cyan">50+</p>
-            <p className="text-xs md:text-sm text-white/40">{t('countriesShipped')}</p>
+            <p className="text-xs md:text-sm text-white/60">{t('countriesShipped')}</p>
           </div>
         </motion.div>
       </div>

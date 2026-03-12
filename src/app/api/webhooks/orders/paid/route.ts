@@ -30,7 +30,10 @@ function verifyWebhook(body: string, signature: string | null): boolean {
     .update(body, 'utf8')
     .digest('base64')
 
-  return crypto.timingSafeEqual(Buffer.from(hmac), Buffer.from(signature))
+  const hmacBuf = Buffer.from(hmac)
+  const sigBuf = Buffer.from(signature)
+  if (hmacBuf.length !== sigBuf.length) return false
+  return crypto.timingSafeEqual(hmacBuf, sigBuf)
 }
 
 export async function POST(request: Request) {
@@ -38,8 +41,13 @@ export async function POST(request: Request) {
     const body = await request.text()
     const signature = request.headers.get('x-shopify-hmac-sha256')
 
-    // Verify webhook signature in production
-    if (SHOPIFY_WEBHOOK_SECRET && !verifyWebhook(body, signature)) {
+    // Verify webhook signature — reject all requests if secret is not configured
+    if (!SHOPIFY_WEBHOOK_SECRET) {
+      console.error('SHOPIFY_WEBHOOK_SECRET is not configured — rejecting webhook')
+      return NextResponse.json({ error: 'Webhook verification not configured' }, { status: 500 })
+    }
+
+    if (!verifyWebhook(body, signature)) {
       console.error('Invalid webhook signature')
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
     }

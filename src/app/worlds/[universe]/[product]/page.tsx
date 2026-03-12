@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_PRODUCT, GET_RELATED_PRODUCTS } from '@/lib/shopify/queries'
 import { getProductRarity } from '@/lib/shopify/utils'
@@ -151,6 +152,8 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     notFound()
   }
 
+  const tCommon = await getTranslations('common')
+
   // Fetch related products and review data in parallel
   const [relatedProducts, reviewStats, approvedReviews] = await Promise.all([
     product.collectionHandle
@@ -219,7 +222,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       {
         '@type': 'ListItem',
         position: 1,
-        name: 'Home',
+        name: tCommon('home'),
         item: siteUrl,
       },
       {

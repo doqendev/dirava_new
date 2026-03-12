@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { gql } from 'graphql-request'
 import { adminFetch } from '@/lib/shopify/adminClient'
+import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimit'
 
 // Admin API mutation to create a marketing subscriber
 const CREATE_MARKETING_SUBSCRIBER = gql`
@@ -91,6 +92,16 @@ interface CustomerSearchResponse {
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 5 subscription attempts per 10 minutes per IP
+    const ip = getClientIp(request)
+    const rl = await checkRateLimit(`newsletter:${ip}`, { maxRequests: 5, windowSeconds: 600 })
+    if (rl.limited) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } }
+      )
+    }
+
     const body = await request.json()
     const { email } = body
 
@@ -110,6 +121,12 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    // Double opt-in: Shopify handles confirmation emails when marketingOptInLevel
+    // is set to CONFIRMED_OPT_IN. The customer receives a confirmation email from
+    // Shopify and must click the link before their status changes to SUBSCRIBED.
+    // Ensure "Email marketing" → "Require double opt-in" is enabled in Shopify Admin
+    // under Settings → Notifications → Customer notifications.
 
     // First, check if customer already exists
     const searchResponse = await adminFetch<CustomerSearchResponse>(

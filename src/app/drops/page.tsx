@@ -17,11 +17,15 @@ export async function generateMetadata(): Promise<Metadata> {
     title: t('dropsTitle'),
     description: t('dropsDescription'),
     keywords: t('keywords'),
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mizoke.com'}/drops`,
+    },
     openGraph: {
       title: t('dropsTitle'),
       description: t('dropsDescription'),
       type: 'website',
       siteName: t('siteName'),
+      images: [`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mizoke.com'}/opengraph-image`],
     },
     twitter: {
       card: 'summary_large_image',

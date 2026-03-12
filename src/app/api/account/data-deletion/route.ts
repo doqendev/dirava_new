@@ -51,16 +51,44 @@ export async function POST(request: Request) {
 
     const customer = customerData.customer
 
-    // Log the deletion request (in production, send to admin email or ticket system)
     console.log(
       `[GDPR] Data deletion requested for customer: ${customer.email} (ID: ${customer.id})`
     )
 
-    // In a real implementation, you would:
-    // 1. Send an email to your admin team / privacy officer
-    // 2. Create a ticket in your support system
-    // 3. Log to a GDPR compliance audit trail
-    // 4. Schedule the deletion within 30 days per GDPR Article 17
+    // Notify store admin via Shopify contact form (delivers to store owner email)
+    const SHOPIFY_STORE_DOMAIN = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN
+    if (SHOPIFY_STORE_DOMAIN) {
+      try {
+        const formData = new URLSearchParams({
+          'form_type': 'contact',
+          'utf8': '✓',
+          'contact[email]': customer.email,
+          'contact[name]': `${customer.firstName || ''} ${customer.lastName || ''}`.trim() || 'Customer',
+          'contact[subject]': `[GDPR] Data Deletion Request — ${customer.email}`,
+          'contact[body]': [
+            `GDPR Data Deletion Request`,
+            ``,
+            `Customer ID: ${customer.id}`,
+            `Email: ${customer.email}`,
+            `Name: ${customer.firstName || ''} ${customer.lastName || ''}`.trim(),
+            `Requested at: ${new Date().toISOString()}`,
+            ``,
+            `Action required: Delete all customer data within 30 days per GDPR Article 17.`,
+            `Go to Shopify Admin → Customers → search for "${customer.email}" → Delete customer data.`,
+          ].join('\n'),
+        })
+
+        await fetch(`https://${SHOPIFY_STORE_DOMAIN}/contact#contact_form`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formData.toString(),
+          redirect: 'manual',
+        })
+      } catch (notifyError) {
+        // Log but don't fail the request — the deletion request is still recorded
+        console.error('[GDPR] Failed to send admin notification:', notifyError)
+      }
+    }
 
     return NextResponse.json({
       success: true,

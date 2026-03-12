@@ -16,6 +16,7 @@ export default function AppleIcon() {
         justifyContent: 'center',
         color: '#00f0ff',
         fontWeight: 'bold',
+        borderRadius: 36,
       }}>
         M
       </div>

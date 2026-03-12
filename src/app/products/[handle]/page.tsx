@@ -10,26 +10,10 @@ interface Props {
   params: Promise<{ handle: string }>
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { handle } = await params
-  try {
-    const data = await shopifyFetch<{ product: ShopifyProduct | null }>(GET_PRODUCT, {
-      handle,
-    })
-
-    if (data.product) {
-      return {
-        title: data.product.title,
-        description: data.product.description,
-      }
-    }
-  } catch (error) {
-    console.error('Failed to fetch product metadata:', error)
-  }
-
-  return {
-    title: 'Product',
-  }
+// This page always redirects — skip metadata fetch to save an API call
+export const metadata: Metadata = {
+  title: 'Product',
+  robots: { index: false, follow: true },
 }
 
 async function getProduct(handle: string) {

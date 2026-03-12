@@ -10,9 +10,18 @@ import { getTranslations } from 'next-intl/server'
 
 export async function generateMetadata() {
   const t = await getTranslations('seo')
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mizoke.com'
   return {
     title: t('worldsTitle'),
     description: t('worldsDescription'),
+    alternates: {
+      canonical: `${siteUrl}/worlds`,
+    },
+    openGraph: {
+      title: t('worldsTitle'),
+      description: t('worldsDescription'),
+      images: [`${siteUrl}/opengraph-image`],
+    },
   }
 }
 

@@ -297,7 +297,7 @@ export function Footer() {
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Copyright */}
-            <p className="text-sm text-white/40">
+            <p className="text-sm text-white/50">
               {t('copyright', { year: new Date().getFullYear() })}
             </p>
 

@@ -5,9 +5,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
-import { Box, Eye } from 'lucide-react'
+import { Eye } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
-import { hasPreviewConfig } from '@/lib/preview/configs'
 import { formatPrice } from '@/lib/utils/formatPrice'
 import { WishlistButton } from '@/components/product/WishlistButton'
 import { useUIStore } from '@/stores/uiStore'
@@ -144,14 +143,6 @@ export function ProductCard({
               />
             </motion.div>
           </div>
-
-          {/* 3D Preview Badge */}
-          {hasPreviewConfig(product.handle) && (
-            <div className="absolute bottom-2 left-2 flex items-center gap-1 px-2 py-1 rounded-md bg-neon-cyan/15 border border-neon-cyan/30 backdrop-blur-sm">
-              <Box className="w-3.5 h-3.5 text-neon-cyan" />
-              <span className="text-[10px] font-bold text-neon-cyan tracking-wide">3D</span>
-            </div>
-          )}
 
           {/* Holographic overlay */}
           <div className="absolute inset-0 bg-holographic opacity-0 group-hover:opacity-20 transition-opacity duration-300 pointer-events-none" />

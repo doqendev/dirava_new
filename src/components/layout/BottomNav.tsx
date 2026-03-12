@@ -31,7 +31,7 @@ export function BottomNav({ className }: BottomNavProps) {
     {
       icon: <Gift className="w-5 h-5" strokeWidth={1.5} />,
       activeIcon: <Gift className="w-5 h-5" strokeWidth={2} />,
-      label: 'GACHA',
+      label: t('gacha').toUpperCase(),
       href: '/gacha'
     },
     {
@@ -43,7 +43,7 @@ export function BottomNav({ className }: BottomNavProps) {
     {
       icon: <User className="w-5 h-5" strokeWidth={1.5} />,
       activeIcon: <User className="w-5 h-5" strokeWidth={2} />,
-      label: 'ACCOUNT',
+      label: t('account').toUpperCase(),
       href: '/account'
     },
   ]
@@ -100,7 +100,7 @@ export function BottomNav({ className }: BottomNavProps) {
                 <motion.div
                   className={cn(
                     'transition-all duration-200',
-                    active ? 'text-neon-cyan' : 'text-white/40'
+                    active ? 'text-neon-cyan' : 'text-white/60'
                   )}
                   style={active ? { filter: 'drop-shadow(0 0 6px rgba(0, 245, 255, 0.8))' } : {}}
                   animate={active ? { y: [0, -2, 0] } : {}}
@@ -115,7 +115,7 @@ export function BottomNav({ className }: BottomNavProps) {
                 className={cn(
                   'mt-1 text-[10px] font-medium tracking-wider',
                   'transition-all duration-200',
-                  active ? 'text-neon-cyan' : 'text-white/40'
+                  active ? 'text-neon-cyan' : 'text-white/60'
                 )}
                 style={active ? { textShadow: '0 0 8px rgba(0, 245, 255, 0.6)' } : {}}
               >

@@ -29,7 +29,7 @@ function ErrorFallback({ notAvailable, webglHint }: { notAvailable: string; webg
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0a12]">
       <Box className="w-8 h-8 text-white/30 mb-3" />
-      <p className="text-sm text-white/40">{notAvailable}</p>
+      <p className="text-sm text-white/60">{notAvailable}</p>
       <p className="text-xs text-white/20 mt-1">{webglHint}</p>
     </div>
   )

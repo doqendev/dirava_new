@@ -8,6 +8,7 @@ import { NextResponse } from 'next/server'
 import { shopifyClient } from '@/lib/shopify/client'
 import { getRedemptionCodeByCode } from '@/lib/gacha/metaobjects'
 import { normalizeCode, isValidCodeFormat } from '@/lib/gacha/codeGenerator'
+import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimit'
 import {
   GET_MYSTERY_BOX,
   GET_PRODUCT_FOR_REVEAL,
@@ -17,10 +18,20 @@ import {
 import type { CodeStatusResponse, MysteryBox, MysteryBoxTheme, LootPool } from '@/types/gacha'
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ code: string }> }
 ) {
   try {
+    // Rate limit: 20 lookups per minute per IP (prevent brute-force enumeration)
+    const ip = getClientIp(request)
+    const rl = await checkRateLimit(`gacha-code:${ip}`, { maxRequests: 20, windowSeconds: 60 })
+    if (rl.limited) {
+      return NextResponse.json(
+        { success: false, error: 'Too many requests. Please try again later.' },
+        { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } }
+      )
+    }
+
     const { code: rawCode } = await params
 
     // Normalize and validate code format

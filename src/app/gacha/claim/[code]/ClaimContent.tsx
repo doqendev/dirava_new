@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -33,6 +34,8 @@ export default function ClaimContent() {
   const params = useParams()
   const router = useRouter()
   const code = params.code as string
+  const tClaim = useTranslations('claim')
+  const tCommon = useTranslations('common')
 
   const [pageState, setPageState] = useState<PageState>('loading')
   const [error, setError] = useState<string | null>(null)
@@ -65,7 +68,7 @@ export default function ClaimContent() {
         const data: CodeStatusResponse = await response.json()
 
         if (!data.success || !data.code) {
-          setError(data.error || 'Code not found')
+          setError(data.error || tClaim('errorCodeNotFound'))
           setPageState('error')
           return
         }
@@ -94,7 +97,7 @@ export default function ClaimContent() {
 
         setPageState('form')
       } catch {
-        setError('Failed to load code. Please try again.')
+        setError(tClaim('errorLoadCode'))
         setPageState('error')
       }
     }
@@ -129,19 +132,19 @@ export default function ClaimContent() {
   const validateForm = (): boolean => {
     const errors: Partial<Record<keyof ShippingAddress, string>> = {}
 
-    if (!formData.firstName.trim()) errors.firstName = 'First name is required'
-    if (!formData.lastName.trim()) errors.lastName = 'Last name is required'
-    if (!formData.address1.trim()) errors.address1 = 'Address is required'
-    if (!formData.city.trim()) errors.city = 'City is required'
-    if (!formData.countryCode) errors.country = 'Country is required'
-    if (!formData.zip.trim()) errors.zip = 'Postal code is required'
+    if (!formData.firstName.trim()) errors.firstName = tClaim('validationFirstName')
+    if (!formData.lastName.trim()) errors.lastName = tClaim('validationLastName')
+    if (!formData.address1.trim()) errors.address1 = tClaim('validationAddress')
+    if (!formData.city.trim()) errors.city = tClaim('validationCity')
+    if (!formData.countryCode) errors.country = tClaim('validationCountry')
+    if (!formData.zip.trim()) errors.zip = tClaim('validationPostalCode')
 
     setFormErrors(errors)
 
     // Check variant selection
     const variants = codeData?.revealedProduct?.variants || []
     if (variants.length > 1 && !selectedVariantId) {
-      setVariantError('Please select a size/variant')
+      setVariantError(tClaim('validationSelectVariant'))
       return false
     }
 
@@ -170,14 +173,14 @@ export default function ClaimContent() {
       const data: ClaimApiResponse = await response.json()
 
       if (!data.success) {
-        setError(data.error || 'Failed to claim your prize')
+        setError(data.error || tClaim('errorClaimFailed'))
         setPageState('form')
         return
       }
 
       setPageState('success')
     } catch {
-      setError('Something went wrong. Please try again.')
+      setError(tClaim('errorGeneric'))
       setPageState('form')
     }
   }
@@ -195,7 +198,7 @@ export default function ClaimContent() {
       <div className="min-h-screen bg-bg-primary flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-neon-cyan animate-spin mx-auto mb-4" />
-          <p className="text-white/60">Loading...</p>
+          <p className="text-white/60">{tCommon('loading')}</p>
         </div>
       </div>
     )
@@ -211,7 +214,7 @@ export default function ClaimContent() {
             className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back</span>
+            <span>{tCommon('back')}</span>
           </Link>
         </div>
 
@@ -219,13 +222,13 @@ export default function ClaimContent() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/20 mb-4">
             <AlertCircle className="w-8 h-8 text-red-400" />
           </div>
-          <h1 className="font-display text-2xl text-white mb-2">Something Went Wrong</h1>
+          <h1 className="font-display text-2xl text-white mb-2">{tClaim('errorTitle')}</h1>
           <p className="text-white/60 mb-6">{error}</p>
           <Link
             href="/gacha/reveal"
             className="inline-flex items-center gap-2 px-6 py-3 bg-neon-cyan text-black font-medium rounded-xl"
           >
-            Try Another Code
+            {tClaim('tryAnotherCode')}
           </Link>
         </div>
       </div>
@@ -242,7 +245,7 @@ export default function ClaimContent() {
             className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back</span>
+            <span>{tCommon('back')}</span>
           </Link>
         </div>
 
@@ -250,15 +253,15 @@ export default function ClaimContent() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-neon-green/20 mb-4">
             <Check className="w-8 h-8 text-neon-green" />
           </div>
-          <h1 className="font-display text-2xl text-white mb-2">Already Claimed</h1>
+          <h1 className="font-display text-2xl text-white mb-2">{tClaim('alreadyClaimedTitle')}</h1>
           <p className="text-white/60 mb-6">
-            This prize has already been claimed and is being processed for shipping.
+            {tClaim('alreadyClaimedDescription')}
           </p>
           <Link
             href="/gacha"
             className="inline-flex items-center gap-2 px-6 py-3 bg-neon-cyan text-black font-medium rounded-xl"
           >
-            Browse More Boxes
+            {tClaim('browseMoreBoxes')}
           </Link>
         </div>
       </div>
@@ -274,9 +277,9 @@ export default function ClaimContent() {
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-neon-green/20 mb-6">
             <Truck className="w-10 h-10 text-neon-green" />
           </div>
-          <h1 className="font-display text-3xl text-white mb-3">Claim Successful!</h1>
+          <h1 className="font-display text-3xl text-white mb-3">{tClaim('successTitle')}</h1>
           <p className="text-white/60 mb-8">
-            Your prize is on its way! You&apos;ll receive a shipping confirmation email soon.
+            {tClaim('successDescription')}
           </p>
 
           {codeData?.revealedProduct && (
@@ -300,7 +303,7 @@ export default function ClaimContent() {
                     <p className="text-neon-cyan text-sm">{variantTitle}</p>
                   )}
                   <p className="text-white/60 text-sm">
-                    Shipping to: {formData.city}, {formData.country}
+                    {tClaim('shippingTo', { city: formData.city, country: formData.country })}
                   </p>
                 </div>
               </div>
@@ -312,13 +315,13 @@ export default function ClaimContent() {
               href="/gacha"
               className="block w-full py-3 bg-neon-cyan text-black font-medium rounded-xl"
             >
-              Open More Boxes
+              {tClaim('openMoreBoxes')}
             </Link>
             <Link
               href="/"
               className="block w-full py-3 bg-white/10 text-white font-medium rounded-xl"
             >
-              Continue Shopping
+              {tClaim('continueShopping')}
             </Link>
           </div>
         </div>
@@ -342,7 +345,7 @@ export default function ClaimContent() {
           className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
+          <span>{tCommon('back')}</span>
         </Link>
       </div>
 
@@ -350,10 +353,10 @@ export default function ClaimContent() {
         {/* Header */}
         <div className="text-center mb-6">
           <h1 className="font-display text-2xl md:text-3xl text-white mb-2">
-            Claim Your Prize
+            {tClaim('title')}
           </h1>
           <p className="text-white/60">
-            {hasVariants ? 'Select your size and enter shipping address' : 'Enter your shipping address to receive your item'}
+            {hasVariants ? tClaim('subtitleWithVariants') : tClaim('subtitleShipping')}
           </p>
         </div>
 
@@ -411,7 +414,7 @@ export default function ClaimContent() {
           {/* Variant Selection */}
           {hasVariants && (
             <div>
-              <label className="block text-sm text-white/60 mb-2">Select Size *</label>
+              <label className="block text-sm text-white/60 mb-2">{tClaim('selectSize')} *</label>
               <div className="grid grid-cols-4 gap-2">
                 {variants.map((variant: ProductVariant) => (
                   <button
@@ -427,7 +430,7 @@ export default function ClaimContent() {
                         : 'border-white/20 text-white/70 hover:border-white/40'
                     )}
                   >
-                    {variant.title === 'Default Title' ? 'One Size' : variant.title}
+                    {variant.title === 'Default Title' ? tClaim('oneSize') : variant.title}
                   </button>
                 ))}
               </div>
@@ -440,7 +443,7 @@ export default function ClaimContent() {
           {/* Name */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="claim-firstName" className="block text-sm text-white/60 mb-1">First Name *</label>
+              <label htmlFor="claim-firstName" className="block text-sm text-white/60 mb-1">{tClaim('firstName')} *</label>
               <input
                 id="claim-firstName"
                 type="text"
@@ -457,7 +460,7 @@ export default function ClaimContent() {
               )}
             </div>
             <div>
-              <label htmlFor="claim-lastName" className="block text-sm text-white/60 mb-1">Last Name *</label>
+              <label htmlFor="claim-lastName" className="block text-sm text-white/60 mb-1">{tClaim('lastName')} *</label>
               <input
                 id="claim-lastName"
                 type="text"
@@ -477,13 +480,13 @@ export default function ClaimContent() {
 
           {/* Address */}
           <div>
-            <label htmlFor="claim-address1" className="block text-sm text-white/60 mb-1">Address *</label>
+            <label htmlFor="claim-address1" className="block text-sm text-white/60 mb-1">{tClaim('address')} *</label>
             <input
               id="claim-address1"
               type="text"
               value={formData.address1}
               onChange={(e) => handleInputChange('address1', e.target.value)}
-              placeholder="Street address"
+              placeholder={tClaim('addressPlaceholder')}
               className={cn(
                 'w-full px-4 py-3 rounded-lg bg-bg-card border text-white',
                 'placeholder:text-white/30',
@@ -497,7 +500,7 @@ export default function ClaimContent() {
           </div>
 
           <div>
-            <label htmlFor="claim-address2" className="block text-sm text-white/60 mb-1">Apartment, suite, etc.</label>
+            <label htmlFor="claim-address2" className="block text-sm text-white/60 mb-1">{tClaim('apartment')}</label>
             <input
               id="claim-address2"
               type="text"
@@ -510,7 +513,7 @@ export default function ClaimContent() {
           {/* City & Postal */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="claim-city" className="block text-sm text-white/60 mb-1">City *</label>
+              <label htmlFor="claim-city" className="block text-sm text-white/60 mb-1">{tClaim('city')} *</label>
               <input
                 id="claim-city"
                 type="text"
@@ -525,7 +528,7 @@ export default function ClaimContent() {
               {formErrors.city && <p className="text-red-400 text-xs mt-1">{formErrors.city}</p>}
             </div>
             <div>
-              <label htmlFor="claim-zip" className="block text-sm text-white/60 mb-1">Postal Code *</label>
+              <label htmlFor="claim-zip" className="block text-sm text-white/60 mb-1">{tClaim('postalCode')} *</label>
               <input
                 id="claim-zip"
                 type="text"
@@ -544,7 +547,7 @@ export default function ClaimContent() {
           {/* Province & Country */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="claim-province" className="block text-sm text-white/60 mb-1">State/Province</label>
+              <label htmlFor="claim-province" className="block text-sm text-white/60 mb-1">{tClaim('stateProvince')}</label>
               <input
                 id="claim-province"
                 type="text"
@@ -554,7 +557,7 @@ export default function ClaimContent() {
               />
             </div>
             <div>
-              <label htmlFor="claim-country" className="block text-sm text-white/60 mb-1">Country *</label>
+              <label htmlFor="claim-country" className="block text-sm text-white/60 mb-1">{tClaim('country')} *</label>
               <select
                 id="claim-country"
                 value={formData.countryCode}
@@ -565,7 +568,7 @@ export default function ClaimContent() {
                   formErrors.country ? 'border-red-500' : 'border-border-subtle'
                 )}
               >
-                <option value="">Select country</option>
+                <option value="">{tClaim('selectCountry')}</option>
                 {COUNTRIES.map((country) => (
                   <option key={country.code} value={country.code}>
                     {country.name}
@@ -580,7 +583,7 @@ export default function ClaimContent() {
 
           {/* Phone */}
           <div>
-            <label htmlFor="claim-phone" className="block text-sm text-white/60 mb-1">Phone (for delivery)</label>
+            <label htmlFor="claim-phone" className="block text-sm text-white/60 mb-1">{tClaim('phone')}</label>
             <input
               id="claim-phone"
               type="tel"
@@ -606,12 +609,12 @@ export default function ClaimContent() {
             {pageState === 'submitting' ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                Processing...
+                {tClaim('processing')}
               </>
             ) : (
               <>
                 <Truck className="w-5 h-5" />
-                Claim & Ship My Prize
+                {tClaim('submitButton')}
               </>
             )}
           </button>

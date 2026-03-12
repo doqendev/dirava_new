@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, SlidersHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
@@ -26,6 +27,8 @@ interface SearchResultsClientProps {
 }
 
 export function SearchResultsClient({ products, query }: SearchResultsClientProps) {
+  const t = useTranslations('search')
+  const tFilters = useTranslations('filters')
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
 
   // Calculate price range from products
@@ -145,7 +148,7 @@ export function SearchResultsClient({ products, query }: SearchResultsClientProp
   if (!query) {
     return (
       <div className="text-center py-16">
-        <p className="text-white/60 text-lg">Enter a search term to find products</p>
+        <p className="text-white/60 text-lg">{t('enterSearchTerm')}</p>
       </div>
     )
   }
@@ -153,9 +156,9 @@ export function SearchResultsClient({ products, query }: SearchResultsClientProp
   if (products.length === 0) {
     return (
       <div className="text-center py-16">
-        <h2 className="font-display text-xl text-white mb-2">No results found</h2>
+        <h2 className="font-display text-xl text-white mb-2">{t('noResultsTitle')}</h2>
         <p className="text-white/60">
-          No products match &quot;{query}&quot;. Try a different search term.
+          {t('noResultsDescription', { query })}
         </p>
       </div>
     )
@@ -184,8 +187,7 @@ export function SearchResultsClient({ products, query }: SearchResultsClientProp
         {/* Mobile Filter Button & Results Count */}
         <div className="flex items-center justify-between mb-6">
           <p className="text-white/60 text-sm">
-            {filteredProducts.length} of {products.length} result
-            {products.length !== 1 ? 's' : ''} for &quot;{query}&quot;
+            {t('resultsCount', { filtered: filteredProducts.length, total: products.length, query })}
           </p>
           <MobileFilterButton
             onClick={() => setIsMobileFilterOpen(true)}
@@ -197,7 +199,7 @@ export function SearchResultsClient({ products, query }: SearchResultsClientProp
         {filteredProducts.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-white/60 mb-4">
-              No products match your current filters.
+              {t('noFiltersMatch')}
             </p>
             <Button
               variant="outline"
@@ -210,7 +212,7 @@ export function SearchResultsClient({ products, query }: SearchResultsClientProp
                 })
               }
             >
-              Clear Filters
+              {tFilters('clearFilters')}
             </Button>
           </div>
         ) : (
@@ -257,7 +259,7 @@ export function SearchResultsClient({ products, query }: SearchResultsClientProp
               <div className="flex items-center justify-between p-4 border-b border-border-subtle">
                 <div className="flex items-center gap-2">
                   <SlidersHorizontal className="w-5 h-5 text-neon-cyan" />
-                  <span className="font-display text-lg text-white">FILTERS</span>
+                  <span className="font-display text-lg text-white">{tFilters('title').toUpperCase()}</span>
                 </div>
                 <button
                   onClick={() => setIsMobileFilterOpen(false)}
@@ -289,7 +291,7 @@ export function SearchResultsClient({ products, query }: SearchResultsClientProp
                   className="w-full"
                   onClick={() => setIsMobileFilterOpen(false)}
                 >
-                  Show {filteredProducts.length} Results
+                  {t('showResults', { count: filteredProducts.length })}
                 </Button>
               </div>
             </motion.div>

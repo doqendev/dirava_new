@@ -171,7 +171,7 @@ export default function ReviewList({ productHandle }: ReviewListProps) {
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <div>
                     <StarRating rating={review.rating} size="sm" />
-                    <div className="flex items-center gap-2 mt-2">
+                    <div className="flex items-center gap-1.5 mt-2">
                       {review.countryCode && (
                         <span className="text-sm" title={review.countryCode}>
                           {countryCodeToFlag(review.countryCode)}
@@ -179,10 +179,7 @@ export default function ReviewList({ productHandle }: ReviewListProps) {
                       )}
                       <span className="font-medium">{review.author}</span>
                       {review.verified && (
-                        <span className="inline-flex items-center gap-1 text-xs bg-neon-green/20 text-neon-green px-2 py-0.5 rounded-full">
-                          <CheckCircle2 className="w-3 h-3" />
-                          {t('verified')}
-                        </span>
+                        <CheckCircle2 className="w-4 h-4 text-neon-green flex-shrink-0" aria-label={t('verified')} />
                       )}
                     </div>
                   </div>

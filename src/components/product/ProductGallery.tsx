@@ -62,9 +62,11 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
     ref
   ) {
     const t = useTranslations('gallery')
+    const tCommon = useTranslations('common')
     const containerRef = useRef<HTMLDivElement>(null)
     const [currentIndex, setCurrentIndex] = useState(0)
     const [isZoomed, setIsZoomed] = useState(false)
+    const touchStartRef = useRef<{ x: number; y: number } | null>(null)
 
     const hasMultipleImages = images.length > 1
     const isTextExtrusion = previewConfig?.type === 'text-extrusion'
@@ -100,7 +102,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
 
     useImperativeHandle(ref, () => ({ goTo3D }), [goTo3D])
 
-    const goToNext = () => {
+    const goToNext = useCallback(() => {
       const nextIndex = currentIndex + 1
       const maxIndex = show3DTab ? images.length : images.length - 1
       if (nextIndex > maxIndex) {
@@ -108,15 +110,15 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
       } else {
         setCurrentIndex(nextIndex)
       }
-    }
+    }, [currentIndex, show3DTab, images.length])
 
-    const goToPrev = () => {
+    const goToPrev = useCallback(() => {
       if (currentIndex === 0) {
         setCurrentIndex(show3DTab ? images.length : images.length - 1)
       } else {
         setCurrentIndex(currentIndex - 1)
       }
-    }
+    }, [currentIndex, show3DTab, images.length])
 
     const goToIndex = (index: number) => {
       setCurrentIndex(index)
@@ -124,6 +126,33 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
         setIsZoomed(false)
       }
     }
+
+    // Touch swipe handlers
+    const handleTouchStart = useCallback((e: React.TouchEvent) => {
+      const touch = e.touches[0]
+      if (touch) {
+        touchStartRef.current = { x: touch.clientX, y: touch.clientY }
+      }
+    }, [])
+
+    const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+      if (!touchStartRef.current) return
+      const touch = e.changedTouches[0]
+      if (!touch) return
+
+      const dx = touch.clientX - touchStartRef.current.x
+      const dy = touch.clientY - touchStartRef.current.y
+      touchStartRef.current = null
+
+      // Only swipe if horizontal movement is dominant and exceeds threshold
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        if (dx < 0) {
+          goToNext()
+        } else {
+          goToPrev()
+        }
+      }
+    }, [goToNext, goToPrev])
 
     // If 3D tab disappears while viewing it (e.g. variant changed to one without SVG), go back
     useEffect(() => {
@@ -152,7 +181,11 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
     return (
       <div ref={containerRef} className={cn('space-y-4', className)}>
         {/* Main Image / 3D Preview */}
-        <div className="relative aspect-square bg-bg-secondary rounded-xl overflow-hidden group">
+        <div
+          className="relative aspect-square bg-bg-secondary rounded-xl overflow-hidden group"
+          onTouchStart={!is3DActive ? handleTouchStart : undefined}
+          onTouchEnd={!is3DActive ? handleTouchEnd : undefined}
+        >
           <AnimatePresence mode="wait">
             {is3DActive && previewConfig ? (
               <motion.div
@@ -166,7 +199,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                 <Suspense
                   fallback={
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0a12]">
-                      <Preview3DLoadingIndicator label="Loading..." />
+                      <Preview3DLoadingIndicator label={tCommon('loading')} />
                     </div>
                   }
                 >
@@ -256,6 +289,24 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
             </button>
           )}
 
+          {/* Mobile 3D Preview button — always visible on mobile so users discover 3D immediately */}
+          {show3DTab && !is3DActive && (
+            <button
+              onClick={() => goToIndex(preview3DIndex)}
+              className={cn(
+                'absolute top-4 right-4 z-10 lg:hidden',
+                'flex items-center gap-1.5 px-3 py-2 rounded-lg',
+                'bg-neon-cyan/15 border border-neon-cyan/40 backdrop-blur-sm',
+                'text-neon-cyan',
+                'active:scale-95 transition-transform'
+              )}
+              aria-label={t('view3DPreview')}
+            >
+              <Box className="w-4 h-4" />
+              <span className="text-xs font-bold tracking-wide">3D</span>
+            </button>
+          )}
+
           {/* Navigation arrows (hidden in 3D mode) */}
           {totalSlides > 1 && !is3DActive && (
             <>
@@ -307,7 +358,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                 'transition-all duration-200',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan'
               )}
-              aria-label="Close 3D preview"
+              aria-label={t('close3DPreview')}
             >
               <X className="w-5 h-5" />
             </button>
@@ -367,7 +418,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                     ? 'border-neon-cyan shadow-glow-sm-cyan bg-neon-cyan/10'
                     : 'border-transparent opacity-60 hover:opacity-100 bg-white/5'
                 )}
-                aria-label="3D Preview"
+                aria-label={t('view3DPreview')}
                 aria-current={is3DActive ? 'true' : undefined}
               >
                 <div className="flex flex-col items-center gap-0.5">

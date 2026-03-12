@@ -103,6 +103,28 @@ export async function POST(request: Request) {
       )
     }
 
+    // Validate that the requested variant belongs to the revealed product
+    if (requestedVariantId && redemptionCode.revealedProductHandle) {
+      const { shopifyClient } = await import('@/lib/shopify/client')
+      const { GET_PRODUCT_FOR_REVEAL } = await import('@/lib/gacha/queries')
+      type ProductForRevealResponse = {
+        product: {
+          variants: { edges: Array<{ node: { id: string } }> }
+        } | null
+      }
+      const productData = await shopifyClient.request<ProductForRevealResponse>(
+        GET_PRODUCT_FOR_REVEAL,
+        { handle: redemptionCode.revealedProductHandle }
+      )
+      const validVariantIds = productData.product?.variants.edges.map(e => e.node.id) || []
+      if (!validVariantIds.includes(requestedVariantId)) {
+        return NextResponse.json<ClaimApiResponse>(
+          { success: false, error: 'Invalid variant for this product' },
+          { status: 400 }
+        )
+      }
+    }
+
     const sanitizedAddress = addressResult.sanitized!
 
     // Create draft order for fulfillment

@@ -27,6 +27,7 @@ import { getPreviewConfig } from '@/lib/preview'
 import { getPreviewDisplayText } from '@/lib/preview/textTransform'
 import type { ShopifyMoney, ShopifySelectedOption } from '@/types/shopify'
 import type { ReviewRating } from '@/types/reviews'
+import { sanitizeHtml } from '@/lib/utils/sanitizeHtml'
 
 interface ProductVariant {
   id: string
@@ -483,7 +484,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               >
                 <div
                   className="prose prose-invert prose-sm max-w-none text-white [&_*]:!bg-transparent [&_*]:!text-inherit"
-                  dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.descriptionHtml) }}
                 />
               </div>
             </div>

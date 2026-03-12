@@ -77,10 +77,10 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: {
       languages: {
         'en': '/',
-        'es': '/?locale=es',
-        'de': '/?locale=de',
-        'fr': '/?locale=fr',
-        'pt': '/?locale=pt',
+        'es': '/es',
+        'de': '/de',
+        'fr': '/fr',
+        'pt': '/pt',
       },
     },
   }
@@ -129,7 +129,7 @@ export default async function RootLayout({
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-neon-cyan focus:text-bg-dark focus:px-4 focus:py-2 focus:rounded-lg focus:font-bold"
         >
-          Skip to content
+          {messages.common?.skipToContent || 'Skip to content'}
         </a>
         <script
           type="application/ld+json"

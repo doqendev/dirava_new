@@ -208,6 +208,9 @@ function CookieToggle({
 
       {/* Custom Toggle Switch */}
       <button
+        role="switch"
+        aria-checked={enabled}
+        aria-label={label}
         onClick={disabled ? undefined : onChange}
         disabled={disabled}
         className={cn(

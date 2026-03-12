@@ -93,7 +93,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/gacha', priority: 0.7, changeFrequency: 'weekly' as const },
     { path: '/contact', priority: 0.6, changeFrequency: 'monthly' as const },
     { path: '/faq', priority: 0.5, changeFrequency: 'monthly' as const },
-    { path: '/search', priority: 0.7, changeFrequency: 'weekly' as const },
+    { path: '/policies/privacy', priority: 0.4, changeFrequency: 'yearly' as const },
+    { path: '/policies/terms', priority: 0.4, changeFrequency: 'yearly' as const },
+    { path: '/policies/shipping', priority: 0.5, changeFrequency: 'monthly' as const },
+    { path: '/policies/returns', priority: 0.5, changeFrequency: 'monthly' as const },
+    { path: '/policies/accessibility', priority: 0.3, changeFrequency: 'yearly' as const },
+    { path: '/policies/imprint', priority: 0.3, changeFrequency: 'yearly' as const },
   ]
 
   staticPages.forEach(({ path, priority, changeFrequency }) => {

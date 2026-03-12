@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { Gift, Sparkles, Info, Ticket, Package, Truck } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { MysteryBoxCard } from '@/components/gacha/MysteryBoxCard'
 import { Badge } from '@/components/ui/Badge'
@@ -7,10 +8,29 @@ import { GET_ALL_MYSTERY_BOXES, type AllMysteryBoxesResponse } from '@/lib/gacha
 import type { MysteryBox, LootPool, MysteryBoxTheme } from '@/types/gacha'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = {
-  title: 'Mystery Boxes | Gacha',
-  description:
-    'Try your luck with our themed mystery boxes! Each box contains a random item from its exclusive collection.',
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('seo')
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mizoke.com'
+
+  return {
+    title: t('gachaTitle'),
+    description: t('gachaDescription'),
+    alternates: {
+      canonical: `${siteUrl}/gacha`,
+    },
+    openGraph: {
+      title: t('gachaTitle'),
+      description: t('gachaDescription'),
+      type: 'website',
+      siteName: t('siteName'),
+      images: [`${siteUrl}/opengraph-image`],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('gachaTitle'),
+      description: t('gachaDescription'),
+    },
+  }
 }
 
 export const revalidate = 60
@@ -85,6 +105,7 @@ function SkeletonMysteryBox() {
 }
 
 async function MysteryBoxesContent() {
+  const t = await getTranslations('gacha')
   const boxes = await getMysteryBoxes()
 
   if (boxes.length === 0) {
@@ -93,9 +114,9 @@ async function MysteryBoxesContent() {
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-bg-secondary mb-4">
           <Gift className="w-8 h-8 text-white/30" />
         </div>
-        <h2 className="font-display text-xl text-white mb-2">No Mystery Boxes Available</h2>
+        <h2 className="font-display text-xl text-white mb-2">{t('noBoxesTitle')}</h2>
         <p className="text-white/60 max-w-md mx-auto">
-          Mystery boxes are currently not available. Check back soon!
+          {t('noBoxesDesc')}
         </p>
       </div>
     )
@@ -114,7 +135,9 @@ async function MysteryBoxesContent() {
   )
 }
 
-export default function GachaPage() {
+export default async function GachaPage() {
+  const t = await getTranslations('gacha')
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -133,13 +156,12 @@ export default function GachaPage() {
           </div>
 
           <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-wider">
-            <span className="text-neon-purple">MYSTERY</span>{' '}
-            <span className="text-white">BOXES</span>
+            <span className="text-neon-purple">{t('heroTitle1')}</span>{' '}
+            <span className="text-white">{t('heroTitle2')}</span>
           </h1>
 
           <p className="mt-4 text-white/60 max-w-xl mx-auto text-lg">
-            Take a chance and discover rare collectibles. Each themed box contains items from its
-            exclusive collection.
+            {t('heroSubtitle')}
           </p>
         </div>
       </section>
@@ -165,9 +187,9 @@ export default function GachaPage() {
       <section className="py-12 border-t border-white/10">
         <div className="px-4 max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <h2 className="font-display text-2xl md:text-3xl text-white mb-2">How It Works</h2>
+            <h2 className="font-display text-2xl md:text-3xl text-white mb-2">{t('howItWorks')}</h2>
             <p className="text-white/60">
-              A simple process to discover your mystery item
+              {t('howItWorksSubtitle')}
             </p>
           </div>
 
@@ -176,9 +198,9 @@ export default function GachaPage() {
               <div className="w-12 h-12 rounded-full bg-neon-cyan/20 flex items-center justify-center mx-auto mb-4">
                 <Package className="w-6 h-6 text-neon-cyan" />
               </div>
-              <h3 className="font-display text-lg text-white mb-2">1. Choose a Box</h3>
+              <h3 className="font-display text-lg text-white mb-2">{t('step1Title')}</h3>
               <p className="text-sm text-white/60">
-                Browse themed mystery boxes and inspect their contents and odds.
+                {t('step1Desc')}
               </p>
             </div>
 
@@ -186,9 +208,9 @@ export default function GachaPage() {
               <div className="w-12 h-12 rounded-full bg-neon-purple/20 flex items-center justify-center mx-auto mb-4">
                 <Ticket className="w-6 h-6 text-neon-purple" />
               </div>
-              <h3 className="font-display text-lg text-white mb-2">2. Get Your Code</h3>
+              <h3 className="font-display text-lg text-white mb-2">{t('step2Title')}</h3>
               <p className="text-sm text-white/60">
-                After purchase, you&apos;ll receive a unique redemption code.
+                {t('step2Desc')}
               </p>
             </div>
 
@@ -196,9 +218,9 @@ export default function GachaPage() {
               <div className="w-12 h-12 rounded-full bg-neon-yellow/20 flex items-center justify-center mx-auto mb-4">
                 <Sparkles className="w-6 h-6 text-neon-yellow" />
               </div>
-              <h3 className="font-display text-lg text-white mb-2">3. Reveal</h3>
+              <h3 className="font-display text-lg text-white mb-2">{t('step3Title')}</h3>
               <p className="text-sm text-white/60">
-                Use your code to reveal your item with an exciting animation.
+                {t('step3Desc')}
               </p>
             </div>
 
@@ -206,9 +228,9 @@ export default function GachaPage() {
               <div className="w-12 h-12 rounded-full bg-neon-green/20 flex items-center justify-center mx-auto mb-4">
                 <Truck className="w-6 h-6 text-neon-green" />
               </div>
-              <h3 className="font-display text-lg text-white mb-2">4. Claim & Ship</h3>
+              <h3 className="font-display text-lg text-white mb-2">{t('step4Title')}</h3>
               <p className="text-sm text-white/60">
-                Enter your shipping address and we&apos;ll send your prize.
+                {t('step4Desc')}
               </p>
             </div>
           </div>
@@ -226,10 +248,9 @@ export default function GachaPage() {
                 </div>
               </div>
               <div className="text-center md:text-left">
-                <h3 className="font-display text-xl text-white mb-2">Gift a Mystery Box</h3>
+                <h3 className="font-display text-xl text-white mb-2">{t('giftTitle')}</h3>
                 <p className="text-white/60">
-                  Share the excitement! You can share your redemption code with friends. They can
-                  reveal the mystery and claim the prize themselves.
+                  {t('giftDesc')}
                 </p>
               </div>
             </div>
@@ -243,10 +264,7 @@ export default function GachaPage() {
           <div className="flex items-start gap-3 text-white/40 text-xs">
             <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
             <p>
-              Mystery boxes contain random items from their themed collection. All odds are
-              displayed for transparency. Results are determined by a cryptographically secure
-              random algorithm at the time of reveal. Each box is guaranteed to contain a product.
-              Must be 18+ to purchase. Please gamble responsibly.
+              {t('disclaimer')}
             </p>
           </div>
         </div>

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimit'
 
+const SHOPIFY_STORE_DOMAIN = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN
+
 export async function POST(request: Request) {
   try {
     const ip = getClientIp(request)
@@ -31,14 +33,30 @@ export async function POST(request: Request) {
       )
     }
 
-    // TODO: Wire up email service (SendGrid, Resend, etc.)
-    console.info('[Contact Form]', {
-      name: name.trim(),
-      email: email.trim(),
-      subject: subject.trim(),
-      messageLength: message.trim().length,
-      timestamp: new Date().toISOString(),
+    // Submit to Shopify's built-in contact form endpoint
+    // Shopify sends the email to the store owner's email address
+    const shopifyUrl = `https://${SHOPIFY_STORE_DOMAIN}/contact#contact_form`
+    const formData = new URLSearchParams({
+      'form_type': 'contact',
+      'utf8': '✓',
+      'contact[email]': email.trim(),
+      'contact[name]': name.trim(),
+      'contact[subject]': subject.trim(),
+      'contact[body]': message.trim(),
     })
+
+    const shopifyResponse = await fetch(shopifyUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formData.toString(),
+      redirect: 'manual',
+    })
+
+    // Shopify returns a 302 redirect on success
+    if (shopifyResponse.status !== 302 && !shopifyResponse.ok) {
+      console.error('[Contact Form] Shopify submission failed:', shopifyResponse.status)
+      return NextResponse.json({ error: 'Failed to send message' }, { status: 500 })
+    }
 
     return NextResponse.json(
       { success: true, message: 'Message sent successfully' },
