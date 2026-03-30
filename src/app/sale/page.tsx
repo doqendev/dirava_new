@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
-import { ChevronRight, Percent } from 'lucide-react'
+import { ChevronRight, Tag } from 'lucide-react'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_ALL_PRODUCTS } from '@/lib/shopify/queries'
 import { extractNodes } from '@/lib/shopify/utils'
@@ -126,7 +126,7 @@ async function SaleContent({
     return (
       <div className="text-center py-16">
         <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-white/5 flex items-center justify-center">
-          <Percent className="w-10 h-10 text-white/30" />
+          <Tag className="w-10 h-10 text-white/30" />
         </div>
         <h2 className="text-xl font-display text-white mb-2">{t('noSaleItems')}</h2>
         <p className="text-white/50 mb-6">
@@ -208,39 +208,53 @@ export default async function SalePage({ searchParams }: Props) {
 
   return (
     <div className="min-h-screen">
-      {/* Header Section */}
-      <section className="pt-6 px-4 max-w-7xl mx-auto">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm mb-4">
-          <Link
-            href="/"
-            className="text-white/50 hover:text-white transition-colors"
-          >
-            {t('breadcrumbHome')}
-          </Link>
-          <ChevronRight className="w-4 h-4 text-white/30" />
-          <span className="text-neon-pink">{t('title')}</span>
-        </nav>
+      {/* Hero Header Section */}
+      <section className="relative py-8 lg:py-12 overflow-hidden">
+        {/* Gradient mesh blobs */}
+        <div className="absolute top-0 left-1/4 w-[450px] h-[220px] rounded-full blur-[110px] opacity-25 bg-[#ff2d6a]" />
+        <div className="absolute top-4 right-1/4 w-[380px] h-[180px] rounded-full blur-[90px] opacity-20 bg-[#ff8c00]" />
 
-        {/* Page Title */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-neon-pink/10 border border-neon-pink/30 flex items-center justify-center">
-            <Percent className="w-6 h-6 text-neon-pink" />
-          </div>
-          <div>
-            <h1
-              className="font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-wider uppercase"
-              style={{
-                color: '#ff2d6a',
-                textShadow: '0 0 20px rgba(255, 45, 106, 0.4), 0 0 40px rgba(255, 45, 106, 0.2)',
-              }}
+        {/* Subtle diagonal accent line */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage:
+              'repeating-linear-gradient(125deg, transparent, transparent 60px, rgba(255,107,53,0.03) 60px, rgba(255,107,53,0.03) 61px)',
+          }}
+        />
+
+        <div className="relative px-4 max-w-7xl mx-auto text-center">
+          {/* Breadcrumb */}
+          <nav className="flex items-center justify-center gap-2 text-sm mb-5">
+            <Link
+              href="/"
+              className="text-white/50 hover:text-white transition-colors"
             >
-              {t('title')}
-            </h1>
-            <p className="text-white/50 text-sm mt-1">
-              {t('description')}
-            </p>
+              {t('breadcrumbHome')}
+            </Link>
+            <ChevronRight className="w-4 h-4 text-white/30" />
+            <span className="text-neon-orange">{t('title')}</span>
+          </nav>
+
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-white/5 border border-[#ff6b35]/30 text-sm font-medium text-[#ff8c00]">
+            <Tag className="w-4 h-4" />
+            {t('saleBadge')}
           </div>
+
+          {/* Title */}
+          <h1
+            className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-wider uppercase bg-gradient-to-r from-[#ff2d6a] via-[#ff6b35] to-[#ff8c00] bg-clip-text text-transparent"
+            style={{
+              textShadow: '0 0 40px rgba(255, 107, 53, 0.25)',
+            }}
+          >
+            {t('title')}
+          </h1>
+
+          <p className="mt-4 text-white/60 max-w-lg mx-auto">
+            {t('description')}
+          </p>
         </div>
       </section>
 

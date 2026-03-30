@@ -693,6 +693,7 @@
     "title": "Sale",
     "description": "Great deals on anime merchandise",
     "breadcrumbHome": "Home",
+    "saleBadge": "Fire Sale",
     "noSaleItems": "No Sale Items",
     "noSaleItemsDescription": "Check back soon for upcoming deals and discounts!",
     "browseAllProducts": "Browse All Products"
