@@ -23,7 +23,7 @@ const statusBadgeClasses: Record<TabStatus, string> = {
 export default function AdminReviewsContent() {
   const [adminSecret, setAdminSecret] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('mizoke-admin-secret') || ''
+      return sessionStorage.getItem('mizoke-admin-secret') || ''
     }
     return ''
   })
@@ -35,10 +35,10 @@ export default function AdminReviewsContent() {
   const [hasFetched, setHasFetched] = useState(false)
   const [expandedImages, setExpandedImages] = useState<string | null>(null)
 
-  // Persist admin secret to localStorage
+  // Persist admin secret to sessionStorage (not localStorage — avoid persisting across sessions)
   useEffect(() => {
     if (adminSecret) {
-      localStorage.setItem('mizoke-admin-secret', adminSecret)
+      sessionStorage.setItem('mizoke-admin-secret', adminSecret)
     }
   }, [adminSecret])
 

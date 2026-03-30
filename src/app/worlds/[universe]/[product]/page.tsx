@@ -2,18 +2,18 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { shopifyFetch } from '@/lib/shopify/client'
-import { GET_PRODUCT, GET_RELATED_PRODUCTS } from '@/lib/shopify/queries'
+import { GET_PRODUCT, GET_PRODUCT_RECOMMENDATIONS, GET_RELATED_PRODUCTS } from '@/lib/shopify/queries'
 import { getProductRarity } from '@/lib/shopify/utils'
 import { ProductDetailClient } from '@/components/product/ProductDetailClient'
-import { RelatedProducts } from '@/components/product/RelatedProducts'
+import { YouMightAlsoLike } from '@/components/product/YouMightAlsoLike'
 import { RecentlyViewed } from '@/components/product/RecentlyViewed'
 import ReviewList from '@/components/product/ReviewList'
 import { ProductLifestyleGallery } from '@/components/product/ProductLifestyleGallery'
 import { ProductFAQ } from '@/components/product/ProductFAQ'
 import { getReviewsByProduct, getReviewStats } from '@/lib/reviews/metaobjects'
-import type { ShopifyProduct, ShopifyCollection } from '@/types/shopify'
-import type { Rarity } from '@/types/common'
+import type { ShopifyProduct } from '@/types/shopify'
 import type { Review } from '@/types/reviews'
+import { SITE_URL } from '@/lib/utils/siteUrl'
 
 // Revalidate every 60 seconds
 export const revalidate = 60
@@ -29,8 +29,15 @@ interface ProductQueryResponse {
   product: ShopifyProduct | null
 }
 
-interface RelatedProductsResponse {
-  collection: ShopifyCollection | null
+interface RecommendedProductNode {
+  id: string
+  handle: string
+  title: string
+  priceRange: { minVariantPrice: { amount: string; currencyCode: string } }
+  compareAtPriceRange?: { minVariantPrice: { amount: string; currencyCode: string } } | null
+  featuredImage: { url: string; altText: string | null } | null
+  variants?: { edges: Array<{ node: { id: string } }> }
+  collections?: { edges: Array<{ node: { handle: string; metafield?: { value: string } | null } }> }
 }
 
 async function getProduct(handle: string) {
@@ -63,6 +70,7 @@ async function getProduct(handle: string) {
           price: edge.node.price,
           compareAtPrice: edge.node.compareAtPrice,
           selectedOptions: edge.node.selectedOptions,
+          image: edge.node.image ?? null,
         }))
       : []
 
@@ -101,46 +109,65 @@ async function getProduct(handle: string) {
   }
 }
 
-async function getRelatedProducts(collectionHandle: string, excludeProductId: string) {
-  try {
-    const data = await shopifyFetch<RelatedProductsResponse>(GET_RELATED_PRODUCTS, {
-      collectionHandle,
-      first: 9,
-    })
-
-    if (!data.collection?.products?.edges) {
-      return []
-    }
-
-    // Filter out current product and limit to 4
-    const products = data.collection.products.edges
-      .filter((edge) => edge.node.id !== excludeProductId)
-      .slice(0, 4)
-      .map((edge) => {
-        const product = edge.node
-        const rarityValue = (product as { metafield?: { value: string } }).metafield?.value
-        let rarity: Rarity | null = null
-        if (rarityValue === 'rare' || rarityValue === 'legendary' || rarityValue === 'common') {
-          rarity = rarityValue
-        }
-
-        return {
-          id: product.id,
-          handle: product.handle,
-          title: product.title,
-          price: product.priceRange.minVariantPrice,
-          compareAtPrice: product.compareAtPriceRange?.minVariantPrice,
-          image: product.featuredImage,
-          variantId: (product as { variants?: { edges: Array<{ node: { id: string } }> } }).variants?.edges?.[0]?.node?.id,
-          rarity,
-        }
-      })
-
-    return products
-  } catch (error) {
-    console.error('Failed to fetch related products:', error)
-    return []
+function mapRecommendedProduct(product: RecommendedProductNode) {
+  const universe = product.collections?.edges?.[0]?.node?.metafield?.value || null
+  return {
+    id: product.id,
+    handle: product.handle,
+    title: product.title,
+    price: product.priceRange.minVariantPrice,
+    compareAtPrice: product.compareAtPriceRange?.minVariantPrice,
+    image: product.featuredImage,
+    variantId: product.variants?.edges?.[0]?.node?.id,
+    universe,
   }
+}
+
+async function getRecommendedProducts(productId: string, collectionHandle: string | null, currentUniverse?: string) {
+  const TARGET = 10
+
+  // 1. Fetch Shopify ML recommendations
+  let recommendations: ReturnType<typeof mapRecommendedProduct>[] = []
+  try {
+    const data = await shopifyFetch<{
+      productRecommendations: RecommendedProductNode[] | null
+    }>(GET_PRODUCT_RECOMMENDATIONS, { productId })
+
+    if (data.productRecommendations) {
+      recommendations = data.productRecommendations
+        .filter((p) => p.id !== productId)
+        .slice(0, TARGET)
+        .map(mapRecommendedProduct)
+    }
+  } catch (error) {
+    console.error('Failed to fetch product recommendations:', error)
+  }
+
+  // 2. If fewer than 10, pad with same-collection products
+  if (recommendations.length < TARGET && collectionHandle) {
+    try {
+      const data = await shopifyFetch<{
+        collection: { products?: { edges: Array<{ node: RecommendedProductNode }> } } | null
+      }>(GET_RELATED_PRODUCTS, { collectionHandle, first: TARGET + 5 })
+
+      if (data.collection?.products?.edges) {
+        const existingIds = new Set([productId, ...recommendations.map((r) => r.id)])
+        const filler = data.collection.products.edges
+          .filter((edge) => !existingIds.has(edge.node.id))
+          .slice(0, TARGET - recommendations.length)
+          .map((edge) => {
+            const mapped = mapRecommendedProduct(edge.node)
+            return { ...mapped, universe: mapped.universe || currentUniverse || null }
+          })
+
+        recommendations = [...recommendations, ...filler]
+      }
+    } catch (error) {
+      console.error('Failed to fetch filler products:', error)
+    }
+  }
+
+  return recommendations.slice(0, TARGET)
 }
 
 export default async function ProductDetailPage({ params }: ProductPageProps) {
@@ -154,16 +181,12 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   const tCommon = await getTranslations('common')
 
-  // Fetch related products and review data in parallel
-  const [relatedProducts, reviewStats, approvedReviews] = await Promise.all([
-    product.collectionHandle
-      ? getRelatedProducts(product.collectionHandle, product.id)
-      : Promise.resolve([]),
+  // Fetch recommendations and review data in parallel
+  const [recommendations, reviewStats, approvedReviews] = await Promise.all([
+    getRecommendedProducts(product.id, product.collectionHandle || null, universe),
     getReviewStats(productHandle),
     getReviewsByProduct(productHandle, 'approved'),
   ])
-
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mizoke.com'
 
   // Product JSON-LD schema
   const productSchema = {
@@ -183,7 +206,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       availability: product.variants.some(v => v.availableForSale)
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',
-      url: `${siteUrl}/worlds/${universe}/${product.handle}`,
+      url: `${SITE_URL}/worlds/${universe}/${product.handle}`,
     },
     ...(reviewStats.reviewCount > 0 && {
       aggregateRating: {
@@ -223,19 +246,19 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         '@type': 'ListItem',
         position: 1,
         name: tCommon('home'),
-        item: siteUrl,
+        item: SITE_URL,
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: universe.charAt(0).toUpperCase() + universe.slice(1),
-        item: `${siteUrl}/worlds/${universe}`,
+        item: `${SITE_URL}/worlds/${universe}`,
       },
       {
         '@type': 'ListItem',
         position: 3,
         name: product.title,
-        item: `${siteUrl}/worlds/${universe}/${product.handle}`,
+        item: `${SITE_URL}/worlds/${universe}/${product.handle}`,
       },
     ],
   }
@@ -268,13 +291,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         <ProductFAQ productHandle={product.handle} />
       </div>
 
-      {/* Related Products */}
-      {relatedProducts.length > 0 && (
+      {/* You Might Also Like */}
+      {recommendations.length > 0 && (
         <div className="px-4 py-12 max-w-7xl mx-auto">
-          <RelatedProducts
-            products={relatedProducts}
-            universe={universe}
-          />
+          <YouMightAlsoLike products={recommendations} />
         </div>
       )}
 
@@ -297,7 +317,6 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     }
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mizoke.com'
   const title = `${product.title} | Mizoke`
   const description = product.description
     ? product.description.slice(0, 160)
@@ -307,7 +326,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     title,
     description,
     alternates: {
-      canonical: `${siteUrl}/worlds/${universe}/${product.handle}`,
+      canonical: `${SITE_URL}/worlds/${universe}/${product.handle}`,
     },
     openGraph: {
       title,

@@ -99,9 +99,8 @@ export function WishlistButton({
         sizeStyles[size],
         'rounded-lg flex items-center justify-center',
         'transition-all duration-200',
-        isInList
-          ? 'bg-neon-pink text-white'
-          : 'bg-black/60 backdrop-blur-sm text-white/70 hover:text-neon-pink hover:bg-black/80',
+        'bg-black/60 backdrop-blur-sm hover:bg-black/80',
+        isInList ? 'text-red-500' : 'text-white/70 hover:text-neon-pink',
         showOnHover && 'opacity-0 group-hover:opacity-100',
         className
       )}

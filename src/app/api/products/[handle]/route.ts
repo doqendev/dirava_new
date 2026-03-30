@@ -25,6 +25,7 @@ export async function GET(
               price: { amount: string; currencyCode: string }
               compareAtPrice?: { amount: string; currencyCode: string } | null
               selectedOptions: Array<{ name: string; value: string }>
+              image?: { url: string; altText: string | null } | null
             }
           }>
         }

@@ -29,10 +29,10 @@ export function LocaleProvider({
   useEffect(() => {
     if (isInitialized && locale !== initialLocale) {
       // User has a different locale preference stored - set cookie and reload might be needed
-      document.cookie = `mizoke-locale=${locale};path=/;max-age=31536000;SameSite=Lax`
+      document.cookie = `mizoke-locale=${locale};path=/;max-age=31536000;SameSite=Lax;Secure`
     }
     if (isInitialized && currency !== initialCurrency) {
-      document.cookie = `mizoke-currency=${currency};path=/;max-age=31536000;SameSite=Lax`
+      document.cookie = `mizoke-currency=${currency};path=/;max-age=31536000;SameSite=Lax;Secure`
     }
   }, [isInitialized, locale, currency, initialLocale, initialCurrency])
 

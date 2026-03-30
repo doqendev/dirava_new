@@ -14,6 +14,7 @@ interface StickyAddToCartProps {
   personalizationValue: string
   onPersonalizationError: () => void
   attributes?: Array<{ key: string; value: string }>
+  quantity?: number
   /** Ref to the main Add to Cart area — used to detect when it scrolls out of view */
   cartButtonRef: React.RefObject<HTMLDivElement | null>
 }
@@ -27,6 +28,7 @@ export function StickyAddToCart({
   personalizationValue,
   onPersonalizationError,
   attributes,
+  quantity = 1,
   cartButtonRef,
 }: StickyAddToCartProps) {
   const [isVisible, setIsVisible] = useState(false)
@@ -63,7 +65,7 @@ export function StickyAddToCart({
         <div className="flex-shrink-0 w-36">
           <AddToCartButton
             variantId={variantId}
-            quantity={1}
+            quantity={quantity}
             available={available}
             requiresPersonalization={requiresPersonalization}
             personalizationValue={personalizationValue}

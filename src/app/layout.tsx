@@ -6,6 +6,7 @@ import { getTranslations } from 'next-intl/server'
 import { getLocale, getCurrency } from '@/i18n/request'
 import { getMessages } from '@/i18n/messages'
 import { SOCIAL_LINKS } from '@/lib/utils/constants'
+import { SITE_URL } from '@/lib/utils/siteUrl'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { BottomNav } from '@/components/layout/BottomNav'
@@ -50,7 +51,7 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://mizoke.com'),
+    metadataBase: new URL(SITE_URL),
     title: {
       default: t('homeTitle'),
       template: `%s | ${t('siteName')}`,
@@ -74,15 +75,9 @@ export async function generateMetadata(): Promise<Metadata> {
       index: true,
       follow: true,
     },
-    alternates: {
-      languages: {
-        'en': '/',
-        'es': '/es',
-        'de': '/de',
-        'fr': '/fr',
-        'pt': '/pt',
-      },
-    },
+    // Note: alternates.languages removed — cookie-based i18n has no path-based
+    // locale routing, so /de, /fr etc. URLs don't exist. Re-add when switching
+    // to path-based locale routing.
   }
 }
 
@@ -102,20 +97,18 @@ export default async function RootLayout({
   const currency = await getCurrency()
   const messages = getMessages(locale)
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mizoke.com'
-
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Mizoke',
     description: 'Your Anime Spirit - Premium anime merchandise',
-    url: siteUrl,
-    logo: `${siteUrl}/opengraph-image`,
+    url: SITE_URL,
+    logo: `${SITE_URL}/opengraph-image`,
     sameAs: SOCIAL_LINKS.map((link) => link.href),
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
-      url: `${siteUrl}/contact`,
+      url: `${SITE_URL}/contact`,
     },
   }
 

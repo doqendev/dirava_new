@@ -41,10 +41,12 @@ interface ProductGalleryProps {
   selectedVariantName?: string
   onPreviewTextChange?: (text: string) => void
   canvasCart?: CanvasCartProps
+  initialImageIndex?: number
 }
 
 export interface ProductGalleryHandle {
   goTo3D: () => void
+  goToIndex: (index: number) => void
 }
 
 export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryProps>(
@@ -58,13 +60,14 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
       selectedVariantName,
       onPreviewTextChange,
       canvasCart,
+      initialImageIndex,
     },
     ref
   ) {
     const t = useTranslations('gallery')
     const tCommon = useTranslations('common')
     const containerRef = useRef<HTMLDivElement>(null)
-    const [currentIndex, setCurrentIndex] = useState(0)
+    const [currentIndex, setCurrentIndex] = useState(initialImageIndex ?? 0)
     const [isZoomed, setIsZoomed] = useState(false)
     const touchStartRef = useRef<{ x: number; y: number } | null>(null)
 
@@ -100,7 +103,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
       }
     }, [preview3DIndex])
 
-    useImperativeHandle(ref, () => ({ goTo3D }), [goTo3D])
+    useImperativeHandle(ref, () => ({ goTo3D, goToIndex: (index: number) => { setCurrentIndex(index); setIsZoomed(false) } }), [goTo3D])
 
     const goToNext = useCallback(() => {
       const nextIndex = currentIndex + 1
@@ -193,7 +196,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: 0.15 }}
                 className="absolute inset-0"
               >
                 <Suspense
@@ -251,7 +254,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: 0.1 }}
                 className="absolute inset-0"
               >
                 <Image

@@ -343,7 +343,7 @@ export function CartDrawer() {
                     </div>
                   )}
 
-                  {total && discountAmount && parseFloat(discountAmount.amount) > 0 && (
+                  {total && (
                     <div className="flex items-center justify-between pt-2 border-t border-border-subtle">
                       <span className="text-white font-medium">{t('total')}</span>
                       <span className="font-mono text-lg text-neon-cyan">

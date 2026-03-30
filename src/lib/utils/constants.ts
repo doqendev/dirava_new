@@ -69,6 +69,26 @@ export const UNIVERSE_CONFIG = {
     textGlowClass: 'text-glow-cyan',
     bgEffect: 'digital',
   },
+  'jujutsu-kaisen': {
+    slug: 'jujutsu-kaisen',
+    name: 'Jujutsu Kaisen',
+    color: '#a855f7',
+    colorName: 'purple',
+    glowClass: 'shadow-glow-purple',
+    borderClass: 'border-neon-purple',
+    textGlowClass: 'text-glow-purple',
+    bgEffect: 'cursed',
+  },
+  'bleach': {
+    slug: 'bleach',
+    name: 'Bleach',
+    color: '#ffd700',
+    colorName: 'yellow',
+    glowClass: 'shadow-glow-yellow',
+    borderClass: 'border-neon-yellow',
+    textGlowClass: 'text-glow-yellow',
+    bgEffect: 'reiatsu',
+  },
 } as const
 
 export type UniverseSlug = keyof typeof UNIVERSE_CONFIG

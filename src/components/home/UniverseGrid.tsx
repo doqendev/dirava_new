@@ -10,6 +10,7 @@ interface Universe {
   name: string
   itemCount: number
   themeColor: UniverseColorName
+  themeColorHex?: string
   backgroundImage?: string
 }
 
@@ -57,6 +58,7 @@ export function UniverseGrid({ universes, className }: UniverseGridProps) {
                 name={universe.name}
                 itemCount={universe.itemCount}
                 themeColor={universe.themeColor}
+                themeColorHex={universe.themeColorHex}
                 backgroundImage={universe.backgroundImage}
               />
             </motion.div>

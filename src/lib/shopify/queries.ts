@@ -50,6 +50,9 @@ export const GET_UNIVERSES = gql`
           metafield(namespace: "custom", key: "universe") {
             value
           }
+          themeColor: metafield(namespace: "custom", key: "theme_color") {
+            value
+          }
           products(first: 250) {
             edges {
               node {
@@ -78,6 +81,9 @@ export const GET_UNIVERSE_PRODUCTS = gql`
         url
         altText
       }
+      themeColor: metafield(namespace: "custom", key: "theme_color") {
+        value
+      }
       products(first: $first, after: $after) {
         pageInfo {
           hasNextPage
@@ -88,6 +94,31 @@ export const GET_UNIVERSE_PRODUCTS = gql`
             ...ProductFields
             metafield(namespace: "custom", key: "rarity") {
               value
+            }
+            variants(first: 100) {
+              edges {
+                node {
+                  id
+                  title
+                  availableForSale
+                  price {
+                    amount
+                    currencyCode
+                  }
+                  compareAtPrice {
+                    amount
+                    currencyCode
+                  }
+                  selectedOptions {
+                    name
+                    value
+                  }
+                  image {
+                    url
+                    altText
+                  }
+                }
+              }
             }
           }
         }
@@ -144,6 +175,10 @@ export const GET_PRODUCT = gql`
             selectedOptions {
               name
               value
+            }
+            image {
+              url
+              altText
             }
           }
         }
@@ -312,6 +347,61 @@ export const PREDICTIVE_SEARCH = gql`
         featuredImage {
           url
           altText
+        }
+        collections(first: 1) {
+          edges {
+            node {
+              metafield(namespace: "custom", key: "universe") {
+                value
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
+/**
+ * Get Shopify ML-based product recommendations
+ */
+export const GET_PRODUCT_RECOMMENDATIONS = gql`
+  query GetProductRecommendations($productId: ID!) {
+    productRecommendations(productId: $productId) {
+      id
+      handle
+      title
+      priceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      compareAtPriceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      featuredImage {
+        url
+        altText
+      }
+      variants(first: 1) {
+        edges {
+          node {
+            id
+          }
+        }
+      }
+      collections(first: 1) {
+        edges {
+          node {
+            handle
+            metafield(namespace: "custom", key: "universe") {
+              value
+            }
+          }
         }
       }
     }

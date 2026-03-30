@@ -6,6 +6,7 @@ export type GridColumns = 1 | 2 | 3
 interface QuickViewProduct {
   handle: string
   universe?: string
+  variantName?: string
 }
 
 interface UIState {

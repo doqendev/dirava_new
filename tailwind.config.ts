@@ -40,6 +40,10 @@ const config: Config = {
         'glow-sm-pink': '0 0 10px rgba(255, 45, 106, 0.4)',
         'glow-sm-orange': '0 0 10px rgba(255, 140, 0, 0.4)',
         'glow-sm-green': '0 0 10px rgba(0, 255, 136, 0.4)',
+        'glow-purple': '0 0 20px rgba(168, 85, 247, 0.5), 0 0 40px rgba(168, 85, 247, 0.3)',
+        'glow-yellow': '0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.3)',
+        'glow-sm-purple': '0 0 10px rgba(168, 85, 247, 0.4)',
+        'glow-sm-yellow': '0 0 10px rgba(255, 215, 0, 0.4)',
       },
       animation: {
         'glow-pulse': 'glow-pulse 2s ease-in-out infinite',

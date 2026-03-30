@@ -23,7 +23,7 @@ export function CollectionViewToggle({ themeColor }: CollectionViewToggleProps) 
   const setGridColumns = useUIStore((state) => state.setGridColumns)
 
   return (
-    <div className="flex items-center gap-1 bg-bg-card border border-border-subtle rounded-lg p-1">
+    <div className="flex items-center gap-0.5 sm:gap-1 bg-bg-card border border-border-subtle rounded-lg p-0.5 sm:p-1">
       {columnOptions.map(({ cols, icon: Icon, label }) => {
         const isActive = gridColumns === cols
 
@@ -32,7 +32,7 @@ export function CollectionViewToggle({ themeColor }: CollectionViewToggleProps) 
             key={cols}
             onClick={() => setGridColumns(cols)}
             className={cn(
-              'w-10 h-10 sm:w-9 sm:h-9 flex items-center justify-center rounded-md',
+              'w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center rounded-md',
               'transition-all duration-200',
               isActive ? 'text-black' : 'text-white/50 hover:text-white'
             )}
@@ -41,7 +41,7 @@ export function CollectionViewToggle({ themeColor }: CollectionViewToggleProps) 
             }}
             title={label}
           >
-            <Icon className="w-5 h-5 sm:w-4 sm:h-4" />
+            <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         )
       })}

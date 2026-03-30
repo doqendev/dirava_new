@@ -7,23 +7,22 @@ import { Badge } from '@/components/ui/Badge'
 import { GET_ALL_MYSTERY_BOXES, type AllMysteryBoxesResponse } from '@/lib/gacha/queries'
 import type { MysteryBox, LootPool, MysteryBoxTheme } from '@/types/gacha'
 import type { Metadata } from 'next'
+import { SITE_URL } from '@/lib/utils/siteUrl'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('seo')
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mizoke.com'
-
   return {
     title: t('gachaTitle'),
     description: t('gachaDescription'),
     alternates: {
-      canonical: `${siteUrl}/gacha`,
+      canonical: `${SITE_URL}/gacha`,
     },
     openGraph: {
       title: t('gachaTitle'),
       description: t('gachaDescription'),
       type: 'website',
       siteName: t('siteName'),
-      images: [`${siteUrl}/opengraph-image`],
+      images: [`${SITE_URL}/opengraph-image`],
     },
     twitter: {
       card: 'summary_large_image',

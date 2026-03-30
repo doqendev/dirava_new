@@ -5,13 +5,22 @@
  * @param currencyCode - The ISO 4217 currency code (default: USD)
  * @returns Formatted price string (e.g., "$29.99")
  */
+const CURRENCY_LOCALE_MAP: Record<string, string> = {
+  USD: 'en-US',
+  EUR: 'de-DE',
+  GBP: 'en-GB',
+  CAD: 'en-CA',
+  AUD: 'en-AU',
+}
+
 export function formatPrice(
   amount: string | number,
   currencyCode = 'USD'
 ): string {
   const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount
+  const locale = CURRENCY_LOCALE_MAP[currencyCode] ?? 'en-US'
 
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: currencyCode,
     minimumFractionDigits: 2,

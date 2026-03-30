@@ -9,6 +9,7 @@ import { BundleHowItWorks } from '@/components/bundles/BundleHowItWorks'
 import { Badge } from '@/components/ui/Badge'
 import type { BundleResolved } from '@/types/bundle'
 import type { Metadata } from 'next'
+import { SITE_URL } from '@/lib/utils/siteUrl'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('seo')
@@ -18,14 +19,14 @@ export async function generateMetadata(): Promise<Metadata> {
     description: t('bundlesDescription'),
     keywords: t('keywords'),
     alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mizoke.com'}/bundles`,
+      canonical: `${SITE_URL}/bundles`,
     },
     openGraph: {
       title: t('bundlesTitle'),
       description: t('bundlesDescription'),
       type: 'website',
       siteName: t('siteName'),
-      images: [`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mizoke.com'}/opengraph-image`],
+      images: [`${SITE_URL}/opengraph-image`],
     },
     twitter: {
       card: 'summary_large_image',

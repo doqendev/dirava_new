@@ -10,17 +10,17 @@ import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_UNIVERSES, GET_DROP_PRODUCTS, GET_NEW_ARRIVALS, GET_BEST_SELLERS } from '@/lib/shopify/queries'
 import { extractNodes, getCollectionUniverse, getCollectionProductCount } from '@/lib/shopify/utils'
 import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
+import { SITE_URL } from '@/lib/utils/siteUrl'
 import type { ShopifyCollection, ShopifyProduct } from '@/types/shopify'
 import type { UniverseColorName } from '@/types/universe'
 
 export async function generateMetadata() {
   const t = await getTranslations('seo')
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mizoke.com'
   return {
     title: t('homeTitle'),
     description: t('homeDescription'),
     alternates: {
-      canonical: siteUrl,
+      canonical: SITE_URL,
     },
   }
 }
@@ -29,12 +29,12 @@ export async function generateMetadata() {
 export const revalidate = 60
 
 // Valid universe slugs
-const VALID_UNIVERSES = ['one-piece', 'demon-slayer', 'dragon-ball', 'hunter-hunter', 'attack-on-titan', 'digimon']
+const VALID_UNIVERSES = ['one-piece', 'demon-slayer', 'dragon-ball', 'hunter-hunter', 'attack-on-titan', 'digimon', 'jujutsu-kaisen', 'bleach']
 
 async function getUniverses() {
   try {
     const data = await shopifyFetch<{
-      collections: { edges: Array<{ node: ShopifyCollection }> }
+      collections: { edges: Array<{ node: ShopifyCollection & { themeColor?: { value: string } | null } }> }
     }>(GET_UNIVERSES)
 
     const collections = extractNodes(data.collections)
@@ -48,12 +48,14 @@ async function getUniverses() {
       .map((collection) => {
         const universeSlug = getCollectionUniverse(collection)!
         const config = UNIVERSE_CONFIG[universeSlug as keyof typeof UNIVERSE_CONFIG]
+        const metafieldColor = (collection as ShopifyCollection & { themeColor?: { value: string } | null }).themeColor?.value
 
         return {
           slug: collection.handle,
           name: config?.name || collection.title,
           itemCount: getCollectionProductCount(collection),
           themeColor: (config?.colorName || 'cyan') as UniverseColorName,
+          themeColorHex: metafieldColor || undefined,
           backgroundImage: collection.image?.url,
         }
       })

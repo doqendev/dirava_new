@@ -1,9 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_UNIVERSES, GET_SITEMAP_PRODUCTS } from '@/lib/shopify/queries'
-import { locales } from '@/i18n/config'
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mizoke.com'
+import { SITE_URL } from '@/lib/utils/siteUrl'
 
 interface UniverseNode {
   handle: string
@@ -71,15 +69,6 @@ async function getAllProducts(): Promise<ProductNode[]> {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
 
-  // Create locale alternates helper
-  const createAlternates = (path: string) => {
-    const languages: Record<string, string> = {}
-    locales.forEach((locale) => {
-      languages[locale] = `${siteUrl}/${locale}${path}`
-    })
-    return { languages }
-  }
-
   const routes: MetadataRoute.Sitemap = []
 
   // Static pages
@@ -103,11 +92,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   staticPages.forEach(({ path, priority, changeFrequency }) => {
     routes.push({
-      url: `${siteUrl}${path}`,
+      url: `${SITE_URL}${path}`,
       lastModified: now,
       changeFrequency,
       priority,
-      alternates: createAlternates(path),
+      // alternates removed — cookie-based i18n has no locale URL paths
     })
   })
 
@@ -121,11 +110,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Add universe pages
     universes.forEach((universe) => {
       routes.push({
-        url: `${siteUrl}/worlds/${universe.handle}`,
+        url: `${SITE_URL}/worlds/${universe.handle}`,
         lastModified: now,
         changeFrequency: 'weekly',
         priority: 0.8,
-        alternates: createAlternates(`/worlds/${universe.handle}`),
+        // alternates removed — cookie-based i18n has no locale URL paths
       })
     })
 
@@ -144,11 +133,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         const productPath = `/worlds/${collectionHandle}/${product.handle}`
 
         routes.push({
-          url: `${siteUrl}${productPath}`,
+          url: `${SITE_URL}${productPath}`,
           lastModified: new Date(product.updatedAt),
           changeFrequency: 'weekly',
           priority: 0.8,
-          alternates: createAlternates(productPath),
+          // alternates removed — cookie-based i18n has no locale URL paths
         })
       }
     })

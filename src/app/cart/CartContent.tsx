@@ -192,7 +192,7 @@ export default function CartContent() {
               </div>
             )}
 
-            {total && discountAmount && parseFloat(discountAmount.amount) > 0 && (
+            {total && (
               <div className="flex items-center justify-between pt-3 border-t border-border-subtle">
                 <span className="text-xl text-white font-medium">{t('total')}</span>
                 <span className="text-2xl font-mono text-neon-cyan">

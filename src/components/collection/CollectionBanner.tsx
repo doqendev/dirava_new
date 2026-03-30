@@ -19,6 +19,8 @@ const universeImages: Record<string, string> = {
   'hunter-hunter': '/images/universes/hunter-hunter.png',
   'attack-on-titan': '/images/universes/attack-on-titan.png',
   'digimon': '/images/universes/digimon.png',
+  'jujutsu-kaisen': '/images/universes/jujutsu-kaisen.png',
+  'bleach': '/images/universes/bleach.png',
 }
 
 // Get universe image by checking the slug

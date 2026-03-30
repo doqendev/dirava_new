@@ -156,7 +156,7 @@ export const useAuthStore = create<AuthState>()(
           })
 
           // Set auth flag cookie for middleware (boolean signal only)
-          document.cookie = 'mizoke-auth=1; path=/; max-age=2592000; SameSite=Lax'
+          document.cookie = 'mizoke-auth=1; path=/; max-age=2592000; SameSite=Lax; Secure'
 
           // Fetch customer data
           await get().fetchCustomer()
@@ -184,7 +184,7 @@ export const useAuthStore = create<AuthState>()(
         })
 
         // Set auth flag cookie for middleware
-        document.cookie = 'mizoke-auth=1; path=/; max-age=2592000; SameSite=Lax'
+        document.cookie = 'mizoke-auth=1; path=/; max-age=2592000; SameSite=Lax; Secure'
       },
 
       register: async (email, password, firstName, lastName) => {
@@ -305,7 +305,7 @@ export const useAuthStore = create<AuthState>()(
             })
 
             // Set auth flag cookie for middleware
-            document.cookie = 'mizoke-auth=1; path=/; max-age=2592000; SameSite=Lax'
+            document.cookie = 'mizoke-auth=1; path=/; max-age=2592000; SameSite=Lax; Secure'
 
             await get().fetchCustomer()
           }
@@ -401,7 +401,7 @@ export const useAuthStore = create<AuthState>()(
         })
 
         // Clear auth flag cookie for middleware
-        document.cookie = 'mizoke-auth=; path=/; max-age=0'
+        document.cookie = 'mizoke-auth=; path=/; max-age=0; Secure'
       },
     }),
     {

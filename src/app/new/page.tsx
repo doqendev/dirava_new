@@ -17,6 +17,7 @@ import {
 } from '@/lib/utils/filters'
 import type { ShopifyProduct } from '@/types/shopify'
 import type { Metadata } from 'next'
+import { SITE_URL } from '@/lib/utils/siteUrl'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('seo')
@@ -26,14 +27,14 @@ export async function generateMetadata(): Promise<Metadata> {
     description: t('newArrivalsDescription'),
     keywords: t('keywords'),
     alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mizoke.com'}/new`,
+      canonical: `${SITE_URL}/new`,
     },
     openGraph: {
       title: t('newArrivalsTitle'),
       description: t('newArrivalsDescription'),
       type: 'website',
       siteName: t('siteName'),
-      images: [`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mizoke.com'}/opengraph-image`],
+      images: [`${SITE_URL}/opengraph-image`],
     },
     twitter: {
       card: 'summary_large_image',

@@ -49,9 +49,9 @@ export async function checkRateLimit(
   const limiter = getLimiter(prefix, opts.maxRequests, opts.windowSeconds)
 
   if (!limiter) {
-    // Redis not configured - allow request but warn
     if (process.env.NODE_ENV === 'production') {
-      console.warn('[Rate Limit] Upstash Redis not configured. Rate limiting is disabled.')
+      console.error('[Rate Limit] CRITICAL: Upstash Redis not configured. Blocking request for safety.')
+      return { limited: true, retryAfter: 60 }
     }
     return { limited: false }
   }

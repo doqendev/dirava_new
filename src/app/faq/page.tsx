@@ -3,20 +3,20 @@ import { ContentPageLayout } from '@/components/content/ContentPageLayout'
 import { faqs } from '@/data/faq'
 import { FAQAccordion } from './FAQAccordion'
 import { getTranslations } from 'next-intl/server'
+import { SITE_URL } from '@/lib/utils/siteUrl'
 
 export async function generateMetadata() {
   const t = await getTranslations('seo')
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mizoke.com'
   return {
     title: t('faqTitle'),
     description: t('faqDescription'),
     alternates: {
-      canonical: `${siteUrl}/faq`,
+      canonical: `${SITE_URL}/faq`,
     },
     openGraph: {
       title: t('faqTitle'),
       description: t('faqDescription'),
-      images: [`${siteUrl}/opengraph-image`],
+      images: [`${SITE_URL}/opengraph-image`],
     },
   }
 }
@@ -36,8 +36,6 @@ export default async function FAQPage() {
     })),
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mizoke.com'
-
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -46,13 +44,13 @@ export default async function FAQPage() {
         '@type': 'ListItem',
         position: 1,
         name: tCommon('home'),
-        item: siteUrl,
+        item: SITE_URL,
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: 'FAQ',
-        item: `${siteUrl}/faq`,
+        item: `${SITE_URL}/faq`,
       },
     ],
   }

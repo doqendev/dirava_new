@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Send, CheckCircle, AlertCircle } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
@@ -9,6 +10,7 @@ import { useAuthStore } from '@/stores/authStore'
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
 export function ForgotPasswordForm() {
+  const t = useTranslations('auth')
   const { recoverPassword } = useAuthStore()
 
   const [email, setEmail] = useState('')
@@ -19,12 +21,12 @@ export function ForgotPasswordForm() {
     e.preventDefault()
 
     if (!email.trim()) {
-      setError('Email is required')
+      setError(t('emailRequired'))
       return
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError('Please enter a valid email')
+      setError(t('emailInvalid'))
       return
     }
 
@@ -37,7 +39,7 @@ export function ForgotPasswordForm() {
       setStatus('success')
     } else {
       setStatus('error')
-      setError(result.errors?.[0]?.message || 'Failed to send reset email')
+      setError(result.errors?.[0]?.message || t('failedToSendReset'))
     }
   }
 
@@ -47,9 +49,9 @@ export function ForgotPasswordForm() {
         <div className="w-16 h-16 rounded-full bg-neon-green/10 flex items-center justify-center mx-auto mb-4">
           <CheckCircle className="w-8 h-8 text-neon-green" />
         </div>
-        <h3 className="font-display text-lg text-white mb-2">Check Your Email</h3>
+        <h3 className="font-display text-lg text-white mb-2">{t('checkYourEmail')}</h3>
         <p className="text-white/60 text-sm">
-          If an account exists for {email}, you&apos;ll receive a password reset link shortly.
+          {t('resetEmailSent', { email })}
         </p>
       </div>
     )
@@ -58,7 +60,7 @@ export function ForgotPasswordForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <Input
-        label="Email Address"
+        label={t('emailAddress')}
         name="email"
         type="email"
         value={email}
@@ -66,7 +68,7 @@ export function ForgotPasswordForm() {
           setEmail(e.target.value)
           setError(null)
         }}
-        placeholder="your@email.com"
+        placeholder={t('emailPlaceholder')}
         error={error || undefined}
         disabled={status === 'loading'}
         autoComplete="email"
@@ -75,7 +77,7 @@ export function ForgotPasswordForm() {
       {status === 'error' && !error && (
         <div className="flex items-center gap-2 text-red-500 text-sm">
           <AlertCircle className="w-4 h-4" />
-          <span>Failed to send reset email. Please try again.</span>
+          <span>{t('failedToSendReset')}</span>
         </div>
       )}
 
@@ -87,7 +89,7 @@ export function ForgotPasswordForm() {
         className="w-full"
       >
         <Send className="w-4 h-4 mr-2" />
-        Send Reset Link
+        {t('sendResetLink')}
       </Button>
     </form>
   )

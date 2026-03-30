@@ -61,6 +61,23 @@ export function Header({ className }: HeaderProps) {
               {t('tagline').toUpperCase()}
             </span>
           </Link>
+          {/* Desktop navigation links */}
+          <nav className="hidden lg:flex items-center gap-6 ml-8">
+            {[
+              { href: '/worlds', label: tCommon('worlds') },
+              { href: '/new', label: tCommon('newArrivals') },
+              { href: '/drops', label: tCommon('drops') },
+              { href: '/sale', label: tCommon('sale') },
+            ].map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm font-display tracking-wider text-white/60 hover:text-neon-cyan transition-colors duration-200 uppercase"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
           {/* Spacer for mobile to keep logo centered */}
           <div className="w-10 h-10 lg:hidden" />
         </div>

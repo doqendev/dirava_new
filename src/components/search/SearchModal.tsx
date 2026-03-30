@@ -27,6 +27,13 @@ interface PredictiveProduct {
     url: string
     altText: string | null
   } | null
+  collections?: {
+    edges: Array<{
+      node: {
+        metafield?: { value: string } | null
+      }
+    }>
+  }
 }
 
 interface PredictiveSearchResponse {
@@ -94,6 +101,7 @@ export function SearchModal() {
   const [isLoading, setIsLoading] = useState(false)
   const [recentSearches, setRecentSearches] = useState<string[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
+  const modalRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
   // Load recent searches on mount
@@ -117,13 +125,40 @@ export function SearchModal() {
     }
   }, [isSearchOpen])
 
-  // Handle escape key
+  // Handle escape key + focus trap
   useEffect(() => {
+    if (!isSearchOpen) return
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isSearchOpen) {
+      if (e.key === 'Escape') {
         closeSearch()
+        return
+      }
+
+      if (e.key !== 'Tab' || !modalRef.current) return
+
+      const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+
+      if (focusableElements.length === 0) return
+
+      const firstElement = focusableElements[0]!
+      const lastElement = focusableElements[focusableElements.length - 1]!
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          e.preventDefault()
+          lastElement.focus()
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          e.preventDefault()
+          firstElement.focus()
+        }
       }
     }
+
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [isSearchOpen, closeSearch])
@@ -188,10 +223,24 @@ export function SearchModal() {
     setResults([])
   }
 
-  const handleRemoveRecentSearch = (search: string, e: React.MouseEvent) => {
+  const handleRemoveRecentSearch = (search: string, e: React.MouseEvent | React.KeyboardEvent) => {
     e.stopPropagation()
     const updated = removeRecentSearch(search)
     setRecentSearches(updated)
+  }
+
+  const handleRecentSearchKeyDown = (search: string, e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      handleRecentSearchClick(search)
+    }
+  }
+
+  const handleRemoveRecentSearchKeyDown = (search: string, e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      handleRemoveRecentSearch(search, e)
+    }
   }
 
   const handleClearAllRecent = () => {
@@ -239,6 +288,7 @@ export function SearchModal() {
 
           {/* Modal */}
           <motion.div
+            ref={modalRef}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -302,20 +352,24 @@ export function SearchModal() {
                       </div>
                       <div className="space-y-1">
                         {recentSearches.map((search) => (
-                          <button
+                          <div
                             key={search}
+                            role="button"
+                            tabIndex={0}
                             onClick={() => handleRecentSearchClick(search)}
-                            className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors group"
+                            onKeyDown={(e) => handleRecentSearchKeyDown(search, e)}
+                            className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors group cursor-pointer"
                           >
                             <span className="text-sm">{search}</span>
                             <button
                               onClick={(e) => handleRemoveRecentSearch(search, e)}
+                              onKeyDown={(e) => handleRemoveRecentSearchKeyDown(search, e)}
                               className="opacity-0 group-hover:opacity-100 p-1 text-white/30 hover:text-white transition-all"
                               aria-label={`Remove "${search}" from recent searches`}
                             >
                               <X className="w-3 h-3" />
                             </button>
-                          </button>
+                          </div>
                         ))}
                       </div>
                     </div>
@@ -341,7 +395,9 @@ export function SearchModal() {
                         {results.slice(0, 8).map((product) => (
                           <Link
                             key={product.id}
-                            href={`/products/${product.handle}`}
+                            href={product.collections?.edges?.[0]?.node?.metafield?.value
+                              ? `/worlds/${product.collections.edges[0].node.metafield.value}/${product.handle}`
+                              : `/products/${product.handle}`}
                             onClick={handleProductClick}
                             className="group"
                           >

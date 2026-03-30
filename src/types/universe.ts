@@ -6,9 +6,9 @@ import type { UNIVERSE_CONFIG } from '@/lib/utils/constants'
 
 export type UniverseSlug = keyof typeof UNIVERSE_CONFIG
 
-export type UniverseColorName = 'cyan' | 'pink' | 'orange' | 'green'
+export type UniverseColorName = 'cyan' | 'pink' | 'orange' | 'green' | 'purple' | 'yellow'
 
-export type UniverseEffect = 'portal' | 'embers' | 'lightning' | 'nen'
+export type UniverseEffect = 'portal' | 'embers' | 'lightning' | 'nen' | 'digital' | 'cursed' | 'reiatsu'
 
 export interface UniverseTheme {
   slug: UniverseSlug

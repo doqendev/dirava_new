@@ -2718,10 +2718,31 @@ const previewConfigs: Record<string, PreviewConfig> = {
   },
 }
 
+/**
+ * Standalone variant images for products that need icon tiles
+ * in the variant selector but NO 3D preview.
+ */
+const variantImagesOnly: Record<string, Record<string, string>> = {
+  'one-piece-custom-led-lightbox-sign': {
+    'Luffy': '/images/characters/style_1.png',
+    'Zoro': '/images/characters/style_2.png',
+    'Ace': '/images/characters/style_3.png',
+    'Chopper': '/images/characters/style_4.png',
+    'Law': '/images/characters/style_5.png',
+    'Shanks': '/images/characters/style_6.png',
+    'Nami': '/images/characters/style_7.png',
+  },
+}
+
 export function getPreviewConfig(handle: string): PreviewConfig | null {
   return previewConfigs[handle] || null
 }
 
 export function hasPreviewConfig(handle: string): boolean {
   return handle in previewConfigs
+}
+
+/** Get variant selector images — from preview config or standalone map */
+export function getVariantImages(handle: string): Record<string, string> | undefined {
+  return previewConfigs[handle]?.variantImages || variantImagesOnly[handle]
 }

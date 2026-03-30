@@ -143,13 +143,19 @@ export const useCartStore = create<CartState>()(
 
           // Add item to cart
           const response = await shopifyClient.request<{
-            cartLinesAdd: { cart: ShopifyCartResponse }
+            cartLinesAdd: { cart: ShopifyCartResponse; userErrors?: Array<{ message: string }> }
           }>(ADD_TO_CART, {
             cartId: currentCartId,
             lines: [lineItem],
           })
 
-          const cart = response.cartLinesAdd.cart
+          const { cart, userErrors } = response.cartLinesAdd
+          if (userErrors && userErrors.length > 0) {
+            set({ error: userErrors[0]!.message, isLoading: false })
+            useToastStore.getState().add({ type: 'error', message: userErrors[0]!.message })
+            return
+          }
+
           applyCartResponse(set, cart)
           useToastStore.getState().add({ type: 'success', message: 'Item added to cart' })
         } catch (error) {
@@ -245,11 +251,13 @@ export const useCartStore = create<CartState>()(
 
         debounceTimers.set(lineId, setTimeout(async () => {
           debounceTimers.delete(lineId)
+          const currentCartId = get().cartId
+          if (!currentCartId) { pendingSnapshots.delete(lineId); return }
           try {
             const response = await shopifyClient.request<{
               cartLinesUpdate: { cart: ShopifyCartResponse }
             }>(UPDATE_CART_LINE, {
-              cartId,
+              cartId: currentCartId,
               lines: [{ id: lineId, quantity: get().lines.find((l) => l.id === lineId)?.quantity ?? quantity }],
             })
 

@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { ArrowLeft, Box, ChevronDown, Truck, ShieldCheck, RotateCcw, Award } from 'lucide-react'
+import { ArrowLeft, Box, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { formatPrice } from '@/lib/utils/formatPrice'
 import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
@@ -23,7 +24,7 @@ import { StickyAddToCart } from '@/components/product/StickyAddToCart'
 import { useTrackProductView } from '@/hooks/useTrackProductView'
 import { getSizeGuide } from '@/data/sizeGuides'
 import { getProductHighlights } from '@/data/productHighlights'
-import { getPreviewConfig } from '@/lib/preview'
+import { getPreviewConfig, getVariantImages } from '@/lib/preview'
 import { getPreviewDisplayText } from '@/lib/preview/textTransform'
 import type { ShopifyMoney, ShopifySelectedOption } from '@/types/shopify'
 import type { ReviewRating } from '@/types/reviews'
@@ -37,6 +38,7 @@ interface ProductVariant {
   price: ShopifyMoney
   compareAtPrice?: ShopifyMoney | null
   selectedOptions: ShopifySelectedOption[]
+  image?: { url: string; altText: string | null } | null
 }
 
 interface ProductImage {
@@ -70,6 +72,8 @@ interface ProductDetailClientProps {
 export function ProductDetailClient({ universe, product }: ProductDetailClientProps) {
   const t = useTranslations('product')
   const tCommon = useTranslations('common')
+  const searchParams = useSearchParams()
+  const variantParam = searchParams.get('variant')
   const config = UNIVERSE_CONFIG[universe as keyof typeof UNIVERSE_CONFIG]
   const themeColor = config?.color || '#00f5ff'
   const universeName = config?.name || universe.replace(/-/g, ' ')
@@ -77,7 +81,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
   // Size guide modal state
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false)
   const [isHighlightsOpen, setIsHighlightsOpen] = useState(true)
-  const [isDescriptionOpen, setIsDescriptionOpen] = useState(false)
+  const [isDescriptionOpen, setIsDescriptionOpen] = useState(true)
   const [isShippingOpen, setIsShippingOpen] = useState(false)
   const [isReturnsOpen, setIsReturnsOpen] = useState(false)
   const [isShareOpen, setIsShareOpen] = useState(false)
@@ -117,16 +121,25 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
     return getPreviewConfig(product.handle)
   }, [product.handle])
 
-  // Selected options state
+  // Selected options state — prefer variant from URL param (e.g., ?variant=Zoro)
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {}
-    const firstAvailable = product.variants.find((v) => v.availableForSale)
-    if (firstAvailable) {
-      firstAvailable.selectedOptions.forEach((opt) => {
-        initial[opt.name] = opt.value
-      })
-    } else if (product.variants[0]) {
-      product.variants[0].selectedOptions.forEach((opt) => {
+
+    // Try to match variant from URL param (exact title or color option value)
+    const variantFromUrl = variantParam
+      ? product.variants.find((v) => v.title === variantParam)
+        ?? product.variants.find((v) =>
+          v.availableForSale &&
+          v.selectedOptions.some((opt) => opt.value === variantParam)
+        )
+      : null
+
+    const target = variantFromUrl
+      || product.variants.find((v) => v.availableForSale)
+      || product.variants[0]
+
+    if (target) {
+      target.selectedOptions.forEach((opt) => {
         initial[opt.name] = opt.value
       })
     }
@@ -175,6 +188,35 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
     )
   }, [product.variants, selectedOptions])
 
+  // Compute initial gallery image index from URL variant's image
+  const initialImageIndex = useMemo(() => {
+    if (!variantParam) return 0
+    const variantFromUrl = product.variants.find((v) => v.title === variantParam)
+      ?? product.variants.find((v) => v.selectedOptions.some((opt) => opt.value === variantParam))
+    if (!variantFromUrl?.image?.url) return 0
+    const idx = product.images.findIndex((img) =>
+      img.url.split('?')[0] === variantFromUrl.image!.url.split('?')[0]
+    )
+    return idx >= 0 ? idx : 0
+  }, [variantParam, product.variants, product.images])
+
+  // Jump gallery to the selected variant's image when options change
+  const isInitialMount = useRef(true)
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      return
+    }
+    if (selectedVariant?.image?.url) {
+      const idx = product.images.findIndex((img) =>
+        img.url.split('?')[0] === selectedVariant.image!.url.split('?')[0]
+      )
+      if (idx >= 0) {
+        galleryRef.current?.goToIndex(idx)
+      }
+    }
+  }, [selectedVariant, product.images])
+
   const handleOptionChange = (name: string, value: string) => {
     setSelectedOptions((prev) => ({ ...prev, [name]: value }))
   }
@@ -213,6 +255,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               ref={galleryRef}
               images={product.images}
               productTitle={product.title}
+              initialImageIndex={initialImageIndex}
               previewConfig={previewConfig}
               previewText={personalizationName}
               selectedVariantName={selectedOptions['Color'] || selectedOptions['color'] || ''}
@@ -290,16 +333,17 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               </div>
             )}
 
-            {/* Variant Selector */}
-            {options.length > 0 && (
+            {/* Variant Selector — hide Shopify's default "Title" option for single-variant products */}
+            {options.length > 0 &&
+              !(options.length === 1 && options[0]?.name === 'Title' && options[0]?.values.length === 1 && options[0]?.values[0] === 'Default Title') && (
               <div className="space-y-3">
                 <VariantSelector
                   options={options}
                   variants={product.variants}
                   selectedOptions={selectedOptions}
                   onOptionChange={handleOptionChange}
-                  optionImages={previewConfig?.variantImages}
-                  imageOptionName={previewConfig?.variantImages ? 'Color' : undefined}
+                  optionImages={getVariantImages(product.handle)}
+                  imageOptionName={getVariantImages(product.handle) ? 'Color' : undefined}
                 />
               </div>
             )}
@@ -329,7 +373,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                     type="text"
                     value={personalizationName}
                     onChange={(e) => setPersonalizationName(previewConfig ? getPreviewDisplayText(e.target.value, previewConfig, '') : e.target.value)}
-                    placeholder="Your Name Here"
+                    placeholder={t('personalizationPlaceholder')}
                     className={cn(
                       'flex-1 min-w-0 px-4 py-3 bg-black/80 border rounded-lg text-white placeholder-white/40 focus:outline-none transition-colors',
                       personalizationName.trim()
@@ -401,39 +445,13 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               />
             </div>
 
-            {/* Trust Badges */}
-            <div className="grid grid-cols-2 gap-3 pt-2">
-              {[
-                { icon: Truck, key: 'trustFreeShipping' },
-                { icon: ShieldCheck, key: 'trustSecureCheckout' },
-                { icon: RotateCcw, key: 'trustReturns' },
-                { icon: Award, key: 'trustLicensed' },
-              ].map(({ icon: Icon, key }) => (
-                <div key={key} className="flex items-center gap-2 text-white/50">
-                  <Icon className="w-4 h-4 flex-shrink-0 text-white/40" />
-                  <span className="text-xs">{t(key)}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Payment Methods */}
-            <div className="flex flex-wrap items-center gap-2 pt-1">
-              {['Visa', 'Mastercard', 'PayPal', 'Apple Pay', 'Google Pay', 'Shop Pay'].map((method) => (
-                <span
-                  key={method}
-                  className="px-2 py-0.5 text-[10px] font-medium text-white/40 border border-white/10 rounded bg-white/[0.03]"
-                >
-                  {method}
-                </span>
-              ))}
-            </div>
-
             {/* What You Get (collapsible) — only if highlights exist */}
             {highlights && (
               <div className="pt-6 border-t border-border-subtle">
                 <button
                   type="button"
                   onClick={() => setIsHighlightsOpen(!isHighlightsOpen)}
+                  aria-expanded={isHighlightsOpen}
                   className="w-full flex items-center justify-between py-1 group"
                 >
                   <h2 className="font-display text-lg text-white">{t('whatYouGet')}</h2>
@@ -468,6 +486,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               <button
                 type="button"
                 onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
+                aria-expanded={isDescriptionOpen}
                 className="w-full flex items-center justify-between py-1 group"
               >
                 <h2 className="font-display text-lg text-white">{t('description')}</h2>
@@ -494,6 +513,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               <button
                 type="button"
                 onClick={() => setIsShippingOpen(!isShippingOpen)}
+                aria-expanded={isShippingOpen}
                 className="w-full flex items-center justify-between py-4 group"
               >
                 <h2 className="font-display text-lg text-white">{t('shippingTitle')}</h2>
@@ -524,6 +544,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               <button
                 type="button"
                 onClick={() => setIsReturnsOpen(!isReturnsOpen)}
+                aria-expanded={isReturnsOpen}
                 className="w-full flex items-center justify-between py-4 group"
               >
                 <h2 className="font-display text-lg text-white">{t('returnsTitle')}</h2>
@@ -552,6 +573,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               <button
                 type="button"
                 onClick={() => setIsShareOpen(!isShareOpen)}
+                aria-expanded={isShareOpen}
                 className="w-full flex items-center justify-between py-4 group"
               >
                 <h2 className="font-display text-lg text-white">{t('share')}</h2>
@@ -599,6 +621,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             ? [{ key: 'Personalization', value: personalizationName.trim() }]
             : undefined
         }
+        quantity={quantity}
         cartButtonRef={cartButtonRef}
       />
     </div>

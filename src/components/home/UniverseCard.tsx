@@ -12,6 +12,7 @@ interface UniverseCardProps {
   name: string
   itemCount: number
   themeColor: UniverseColorName
+  themeColorHex?: string
   backgroundImage?: string
   className?: string
 }
@@ -24,6 +25,8 @@ const universeCardImages: Record<string, string> = {
   'hunter-hunter': '/images/universes/hunter-hunter.png',
   'attack-on-titan': '/images/universes/attack-on-titan.png',
   'digimon': '/images/universes/digimon.png',
+  'jujutsu-kaisen': '/images/universes/jujutsu-kaisen.png',
+  'bleach': '/images/universes/bleach.png',
 }
 
 // Get card image by checking the slug or collection handle
@@ -101,6 +104,7 @@ export function UniverseCard({
   name,
   itemCount,
   themeColor,
+  themeColorHex,
   backgroundImage,
   className,
 }: UniverseCardProps) {
@@ -139,45 +143,47 @@ export function UniverseCard({
     pink: '#ff2d6a',
     orange: '#ff8c00',
     green: '#00ff88',
+    purple: '#a855f7',
+    yellow: '#ffd700',
   }
 
-  const currentColor = glowColors[themeColor]
+  const currentColor = themeColorHex || glowColors[themeColor]
 
   // If we have a custom card image, use the enhanced design
   if (customCardImage) {
     return (
-      <motion.div
-        ref={cardRef}
-        onMouseMove={handleMouseMove}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          rotateX,
-          rotateY,
-          transformStyle: 'preserve-3d',
-          perspective: 1000,
-        }}
-        whileTap={{ scale: 0.98 }}
-        className={cn('relative z-0', className)}
+      <Link
+        href={`/worlds/${slug}`}
+        className={cn('block relative z-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary', className)}
       >
-        {/* Glow effect behind the card */}
         <motion.div
-          className="absolute inset-0 rounded-3xl -z-10"
+          ref={cardRef}
+          onMouseMove={handleMouseMove}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={handleMouseLeave}
           style={{
-            backgroundColor: currentColor,
-            filter: 'blur(40px)',
-            transform: 'scale(0.85)',
+            rotateX,
+            rotateY,
+            transformStyle: 'preserve-3d',
+            perspective: 1000,
           }}
-          animate={{
-            opacity: isHovered ? 0.6 : 0.4,
-          }}
-          transition={{ duration: 0.3 }}
-        />
-
-        <Link
-          href={`/worlds/${slug}`}
-          className="block relative z-10 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
+          whileTap={{ scale: 0.98 }}
+          className="relative"
         >
+          {/* Glow effect behind the card */}
+          <motion.div
+            className="absolute inset-0 rounded-3xl -z-10"
+            style={{
+              backgroundColor: currentColor,
+              filter: 'blur(40px)',
+              transform: 'scale(0.85)',
+            }}
+            animate={{
+              opacity: isHovered ? 0.6 : 0.4,
+            }}
+            transition={{ duration: 0.3 }}
+          />
+
           <div className="relative aspect-[3/4]">
             {/* Card image */}
             <Image
@@ -274,8 +280,8 @@ export function UniverseCard({
               transition={{ duration: 1.5, repeat: Infinity, delay: 1.5 }}
             />
           </div>
-        </Link>
-      </motion.div>
+        </motion.div>
+      </Link>
     )
   }
 
@@ -308,6 +314,20 @@ export function UniverseCard({
       text: 'text-neon-green',
       bg: 'from-neon-green/20 to-transparent',
       buttonBg: 'bg-neon-green/20 border-neon-green hover:bg-neon-green/30',
+    },
+    purple: {
+      border: 'border-neon-purple',
+      glow: 'shadow-glow-purple',
+      text: 'text-neon-purple',
+      bg: 'from-neon-purple/20 to-transparent',
+      buttonBg: 'bg-neon-purple/20 border-neon-purple hover:bg-neon-purple/30',
+    },
+    yellow: {
+      border: 'border-neon-yellow',
+      glow: 'shadow-glow-yellow',
+      text: 'text-neon-yellow',
+      bg: 'from-neon-yellow/20 to-transparent',
+      buttonBg: 'bg-neon-yellow/20 border-neon-yellow hover:bg-neon-yellow/30',
     },
   }
 
@@ -343,9 +363,7 @@ export function UniverseCard({
           <motion.div
             className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full blur-[60px] opacity-60"
             style={{
-              backgroundColor: themeColor === 'cyan' ? '#00f5ff' :
-                             themeColor === 'pink' ? '#ff2d6a' :
-                             themeColor === 'orange' ? '#ff8c00' : '#00ff88'
+              backgroundColor: currentColor
             }}
             animate={{ opacity: [0.4, 0.7, 0.4], scale: [1, 1.1, 1] }}
             transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}

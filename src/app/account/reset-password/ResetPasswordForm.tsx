@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { KeyRound, CheckCircle, AlertCircle } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
@@ -16,6 +17,7 @@ interface FormErrors {
 }
 
 export function ResetPasswordForm() {
+  const t = useTranslations('auth')
   const router = useRouter()
   const searchParams = useSearchParams()
   const { resetPassword } = useAuthStore()
@@ -60,15 +62,15 @@ export function ResetPasswordForm() {
     const newErrors: FormErrors = {}
 
     if (!password) {
-      newErrors.password = 'Password is required'
+      newErrors.password = t('passwordRequired')
     } else if (password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters'
+      newErrors.password = t('passwordMinLength')
     }
 
     if (!confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password'
+      newErrors.confirmPassword = t('confirmPasswordRequired')
     } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match'
+      newErrors.confirmPassword = t('passwordsDoNotMatch')
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -89,7 +91,7 @@ export function ResetPasswordForm() {
       }, 2000)
     } else {
       setStatus('error')
-      setApiError(result.errors?.[0]?.message || 'Failed to reset password')
+      setApiError(result.errors?.[0]?.message || t('failedToResetPassword'))
     }
   }
 
@@ -99,15 +101,15 @@ export function ResetPasswordForm() {
         <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
           <AlertCircle className="w-8 h-8 text-red-500" />
         </div>
-        <h3 className="font-display text-lg text-white mb-2">Invalid Reset Link</h3>
+        <h3 className="font-display text-lg text-white mb-2">{t('invalidResetLink')}</h3>
         <p className="text-white/60 text-sm mb-4">
-          This password reset link is invalid or has expired.
+          {t('invalidResetLinkDesc')}
         </p>
         <Link
           href="/account/forgot-password"
           className="text-neon-cyan hover:underline text-sm"
         >
-          Request a new reset link
+          {t('requestNewResetLink')}
         </Link>
       </div>
     )
@@ -119,9 +121,9 @@ export function ResetPasswordForm() {
         <div className="w-16 h-16 rounded-full bg-neon-green/10 flex items-center justify-center mx-auto mb-4">
           <CheckCircle className="w-8 h-8 text-neon-green" />
         </div>
-        <h3 className="font-display text-lg text-white mb-2">Password Reset!</h3>
+        <h3 className="font-display text-lg text-white mb-2">{t('passwordResetSuccess')}</h3>
         <p className="text-white/60 text-sm">
-          Your password has been updated. Redirecting to your dashboard...
+          {t('passwordResetRedirect')}
         </p>
       </div>
     )
@@ -130,7 +132,7 @@ export function ResetPasswordForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <Input
-        label="New Password"
+        label={t('newPassword')}
         name="password"
         type="password"
         value={password}
@@ -138,14 +140,14 @@ export function ResetPasswordForm() {
           setPassword(e.target.value)
           setErrors((prev) => ({ ...prev, password: undefined }))
         }}
-        placeholder="At least 8 characters"
+        placeholder={t('newPasswordPlaceholder')}
         error={errors.password}
         disabled={status === 'loading'}
         autoComplete="new-password"
       />
 
       <Input
-        label="Confirm Password"
+        label={t('confirmPassword')}
         name="confirmPassword"
         type="password"
         value={confirmPassword}
@@ -153,7 +155,7 @@ export function ResetPasswordForm() {
           setConfirmPassword(e.target.value)
           setErrors((prev) => ({ ...prev, confirmPassword: undefined }))
         }}
-        placeholder="Confirm your password"
+        placeholder={t('confirmPasswordPlaceholder')}
         error={errors.confirmPassword}
         disabled={status === 'loading'}
         autoComplete="new-password"
@@ -174,7 +176,7 @@ export function ResetPasswordForm() {
         className="w-full"
       >
         <KeyRound className="w-4 h-4 mr-2" />
-        Reset Password
+        {t('resetPassword')}
       </Button>
     </form>
   )

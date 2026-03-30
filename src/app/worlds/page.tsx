@@ -4,23 +4,23 @@ import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_UNIVERSES } from '@/lib/shopify/queries'
 import { extractNodes, getCollectionUniverse, getCollectionProductCount } from '@/lib/shopify/utils'
 import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
+import { SITE_URL } from '@/lib/utils/siteUrl'
 import type { ShopifyCollection } from '@/types/shopify'
 import type { UniverseColorName } from '@/types/universe'
 import { getTranslations } from 'next-intl/server'
 
 export async function generateMetadata() {
   const t = await getTranslations('seo')
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mizoke.com'
   return {
     title: t('worldsTitle'),
     description: t('worldsDescription'),
     alternates: {
-      canonical: `${siteUrl}/worlds`,
+      canonical: `${SITE_URL}/worlds`,
     },
     openGraph: {
       title: t('worldsTitle'),
       description: t('worldsDescription'),
-      images: [`${siteUrl}/opengraph-image`],
+      images: [`${SITE_URL}/opengraph-image`],
     },
   }
 }
@@ -33,7 +33,7 @@ const VALID_UNIVERSES = Object.keys(UNIVERSE_CONFIG)
 async function getUniverses() {
   try {
     const data = await shopifyFetch<{
-      collections: { edges: Array<{ node: ShopifyCollection }> }
+      collections: { edges: Array<{ node: ShopifyCollection & { themeColor?: { value: string } | null } }> }
     }>(GET_UNIVERSES)
 
     const collections = extractNodes(data.collections)
@@ -47,12 +47,14 @@ async function getUniverses() {
       .map((collection) => {
         const universeSlug = getCollectionUniverse(collection)!
         const config = UNIVERSE_CONFIG[universeSlug as keyof typeof UNIVERSE_CONFIG]
+        const metafieldColor = (collection as ShopifyCollection & { themeColor?: { value: string } | null }).themeColor?.value
 
         return {
           slug: collection.handle,
           name: config?.name || collection.title,
           itemCount: getCollectionProductCount(collection),
           themeColor: (config?.colorName || 'cyan') as UniverseColorName,
+          themeColorHex: metafieldColor || undefined,
           backgroundImage: collection.image?.url,
         }
       })

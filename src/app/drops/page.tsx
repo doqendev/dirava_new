@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/Badge'
 import { SkeletonProductGrid } from '@/components/ui/Skeleton'
 import type { ShopifyProduct } from '@/types/shopify'
 import type { Metadata } from 'next'
+import { SITE_URL } from '@/lib/utils/siteUrl'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('seo')
@@ -18,14 +19,14 @@ export async function generateMetadata(): Promise<Metadata> {
     description: t('dropsDescription'),
     keywords: t('keywords'),
     alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mizoke.com'}/drops`,
+      canonical: `${SITE_URL}/drops`,
     },
     openGraph: {
       title: t('dropsTitle'),
       description: t('dropsDescription'),
       type: 'website',
       siteName: t('siteName'),
-      images: [`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mizoke.com'}/opengraph-image`],
+      images: [`${SITE_URL}/opengraph-image`],
     },
     twitter: {
       card: 'summary_large_image',

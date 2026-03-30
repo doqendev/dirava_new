@@ -6,6 +6,7 @@ import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_UNIVERSE_PRODUCTS } from '@/lib/shopify/queries'
 import { extractNodes, getFirstAvailableVariant } from '@/lib/shopify/utils'
 import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
+import { SITE_URL } from '@/lib/utils/siteUrl'
 import {
   parseFiltersFromParams,
   calculatePriceRange,
@@ -29,13 +30,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { universe } = await params
   const config = UNIVERSE_CONFIG[universe as keyof typeof UNIVERSE_CONFIG]
   const name = config?.name || universe
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mizoke.com'
-
   return {
     title: `${name} – Anime Merch & Collectibles | Mizoke`,
     description: `Shop exclusive ${name} merchandise. Premium apparel, collectibles, and limited edition drops from the ${name} universe.`,
     alternates: {
-      canonical: `${siteUrl}/worlds/${universe}`,
+      canonical: `${SITE_URL}/worlds/${universe}`,
     },
     openGraph: {
       title: `${name} – Anime Merch & Collectibles | Mizoke`,
@@ -45,6 +44,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export const revalidate = 60
+
+async function getCollectionThemeColor(handle: string): Promise<string | null> {
+  try {
+    const data = await shopifyFetch<{
+      collection: { themeColor?: { value: string } | null } | null
+    }>(`query GetCollectionThemeColor($handle: String!) {
+      collection(handle: $handle) {
+        themeColor: metafield(namespace: "custom", key: "theme_color") {
+          value
+        }
+      }
+    }`, { handle })
+    return data.collection?.themeColor?.value || null
+  } catch {
+    return null
+  }
+}
 
 async function getUniverseProducts(handle: string) {
   try {
@@ -63,23 +79,113 @@ async function getUniverseProducts(handle: string) {
       ? extractNodes(data.collection.products as { edges: Array<{ node: ShopifyProduct }> })
       : []
 
+    const collectionThemeColor = (data.collection as ShopifyCollection & { themeColor?: { value: string } | null }).themeColor?.value || null
+
     return {
       collection: data.collection,
-      products: products.map((product: ShopifyProduct & { metafield?: { value: string } | null }) => {
+      themeColorHex: collectionThemeColor,
+      products: products.flatMap((product: ShopifyProduct & { metafield?: { value: string } | null }) => {
+        const variants = product.variants?.edges?.map((e) => e.node) || []
+        const variantsWithImages = variants.filter((v) => v.image)
+
+        if (variantsWithImages.length > 1) {
+          // For each option, check if grouping by its values yields distinct images.
+          const optionNames = variants[0]?.selectedOptions
+            ?.map((o) => o.name)
+            .filter((name) => !(name === 'Title' && variants.length === 1)) || []
+
+          // Find which options produce distinct images
+          const visualOptions: string[] = []
+          for (const optName of optionNames) {
+            const groups = new Map<string, typeof variants[0]>()
+            for (const v of variants) {
+              const val = v.selectedOptions.find((o) => o.name === optName)?.value
+              if (val && !groups.has(val)) {
+                groups.set(val, v)
+              }
+            }
+            const imageUrls = new Set(
+              Array.from(groups.values())
+                .map((v) => v.image?.url?.split('?')[0])
+                .filter(Boolean)
+            )
+            if (imageUrls.size > 1) {
+              visualOptions.push(optName)
+            }
+          }
+
+          if (visualOptions.length >= 2) {
+            // Multiple visual options (e.g. Devil Fruit + Hoodie Color + Size):
+            // group by the combination of visual option values, ignoring non-visual ones (Size etc.)
+            const groups = new Map<string, typeof variants[0]>()
+            for (const v of variants) {
+              const key = visualOptions
+                .map((optName) => v.selectedOptions.find((o) => o.name === optName)?.value || '')
+                .join(' / ')
+              if (!groups.has(key)) {
+                groups.set(key, v)
+              }
+            }
+            return Array.from(groups.entries()).map(([comboName, variant]) => ({
+              id: `${product.id}__${variant.id}`,
+              handle: product.handle,
+              title: product.title,
+              variantName: comboName as string | null,
+              price: variant.price,
+              compareAtPrice: variant.compareAtPrice ?? null,
+              image: variant.image || product.featuredImage,
+              variantId: variant.id as string | undefined,
+              rarity: product.metafield?.value as 'common' | 'rare' | 'legendary' | undefined,
+              productType: product.productType,
+              tags: product.tags,
+              createdAt: product.createdAt,
+            }))
+          }
+
+          if (visualOptions.length === 1) {
+            // One visual option (e.g. Color on apparel, or Character on name signs):
+            // group by that option → one card per value
+            const optName = visualOptions[0]!
+            const groups = new Map<string, typeof variants[0]>()
+            for (const v of variants) {
+              const val = v.selectedOptions.find((o) => o.name === optName)?.value
+              if (val && !groups.has(val)) {
+                groups.set(val, v)
+              }
+            }
+            return Array.from(groups.entries()).map(([value, variant]) => ({
+              id: `${product.id}__${optName}__${value}`,
+              handle: product.handle,
+              title: product.title,
+              variantName: value as string | null,
+              price: variant.price,
+              compareAtPrice: variant.compareAtPrice ?? null,
+              image: variant.image || product.featuredImage,
+              variantId: variant.id as string | undefined,
+              rarity: product.metafield?.value as 'common' | 'rare' | 'legendary' | undefined,
+              productType: product.productType,
+              tags: product.tags,
+              createdAt: product.createdAt,
+            }))
+          }
+        }
+
+        // No option had distinct images or single variant → single card
         const firstVariant = getFirstAvailableVariant(product)
-        return {
+        return [{
           id: product.id,
           handle: product.handle,
           title: product.title,
+          variantName: null as string | null,
           price: product.priceRange.minVariantPrice,
-          compareAtPrice: product.compareAtPriceRange?.minVariantPrice,
+          compareAtPrice: product.compareAtPriceRange?.minVariantPrice ?? null,
           image: product.featuredImage,
           variantId: firstVariant?.id,
           rarity: product.metafield?.value as 'common' | 'rare' | 'legendary' | undefined,
           productType: product.productType,
           tags: product.tags,
           createdAt: product.createdAt,
-        }
+        }]
       }),
     }
   } catch (error) {
@@ -105,7 +211,7 @@ async function UniverseContent({
   // Remove trailing "-1", "-2", etc. that Shopify adds for duplicate handles
   const cleanUniverse = universe.replace(/-\d+$/, '')
   const config = UNIVERSE_CONFIG[cleanUniverse as keyof typeof UNIVERSE_CONFIG]
-  const themeColor = config?.color || '#00f5ff'
+  const themeColor = data.themeColorHex || config?.color || '#00f5ff'
 
   // Parse filters from URL
   const filters = parseFiltersFromParams(searchParams)
@@ -198,9 +304,8 @@ export default async function UniversePage({ params, searchParams }: Props) {
   const cleanUniverse = universe.replace(/-\d+$/, '')
   const config = UNIVERSE_CONFIG[cleanUniverse as keyof typeof UNIVERSE_CONFIG]
   const universeName = config?.name || cleanUniverse.replace(/-/g, ' ')
-  const themeColor = config?.color || '#00f5ff'
-
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mizoke.com'
+  const metafieldColor = await getCollectionThemeColor(universe)
+  const themeColor = metafieldColor || config?.color || '#00f5ff'
 
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
@@ -210,19 +315,19 @@ export default async function UniversePage({ params, searchParams }: Props) {
         '@type': 'ListItem',
         position: 1,
         name: t('home'),
-        item: siteUrl,
+        item: SITE_URL,
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: t('worlds'),
-        item: `${siteUrl}/worlds`,
+        item: `${SITE_URL}/worlds`,
       },
       {
         '@type': 'ListItem',
         position: 3,
         name: universeName,
-        item: `${siteUrl}/worlds/${universe}`,
+        item: `${SITE_URL}/worlds/${universe}`,
       },
     ],
   }

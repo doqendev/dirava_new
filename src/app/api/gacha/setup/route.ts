@@ -8,6 +8,7 @@
  */
 
 import { NextResponse } from 'next/server'
+import { timingSafeEqual } from 'crypto'
 import { setupMetaobjectDefinition } from '@/lib/gacha/metaobjects'
 
 const SETUP_SECRET = process.env.GACHA_SETUP_SECRET
@@ -28,7 +29,15 @@ export async function POST(request: Request) {
       const body = await request.json().catch(() => ({}))
       const secret = body?.secret
 
-      if (secret !== SETUP_SECRET) {
+      let secretMatches = false
+      try {
+        const a = Buffer.from(secret as string)
+        const b = Buffer.from(SETUP_SECRET)
+        secretMatches = a.length === b.length && timingSafeEqual(a, b)
+      } catch {
+        secretMatches = false
+      }
+      if (!secretMatches) {
         return NextResponse.json(
           { success: false, error: 'Invalid setup secret' },
           { status: 401 }

@@ -86,9 +86,14 @@ export async function POST(request: Request) {
     }
 
     if (redemptionCode.status === 'claimed' || redemptionCode.status === 'shipped') {
+      // Idempotency: if already claimed, return success with existing order ID
+      // so refreshes / retries don't show an error to the user
       return NextResponse.json<ClaimApiResponse>(
-        { success: false, error: 'Prize has already been claimed' },
-        { status: 400 }
+        {
+          success: true,
+          fulfillmentOrderId: redemptionCode.fulfillmentOrderId ?? redemptionCode.id,
+        },
+        { headers: { 'Cache-Control': 'no-store' } }
       )
     }
 

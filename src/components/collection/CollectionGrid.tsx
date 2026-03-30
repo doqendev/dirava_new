@@ -16,6 +16,7 @@ interface Product {
   id: string
   handle: string
   title: string
+  variantName?: string | null
   price: { amount: string; currencyCode: string }
   compareAtPrice?: { amount: string; currencyCode: string } | null
   image: { url: string; altText: string | null } | null
@@ -164,6 +165,7 @@ export function CollectionGrid({
                 universe={universe || product.universe || undefined}
                 showQuickView={!!product.variantId}
                 compactMode={compactMode}
+                themeColor={themeColor}
               />
             </motion.div>
           ))}
