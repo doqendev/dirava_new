@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils/cn'
 import { Button } from '@/components/ui/Button'
 import { useCartStore } from '@/stores/cartStore'
 import { useUIStore } from '@/stores/uiStore'
+import { useToastStore } from '@/stores/toastStore'
 
 interface AddToCartButtonProps {
   variantId: string
@@ -40,9 +41,11 @@ export function AddToCartButton({
 }: AddToCartButtonProps) {
   const t = useTranslations('product')
   const tCommon = useTranslations('common')
+  const tCart = useTranslations('cart')
   const [state, setState] = useState<ButtonState>('idle')
   const addItem = useCartStore((state) => state.addItem)
   const openCart = useUIStore((state) => state.openCart)
+  const addToast = useToastStore((state) => state.add)
 
   const handleClick = async () => {
     if (!available || state === 'loading') return
@@ -65,6 +68,7 @@ export function AddToCartButton({
     try {
       await addItem(variantId, quantity, attributes)
       setState('success')
+      addToast({ type: 'success', message: tCart('itemAdded') })
 
       // Open cart after success
       setTimeout(() => {
@@ -74,6 +78,7 @@ export function AddToCartButton({
     } catch (error) {
       console.error('Failed to add to cart:', error)
       setState('error')
+      addToast({ type: 'error', message: tCart('failedToAdd') })
       setTimeout(() => setState('idle'), 2000)
     }
   }

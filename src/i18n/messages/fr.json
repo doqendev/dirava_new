@@ -43,16 +43,20 @@
     "outOfStock": "Rupture de stock",
     "inStock": "En stock",
     "lowStock": "Stock limité",
-    "soldOut": "Épuisé"
+    "soldOut": "Épuisé",
+    "bundles": "Bundles",
+    "contact": "Contact",
+    "faq": "FAQ"
   },
   "nav": {
     "account": "Compte",
     "bundles": "Bundles",
     "drops": "Drops",
-    "gacha": "Gacha",
     "home": "Accueil",
     "profile": "Profil",
+    "search": "Recherche",
     "searchPlaceholder": "Rechercher des produits...",
+    "shop": "Boutique",
     "worlds": "Univers"
   },
   "header": {
@@ -134,6 +138,7 @@
     "returnsExchanges": "Échanges disponibles pour d'autres tailles ou couleurs, sous réserve de disponibilité.",
     "returnsRefund": "Les remboursements sont traités sous 5 à 7 jours ouvrables après réception de votre retour.",
     "returnsFinalSale": "Les articles personnalisés et en édition limitée ne sont ni repris ni échangés.",
+    "preview3D": "Aperçu 3D",
     "preview3dLoading": "Chargement...",
     "preview3dUpdating": "Mise à jour...",
     "preview3dNotAvailable": "Aperçu 3D non disponible",
@@ -143,7 +148,7 @@
     "trustFreeShipping": "Livraison gratuite",
     "trustSecureCheckout": "Paiement sécurisé",
     "trustReturns": "Retours sous 30 jours",
-    "trustLicensed": "Licence officielle",
+    "trustLicensed": "Designs personnalisés",
     "whatYouGet": "Ce que tu reçois",
     "highlightLedSign": "Enseigne LED néon personnalisée avec ton nom",
     "highlightAcrylicBase": "Base en acrylique de haute qualité",
@@ -178,7 +183,12 @@
     "decreaseQuantity": "Diminuer la quantité",
     "increaseQuantity": "Augmenter la quantité",
     "youMightLike": "Tu pourrais aussi aimer",
-    "quickView": "Aperçu rapide"
+    "quickView": "Aperçu rapide",
+    "itemAdded": "Article ajouté au panier",
+    "failedToAdd": "Impossible d'ajouter l'article",
+    "failedToAddBundle": "Impossible d'ajouter le lot",
+    "failedToUpdate": "Impossible de mettre à jour l'article",
+    "failedToRemove": "Impossible de supprimer l'article"
   },
   "discount": {
     "haveCode": "Avez-vous un code promo ?",
@@ -230,32 +240,6 @@
     "exploreDescription": "Choisissez votre univers et découvrez des produits exclusifs de vos anime préférés.",
     "home": "Accueil",
     "worlds": "Mondes"
-  },
-  "codes": {
-    "revealNow": "Révéler maintenant",
-    "claimPrize": "Réclamer le prix",
-    "viewDetails": "Voir les détails",
-    "back": "Retour",
-    "signInRequired": "Connexion requise",
-    "signInToView": "Veuillez vous connecter pour voir vos codes de remboursement.",
-    "signIn": "Se connecter",
-    "loadingCodes": "Chargement de vos codes...",
-    "somethingWrong": "Quelque chose s'est mal passé",
-    "loadError": "Impossible de charger vos codes. Veuillez réessayer.",
-    "tryAgain": "Réessayer",
-    "backToAccount": "Retour au compte",
-    "myRedemptionCodes": "Mes codes de remboursement",
-    "codesTotal": "{count} {count, plural, one {code} other {codes}} au total",
-    "noCodesYet": "Pas encore de codes",
-    "noCodesDescription": "Achetez une boîte mystère pour obtenir votre premier code !",
-    "browseMysteryBoxes": "Parcourir les boîtes mystères",
-    "haveCode": "Vous avez un code à utiliser ?",
-    "haveCodeDescription": "Si quelqu'un a partagé un code avec vous, entrez-le pour révéler le mystère.",
-    "enterCode": "Entrer un code",
-    "statusUnused": "Prêt à révéler",
-    "statusRevealed": "Révélé",
-    "statusClaimed": "Réclamé",
-    "statusShipped": "Expédié"
   },
   "orderHistory": {
     "title": "Commandes",
@@ -420,6 +404,7 @@
     "showingProducts": "{count} produits affichés",
     "noProductsMatch": "Aucun produit ne correspond à tes filtres",
     "productType": "Type de produit",
+    "world": "Monde",
     "apparel": "Vêtements",
     "accessories": "Accessoires",
     "applyFilters": "APPLIQUER LES FILTRES",
@@ -496,6 +481,234 @@
     "questionsPrefix": "Si tu as des questions sur cette politique, merci de",
     "contactUs": "nous contacter"
   },
+  "policies": {
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "description": "Comment nous collectons, utilisons et protégeons vos informations personnelles.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "Informations que nous collectons",
+          "content": "Informations personnelles fournies lors de la création d'un compte (nom, adresse e-mail, adresse de livraison)\nInformations de paiement traitées de manière sécurisée par nos prestataires de paiement\nHistorique des commandes et préférences produits\nInformations sur l'appareil et le navigateur pour l'optimisation du site\nCookies et technologies de suivi similaires pour améliorer votre expérience"
+        },
+        "1": {
+          "heading": "Comment nous utilisons vos informations",
+          "content": "Traiter et exécuter vos commandes\nEnvoyer des confirmations de commande et des mises à jour d'expédition\nFournir un support client et répondre aux demandes\nEnvoyer des e-mails promotionnels (avec votre consentement)\nAméliorer notre site web et nos offres de produits\nPrévenir la fraude et renforcer la sécurité"
+        },
+        "2": {
+          "heading": "Partage des informations",
+          "content": "Nous ne vendons pas vos informations personnelles à des tiers. Nous pouvons partager vos informations avec des prestataires de confiance qui nous aident à exploiter notre site web, traiter les paiements et livrer les produits. Ces partenaires sont liés par des accords de confidentialité et ne sont autorisés à utiliser vos informations que dans la mesure nécessaire à la fourniture de services pour notre compte."
+        },
+        "3": {
+          "heading": "Sécurité des données",
+          "content": "Nous mettons en œuvre des mesures de sécurité conformes aux normes du secteur pour protéger vos informations personnelles. Toutes les transactions de paiement sont chiffrées à l'aide de la technologie SSL. Cependant, aucune méthode de transmission sur Internet n'est sécurisée à 100 %, et nous ne pouvons garantir une sécurité absolue."
+        },
+        "4": {
+          "heading": "Vos droits",
+          "content": "Accéder aux informations personnelles que nous détenons à votre sujet\nDemander la correction d'informations inexactes\nDemander la suppression de vos données personnelles\nVous désinscrire des communications marketing à tout moment\nDemander une copie de vos données dans un format portable"
+        },
+        "5": {
+          "heading": "Nous contacter",
+          "content": "Si vous avez des questions concernant cette politique de confidentialité ou souhaitez exercer vos droits, veuillez nous contacter à privacy@mizoke.com ou via notre page Contact."
+        }
+      }
+    },
+    "terms": {
+      "title": "Conditions générales d'utilisation",
+      "description": "Les conditions régissant l'utilisation de notre site web et de nos services.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "Acceptation des conditions",
+          "content": "En accédant à Mizoke et en l'utilisant, vous acceptez d'être lié par ces conditions générales d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser notre site web ni nos services."
+        },
+        "1": {
+          "heading": "Utilisation du site web",
+          "content": "Vous devez avoir au moins 18 ans ou disposer du consentement parental pour effectuer des achats\nVous êtes responsable de la confidentialité de votre compte\nVous acceptez de fournir des informations exactes et complètes\nVous ne pouvez pas utiliser notre site web à des fins illégales ou non autorisées\nNous nous réservons le droit de refuser le service à quiconque pour quelque raison que ce soit"
+        },
+        "2": {
+          "heading": "Produits et tarification",
+          "content": "Tous les produits sont soumis à disponibilité. Nous nous réservons le droit d'interrompre tout produit à tout moment. Les prix sont susceptibles de changer sans préavis. Nous faisons tout notre possible pour afficher des prix exacts, mais des erreurs peuvent survenir. En cas d'erreur de prix, nous nous réservons le droit d'annuler toute commande passée au prix incorrect."
+        },
+        "3": {
+          "heading": "Commandes et paiement",
+          "content": "Toutes les commandes sont soumises à acceptation et disponibilité\nLe paiement doit être reçu avant le traitement de la commande\nNous acceptons les principales cartes de crédit et autres moyens de paiement affichés lors du règlement\nVous êtes responsable des taxes et droits applicables"
+        },
+        "4": {
+          "heading": "Propriété intellectuelle",
+          "content": "Tout le contenu de ce site web, y compris les images, textes, logos et designs, est la propriété de Mizoke ou de nos concédants de licence. Vous ne pouvez pas reproduire, distribuer ou utiliser tout contenu sans notre autorisation écrite expresse. Les personnages et franchises d'anime sont des marques de leurs propriétaires respectifs."
+        },
+        "5": {
+          "heading": "Limitation de responsabilité",
+          "content": "Mizoke ne saurait être tenu responsable de tout dommage indirect, accessoire, spécial ou consécutif découlant de votre utilisation de notre site web ou de nos produits. Notre responsabilité totale ne saurait excéder le montant que vous avez payé pour les produits concernés."
+        },
+        "6": {
+          "heading": "Modifications des conditions",
+          "content": "Nous nous réservons le droit de modifier ces conditions générales à tout moment. Les modifications prennent effet immédiatement après leur publication. Votre utilisation continue du site web après les modifications constitue une acceptation des nouvelles conditions."
+        }
+      }
+    },
+    "shipping": {
+      "title": "Politique d'expédition",
+      "description": "Informations sur les méthodes d'expédition, les délais de livraison et les coûts.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "Délai de traitement",
+          "content": "Les commandes sont généralement traitées sous 1 à 3 jours ouvrables. Pendant les périodes de forte affluence ou lors de drops spéciaux, le traitement peut prendre jusqu'à 5 jours ouvrables. Les articles en précommande seront expédiés conformément à leurs dates de sortie estimées."
+        },
+        "1": {
+          "heading": "Europe (national)",
+          "content": "Livraison standard (5-12 jours ouvrables) : 5,99 € ou GRATUIT pour les commandes supérieures à 45 €"
+        },
+        "2": {
+          "heading": "Royaume-Uni",
+          "content": "Livraison standard (5-10 jours ouvrables) : 4,99 £ ou GRATUIT pour les commandes supérieures à 40 £"
+        },
+        "3": {
+          "heading": "Canada",
+          "content": "Livraison standard (7-14 jours ouvrables) : 9,99 CAD ou GRATUIT pour les commandes supérieures à 73 CAD"
+        },
+        "4": {
+          "heading": "Australie",
+          "content": "Livraison standard (10-20 jours ouvrables) : 11 AUD ou GRATUIT pour les commandes supérieures à 80 AUD"
+        },
+        "5": {
+          "heading": "Reste du monde",
+          "content": "Asie-Pacifique : 14-28 jours ouvrables. Autres régions : 14-35 jours ouvrables. Les frais d'expédition varient selon le pays et sont calculés lors du règlement en fonction de votre localisation et du poids de la commande."
+        },
+        "6": {
+          "heading": "États-Unis",
+          "content": "L'expédition vers les États-Unis est actuellement suspendue en raison de changements tarifaires en cours. Nous nous excusons pour la gêne occasionnée et suivons la situation de près. Veuillez revenir ultérieurement ou vous inscrire à notre newsletter pour être informé de la reprise des expéditions vers les États-Unis."
+        },
+        "7": {
+          "heading": "Douanes et droits de douane",
+          "content": "Les commandes internationales peuvent être soumises à des frais de douane, des droits d'importation et des taxes. Ces frais sont à la charge du destinataire et ne sont pas inclus dans nos prix d'expédition. Nous ne sommes pas responsables des retards causés par le dédouanement."
+        },
+        "8": {
+          "heading": "Suivi de commande",
+          "content": "Une fois votre commande expédiée, vous recevrez un e-mail avec les informations de suivi. Vous pouvez également suivre votre commande en vous connectant à votre compte ou en visitant notre page de suivi de commande. Veuillez prévoir 24 à 48 heures pour la mise à jour des informations de suivi."
+        },
+        "9": {
+          "heading": "Restrictions d'expédition",
+          "content": "Certains produits peuvent avoir des restrictions d'expédition vers certaines régions. Si nous ne pouvons pas expédier vers votre localisation, vous en serez informé lors du règlement. Nous ne livrons actuellement pas aux boîtes postales pour les commandes express ou en livraison de nuit."
+        },
+        "10": {
+          "heading": "Colis perdus ou endommagés",
+          "content": "Si votre colis est perdu ou arrive endommagé, veuillez nous contacter dans les 7 jours suivant la date de livraison prévue. Nous travaillerons avec le transporteur pour résoudre le problème et pourrons proposer un remplacement ou un remboursement à notre discrétion."
+        }
+      }
+    },
+    "returns": {
+      "title": "Retours et remboursements",
+      "description": "Nos politiques de retour, d'échange et de remboursement.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "Politique de retour",
+          "content": "Nous souhaitons que vous aimiez votre achat ! Si vous n'êtes pas entièrement satisfait, vous pouvez retourner la plupart des articles dans les 30 jours suivant la livraison pour un remboursement intégral ou un échange. Les articles doivent être non utilisés, non portés et dans leur emballage d'origine avec toutes les étiquettes attachées."
+        },
+        "1": {
+          "heading": "Articles non retournables",
+          "content": "Articles en édition limitée ou exclusifs (marqués « Vente finale »)\nObjets de collection et figurines ouverts\nArticles personnalisés ou sur mesure\nArticles soldés ou en vente finale\nCartes cadeaux"
+        },
+        "2": {
+          "heading": "Comment initier un retour",
+          "content": "Connectez-vous à votre compte et allez dans l'historique des commandes\nSélectionnez la commande et les articles que vous souhaitez retourner\nChoisissez le motif du retour et soumettez la demande\nVous recevrez l'adresse de retour et les instructions par e-mail\nEmballez les articles de manière sécurisée et expédiez-les à vos frais avec un service de suivi"
+        },
+        "3": {
+          "heading": "Échanges",
+          "content": "Si vous souhaitez échanger un article pour une taille ou une couleur différente, veuillez l'indiquer lors de votre retour. Sous réserve de disponibilité, nous expédierons l'article d'échange dès réception de votre retour. Si l'article d'échange n'est pas disponible, nous procéderons à un remboursement."
+        },
+        "4": {
+          "heading": "Traitement des remboursements",
+          "content": "Les remboursements sont traités dans les 5 à 7 jours ouvrables après réception de votre retour. Le remboursement sera crédité sur votre moyen de paiement d'origine. Veuillez prévoir 3 à 5 jours ouvrables supplémentaires pour que le remboursement apparaisse sur votre relevé."
+        },
+        "5": {
+          "heading": "Frais d'expédition de retour",
+          "content": "Les frais d'expédition de retour sont à la charge du client. Nous recommandons d'utiliser un service d'expédition avec suivi pour garantir que votre retour nous parvienne en toute sécurité. Si le retour est dû à notre erreur (mauvais article, produit défectueux), nous prendrons en charge les frais de retour."
+        },
+        "6": {
+          "heading": "Articles endommagés ou défectueux",
+          "content": "Si vous recevez un article endommagé ou défectueux, veuillez nous contacter dans les 48 heures suivant la livraison avec des photos des dommages. Nous organiserons un retour gratuit et enverrons un remplacement ou procéderons à un remboursement intégral selon votre préférence."
+        }
+      }
+    },
+    "accessibility": {
+      "title": "Accessibilité",
+      "description": "Notre engagement à rendre notre site web accessible à tous.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "Notre engagement",
+          "content": "Mizoke s'engage à garantir l'accessibilité numérique pour les personnes de toutes capacités. Nous améliorons continuellement l'expérience utilisateur pour tous et appliquons les normes d'accessibilité pertinentes afin de garantir un accès égal à tous les utilisateurs."
+        },
+        "1": {
+          "heading": "Normes d'accessibilité",
+          "content": "Nous nous efforçons de nous conformer aux directives d'accessibilité du contenu web (WCAG) 2.1 niveau AA. Notre site web est conçu pour être compatible avec les technologies d'assistance, y compris les lecteurs d'écran, la navigation au clavier et les loupes d'écran."
+        },
+        "2": {
+          "heading": "Fonctionnalités d'accessibilité",
+          "content": "Navigation au clavier sur l'ensemble du site web\nTextes alternatifs pour les images\nRapports de contraste des couleurs suffisants\nTexte redimensionnable sans perte de fonctionnalité\nNavigation claire et cohérente\nÉtiquettes de formulaire et identification des erreurs\nLiens de saut de navigation\nPoints de repère et étiquettes ARIA"
+        },
+        "3": {
+          "heading": "Efforts continus",
+          "content": "Nous testons régulièrement notre site web à l'aide de technologies d'assistance et d'outils d'évaluation de l'accessibilité. Notre équipe reçoit une formation sur les meilleures pratiques en matière d'accessibilité, et nous intégrons les considérations d'accessibilité dans nos processus de conception et de développement."
+        },
+        "4": {
+          "heading": "Limitations connues",
+          "content": "Bien que nous visions une accessibilité complète, certains contenus ou fonctionnalités tiers peuvent ne pas être entièrement accessibles. Nous travaillons avec nos fournisseurs pour améliorer l'accessibilité sur tous les aspects de notre site web."
+        },
+        "5": {
+          "heading": "Commentaires",
+          "content": "Nous accueillons vos commentaires sur l'accessibilité de Mizoke. Si vous rencontrez des barrières d'accessibilité ou avez des suggestions d'amélioration, veuillez nous contacter à accessibility@mizoke.com ou utiliser notre page Contact. Nous prenons tous les commentaires au sérieux et travaillerons à résoudre tout problème."
+        },
+        "6": {
+          "heading": "Accès alternatif",
+          "content": "Si vous ne parvenez pas à accéder à un contenu ou une fonctionnalité de notre site web, veuillez contacter notre équipe de service client. Nous travaillerons avec vous pour vous fournir les informations ou le service dont vous avez besoin par un moyen alternatif."
+        }
+      }
+    },
+    "imprint": {
+      "title": "Mentions légales (Impressum)",
+      "description": "Informations légales sur la société exploitant ce site web.",
+      "lastUpdated": "2026-02-26",
+      "sections": {
+        "0": {
+          "heading": "Informations sur la société",
+          "content": "Neo Stage Collective\nDirecteur général : [À ajouter]\nE-mail : contact@mizoke.com\nSite web : https://www.mizoke.com"
+        },
+        "1": {
+          "heading": "Adresse",
+          "content": "[Adresse de la société à ajouter avant le lancement]"
+        },
+        "2": {
+          "heading": "Numéro d'identification TVA",
+          "content": "N° TVA : [À ajouter avant le lancement]"
+        },
+        "3": {
+          "heading": "Responsable du contenu",
+          "content": "Responsable conformément au § 55 al. 2 RStV : [À ajouter]"
+        },
+        "4": {
+          "heading": "Règlement en ligne des litiges de l'UE",
+          "content": "La Commission européenne fournit une plateforme de règlement en ligne des litiges (RLL) : https://ec.europa.eu/consumers/odr. Notre adresse e-mail figure ci-dessus. Nous ne sommes ni disposés ni obligés de participer à une procédure de règlement des litiges devant un organisme d'arbitrage des consommateurs."
+        },
+        "5": {
+          "heading": "Responsabilité du contenu",
+          "content": "En tant que prestataire de services, nous sommes responsables de notre propre contenu sur ces pages conformément aux lois générales (§ 7 al. 1 TMG). Conformément aux §§ 8 à 10 TMG, nous ne sommes toutefois pas tenus de surveiller les informations de tiers transmises ou stockées, ni de rechercher des circonstances indiquant une activité illégale."
+        },
+        "6": {
+          "heading": "Responsabilité des liens",
+          "content": "Notre site web contient des liens vers des sites web externes de tiers sur le contenu desquels nous n'avons aucune influence. Par conséquent, nous ne pouvons accepter aucune responsabilité pour ce contenu externe. Le fournisseur ou l'exploitant respectif des pages liées est toujours responsable du contenu des pages liées."
+        },
+        "7": {
+          "heading": "Droit d'auteur",
+          "content": "Le contenu et les œuvres créés par les exploitants du site sur ces pages sont soumis au droit d'auteur. La reproduction, le traitement, la distribution et toute forme d'utilisation au-delà des limites du droit d'auteur nécessitent le consentement écrit de l'auteur ou du créateur respectif. Les personnages et franchises d'anime sont des marques de leurs propriétaires respectifs."
+        }
+      }
+    }
+  },
   "sizeGuide": {
     "title": "Guide des tailles {type}",
     "allMeasurementsIn": "Toutes les mesures en",
@@ -508,7 +721,41 @@
     "hips": "Hanches",
     "hipsDescription": "Mesurez autour de la partie la plus large de vos hanches",
     "length": "Longueur",
-    "lengthDescription": "Mesurez de l'épaule à l'ourlet"
+    "lengthDescription": "Mesurez de l'épaule à l'ourlet",
+    "columns": {
+      "size": "Taille",
+      "chest": "Poitrine",
+      "length": "Longueur",
+      "shoulder": "Épaule",
+      "sleeve": "Manche",
+      "waist": "Tour de taille",
+      "hips": "Hanches",
+      "inseam": "Entrejambe"
+    },
+    "productTypes": {
+      "tshirt": "T-Shirt",
+      "hoodie": "Sweat à capuche",
+      "pants": "Pantalon",
+      "jacket": "Veste",
+      "shorts": "Short",
+      "dress": "Robe",
+      "default": "Vêtement"
+    },
+    "noteKeys": {
+      "measurementsInCm": "Les mesures sont en centimètres",
+      "sizeUpForRelaxed": "Pour un fit ample, prenez une taille au-dessus",
+      "chestTolerance": "Les mesures de poitrine incluent une tolérance de 2-3 cm",
+      "hoodiesOversized": "Les sweats à capuche ont une coupe oversize",
+      "lengthFromShoulder": "La longueur est mesurée de l'épaule à l'ourlet",
+      "waistNatural": "La taille est mesurée à la taille naturelle",
+      "inseamCrotchToAnkle": "L'entrejambe est mesuré de l'entrejambe à la cheville",
+      "allowLayering": "Prévoir de la place pour les couches",
+      "jacketFromCollar": "La longueur de la veste est mesurée du col à l'ourlet",
+      "lengthWaistToHem": "Longueur mesurée de la ceinture à l'ourlet",
+      "lengthShoulderToHem": "Longueur mesurée de l'épaule à l'ourlet",
+      "generalGuide": "Il s'agit d'un guide des tailles général",
+      "individualVariation": "Les produits individuels peuvent varier légèrement"
+    }
   },
   "reviews": {
     "title": "Avis clients",
@@ -627,7 +874,7 @@
   "home": {
     "chooseYour": "CHOISIS TON",
     "world": "MONDE",
-    "heroTagline": "Drops, bundles et objets de collection — touche un univers.",
+    "heroTagline": "Du merch anime personnalisé rien que pour toi. Choisis ton univers et rends-le unique.",
     "newArrivals": "NOUVEAUTÉS",
     "dropRunway": "DROPS",
     "bestSellers": "MEILLEURES VENTES",
@@ -762,26 +1009,6 @@
     "supportDescription": "Tu ne trouves pas la réponse ? Notre équipe support est là pour t'aider.",
     "contactSupport": "Nous contacter"
   },
-  "gacha": {
-    "heroTitle1": "BOÎTES",
-    "heroTitle2": "MYSTÈRES",
-    "heroSubtitle": "Tente ta chance et découvre des objets de collection rares. Chaque boîte contient des articles de sa collection exclusive.",
-    "howItWorks": "Comment ça marche",
-    "howItWorksSubtitle": "Un processus simple pour découvrir ton article mystère",
-    "step1Title": "1. Choisir une boîte",
-    "step1Desc": "Parcours les boîtes mystères thématiques et consulte leur contenu et les probabilités.",
-    "step2Title": "2. Obtenir ton code",
-    "step2Desc": "Après l'achat, tu recevras un code de remboursement unique.",
-    "step3Title": "3. Révéler",
-    "step3Desc": "Utilise ton code pour révéler ton article avec une animation captivante.",
-    "step4Title": "4. Réclamer & Expédier",
-    "step4Desc": "Entre ton adresse de livraison et nous t'enverrons ton prix.",
-    "giftTitle": "Offrir une boîte mystère",
-    "giftDesc": "Partage l'excitation ! Tu peux partager ton code de remboursement avec des amis. Ils peuvent révéler le mystère et réclamer le prix eux-mêmes.",
-    "noBoxesTitle": "Aucune boîte mystère disponible",
-    "noBoxesDesc": "Les boîtes mystères ne sont pas disponibles pour le moment. Reviens bientôt !",
-    "disclaimer": "Les boîtes mystères contiennent des articles aléatoires de leur collection thématique. Toutes les probabilités sont affichées pour la transparence. Les résultats sont déterminés par un algorithme aléatoire cryptographiquement sécurisé au moment de la révélation. Chaque boîte contient garantie un produit. Réservé aux personnes de 18 ans et plus. Jouez de manière responsable."
-  },
   "cookies": {
     "banner": "Nous utilisons des cookies pour améliorer votre expérience. Vous pouvez personnaliser vos préférences ci-dessous.",
     "acceptAll": "Tout accepter",
@@ -798,5 +1025,45 @@
     "marketingDesc": "Utilisés pour diffuser des publicités pertinentes et suivre les performances des campagnes.",
     "marketingCookies": "Pixels marketing Shopify (suivi de conversions)",
     "privacyLink": "Politique de confidentialité"
+  },
+  "shopByType": {
+    "breadcrumbHome": "Accueil",
+    "breadcrumbShop": "Boutique",
+    "hubTitle": "Shopping par Type",
+    "hubSubtitle": "Parcours les produits de tous les univers anime, triés par catégorie. Trouve ton style préféré dans tous les mondes en même temps.",
+    "hubMetaTitle": "Shopping par Type — Toutes les Catégories | Mizoke",
+    "hubMetaDescription": "Merchandising anime par catégorie. Sweats, t-shirts, plaques nominatives, porte-clés et aimants de tous les univers anime.",
+    "hub": {
+      "eyebrow": "Shopping Merch Anime",
+      "title": "Par Catégorie",
+      "subtitle": "Merchandising anime personnalisé de chaque univers. Sweats, t-shirts, plaques nominatives, porte-clés et aimants sur mesure de One Piece, Demon Slayer, Dragon Ball, Jujutsu Kaisen et plus — livraison mondiale.",
+      "items": "articles",
+      "enter": "Entrer",
+      "crosslink": "Préfères-tu acheter par univers anime ?"
+    },
+    "metaTitle": "{type} — Tous les Univers Anime | Mizoke",
+    "metaDescription": "Parcours {type} de tous les univers anime en un seul endroit. Designs personnalisés de One Piece, Demon Slayer, Attack on Titan et plus.",
+    "types": {
+      "hoodies": {
+        "title": "Sweats",
+        "subtitle": "Sweats anime premium de chaque univers"
+      },
+      "tshirts": {
+        "title": "T-Shirts",
+        "subtitle": "T-shirts anime personnalisés de tous les mondes"
+      },
+      "name-signs": {
+        "title": "Plaques Nominatives",
+        "subtitle": "Plaques personnalisées inspirées de ton anime préféré"
+      },
+      "keychains": {
+        "title": "Porte-clés",
+        "subtitle": "Porte-clés anime de chaque univers"
+      },
+      "magnets": {
+        "title": "Aimants",
+        "subtitle": "Aimants anime à collectionner de tous les mondes"
+      }
+    }
   }
 }

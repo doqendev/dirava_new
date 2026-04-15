@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
-import { ChevronRight, Rocket } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_NEW_ARRIVALS } from '@/lib/shopify/queries'
 import { extractNodes } from '@/lib/shopify/utils'
@@ -170,48 +170,30 @@ export default async function NewArrivalsPage({ searchParams }: Props) {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Header Section */}
-      <section className="relative py-8 lg:py-12 overflow-hidden">
-        {/* Aurora mesh blobs */}
-        <div className="absolute top-0 left-1/4 w-[350px] h-[180px] rounded-full blur-[100px] opacity-20 bg-[#00f5ff]" />
-        <div className="absolute top-0 right-1/4 w-[350px] h-[180px] rounded-full blur-[100px] opacity-20 bg-[#a855f7]" />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[250px] h-[120px] rounded-full blur-[80px] opacity-15 bg-[#3b82f6]" />
-
-        <div className="relative px-4 max-w-7xl mx-auto text-center">
-          {/* Breadcrumb */}
-          <nav className="flex items-center justify-center gap-2 text-sm mb-5">
-            <Link
-              href="/"
-              className="text-white/50 hover:text-white transition-colors"
-            >
-              {t('breadcrumbHome')}
-            </Link>
-            <ChevronRight className="w-4 h-4 text-white/30" />
-            <span className="text-neon-cyan">{t('title')}</span>
-          </nav>
-
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full border border-[#00f5ff]/30 bg-[#00f5ff]/10">
-            <Rocket className="w-4 h-4 text-[#00f5ff]" />
-            <span className="text-xs font-mono font-semibold tracking-widest uppercase text-[#00f5ff]">
-              JUST LANDED
-            </span>
-          </div>
-
-          {/* Title */}
-          <h1
-            className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-wider uppercase bg-gradient-to-r from-[#00f5ff] via-[#7c3aed] to-[#a855f7] bg-clip-text text-transparent"
-            style={{
-              textShadow: '0 0 40px rgba(0, 245, 255, 0.25), 0 0 80px rgba(168, 85, 247, 0.15)',
-            }}
+      {/* Header Section */}
+      <section className="pt-6 px-4 max-w-7xl mx-auto">
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-2 text-sm mb-4">
+          <Link
+            href="/"
+            className="text-white/50 hover:text-white transition-colors"
           >
-            {t('title')}
-          </h1>
+            {t('breadcrumbHome')}
+          </Link>
+          <ChevronRight className="w-4 h-4 text-white/30" />
+          <span className="text-neon-cyan">{t('title')}</span>
+        </nav>
 
-          <p className="mt-4 text-white/60 max-w-lg mx-auto">
-            {t('description')}
-          </p>
-        </div>
+        {/* Collection Title */}
+        <h1
+          className="font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-wider uppercase mb-6"
+          style={{
+            color: '#00f5ff',
+            textShadow: '0 0 20px rgba(0, 245, 255, 0.4), 0 0 40px rgba(0, 245, 255, 0.2)',
+          }}
+        >
+          {t('title')}
+        </h1>
       </section>
 
       {/* Main Content */}

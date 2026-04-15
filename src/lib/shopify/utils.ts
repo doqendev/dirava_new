@@ -60,10 +60,69 @@ export function getCollectionUniverse(collection: ShopifyCollection): string | n
 }
 
 /**
- * Get product count from a collection
+ * Count the number of cards that would be displayed for a collection.
+ * Each variant with a distinct image counts as a separate card,
+ * matching the visual-option expansion logic in the collection page.
  */
 export function getCollectionProductCount(collection: ShopifyCollection): number {
-  return collection.products?.edges?.length ?? 0
+  const products = collection.products?.edges
+  if (!products) return 0
+
+  let count = 0
+
+  for (const edge of products) {
+    const product = edge.node
+    const variants = product.variants?.edges?.map((e) => e.node) || []
+    const variantsWithImages = variants.filter((v) => v.image)
+
+    if (variantsWithImages.length > 1) {
+      // Check which options produce distinct images
+      const optionNames = variants[0]?.selectedOptions
+        ?.map((o) => o.name)
+        .filter((name) => !(name === 'Title' && variants.length === 1)) || []
+
+      const visualOptions: string[] = []
+      for (const optName of optionNames) {
+        const groups = new Map<string, string>()
+        for (const v of variants) {
+          const val = v.selectedOptions?.find((o) => o.name === optName)?.value
+          if (val && !groups.has(val) && v.image?.url) {
+            groups.set(val, v.image.url.split('?')[0]!)
+          }
+        }
+        const imageUrls = new Set(groups.values())
+        if (imageUrls.size > 1) {
+          visualOptions.push(optName)
+        }
+      }
+
+      if (visualOptions.length >= 2) {
+        // Multiple visual options: count unique combinations
+        const combos = new Set<string>()
+        for (const v of variants) {
+          const key = visualOptions
+            .map((optName) => v.selectedOptions?.find((o) => o.name === optName)?.value || '')
+            .join(' / ')
+          combos.add(key)
+        }
+        count += combos.size
+      } else if (visualOptions.length === 1) {
+        // One visual option: count unique values
+        const values = new Set<string>()
+        for (const v of variants) {
+          const val = v.selectedOptions?.find((o) => o.name === visualOptions[0])?.value
+          if (val) values.add(val)
+        }
+        count += values.size
+      } else {
+        count += 1
+      }
+    } else {
+      count += 1
+    }
+  }
+
+  return count
 }
 
 /**

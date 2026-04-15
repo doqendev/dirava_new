@@ -18,7 +18,7 @@ export function isValidEmail(email: string): boolean {
 }
 
 /**
- * Validate and sanitize a shipping address for gacha claims.
+ * Validate and sanitize a shipping address.
  */
 export function validateShippingAddress(address: unknown): {
   valid: boolean

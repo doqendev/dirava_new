@@ -1,0 +1,15 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&amp;display=swap');
+.mz { font-family: 'Orbitron', 'Eurostile', 'Arial Black', sans-serif; font-weight: 900; }
+</style>
+<filter id="gC" x="-50%" y="-50%" width="200%" height="200%">
+<feGaussianBlur stdDeviation="1.5" result="b1"/>
+<feMerge><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge>
+</filter>
+</defs>
+<rect x="1" y="1" width="62" height="62" rx="10" fill="#050814" stroke="#22d3ee" stroke-width="1.2"/>
+<text x="32" y="50" text-anchor="middle" class="mz" font-size="44" fill="#22d3ee" filter="url(#gC)">M</text>
+<text x="32" y="50" text-anchor="middle" class="mz" font-size="44" fill="#f0fdff">M</text>
+</svg>

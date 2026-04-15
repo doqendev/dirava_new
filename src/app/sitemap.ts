@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_UNIVERSES, GET_SITEMAP_PRODUCTS } from '@/lib/shopify/queries'
 import { SITE_URL } from '@/lib/utils/siteUrl'
+import { PRODUCT_TYPE_OPTIONS } from '@/lib/utils/filters'
 
 interface UniverseNode {
   handle: string
@@ -78,8 +79,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/sale', priority: 0.9, changeFrequency: 'daily' as const },
     { path: '/new', priority: 0.9, changeFrequency: 'daily' as const },
     { path: '/worlds', priority: 0.9, changeFrequency: 'weekly' as const },
+    { path: '/shop', priority: 0.9, changeFrequency: 'weekly' as const },
     { path: '/bundles', priority: 0.8, changeFrequency: 'weekly' as const },
-    { path: '/gacha', priority: 0.7, changeFrequency: 'weekly' as const },
     { path: '/contact', priority: 0.6, changeFrequency: 'monthly' as const },
     { path: '/faq', priority: 0.5, changeFrequency: 'monthly' as const },
     { path: '/policies/privacy', priority: 0.4, changeFrequency: 'yearly' as const },
@@ -97,6 +98,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency,
       priority,
       // alternates removed — cookie-based i18n has no locale URL paths
+    })
+  })
+
+  // Shop-by-type pages (one per product category)
+  PRODUCT_TYPE_OPTIONS.forEach((option) => {
+    routes.push({
+      url: `${SITE_URL}/shop/${option.value}`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.8,
     })
   })
 

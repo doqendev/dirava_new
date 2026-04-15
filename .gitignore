@@ -50,3 +50,17 @@ next-env.d.ts
 
 .vercel
 .env*.local
+
+# OMC orchestrator runtime state
+.omc/state/
+.omc/sessions/
+.omc/project-memory.json
+
+# Local scratch / one-off scripts (may contain credentials)
+*.cjs
+nul
+
+# Local design artifacts
+*.pen
+screenshots/
+images/

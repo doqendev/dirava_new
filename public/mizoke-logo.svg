@@ -1,0 +1,15 @@
+<svg width="680" height="140" viewBox="0 0 680 140" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&amp;display=swap');
+.mz { font-family: 'Orbitron', 'Eurostile', 'Bank Gothic', sans-serif; font-weight: 900; }
+</style>
+<filter id="neonCyan" x="-50%" y="-50%" width="200%" height="200%">
+<feGaussianBlur stdDeviation="3" result="b1"/>
+<feGaussianBlur in="SourceGraphic" stdDeviation="1" result="b2"/>
+<feMerge><feMergeNode in="b1"/><feMergeNode in="b2"/><feMergeNode in="SourceGraphic"/></feMerge>
+</filter>
+</defs>
+<text x="340" y="90" text-anchor="middle" class="mz" font-size="62" fill="#22d3ee" filter="url(#neonCyan)" letter-spacing="6">MIZOKE</text>
+<text x="340" y="90" text-anchor="middle" class="mz" font-size="62" fill="#f0fdff" letter-spacing="6">MIZOKE</text>
+</svg>

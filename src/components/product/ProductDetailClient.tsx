@@ -23,7 +23,6 @@ import { ReviewSummary } from '@/components/product/ReviewSummary'
 import { StickyAddToCart } from '@/components/product/StickyAddToCart'
 import { useTrackProductView } from '@/hooks/useTrackProductView'
 import { getSizeGuide } from '@/data/sizeGuides'
-import { getProductHighlights } from '@/data/productHighlights'
 import { getPreviewConfig, getVariantImages } from '@/lib/preview'
 import { getPreviewDisplayText } from '@/lib/preview/textTransform'
 import type { ShopifyMoney, ShopifySelectedOption } from '@/types/shopify'
@@ -80,7 +79,6 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
 
   // Size guide modal state
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false)
-  const [isHighlightsOpen, setIsHighlightsOpen] = useState(true)
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(true)
   const [isShippingOpen, setIsShippingOpen] = useState(false)
   const [isReturnsOpen, setIsReturnsOpen] = useState(false)
@@ -151,9 +149,6 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
 
   // Ref for sticky add-to-cart IntersectionObserver
   const cartButtonRef = useRef<HTMLDivElement>(null)
-
-  // Product highlights for "What You Get" section
-  const highlights = useMemo(() => getProductHighlights(product.handle), [product.handle])
 
   // Gallery ref for programmatic 3D navigation
   const galleryRef = useRef<ProductGalleryHandle>(null)
@@ -277,21 +272,18 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
           {/* Product Info */}
           <div className="space-y-6 w-full min-w-0">
             {/* Badges */}
-            <div className="flex flex-wrap gap-2">
-              <Badge
-                variant={config?.colorName === 'cyan' ? 'cyan' : config?.colorName === 'pink' ? 'pink' : config?.colorName === 'orange' ? 'orange' : 'green'}
-              >
-                {universeName}
-              </Badge>
-              {product.rarity && product.rarity !== 'common' && (
-                <Badge variant={product.rarity === 'legendary' ? 'yellow' : 'purple'}>
-                  {product.rarity}
-                </Badge>
-              )}
-              {hasDiscount && (
-                <Badge variant="pink">{tCommon('sale').toUpperCase()}</Badge>
-              )}
-            </div>
+            {(product.rarity && product.rarity !== 'common' || hasDiscount) && (
+              <div className="flex flex-wrap gap-2">
+                {product.rarity && product.rarity !== 'common' && (
+                  <Badge variant={product.rarity === 'legendary' ? 'yellow' : 'purple'}>
+                    {product.rarity}
+                  </Badge>
+                )}
+                {hasDiscount && (
+                  <Badge variant="pink">{tCommon('sale').toUpperCase()}</Badge>
+                )}
+              </div>
+            )}
 
             {/* Title */}
             <h1 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-wide">
@@ -326,8 +318,8 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               )}
             </div>
 
-            {/* Size Guide Button - only for apparel (not personalizable/3D products) */}
-            {!previewConfig && (
+            {/* Size Guide Button - only for apparel with a matching size guide */}
+            {sizeGuide && (
               <div className="flex justify-end">
                 <SizeGuideButton onClick={() => setIsSizeGuideOpen(true)} />
               </div>
@@ -367,26 +359,44 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 <label className="block text-sm font-medium text-white/70 mb-2">
                   {t('personalizationName')} <span className="text-neon-pink">*</span>
                 </label>
-                <div className="flex gap-2">
-                  <input
-                    ref={personalizationInputRef}
-                    type="text"
-                    value={personalizationName}
-                    onChange={(e) => setPersonalizationName(previewConfig ? getPreviewDisplayText(e.target.value, previewConfig, '') : e.target.value)}
-                    placeholder={t('personalizationPlaceholder')}
-                    className={cn(
-                      'flex-1 min-w-0 px-4 py-3 bg-black/80 border rounded-lg text-white placeholder-white/40 focus:outline-none transition-colors',
-                      personalizationName.trim()
-                        ? 'border-neon-green/50 focus:border-neon-green'
-                        : 'border-border-subtle focus:border-neon-cyan'
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <input
+                      ref={personalizationInputRef}
+                      type="text"
+                      value={personalizationName}
+                      onChange={(e) => setPersonalizationName(previewConfig ? getPreviewDisplayText(e.target.value, previewConfig, '') : e.target.value)}
+                      placeholder={t('personalizationPlaceholder')}
+                      className={cn(
+                        'flex-1 min-w-0 px-4 py-3 bg-black/80 border rounded-lg text-white placeholder-white/40 focus:outline-none transition-colors',
+                        personalizationName.trim()
+                          ? 'border-neon-green/50 focus:border-neon-green'
+                          : 'border-border-subtle focus:border-neon-cyan'
+                      )}
+                    />
+                    {previewConfig && (
+                      <button
+                        type="button"
+                        onClick={() => galleryRef.current?.goTo3D()}
+                        className={cn(
+                          'hidden sm:flex flex-shrink-0 items-center gap-1.5 px-3 py-3 rounded-lg',
+                          'bg-neon-cyan/10 border border-neon-cyan/30',
+                          'text-neon-cyan text-sm font-medium',
+                          'hover:bg-neon-cyan/20 hover:border-neon-cyan/50',
+                          'transition-colors'
+                        )}
+                      >
+                        <Box className="w-4 h-4" />
+                        3D
+                      </button>
                     )}
-                  />
+                  </div>
                   {previewConfig && (
                     <button
                       type="button"
                       onClick={() => galleryRef.current?.goTo3D()}
                       className={cn(
-                        'flex-shrink-0 flex items-center gap-1.5 px-3 py-3 rounded-lg',
+                        'sm:hidden flex items-center justify-center gap-2 w-full py-2.5 rounded-lg',
                         'bg-neon-cyan/10 border border-neon-cyan/30',
                         'text-neon-cyan text-sm font-medium',
                         'hover:bg-neon-cyan/20 hover:border-neon-cyan/50',
@@ -394,13 +404,10 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                       )}
                     >
                       <Box className="w-4 h-4" />
-                      3D
+                      {t('preview3D')}
                     </button>
                   )}
                 </div>
-                <p className="mt-1 text-xs text-white/50">
-                  {t('personalizationHint')}
-                </p>
               </div>
             )}
 
@@ -444,42 +451,6 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 size="lg"
               />
             </div>
-
-            {/* What You Get (collapsible) — only if highlights exist */}
-            {highlights && (
-              <div className="pt-6 border-t border-border-subtle">
-                <button
-                  type="button"
-                  onClick={() => setIsHighlightsOpen(!isHighlightsOpen)}
-                  aria-expanded={isHighlightsOpen}
-                  className="w-full flex items-center justify-between py-1 group"
-                >
-                  <h2 className="font-display text-lg text-white">{t('whatYouGet')}</h2>
-                  <ChevronDown className={cn(
-                    'w-5 h-5 text-white/50 transition-transform duration-300',
-                    isHighlightsOpen && 'rotate-180'
-                  )} />
-                </button>
-                <div
-                  className={cn(
-                    'overflow-hidden transition-all duration-300',
-                    isHighlightsOpen ? 'max-h-[500px] opacity-100 mt-3' : 'max-h-0 opacity-0'
-                  )}
-                >
-                  <ul className="space-y-2.5">
-                    {highlights.map((highlight) => {
-                      const Icon = highlight.icon
-                      return (
-                        <li key={highlight.textKey} className="flex items-start gap-3">
-                          <Icon className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: themeColor }} />
-                          <span className="text-sm text-white/70">{t(highlight.textKey)}</span>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </div>
-              </div>
-            )}
 
             {/* Description (collapsible) */}
             <div className="pt-6 border-t border-border-subtle">
@@ -601,11 +572,13 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
       </div>
 
       {/* Size Guide Modal */}
-      <SizeGuideModal
-        isOpen={isSizeGuideOpen}
-        onClose={() => setIsSizeGuideOpen(false)}
-        sizeGuide={sizeGuide}
-      />
+      {sizeGuide && (
+        <SizeGuideModal
+          isOpen={isSizeGuideOpen}
+          onClose={() => setIsSizeGuideOpen(false)}
+          sizeGuide={sizeGuide}
+        />
+      )}
 
       {/* Sticky Mobile Add-to-Cart */}
       <StickyAddToCart

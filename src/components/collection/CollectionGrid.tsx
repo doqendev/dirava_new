@@ -98,12 +98,12 @@ export function CollectionGrid({
   const hasFiltersActive = hasActiveFilters(filters)
 
   // Grid column classes:
-  // Option 1: 2 columns (larger cards)
-  // Option 2: 4 columns (default)
-  // Option 3: 4 columns compact (no details)
+  // Option 1: 1 column mobile / 2 columns desktop (largest cards)
+  // Option 2: 2 columns mobile / 4 columns desktop (default)
+  // Option 3: 2 columns mobile / 4 columns desktop compact (no details)
   const gridClasses = cn(
     'grid gap-4',
-    gridColumns === 1 && 'grid-cols-2',
+    gridColumns === 1 && 'grid-cols-1 lg:grid-cols-2',
     gridColumns === 2 && 'grid-cols-2 lg:grid-cols-4',
     gridColumns === 3 && 'grid-cols-2 lg:grid-cols-4',
     // Default to option 2 (4 columns)

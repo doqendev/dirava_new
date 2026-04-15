@@ -43,16 +43,20 @@
     "outOfStock": "Esgotado",
     "inStock": "Em stock",
     "lowStock": "Poucas unidades",
-    "soldOut": "Esgotado"
+    "soldOut": "Esgotado",
+    "bundles": "Packs",
+    "contact": "Contacto",
+    "faq": "FAQ"
   },
   "nav": {
     "account": "Conta",
     "bundles": "Bundles",
     "drops": "Drops",
-    "gacha": "Gacha",
     "home": "Início",
     "profile": "Perfil",
+    "search": "Buscar",
     "searchPlaceholder": "Pesquisar produtos...",
+    "shop": "Loja",
     "worlds": "Mundos"
   },
   "header": {
@@ -134,6 +138,7 @@
     "returnsExchanges": "Trocas disponíveis para diferentes tamanhos ou cores, sujeito a disponibilidade.",
     "returnsRefund": "Os reembolsos são processados em 5-7 dias úteis após o recebimento da sua devolução.",
     "returnsFinalSale": "Artigos personalizados e de edição limitada são venda final.",
+    "preview3D": "Pré-visualização 3D",
     "preview3dLoading": "Carregando...",
     "preview3dUpdating": "Atualizando...",
     "preview3dNotAvailable": "Pré-visualização 3D não disponível",
@@ -143,7 +148,7 @@
     "trustFreeShipping": "Envio grátis",
     "trustSecureCheckout": "Pagamento seguro",
     "trustReturns": "Devoluções em 30 dias",
-    "trustLicensed": "Licenciado oficialmente",
+    "trustLicensed": "Designs personalizados",
     "whatYouGet": "O que recebes",
     "highlightLedSign": "Letreiro LED néon personalizado com o teu nome",
     "highlightAcrylicBase": "Base em acrílico de alta qualidade",
@@ -178,7 +183,12 @@
     "decreaseQuantity": "Diminuir quantidade",
     "increaseQuantity": "Aumentar quantidade",
     "youMightLike": "Também podes gostar",
-    "quickView": "Vista rápida"
+    "quickView": "Vista rápida",
+    "itemAdded": "Artigo adicionado ao carrinho",
+    "failedToAdd": "Não foi possível adicionar o artigo",
+    "failedToAddBundle": "Não foi possível adicionar o pacote",
+    "failedToUpdate": "Não foi possível atualizar o artigo",
+    "failedToRemove": "Não foi possível remover o artigo"
   },
   "discount": {
     "haveCode": "Tens um código de desconto?",
@@ -230,32 +240,6 @@
     "exploreDescription": "Escolhe o teu universo e descobre produtos exclusivos dos teus anime favoritos.",
     "home": "Início",
     "worlds": "Mundos"
-  },
-  "codes": {
-    "revealNow": "Revelar agora",
-    "claimPrize": "Reclamar prémio",
-    "viewDetails": "Ver detalhes",
-    "back": "Voltar",
-    "signInRequired": "Início de sessão necessário",
-    "signInToView": "Por favor, inicia sessão para ver os teus códigos de resgate.",
-    "signIn": "Iniciar sessão",
-    "loadingCodes": "A carregar os teus códigos...",
-    "somethingWrong": "Algo correu mal",
-    "loadError": "Não foi possível carregar os teus códigos. Por favor, tenta novamente.",
-    "tryAgain": "Tentar novamente",
-    "backToAccount": "Voltar à conta",
-    "myRedemptionCodes": "Os meus códigos de resgate",
-    "codesTotal": "{count} {count, plural, one {código} other {códigos}} no total",
-    "noCodesYet": "Ainda sem códigos",
-    "noCodesDescription": "Compra uma caixa misteriosa para obteres o teu primeiro código de resgate!",
-    "browseMysteryBoxes": "Ver caixas misteriosas",
-    "haveCode": "Tens um código para resgatar?",
-    "haveCodeDescription": "Se alguém partilhou um código contigo, insere-o para revelar o mistério.",
-    "enterCode": "Inserir um código",
-    "statusUnused": "Pronto para revelar",
-    "statusRevealed": "Revelado",
-    "statusClaimed": "Resgatado",
-    "statusShipped": "Enviado"
   },
   "orderHistory": {
     "title": "Encomendas",
@@ -420,6 +404,7 @@
     "showingProducts": "A mostrar {count} produtos",
     "noProductsMatch": "Nenhum produto corresponde aos teus filtros",
     "productType": "Tipo de produto",
+    "world": "Mundo",
     "apparel": "Vestuário",
     "accessories": "Acessórios",
     "applyFilters": "APLICAR FILTROS",
@@ -496,6 +481,234 @@
     "questionsPrefix": "Se tens dúvidas sobre esta política, por favor",
     "contactUs": "contacta-nos"
   },
+  "policies": {
+    "privacy": {
+      "title": "Política de Privacidade",
+      "description": "Como recolhemos, usamos e protegemos as tuas informações pessoais.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "Informações que recolhemos",
+          "content": "Informações pessoais fornecidas ao criar uma conta (nome, endereço de e-mail, morada de envio)\nInformações de pagamento processadas de forma segura pelos nossos fornecedores de pagamento\nHistórico de encomendas e preferências de produtos\nInformações do dispositivo e navegador para otimização do site\nCookies e tecnologias de rastreamento semelhantes para melhorar a tua experiência"
+        },
+        "1": {
+          "heading": "Como usamos as tuas informações",
+          "content": "Processar e concluir as tuas encomendas\nEnviar confirmações de encomenda e atualizações de envio\nFornecer suporte ao cliente e responder a consultas\nEnviar e-mails promocionais (com o teu consentimento)\nMelhorar o nosso site e ofertas de produtos\nPrevenir fraudes e reforçar a segurança"
+        },
+        "2": {
+          "heading": "Partilha de informações",
+          "content": "Não vendemos as tuas informações pessoais a terceiros. Podemos partilhar as tuas informações com prestadores de serviços de confiança que nos ajudam a operar o nosso site, processar pagamentos e entregar produtos. Estes parceiros estão vinculados por acordos de confidencialidade e só estão autorizados a usar as tuas informações na medida do necessário para nos prestar serviços."
+        },
+        "3": {
+          "heading": "Segurança dos dados",
+          "content": "Implementamos medidas de segurança padrão da indústria para proteger as tuas informações pessoais. Todas as transações de pagamento são encriptadas com tecnologia SSL. No entanto, nenhum método de transmissão pela Internet é 100 % seguro e não podemos garantir segurança absoluta."
+        },
+        "4": {
+          "heading": "Os teus direitos",
+          "content": "Aceder às informações pessoais que temos sobre ti\nSolicitar a correção de informações incorretas\nSolicitar a eliminação dos teus dados pessoais\nCancelar a subscrição de comunicações de marketing a qualquer momento\nSolicitar uma cópia dos teus dados num formato portátil"
+        },
+        "5": {
+          "heading": "Contacta-nos",
+          "content": "Se tiveres questões sobre esta Política de Privacidade ou desejares exercer os teus direitos, contacta-nos em privacy@mizoke.com ou através da nossa página de Contacto."
+        }
+      }
+    },
+    "terms": {
+      "title": "Termos e Condições",
+      "description": "Os termos e condições que regem a utilização do nosso site e serviços.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "Aceitação dos termos",
+          "content": "Ao acederes e utilizares o Mizoke, aceitas e concordas em ficar vinculado a estes Termos e Condições. Se não concordares com estes termos, por favor não utilizes o nosso site nem os nossos serviços."
+        },
+        "1": {
+          "heading": "Utilização do site",
+          "content": "Deves ter pelo menos 18 anos ou consentimento parental para efetuar compras\nÉs responsável por manter a confidencialidade da tua conta\nConcordas em fornecer informações precisas e completas\nNão podes usar o nosso site para fins ilegais ou não autorizados\nReservamo-nos o direito de recusar o serviço a qualquer pessoa por qualquer motivo"
+        },
+        "2": {
+          "heading": "Produtos e preços",
+          "content": "Todos os produtos estão sujeitos a disponibilidade. Reservamo-nos o direito de descontinuar qualquer produto a qualquer momento. Os preços estão sujeitos a alterações sem aviso prévio. Fazemos todos os esforços para apresentar preços corretos, mas podem ocorrer erros. Em caso de erro de preço, reservamo-nos o direito de cancelar quaisquer encomendas feitas ao preço incorreto."
+        },
+        "3": {
+          "heading": "Encomendas e pagamento",
+          "content": "Todas as encomendas estão sujeitas a aceitação e disponibilidade\nO pagamento deve ser recebido antes do processamento da encomenda\nAceitamos os principais cartões de crédito e outros métodos de pagamento apresentados no checkout\nÉs responsável por quaisquer impostos e taxas aplicáveis"
+        },
+        "4": {
+          "heading": "Propriedade intelectual",
+          "content": "Todo o conteúdo deste site, incluindo imagens, textos, logótipos e designs, é propriedade do Mizoke ou dos nossos licenciadores. Não podes reproduzir, distribuir ou usar qualquer conteúdo sem a nossa autorização expressa por escrito. Os personagens e franquias de anime são marcas registadas dos seus respetivos proprietários."
+        },
+        "5": {
+          "heading": "Limitação de responsabilidade",
+          "content": "O Mizoke não será responsável por quaisquer danos indiretos, incidentais, especiais ou consequenciais decorrentes da tua utilização do nosso site ou produtos. A nossa responsabilidade total não excederá o montante que pagaste pelos produtos em questão."
+        },
+        "6": {
+          "heading": "Alterações aos termos",
+          "content": "Reservamo-nos o direito de modificar estes Termos e Condições a qualquer momento. As alterações entram em vigor imediatamente após a publicação. A tua utilização continuada do site após as alterações constitui aceitação dos novos termos."
+        }
+      }
+    },
+    "shipping": {
+      "title": "Política de Envio",
+      "description": "Informações sobre métodos de envio, prazos de entrega e custos.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "Tempo de processamento",
+          "content": "As encomendas são normalmente processadas dentro de 1 a 3 dias úteis. Durante períodos de grande volume ou drops especiais, o processamento pode demorar até 5 dias úteis. Os artigos em pré-encomenda serão enviados de acordo com as suas datas de lançamento estimadas."
+        },
+        "1": {
+          "heading": "Europa (nacional)",
+          "content": "Envio padrão (5-12 dias úteis): 5,99 € ou GRÁTIS em encomendas superiores a 45 €"
+        },
+        "2": {
+          "heading": "Reino Unido",
+          "content": "Envio padrão (5-10 dias úteis): 4,99 £ ou GRÁTIS em encomendas superiores a 40 £"
+        },
+        "3": {
+          "heading": "Canadá",
+          "content": "Envio padrão (7-14 dias úteis): 9,99 CAD ou GRÁTIS em encomendas superiores a 73 CAD"
+        },
+        "4": {
+          "heading": "Austrália",
+          "content": "Envio padrão (10-20 dias úteis): 11 AUD ou GRÁTIS em encomendas superiores a 80 AUD"
+        },
+        "5": {
+          "heading": "Resto do mundo",
+          "content": "Ásia-Pacífico: 14-28 dias úteis. Outras regiões: 14-35 dias úteis. Os custos de envio variam consoante o país e são calculados no checkout com base na tua localização e no peso da encomenda."
+        },
+        "6": {
+          "heading": "Estados Unidos",
+          "content": "O envio para os Estados Unidos está atualmente suspenso devido a alterações tarifárias em curso. Pedimos desculpa pelo incómodo e estamos a acompanhar a situação de perto. Por favor, volta mais tarde ou subscreve a nossa newsletter para seres notificado quando o envio para os EUA for retomado."
+        },
+        "7": {
+          "heading": "Alfândega e impostos",
+          "content": "As encomendas internacionais podem estar sujeitas a taxas alfandegárias, direitos de importação e impostos. Estes encargos são da responsabilidade do destinatário e não estão incluídos nos nossos preços de envio. Não somos responsáveis por atrasos causados pelo despacho alfandegário."
+        },
+        "8": {
+          "heading": "Rastreamento da encomenda",
+          "content": "Assim que a tua encomenda for enviada, receberás um e-mail com as informações de rastreamento. Também podes acompanhar a tua encomenda ao iniciar sessão na tua conta ou ao visitar a nossa página de rastreamento de encomendas. Por favor, aguarda 24 a 48 horas para a atualização das informações de rastreamento."
+        },
+        "9": {
+          "heading": "Restrições de envio",
+          "content": "Alguns produtos podem ter restrições de envio para certas regiões. Se não conseguirmos enviar para a tua localização, serás notificado durante o checkout. Atualmente não fazemos envios para caixas postais em encomendas expresso ou de entrega noturna."
+        },
+        "10": {
+          "heading": "Encomendas perdidas ou danificadas",
+          "content": "Se a tua encomenda se perder ou chegar danificada, contacta-nos dentro de 7 dias após a data de entrega prevista. Trabalharemos com o transportador para resolver o problema e poderemos oferecer uma substituição ou reembolso a nosso critério."
+        }
+      }
+    },
+    "returns": {
+      "title": "Devoluções e Reembolsos",
+      "description": "As nossas políticas de devoluções, trocas e reembolsos.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "Política de devoluções",
+          "content": "Queremos que adores a tua compra! Se não estiveres completamente satisfeito, podes devolver a maioria dos artigos dentro de 30 dias após a entrega para um reembolso total ou troca. Os artigos devem estar sem uso, sem vestir e na embalagem original com todas as etiquetas."
+        },
+        "1": {
+          "heading": "Artigos não devolvíveis",
+          "content": "Artigos de edição limitada ou exclusivos (marcados como \"Venda final\")\nColecionáveis e figuras abertos\nArtigos personalizados ou feitos à medida\nArtigos em saldos ou venda final\nCartões presente"
+        },
+        "2": {
+          "heading": "Como iniciar uma devolução",
+          "content": "Inicia sessão na tua conta e vai ao histórico de encomendas\nSeleciona a encomenda e os artigos que desejas devolver\nEscolhe o motivo da devolução e submete o pedido\nReceberás a morada de devolução e instruções por e-mail\nEmbala os artigos de forma segura e envia a teu cargo com um serviço de rastreamento"
+        },
+        "3": {
+          "heading": "Trocas",
+          "content": "Se desejares trocar um artigo por um tamanho ou cor diferente, indica-o ao iniciar a tua devolução. Sujeito a disponibilidade, enviaremos o artigo de troca assim que recebermos a tua devolução. Se o artigo de troca não estiver disponível, emitiremos um reembolso."
+        },
+        "4": {
+          "heading": "Processamento de reembolsos",
+          "content": "Os reembolsos são processados dentro de 5 a 7 dias úteis após recebermos a tua devolução. O reembolso será creditado no teu método de pagamento original. Por favor, aguarda 3 a 5 dias úteis adicionais para que o reembolso apareça no teu extrato."
+        },
+        "5": {
+          "heading": "Envio de devolução",
+          "content": "Os custos de envio de devolução são da responsabilidade do cliente. Recomendamos usar um serviço de envio com rastreamento para garantir que a tua devolução nos chegue em segurança. Se a devolução se dever a um erro nosso (artigo errado, produto defeituoso), cobriremos os custos de envio da devolução."
+        },
+        "6": {
+          "heading": "Artigos danificados ou defeituosos",
+          "content": "Se receberes um artigo danificado ou defeituoso, contacta-nos dentro de 48 horas após a entrega com fotos do dano. Organizaremos uma devolução gratuita e enviaremos uma substituição ou emitiremos um reembolso total conforme a tua preferência."
+        }
+      }
+    },
+    "accessibility": {
+      "title": "Acessibilidade",
+      "description": "O nosso compromisso em tornar o nosso site acessível a todos.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "O nosso compromisso",
+          "content": "O Mizoke compromete-se a garantir a acessibilidade digital para pessoas de todas as capacidades. Melhoramos continuamente a experiência do utilizador para todos e aplicamos os padrões de acessibilidade relevantes para garantir acesso igualitário a todos os utilizadores."
+        },
+        "1": {
+          "heading": "Padrões de acessibilidade",
+          "content": "Esforçamo-nos por cumprir as Diretrizes de Acessibilidade para Conteúdo Web (WCAG) 2.1 Nível AA. O nosso site é concebido para ser compatível com tecnologias assistivas, incluindo leitores de ecrã, navegação por teclado e ampliadores de ecrã."
+        },
+        "2": {
+          "heading": "Funcionalidades de acessibilidade",
+          "content": "Navegação por teclado em todo o site\nTexto alternativo para imagens\nRácios de contraste de cor suficientes\nTexto redimensionável sem perda de funcionalidade\nNavegação clara e consistente\nEtiquetas de formulário e identificação de erros\nLinks para saltar a navegação\nPontos de referência e etiquetas ARIA"
+        },
+        "3": {
+          "heading": "Esforços contínuos",
+          "content": "Testamos regularmente o nosso site utilizando tecnologias assistivas e ferramentas de avaliação de acessibilidade. A nossa equipa recebe formação sobre as melhores práticas de acessibilidade, e incluímos considerações de acessibilidade nos nossos processos de design e desenvolvimento."
+        },
+        "4": {
+          "heading": "Limitações conhecidas",
+          "content": "Embora nos esforcemos por uma acessibilidade completa, alguns conteúdos ou funcionalidades de terceiros podem não ser totalmente acessíveis. Estamos a trabalhar com os nossos fornecedores para melhorar a acessibilidade em todos os aspetos do nosso site."
+        },
+        "5": {
+          "heading": "Comentários",
+          "content": "Agradecemos os teus comentários sobre a acessibilidade do Mizoke. Se encontrares barreiras de acessibilidade ou tiveres sugestões de melhoria, contacta-nos em accessibility@mizoke.com ou usa a nossa página de Contacto. Levamos todos os comentários a sério e trabalharemos para resolver qualquer problema."
+        },
+        "6": {
+          "heading": "Acesso alternativo",
+          "content": "Se não conseguires aceder a algum conteúdo ou funcionalidade do nosso site, contacta a nossa equipa de apoio ao cliente. Trabalharemos contigo para te fornecer as informações ou o serviço de que precisas através de um método alternativo."
+        }
+      }
+    },
+    "imprint": {
+      "title": "Informações Legais (Impressum)",
+      "description": "Informações legais sobre a empresa que opera este site.",
+      "lastUpdated": "2026-02-26",
+      "sections": {
+        "0": {
+          "heading": "Informações da empresa",
+          "content": "Neo Stage Collective\nDiretor-geral: [A adicionar]\nE-mail: contact@mizoke.com\nSite: https://www.mizoke.com"
+        },
+        "1": {
+          "heading": "Morada",
+          "content": "[Morada da empresa a adicionar antes do lançamento]"
+        },
+        "2": {
+          "heading": "Número de identificação fiscal",
+          "content": "NIF/IVA: [A adicionar antes do lançamento]"
+        },
+        "3": {
+          "heading": "Responsável pelo conteúdo",
+          "content": "Responsável nos termos do § 55 n.º 2 RStV: [A adicionar]"
+        },
+        "4": {
+          "heading": "Resolução de litígios online da UE",
+          "content": "A Comissão Europeia disponibiliza uma plataforma para a resolução de litígios em linha (RLL): https://ec.europa.eu/consumers/odr. O nosso endereço de e-mail encontra-se acima. Não estamos dispostos nem obrigados a participar em procedimentos de resolução de litígios perante um organismo de arbitragem de consumidores."
+        },
+        "5": {
+          "heading": "Responsabilidade pelo conteúdo",
+          "content": "Como prestador de serviços, somos responsáveis pelo nosso próprio conteúdo nestas páginas de acordo com as leis gerais (§ 7 n.º 1 TMG). De acordo com os §§ 8 a 10 TMG, no entanto, não somos obrigados a monitorizar informações de terceiros transmitidas ou armazenadas nem a investigar circunstâncias que indiquem atividade ilegal."
+        },
+        "6": {
+          "heading": "Responsabilidade por links",
+          "content": "O nosso site contém links para sites externos de terceiros sobre cujo conteúdo não temos qualquer influência. Por conseguinte, não podemos aceitar qualquer responsabilidade por este conteúdo externo. O respetivo fornecedor ou operador das páginas ligadas é sempre responsável pelo conteúdo das páginas ligadas."
+        },
+        "7": {
+          "heading": "Direitos de autor",
+          "content": "O conteúdo e as obras criadas pelos operadores do site nestas páginas estão sujeitos à lei de direitos de autor. A duplicação, processamento, distribuição e qualquer tipo de utilização para além dos limites da lei de direitos de autor requerem o consentimento por escrito do respetivo autor ou criador. Os personagens e franquias de anime são marcas registadas dos seus respetivos proprietários."
+        }
+      }
+    }
+  },
   "sizeGuide": {
     "title": "Guia de tamanhos {type}",
     "allMeasurementsIn": "Todas as medidas em",
@@ -508,7 +721,41 @@
     "hips": "Anca",
     "hipsDescription": "Mede à volta da parte mais larga da anca",
     "length": "Comprimento",
-    "lengthDescription": "Mede do ombro até à bainha"
+    "lengthDescription": "Mede do ombro até à bainha",
+    "columns": {
+      "size": "Tamanho",
+      "chest": "Peito",
+      "length": "Comprimento",
+      "shoulder": "Ombro",
+      "sleeve": "Manga",
+      "waist": "Cintura",
+      "hips": "Anca",
+      "inseam": "Entreperna"
+    },
+    "productTypes": {
+      "tshirt": "T-Shirt",
+      "hoodie": "Hoodie",
+      "pants": "Calças",
+      "jacket": "Casaco",
+      "shorts": "Calções",
+      "dress": "Vestido",
+      "default": "Roupa"
+    },
+    "noteKeys": {
+      "measurementsInCm": "As medidas estão em centímetros",
+      "sizeUpForRelaxed": "Para um ajuste mais folgado, escolhe um tamanho acima",
+      "chestTolerance": "As medidas do peito incluem uma tolerância de 2-3 cm",
+      "hoodiesOversized": "Os hoodies têm um ajuste oversized",
+      "lengthFromShoulder": "O comprimento é medido do ombro até à bainha",
+      "waistNatural": "A cintura é medida na linha de cintura natural",
+      "inseamCrotchToAnkle": "A entreperna é medida desde a virilha até ao tornozelo",
+      "allowLayering": "Deixa espaço para camadas de roupa",
+      "jacketFromCollar": "O comprimento do casaco é medido do colarinho até à bainha",
+      "lengthWaistToHem": "Comprimento medido desde a cintura até à bainha",
+      "lengthShoulderToHem": "Comprimento medido desde o ombro até à bainha",
+      "generalGuide": "Este é um guia de tamanhos geral",
+      "individualVariation": "Os produtos individuais podem variar ligeiramente"
+    }
   },
   "reviews": {
     "title": "Avaliações de clientes",
@@ -627,7 +874,7 @@
   "home": {
     "chooseYour": "ESCOLHE O TEU",
     "world": "MUNDO",
-    "heroTagline": "Drops, bundles e colecionáveis — toca num universo.",
+    "heroTagline": "Merch anime personalizado feito para ti. Escolhe o teu universo e torna-o pessoal.",
     "newArrivals": "NOVIDADES",
     "dropRunway": "DROPS",
     "bestSellers": "MAIS VENDIDOS",
@@ -762,26 +1009,6 @@
     "supportDescription": "Não encontras a resposta? A nossa equipa de suporte está aqui para ajudar.",
     "contactSupport": "Contacte-nos"
   },
-  "gacha": {
-    "heroTitle1": "CAIXAS",
-    "heroTitle2": "MISTERIOSAS",
-    "heroSubtitle": "Tenta a sorte e descobre colecionáveis raros. Cada caixa temática contém artigos da sua coleção exclusiva.",
-    "howItWorks": "Como funciona",
-    "howItWorksSubtitle": "Um processo simples para descobrir o teu artigo misterioso",
-    "step1Title": "1. Escolhe uma caixa",
-    "step1Desc": "Explora as caixas misteriosas temáticas e verifica o conteúdo e as probabilidades.",
-    "step2Title": "2. Obtém o teu código",
-    "step2Desc": "Após a compra, receberás um código de resgate único.",
-    "step3Title": "3. Revelar",
-    "step3Desc": "Usa o teu código para revelar o teu artigo com uma animação emocionante.",
-    "step4Title": "4. Resgatar e Enviar",
-    "step4Desc": "Introduz o teu endereço de envio e nós enviamos o teu prémio.",
-    "giftTitle": "Oferecer uma caixa misteriosa",
-    "giftDesc": "Partilha a emoção! Podes partilhar o teu código de resgate com amigos. Eles podem revelar o mistério e resgatar o prémio eles próprios.",
-    "noBoxesTitle": "Sem caixas misteriosas disponíveis",
-    "noBoxesDesc": "As caixas misteriosas não estão disponíveis de momento. Volta em breve!",
-    "disclaimer": "As caixas misteriosas contêm artigos aleatórios da sua coleção temática. Todas as probabilidades são apresentadas para transparência. Os resultados são determinados por um algoritmo aleatório criptograficamente seguro no momento da revelação. Cada caixa tem garantidamente um produto. Apenas para maiores de 18 anos. Joga com responsabilidade."
-  },
   "cookies": {
     "banner": "Utilizamos cookies para melhorar a sua experiência. Pode personalizar as suas preferências abaixo.",
     "acceptAll": "Aceitar tudo",
@@ -798,5 +1025,45 @@
     "marketingDesc": "Utilizados para apresentar anúncios relevantes e acompanhar o desempenho das campanhas.",
     "marketingCookies": "Pixels de marketing Shopify (rastreio de conversões)",
     "privacyLink": "Política de privacidade"
+  },
+  "shopByType": {
+    "breadcrumbHome": "Início",
+    "breadcrumbShop": "Loja",
+    "hubTitle": "Comprar por Tipo",
+    "hubSubtitle": "Explora produtos de todos os universos anime, organizados por categoria. Encontra o teu estilo favorito de todos os mundos de uma só vez.",
+    "hubMetaTitle": "Comprar por Tipo — Todas as Categorias | Mizoke",
+    "hubMetaDescription": "Merchandising anime por categoria. Hoodies, t-shirts, placas com nome, porta-chaves e ímanes de todos os universos anime.",
+    "hub": {
+      "eyebrow": "Comprar Merch Anime",
+      "title": "Por Categoria",
+      "subtitle": "Merchandising anime personalizado de cada universo. Hoodies, t-shirts, placas com nome, porta-chaves e ímanes à medida de One Piece, Demon Slayer, Dragon Ball, Jujutsu Kaisen e mais — envio mundial.",
+      "items": "artigos",
+      "enter": "Entrar",
+      "crosslink": "Preferes comprar por universo anime?"
+    },
+    "metaTitle": "{type} — Todos os Universos Anime | Mizoke",
+    "metaDescription": "Explora {type} de todos os universos anime num só lugar. Designs personalizados de One Piece, Demon Slayer, Attack on Titan e mais.",
+    "types": {
+      "hoodies": {
+        "title": "Hoodies",
+        "subtitle": "Hoodies anime premium de cada universo"
+      },
+      "tshirts": {
+        "title": "T-Shirts",
+        "subtitle": "T-shirts anime personalizadas de todos os mundos"
+      },
+      "name-signs": {
+        "title": "Placas com Nome",
+        "subtitle": "Placas personalizadas inspiradas no teu anime favorito"
+      },
+      "keychains": {
+        "title": "Porta-chaves",
+        "subtitle": "Porta-chaves anime de cada universo"
+      },
+      "magnets": {
+        "title": "Ímanes",
+        "subtitle": "Ímanes anime colecionáveis de todos os mundos"
+      }
+    }
   }
 }

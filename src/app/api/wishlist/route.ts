@@ -92,21 +92,27 @@ export async function GET(request: NextRequest) {
     const metafieldValue = response.customer?.metafield?.value
 
     if (!metafieldValue) {
-      return NextResponse.json({ items: [] })
+      return NextResponse.json({ items: [] }, {
+        headers: { 'Cache-Control': 'no-store' },
+      })
     }
 
     try {
       const items: WishlistItem[] = JSON.parse(metafieldValue)
-      return NextResponse.json({ items })
+      return NextResponse.json({ items }, {
+        headers: { 'Cache-Control': 'no-store' },
+      })
     } catch {
       // Invalid JSON in metafield, return empty
-      return NextResponse.json({ items: [] })
+      return NextResponse.json({ items: [] }, {
+        headers: { 'Cache-Control': 'no-store' },
+      })
     }
   } catch (error) {
     console.error('Failed to fetch wishlist:', error)
     return NextResponse.json(
       { error: 'Failed to fetch wishlist' },
-      { status: 500 }
+      { status: 500, headers: { 'Cache-Control': 'no-store' } }
     )
   }
 }

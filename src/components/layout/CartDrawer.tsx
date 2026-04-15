@@ -11,6 +11,7 @@ import { formatPrice } from '@/lib/utils/formatPrice'
 import { useUIStore } from '@/stores/uiStore'
 import { useCartStore } from '@/stores/cartStore'
 import { useWishlistStore } from '@/stores/wishlistStore'
+import { useToastStore } from '@/stores/toastStore'
 import { Button } from '@/components/ui/Button'
 import { CartUpsells } from '@/components/cart/CartUpsells'
 import { DiscountCodeInput } from '@/components/cart/DiscountCodeInput'
@@ -21,9 +22,10 @@ export function CartDrawer() {
   const tProduct = useTranslations('product')
   const { isCartOpen, closeCart } = useUIStore()
   const tDiscount = useTranslations('discount')
-  const { lines, totalQuantity, subtotal, total, discountAmount, checkoutUrl, updateItem, removeItem, loadingItems } =
+  const { lines, totalQuantity, subtotal, total, discountAmount, checkoutUrl, updateItem, removeItem, loadingItems, error } =
     useCartStore()
   const { addItem: addToWishlist, isInWishlist } = useWishlistStore()
+  const addToast = useToastStore((state) => state.add)
 
   const handleSaveForLater = (line: typeof lines[0]) => {
     // Add to wishlist
@@ -39,6 +41,13 @@ export function CartDrawer() {
     // Remove from cart
     removeItem(line.id)
   }
+
+  // Show translated toast on cart errors
+  useEffect(() => {
+    if (error) {
+      addToast({ type: 'error', message: t('failedToUpdate') })
+    }
+  }, [error, addToast, t])
 
   const drawerRef = useRef<HTMLDivElement>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)

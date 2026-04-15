@@ -13,13 +13,13 @@ interface SizeGuideModalProps {
 
 export function SizeGuideModal({ isOpen, onClose, sizeGuide }: SizeGuideModalProps) {
   const t = useTranslations('sizeGuide')
-  const columnKeys = sizeGuide.columns.map(col => col.toLowerCase())
+  const columnKeys = sizeGuide.columns
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={t('title', { type: sizeGuide.productType })}
+      title={t('title', { type: t(`productTypes.${sizeGuide.productType}`) })}
       size="lg"
     >
       <div className="space-y-4">
@@ -33,15 +33,15 @@ export function SizeGuideModal({ isOpen, onClose, sizeGuide }: SizeGuideModalPro
           <table className="w-full min-w-[400px]">
             <thead>
               <tr className="border-b border-border-subtle">
-                {sizeGuide.columns.map((column) => (
+                {sizeGuide.columns.map((colKey) => (
                   <th
-                    key={column}
+                    key={colKey}
                     className={cn(
                       'px-3 py-2 text-left text-sm font-medium text-white/80',
-                      column === 'Size' && 'w-16'
+                      colKey === 'size' && 'w-16'
                     )}
                   >
-                    {column}
+                    {t(`columns.${colKey}`)}
                   </th>
                 ))}
               </tr>
@@ -63,7 +63,7 @@ export function SizeGuideModal({ isOpen, onClose, sizeGuide }: SizeGuideModalPro
                         key === 'size' ? 'font-medium text-neon-cyan' : 'text-white/70'
                       )}
                     >
-                      {row[key] || '-'}
+                      {row[key] ?? '-'}
                     </td>
                   ))}
                 </tr>
@@ -77,10 +77,10 @@ export function SizeGuideModal({ isOpen, onClose, sizeGuide }: SizeGuideModalPro
           <div className="pt-4 border-t border-border-subtle">
             <p className="text-sm font-medium text-white/80 mb-2">{t('notes')}</p>
             <ul className="space-y-1">
-              {sizeGuide.notes.map((note, index) => (
+              {sizeGuide.notes.map((noteKey, index) => (
                 <li key={index} className="text-sm text-white/60 flex items-start gap-2">
                   <span className="text-neon-cyan mt-1">•</span>
-                  {note}
+                  {t(`noteKeys.${noteKey}`)}
                 </li>
               ))}
             </ul>

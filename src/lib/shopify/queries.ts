@@ -57,6 +57,20 @@ export const GET_UNIVERSES = gql`
             edges {
               node {
                 id
+                variants(first: 100) {
+                  edges {
+                    node {
+                      id
+                      image {
+                        url
+                      }
+                      selectedOptions {
+                        name
+                        value
+                      }
+                    }
+                  }
+                }
               }
             }
           }
@@ -506,6 +520,31 @@ export const GET_ALL_PRODUCTS = gql`
           ...ProductFields
           universe: metafield(namespace: "custom", key: "universe") {
             value
+          }
+          variants(first: 100) {
+            edges {
+              node {
+                id
+                title
+                availableForSale
+                price {
+                  amount
+                  currencyCode
+                }
+                compareAtPrice {
+                  amount
+                  currencyCode
+                }
+                selectedOptions {
+                  name
+                  value
+                }
+                image {
+                  url
+                  altText
+                }
+              }
+            }
           }
         }
       }

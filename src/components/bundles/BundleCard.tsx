@@ -7,6 +7,7 @@ import { motion } from 'framer-motion'
 import { Plus, ShoppingCart, Check, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { useCartStore } from '@/stores/cartStore'
+import { useToastStore } from '@/stores/toastStore'
 import { getFirstAvailableVariant } from '@/lib/shopify/utils'
 import { Badge } from '@/components/ui/Badge'
 import type { BundleResolved } from '@/types/bundle'
@@ -17,7 +18,9 @@ interface BundleCardProps {
 
 export function BundleCard({ bundle }: BundleCardProps) {
   const t = useTranslations('bundles')
+  const tCart = useTranslations('cart')
   const addBundle = useCartStore((state) => state.addBundle)
+  const addToast = useToastStore((state) => state.add)
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
 
   const { config, products, originalTotal, bundleTotal, currencyCode, allAvailable } = bundle
@@ -46,9 +49,11 @@ export function BundleCard({ bundle }: BundleCardProps) {
 
     if (result.success) {
       setStatus('success')
+      addToast({ type: 'success', message: tCart('itemAdded') })
       setTimeout(() => setStatus('idle'), 2000)
     } else {
       setStatus('error')
+      addToast({ type: 'error', message: tCart('failedToAddBundle') })
       setTimeout(() => setStatus('idle'), 3000)
     }
   }

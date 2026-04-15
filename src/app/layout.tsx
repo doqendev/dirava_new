@@ -11,6 +11,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { CartDrawer } from '@/components/layout/CartDrawer'
+import { MobileMenu } from '@/components/layout/MobileMenu'
 import { SearchModal } from '@/components/search/SearchModal'
 import { QuickViewModal } from '@/components/product/QuickViewModal'
 import { CookieConsent } from '@/components/layout/CookieConsent'
@@ -138,6 +139,7 @@ export default async function RootLayout({
               <Footer />
               <BottomNav />
               <CartDrawer />
+              <MobileMenu />
               <SearchModal />
               <QuickViewModal />
               <CookieConsent />

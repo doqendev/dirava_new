@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation'
+import { redirect, notFound } from 'next/navigation'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_PRODUCT } from '@/lib/shopify/queries'
 import type { ShopifyProduct, ShopifyMetafield } from '@/types/shopify'
@@ -63,7 +63,7 @@ export default async function ProductPage({ params }: Props) {
   const product = await getProduct(handle)
 
   if (!product) {
-    redirect('/404')
+    notFound()
   }
 
   // Get universe from product metafields or collections

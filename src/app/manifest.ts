@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Mizoke - Your Anime Spirit',
     short_name: 'Mizoke',
-    description: 'Premium anime merchandise, collectibles, and mystery boxes',
+    description: 'Premium anime merchandise and collectibles',
     start_url: '/',
     display: 'standalone',
     background_color: '#0a0a12',

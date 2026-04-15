@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { cn } from '@/lib/utils/cn'
+import { Particles, BorderPulse, CornerBrackets } from '@/components/ui/neon'
 import type { UniverseColorName } from '@/types/universe'
 
 interface UniverseCardProps {
@@ -40,63 +41,6 @@ function getCardImage(slug: string): string | null {
     }
   }
   return null
-}
-
-// Particle component for floating effects
-function Particles({ color, count = 6 }: { color: string; count?: number }) {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {Array.from({ length: count }).map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-1 h-1 rounded-full"
-          style={{
-            backgroundColor: color,
-            boxShadow: `0 0 6px 2px ${color}`,
-            left: `${15 + Math.random() * 70}%`,
-            top: `${10 + Math.random() * 80}%`,
-          }}
-          animate={{
-            y: [0, -20, 0],
-            x: [0, Math.random() > 0.5 ? 10 : -10, 0],
-            opacity: [0, 1, 0],
-            scale: [0, 1, 0],
-          }}
-          transition={{
-            duration: 2 + Math.random() * 2,
-            repeat: Infinity,
-            delay: i * 0.4,
-            ease: 'easeInOut',
-          }}
-        />
-      ))}
-    </div>
-  )
-}
-
-// Border pulse effect component
-function BorderPulse({ color }: { color: string }) {
-  return (
-    <motion.div
-      className="absolute inset-0 rounded-xl pointer-events-none"
-      style={{
-        border: `2px solid ${color}`,
-      }}
-      animate={{
-        opacity: [0.3, 0.8, 0.3],
-        boxShadow: [
-          `0 0 5px ${color}40, inset 0 0 5px ${color}20`,
-          `0 0 20px ${color}60, inset 0 0 10px ${color}30`,
-          `0 0 5px ${color}40, inset 0 0 5px ${color}20`,
-        ],
-      }}
-      transition={{
-        duration: 2,
-        repeat: Infinity,
-        ease: 'easeInOut',
-      }}
-    />
-  )
 }
 
 export function UniverseCard({
@@ -225,60 +169,13 @@ export function UniverseCard({
             </div>
 
             {/* Particle effects */}
-            <Particles color={currentColor} count={8} />
+            <Particles color={currentColor} amplitude="intense" />
 
             {/* Border pulse effect */}
-            <BorderPulse color={currentColor} />
+            <BorderPulse color={currentColor} amplitude="intense" />
 
             {/* Corner energy effects */}
-            <motion.div
-              className="absolute top-2 left-2 w-3 h-3"
-              style={{
-                borderLeft: `2px solid ${currentColor}`,
-                borderTop: `2px solid ${currentColor}`,
-                boxShadow: `0 0 8px ${currentColor}`,
-              }}
-              animate={{
-                opacity: [0.5, 1, 0.5],
-              }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            />
-            <motion.div
-              className="absolute top-2 right-2 w-3 h-3"
-              style={{
-                borderRight: `2px solid ${currentColor}`,
-                borderTop: `2px solid ${currentColor}`,
-                boxShadow: `0 0 8px ${currentColor}`,
-              }}
-              animate={{
-                opacity: [0.5, 1, 0.5],
-              }}
-              transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
-            />
-            <motion.div
-              className="absolute bottom-2 left-2 w-3 h-3"
-              style={{
-                borderLeft: `2px solid ${currentColor}`,
-                borderBottom: `2px solid ${currentColor}`,
-                boxShadow: `0 0 8px ${currentColor}`,
-              }}
-              animate={{
-                opacity: [0.5, 1, 0.5],
-              }}
-              transition={{ duration: 1.5, repeat: Infinity, delay: 1 }}
-            />
-            <motion.div
-              className="absolute bottom-2 right-2 w-3 h-3"
-              style={{
-                borderRight: `2px solid ${currentColor}`,
-                borderBottom: `2px solid ${currentColor}`,
-                boxShadow: `0 0 8px ${currentColor}`,
-              }}
-              animate={{
-                opacity: [0.5, 1, 0.5],
-              }}
-              transition={{ duration: 1.5, repeat: Infinity, delay: 1.5 }}
-            />
+            <CornerBrackets color={currentColor} size="md" />
           </div>
         </motion.div>
       </Link>

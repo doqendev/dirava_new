@@ -125,11 +125,4 @@ test.describe('Navigation and Routing', () => {
     await expect(form).toBeVisible()
   })
 
-  test('gacha page is accessible', async ({ page }) => {
-    await page.goto('/gacha')
-    await page.waitForLoadState('networkidle')
-
-    expect(page.url()).toContain('/gacha')
-    await expect(page.locator('body')).toBeVisible()
-  })
 })

@@ -18,6 +18,7 @@ export type SortOption =
 
 export interface FilterState {
   productTypes: ProductTypeFilter[]
+  universes: string[]
   priceMin: number
   priceMax: number
   sort: SortOption
@@ -45,6 +46,7 @@ export const SORT_OPTIONS: Array<{ value: SortOption; label: string }> = [
 
 export const DEFAULT_FILTERS: FilterState = {
   productTypes: [],
+  universes: [],
   priceMin: 0,
   priceMax: 1000,
   sort: 'featured',
@@ -64,12 +66,20 @@ export function parseFiltersFromParams(
       )
     : []
 
+  const universesRaw = searchParams.universes
+  const universes = universesRaw
+    ? (typeof universesRaw === 'string' ? universesRaw.split(',') : universesRaw).filter(
+        (u): u is string => typeof u === 'string' && u.length > 0
+      )
+    : []
+
   const priceMin = parseInt(searchParams.priceMin as string) || 0
   const priceMax = parseInt(searchParams.priceMax as string) || 1000
   const sort = (searchParams.sort as SortOption) || 'featured'
 
   return {
     productTypes,
+    universes,
     priceMin,
     priceMax,
     sort: SORT_OPTIONS.some((opt) => opt.value === sort) ? sort : 'featured',
@@ -84,6 +94,9 @@ export function filtersToParams(filters: FilterState): string {
 
   if (filters.productTypes.length > 0) {
     params.set('types', filters.productTypes.join(','))
+  }
+  if (filters.universes.length > 0) {
+    params.set('universes', filters.universes.join(','))
   }
   if (filters.priceMin > 0) {
     params.set('priceMin', String(filters.priceMin))
@@ -142,6 +155,7 @@ export function filterProducts<
     price: { amount: string }
     productType?: string
     tags?: string[]
+    universe?: string | null
   }
 >(products: T[], filters: FilterState): T[] {
   return products.filter((product) => {
@@ -151,6 +165,13 @@ export function filterProducts<
         matchesProductType(product.productType, product.tags, filterType)
       )
       if (!matchesAnyType) return false
+    }
+
+    // Filter by universe
+    if (filters.universes.length > 0) {
+      if (!product.universe || !filters.universes.includes(product.universe)) {
+        return false
+      }
     }
 
     // Filter by price range
@@ -244,6 +265,7 @@ export function calculatePriceRange<T extends { price: { amount: string } }>(
 export function hasActiveFilters(filters: FilterState): boolean {
   return (
     filters.productTypes.length > 0 ||
+    filters.universes.length > 0 ||
     filters.priceMin > 0 ||
     filters.priceMax < 1000
   )

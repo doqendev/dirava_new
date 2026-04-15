@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { formatPrice } from '@/lib/utils/formatPrice'
 
@@ -121,7 +121,7 @@ export function DropRunway({
               transition={{ duration: 0.3, delay: index * 0.05 }}
               className="flex-shrink-0 w-40 snap-start"
             >
-              <ProductCard product={product} t={t} />
+              <ProductCard product={product} />
             </motion.div>
           ))}
         </div>
@@ -142,8 +142,7 @@ export function DropRunway({
 }
 
 // Product Card Component
-function ProductCard({ product, t }: { product: DropProduct; t: ReturnType<typeof useTranslations> }) {
-  const [isHovered, setIsHovered] = useState(false)
+function ProductCard({ product }: { product: DropProduct }) {
   const tProduct = useTranslations('product')
 
   // Build the product URL - use universe path if available, otherwise fallback to /products
@@ -162,8 +161,6 @@ function ProductCard({ product, t }: { product: DropProduct; t: ReturnType<typeo
         'hover:border-neon-cyan/50 hover:shadow-glow-sm-cyan',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan'
       )}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image */}
       <div className="relative aspect-square bg-bg-secondary">
@@ -180,31 +177,6 @@ function ProductCard({ product, t }: { product: DropProduct; t: ReturnType<typeo
             {tProduct('noImage')}
           </div>
         )}
-
-        {/* Quick add button */}
-        <motion.button
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{
-            opacity: isHovered ? 1 : 0,
-            scale: isHovered ? 1 : 0.8,
-          }}
-          transition={{ duration: 0.15 }}
-          className={cn(
-            'absolute top-2 right-2',
-            'px-2 py-1 rounded-md',
-            'bg-neon-cyan text-black',
-            'text-[10px] font-bold',
-            'flex items-center gap-1',
-            'hover:bg-neon-cyan/90'
-          )}
-          onClick={(e) => {
-            e.preventDefault()
-            // TODO: Quick add to cart functionality
-          }}
-        >
-          <Plus className="w-3 h-3" />
-          {t('add')}
-        </motion.button>
 
         {/* Holographic overlay */}
         <div className="absolute inset-0 bg-holographic opacity-20 pointer-events-none" />

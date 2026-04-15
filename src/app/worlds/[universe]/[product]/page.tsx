@@ -281,16 +281,6 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         <ProductLifestyleGallery productHandle={product.handle} />
       </div>
 
-      {/* Reviews */}
-      <div id="reviews" className="px-4 py-12 max-w-7xl mx-auto border-t border-border-subtle">
-        <ReviewList productHandle={product.handle} />
-      </div>
-
-      {/* Product FAQ */}
-      <div className="px-4 py-12 max-w-7xl mx-auto border-t border-border-subtle">
-        <ProductFAQ productHandle={product.handle} />
-      </div>
-
       {/* You Might Also Like */}
       {recommendations.length > 0 && (
         <div className="px-4 py-12 max-w-7xl mx-auto">
@@ -301,6 +291,16 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       {/* Recently Viewed */}
       <div className="px-4 py-12 max-w-7xl mx-auto border-t border-border-subtle">
         <RecentlyViewed excludeProductId={product.id} maxItems={4} />
+      </div>
+
+      {/* Reviews */}
+      <div id="reviews" className="px-4 py-12 max-w-7xl mx-auto border-t border-border-subtle">
+        <ReviewList productHandle={product.handle} />
+      </div>
+
+      {/* Product FAQ */}
+      <div className="px-4 py-12 max-w-7xl mx-auto border-t border-border-subtle">
+        <ProductFAQ productHandle={product.handle} />
       </div>
     </>
   )

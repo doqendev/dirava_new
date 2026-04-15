@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import { Shield, Loader2, AlertCircle, Check, X, Star, Image as ImageIcon, ExternalLink } from 'lucide-react'
+import { Shield, Loader2, AlertCircle, Check, X, Star, Image as ImageIcon, ExternalLink, Pencil, Save } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { StarRating } from '@/components/product/StarRating'
 import type { AdminReview } from '@/types/reviews'
@@ -34,6 +34,13 @@ export default function AdminReviewsContent() {
   const [loadingActions, setLoadingActions] = useState<Record<string, boolean>>({})
   const [hasFetched, setHasFetched] = useState(false)
   const [expandedImages, setExpandedImages] = useState<string | null>(null)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editForm, setEditForm] = useState<{ authorName: string; rating: number; title: string; content: string }>({
+    authorName: '',
+    rating: 5,
+    title: '',
+    content: '',
+  })
 
   // Persist admin secret to sessionStorage (not localStorage — avoid persisting across sessions)
   useEffect(() => {
@@ -76,6 +83,59 @@ export default function AdminReviewsContent() {
       setIsLoading(false)
     }
   }, [adminSecret, authHeaders])
+
+  const startEditing = (review: AdminReview) => {
+    setEditingId(review.id)
+    setEditForm({
+      authorName: review.author,
+      rating: review.rating,
+      title: review.title || '',
+      content: review.content,
+    })
+  }
+
+  const cancelEditing = () => {
+    setEditingId(null)
+  }
+
+  const saveEdit = async (reviewId: string) => {
+    setLoadingActions(prev => ({ ...prev, [reviewId]: true }))
+
+    try {
+      const encodedId = encodeURIComponent(reviewId)
+      const response = await fetch(`/api/admin/reviews/${encodedId}`, {
+        method: 'PATCH',
+        headers: authHeaders(),
+        body: JSON.stringify({
+          authorName: editForm.authorName,
+          rating: editForm.rating,
+          title: editForm.title,
+          content: editForm.content,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok || !data.success) {
+        setError(data.error || 'Failed to save review')
+        return
+      }
+
+      // Optimistic update
+      setReviews(prev =>
+        prev.map(r =>
+          r.id === reviewId
+            ? { ...r, author: editForm.authorName, rating: editForm.rating, title: editForm.title || undefined, content: editForm.content }
+            : r
+        )
+      )
+      setEditingId(null)
+    } catch {
+      setError('Failed to save review')
+    } finally {
+      setLoadingActions(prev => ({ ...prev, [reviewId]: false }))
+    }
+  }
 
   const handleStatusUpdate = async (reviewId: string, newStatus: 'approved' | 'rejected') => {
     setLoadingActions(prev => ({ ...prev, [reviewId]: true }))
@@ -248,13 +308,60 @@ export default function AdminReviewsContent() {
                       )}
                     </div>
 
-                    {/* Title + Content */}
-                    {review.title && (
-                      <h3 className="text-white font-medium mb-1">{review.title}</h3>
+                    {/* Title + Content (or edit form) */}
+                    {editingId === review.id ? (
+                      <div className="space-y-3 mb-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs text-white/50 mb-1">Author Name</label>
+                            <input
+                              type="text"
+                              value={editForm.authorName}
+                              onChange={(e) => setEditForm(f => ({ ...f, authorName: e.target.value }))}
+                              className="w-full px-3 py-2 rounded-lg bg-bg-secondary border border-border-subtle text-white text-sm focus:outline-none focus:border-neon-purple"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-white/50 mb-1">Rating (1-5)</label>
+                            <input
+                              type="number"
+                              min={1}
+                              max={5}
+                              value={editForm.rating}
+                              onChange={(e) => setEditForm(f => ({ ...f, rating: Math.max(1, Math.min(5, parseInt(e.target.value) || 1)) }))}
+                              className="w-full px-3 py-2 rounded-lg bg-bg-secondary border border-border-subtle text-white text-sm focus:outline-none focus:border-neon-purple"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-white/50 mb-1">Title (optional)</label>
+                          <input
+                            type="text"
+                            value={editForm.title}
+                            onChange={(e) => setEditForm(f => ({ ...f, title: e.target.value }))}
+                            className="w-full px-3 py-2 rounded-lg bg-bg-secondary border border-border-subtle text-white text-sm focus:outline-none focus:border-neon-purple"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-white/50 mb-1">Content</label>
+                          <textarea
+                            value={editForm.content}
+                            onChange={(e) => setEditForm(f => ({ ...f, content: e.target.value }))}
+                            rows={3}
+                            className="w-full px-3 py-2 rounded-lg bg-bg-secondary border border-border-subtle text-white text-sm focus:outline-none focus:border-neon-purple resize-y"
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        {review.title && (
+                          <h3 className="text-white font-medium mb-1">{review.title}</h3>
+                        )}
+                        <p className="text-white/70 text-sm leading-relaxed mb-3">
+                          {review.content}
+                        </p>
+                      </>
                     )}
-                    <p className="text-white/70 text-sm leading-relaxed mb-3">
-                      {review.content}
-                    </p>
 
                     {/* Images */}
                     {review.images && review.images.length > 0 && (
@@ -298,43 +405,92 @@ export default function AdminReviewsContent() {
                       </span>
 
                       <div className="flex items-center gap-2">
-                        {review.status !== 'approved' && (
-                          <button
-                            onClick={() => handleStatusUpdate(review.id, 'approved')}
-                            disabled={!!loadingActions[review.id]}
-                            className={cn(
-                              'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
-                              'bg-neon-green/10 text-neon-green border border-neon-green/30',
-                              'hover:bg-neon-green/20',
-                              'disabled:opacity-50 disabled:cursor-not-allowed'
+                        {editingId === review.id ? (
+                          <>
+                            <button
+                              onClick={() => saveEdit(review.id)}
+                              disabled={!!loadingActions[review.id]}
+                              className={cn(
+                                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
+                                'bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/30',
+                                'hover:bg-neon-cyan/20',
+                                'disabled:opacity-50 disabled:cursor-not-allowed'
+                              )}
+                            >
+                              {loadingActions[review.id] ? (
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              ) : (
+                                <Save className="w-3.5 h-3.5" />
+                              )}
+                              Save
+                            </button>
+                            <button
+                              onClick={cancelEditing}
+                              disabled={!!loadingActions[review.id]}
+                              className={cn(
+                                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
+                                'bg-white/5 text-white/60 border border-white/10',
+                                'hover:bg-white/10',
+                                'disabled:opacity-50 disabled:cursor-not-allowed'
+                              )}
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => startEditing(review)}
+                              disabled={!!loadingActions[review.id]}
+                              className={cn(
+                                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
+                                'bg-neon-purple/10 text-neon-purple border border-neon-purple/30',
+                                'hover:bg-neon-purple/20',
+                                'disabled:opacity-50 disabled:cursor-not-allowed'
+                              )}
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                              Edit
+                            </button>
+                            {review.status !== 'approved' && (
+                              <button
+                                onClick={() => handleStatusUpdate(review.id, 'approved')}
+                                disabled={!!loadingActions[review.id]}
+                                className={cn(
+                                  'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
+                                  'bg-neon-green/10 text-neon-green border border-neon-green/30',
+                                  'hover:bg-neon-green/20',
+                                  'disabled:opacity-50 disabled:cursor-not-allowed'
+                                )}
+                              >
+                                {loadingActions[review.id] ? (
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                ) : (
+                                  <Check className="w-3.5 h-3.5" />
+                                )}
+                                Approve
+                              </button>
                             )}
-                          >
-                            {loadingActions[review.id] ? (
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                            ) : (
-                              <Check className="w-3.5 h-3.5" />
+                            {review.status !== 'rejected' && (
+                              <button
+                                onClick={() => handleStatusUpdate(review.id, 'rejected')}
+                                disabled={!!loadingActions[review.id]}
+                                className={cn(
+                                  'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
+                                  'bg-red-500/10 text-red-400 border border-red-500/30',
+                                  'hover:bg-red-500/20',
+                                  'disabled:opacity-50 disabled:cursor-not-allowed'
+                                )}
+                              >
+                                {loadingActions[review.id] ? (
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                ) : (
+                                  <X className="w-3.5 h-3.5" />
+                                )}
+                                Reject
+                              </button>
                             )}
-                            Approve
-                          </button>
-                        )}
-                        {review.status !== 'rejected' && (
-                          <button
-                            onClick={() => handleStatusUpdate(review.id, 'rejected')}
-                            disabled={!!loadingActions[review.id]}
-                            className={cn(
-                              'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
-                              'bg-red-500/10 text-red-400 border border-red-500/30',
-                              'hover:bg-red-500/20',
-                              'disabled:opacity-50 disabled:cursor-not-allowed'
-                            )}
-                          >
-                            {loadingActions[review.id] ? (
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                            ) : (
-                              <X className="w-3.5 h-3.5" />
-                            )}
-                            Reject
-                          </button>
+                          </>
                         )}
                       </div>
                     </div>

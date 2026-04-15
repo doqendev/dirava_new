@@ -4,22 +4,25 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
-import { Instagram, Twitter, Music2, MessageCircle, Send, CheckCircle, type LucideIcon } from 'lucide-react'
+import { Send, CheckCircle } from 'lucide-react'
+import { FaInstagram, FaXTwitter, FaTiktok, FaDiscord, FaCcVisa, FaCcMastercard, FaCcPaypal, FaApplePay, FaGooglePay } from 'react-icons/fa6'
+import type { IconType } from 'react-icons'
 import { cn } from '@/lib/utils/cn'
+import { MizokeLogo } from '@/components/ui/MizokeLogo'
 import { Button } from '@/components/ui/Button'
 import { SOCIAL_LINKS } from '@/lib/utils/constants'
 import { LocaleSwitcher } from './LocaleSwitcher'
 
-const socialIcons: Record<string, LucideIcon> = {
-  Instagram,
-  Twitter,
-  TikTok: Music2,
-  Discord: MessageCircle,
+const socialIcons: Record<string, IconType> = {
+  Instagram: FaInstagram,
+  Twitter: FaXTwitter,
+  TikTok: FaTiktok,
+  Discord: FaDiscord,
 }
 
 const socialLinks = SOCIAL_LINKS.map((link) => ({
   ...link,
-  icon: socialIcons[link.label] || MessageCircle,
+  icon: socialIcons[link.label] || FaDiscord,
 }))
 
 // Footer link column component
@@ -184,7 +187,7 @@ function NewsletterForm() {
 export function Footer() {
   const t = useTranslations('footer')
   const tCommon = useTranslations('common')
-  const tHeader = useTranslations('header')
+
 
   // Footer link sections with translations
   const shopLinks = [
@@ -302,18 +305,8 @@ export function Footer() {
             </p>
 
             {/* Logo */}
-            <Link href="/" className="flex flex-col items-center">
-              <span
-                className="font-display text-xl font-bold text-white tracking-wider"
-                style={{
-                  textShadow: '0 0 15px rgba(0, 245, 255, 0.4)',
-                }}
-              >
-                MIZOKE
-              </span>
-              <span className="text-[9px] text-neon-cyan/60 tracking-[2px]">
-                {tHeader('tagline')}
-              </span>
+            <Link href="/" className="flex justify-center">
+              <MizokeLogo className="h-8 w-auto" />
             </Link>
 
             {/* Language/Currency Switcher and Trust badges */}
@@ -333,46 +326,24 @@ export function Footer() {
               Accepted payment methods
             </span>
             <div
-              className="flex items-center gap-3"
+              className="flex items-center gap-4"
               role="list"
               aria-labelledby="payment-methods-label"
             >
-              {/* Visa */}
               <div role="listitem" aria-label="Visa" title="Visa" className="text-white/40 hover:text-white/70 transition-colors duration-200">
-                <svg className="h-7 w-auto" viewBox="0 0 48 16" fill="currentColor" aria-hidden="true">
-                  <path d="M18.72 0 13.8 15.8h-3.47L5.43 3.48c-.27-.73-.5-.97-1.06-1.27C3.36 1.74 1.68 1.24 0 .97L.07 0h5.57c.75 0 1.43.5 1.6 1.37l1.46 7.77L12.04 0h3.48l3.2 0zm5.7 0-2.8 15.8H18.3L21.1 0h3.32zm10.3 10.63c.01-3.06-4.24-3.23-4.21-4.6.01-.41.41-.86 1.27-.97.43-.06 1.61-.1 2.95.52l.52-2.44A8.06 8.06 0 0 0 32.97 2.5c-3.27 0-5.57 1.74-5.59 4.22-.02 1.84 1.64 2.86 2.89 3.47 1.29.63 1.72 1.03 1.71 1.59-.01.86-1.02 1.24-1.97 1.25-1.65.03-2.61-.44-3.37-.8l-.6 2.79c.77.35 2.18.66 3.65.67 3.45 0 5.71-1.71 5.73-4.36zM48 15.8h-3.04l-.48-2.32h-4.22l-.72 2.32H36.2L40.83 0h3.04L48 15.8zm-4.1-5.14-1.34-6.57-1.88 6.57h3.22z"/>
-                </svg>
+                <FaCcVisa className="h-8 w-auto" />
               </div>
-
-              {/* Mastercard */}
               <div role="listitem" aria-label="Mastercard" title="Mastercard" className="text-white/40 hover:text-white/70 transition-colors duration-200">
-                <svg className="h-7 w-auto" viewBox="0 0 38 24" fill="currentColor" aria-hidden="true">
-                  <circle cx="12" cy="12" r="10" opacity="0.8"/>
-                  <circle cx="26" cy="12" r="10" opacity="0.5"/>
-                  <path d="M19 5.26a10 10 0 0 1 0 13.48A10 10 0 0 1 19 5.26z" opacity="0.7"/>
-                </svg>
+                <FaCcMastercard className="h-8 w-auto" />
               </div>
-
-              {/* PayPal */}
               <div role="listitem" aria-label="PayPal" title="PayPal" className="text-white/40 hover:text-white/70 transition-colors duration-200">
-                <svg className="h-7 w-auto" viewBox="0 0 60 20" fill="currentColor" aria-hidden="true">
-                  <path d="M10.5 0C6.8 0 4.5 1.9 3.8 5.1L1 18.6h4.2l.8-4.3h2.8c4.4 0 7.1-2.1 7.8-5.9.6-3.3-1.3-5.3-4.4-5.7L10.5 0zm.3 3.6c1.7.2 2.5 1.3 2.1 3.3-.4 2.2-1.9 3.4-4 3.4H7L8.5 3.7l2.3-.1zM22 5.4c-1.1 0-2 .2-2.9.5l-.5 2.6c.8-.4 1.7-.6 2.7-.6 1.1 0 1.7.4 1.5 1.3l-.1.4h-1.4c-2.9 0-4.6 1.2-5 3.4-.3 1.7.7 2.8 2.4 2.8 1.2 0 2.1-.4 2.9-1.1l-.2.9h3.5l1.4-7.2C26.9 6.3 25 5.4 22 5.4zm.3 6.5c-.2 1-.9 1.6-1.9 1.6-.7 0-1.1-.4-1-1 .2-.9.9-1.4 2.1-1.4h1.1l-.3.8zM33.2 5.6h-3.6L27 15.8h3.6l1.6-7.2 2.2 7.2h3.5l4.2-10.2h-3.6l-2.2 6.8-1.1-6.8z"/>
-                </svg>
+                <FaCcPaypal className="h-8 w-auto" />
               </div>
-
-              {/* Apple Pay */}
               <div role="listitem" aria-label="Apple Pay" title="Apple Pay" className="text-white/40 hover:text-white/70 transition-colors duration-200">
-                <svg className="h-7 w-auto" viewBox="0 0 50 20" fill="currentColor" aria-hidden="true">
-                  <path d="M9.8 3.4c.6-.8 1-1.8.9-2.9-.9 0-2 .6-2.6 1.4-.6.7-1.1 1.8-.9 2.8 1 .1 2-.5 2.6-1.3zM10.7 5c-1.4-.1-2.7.8-3.4.8-.7 0-1.8-.8-3-.7C2.8 5.2 1.4 6.3.7 7.9c-1.4 2.9-.4 7.2.9 9.5.6 1.1 1.4 2.3 2.4 2.3 1 0 1.3-.6 2.5-.6 1.2 0 1.5.6 2.5.6 1 0 1.7-1.1 2.3-2.2.7-1.2 1-2.5 1-2.5-1.9-.7-3.2-2.7-3.2-5 0-2 1-3.7 2.6-4.7-.9-.8-2-.9-2.8-.9zm9.7-.6h-2.7L13.9 18h2.2l1-3.1h3.8l1 3.1H24L19.4 4.4zm-2 8.4 1.5-4.7 1.5 4.7h-3zm11.7-8.6c-2.1 0-3.5 1.2-3.5 3 0 1.3.8 2.3 2.1 2.7l1.6.5c.8.3 1.2.7 1.2 1.3 0 .7-.7 1.2-1.7 1.2-1.1 0-1.8-.5-1.9-1.4h-2.1c.1 2 1.5 3.2 4 3.2 2.2 0 3.8-1.2 3.8-3 0-1.4-.8-2.3-2.4-2.8l-1.5-.5c-.8-.2-1.1-.6-1.1-1.2 0-.7.6-1.2 1.5-1.2s1.6.5 1.7 1.3h2c-.1-1.8-1.5-3.1-3.7-3.1zm9 0c-2.1 0-3.5 1.2-3.5 3 0 1.3.8 2.3 2.1 2.7l1.6.5c.8.3 1.2.7 1.2 1.3 0 .7-.7 1.2-1.7 1.2-1.1 0-1.8-.5-1.9-1.4h-2.1c.1 2 1.5 3.2 4 3.2 2.2 0 3.8-1.2 3.8-3 0-1.4-.8-2.3-2.4-2.8l-1.5-.5c-.8-.2-1.1-.6-1.1-1.2 0-.7.6-1.2 1.5-1.2s1.6.5 1.7 1.3h2c-.1-1.8-1.5-3.1-3.7-3.1z"/>
-                </svg>
+                <FaApplePay className="h-8 w-auto" />
               </div>
-
-              {/* Google Pay */}
               <div role="listitem" aria-label="Google Pay" title="Google Pay" className="text-white/40 hover:text-white/70 transition-colors duration-200">
-                <svg className="h-7 w-auto" viewBox="0 0 56 20" fill="currentColor" aria-hidden="true">
-                  <path d="M26.1 9.7v4.9h-1.5V3h4.1c1 0 1.9.4 2.6 1 .7.7 1.1 1.5 1.1 2.5s-.4 1.8-1.1 2.5c-.7.7-1.6 1-2.6 1l-2.6-.3zm0-5.4v4.1h2.6c.6 0 1.1-.2 1.5-.6.4-.4.6-.9.6-1.5 0-.5-.2-1-.6-1.4-.4-.4-.9-.6-1.5-.6h-2.6zm9.4 2.3c1.1 0 2 .3 2.6.9.6.6.9 1.4.9 2.5v5h-1.4v-1.1c-.6.9-1.4 1.3-2.5 1.3-.9 0-1.7-.3-2.3-.8-.6-.5-.9-1.2-.9-2 0-.9.3-1.5 1-2 .6-.5 1.5-.7 2.5-.7 1 0 1.7.2 2.3.5v-.3c0-.7-.2-1.3-.7-1.7-.5-.4-1-.6-1.7-.6-.5 0-1 .1-1.4.4-.4.2-.7.6-.9 1l-1.3-.5c.3-.7.8-1.3 1.4-1.7.6-.4 1.4-.6 2.4-.6zm-.3 7.8c.7 0 1.2-.2 1.7-.7.5-.5.7-1 .7-1.6v-.8c-.5-.3-1.2-.5-2-.5-.7 0-1.3.2-1.7.5-.4.3-.6.7-.6 1.3 0 .5.2.9.5 1.2.4.4.9.6 1.4.6zm6.6 3.7-1.4-.5 2-4.8-3.7-8.3h1.5l2.8 6.7 2.7-6.7h1.5l-5.4 13.6z"/>
-                  <path d="M15.2 9.4c0-.5 0-.9-.1-1.4H8v2.6h4.1c-.2.9-.7 1.7-1.4 2.2v1.8h2.3c1.4-1.2 2.2-3 2.2-5.2zM8 17c2 0 3.7-.7 5-1.8l-2.3-1.8c-.7.5-1.6.7-2.7.7-2 0-3.8-1.4-4.4-3.3H1.2v1.9C2.5 15.1 5.1 17 8 17zM3.6 10.8c-.2-.5-.3-1-.3-1.5s.1-1 .3-1.5V5.9H1.2C.4 7.5 0 9.2 0 11s.4 3.5 1.2 5.1l2.4-2 .0-3.3zM8 4.6c1.1 0 2.1.4 2.9 1.2L13 3.7C11.7 2.5 10 1.8 8 1.8 5.1 1.8 2.5 3.7 1.2 6.4l2.4 1.9C4.2 6 6 4.6 8 4.6z"/>
-                </svg>
+                <FaGooglePay className="h-8 w-auto" />
               </div>
             </div>
           </div>

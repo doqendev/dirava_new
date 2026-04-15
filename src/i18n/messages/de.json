@@ -43,16 +43,20 @@
     "outOfStock": "Nicht vorrätig",
     "inStock": "Auf Lager",
     "lowStock": "Wenig vorrätig",
-    "soldOut": "Ausverkauft"
+    "soldOut": "Ausverkauft",
+    "bundles": "Bundles",
+    "contact": "Kontakt",
+    "faq": "FAQ"
   },
   "nav": {
     "account": "Konto",
     "bundles": "Bundles",
     "drops": "Drops",
-    "gacha": "Gacha",
     "home": "Startseite",
     "profile": "Profil",
+    "search": "Suche",
     "searchPlaceholder": "Produkte suchen...",
+    "shop": "Shop",
     "worlds": "Welten"
   },
   "header": {
@@ -134,6 +138,7 @@
     "returnsExchanges": "Umtausch in andere Größen oder Farben möglich, vorbehaltlich Verfügbarkeit.",
     "returnsRefund": "Rückerstattungen werden innerhalb von 5-7 Werktagen nach Eingang der Rücksendung bearbeitet.",
     "returnsFinalSale": "Personalisierte und limitierte Artikel sind vom Umtausch ausgeschlossen.",
+    "preview3D": "3D-Vorschau",
     "preview3dLoading": "Lädt...",
     "preview3dUpdating": "Aktualisiert...",
     "preview3dNotAvailable": "3D-Vorschau nicht verfügbar",
@@ -143,7 +148,7 @@
     "trustFreeShipping": "Kostenloser Versand",
     "trustSecureCheckout": "Sicherer Checkout",
     "trustReturns": "30 Tage Rückgabe",
-    "trustLicensed": "Offiziell lizenziert",
+    "trustLicensed": "Individuelle Designs",
     "whatYouGet": "Was du bekommst",
     "highlightLedSign": "Individuelles LED-Neon-Schild mit deinem Namen",
     "highlightAcrylicBase": "Hochwertige Acrylbasis",
@@ -178,7 +183,12 @@
     "decreaseQuantity": "Menge verringern",
     "increaseQuantity": "Menge erhöhen",
     "youMightLike": "Das könnte dir auch gefallen",
-    "quickView": "Schnellansicht"
+    "quickView": "Schnellansicht",
+    "itemAdded": "Artikel zum Warenkorb hinzugefügt",
+    "failedToAdd": "Artikel konnte nicht hinzugefügt werden",
+    "failedToAddBundle": "Bundle konnte nicht hinzugefügt werden",
+    "failedToUpdate": "Artikel konnte nicht aktualisiert werden",
+    "failedToRemove": "Artikel konnte nicht entfernt werden"
   },
   "discount": {
     "haveCode": "Hast du einen Rabattcode?",
@@ -230,32 +240,6 @@
     "exploreDescription": "Wähle dein Universum und entdecke exklusive Merchandise deiner Lieblings-Anime.",
     "home": "Startseite",
     "worlds": "Welten"
-  },
-  "codes": {
-    "revealNow": "Jetzt enthüllen",
-    "claimPrize": "Preis einlösen",
-    "viewDetails": "Details ansehen",
-    "back": "Zurück",
-    "signInRequired": "Anmeldung erforderlich",
-    "signInToView": "Bitte melde dich an, um deine Einlösecodes zu sehen.",
-    "signIn": "Anmelden",
-    "loadingCodes": "Codes werden geladen...",
-    "somethingWrong": "Etwas ist schiefgelaufen",
-    "loadError": "Deine Codes konnten nicht geladen werden. Bitte versuche es erneut.",
-    "tryAgain": "Erneut versuchen",
-    "backToAccount": "Zurück zum Konto",
-    "myRedemptionCodes": "Meine Einlösecodes",
-    "codesTotal": "{count} {count, plural, one {Code} other {Codes}} gesamt",
-    "noCodesYet": "Noch keine Codes",
-    "noCodesDescription": "Kaufe eine Mystery Box, um deinen ersten Einlösecode zu erhalten!",
-    "browseMysteryBoxes": "Mystery Boxen durchstöbern",
-    "haveCode": "Hast du einen Code zum Einlösen?",
-    "haveCodeDescription": "Wenn jemand einen Code mit dir geteilt hat, gib ihn ein, um das Geheimnis zu lüften.",
-    "enterCode": "Code eingeben",
-    "statusUnused": "Bereit zum Enthüllen",
-    "statusRevealed": "Enthüllt",
-    "statusClaimed": "Eingelöst",
-    "statusShipped": "Versendet"
   },
   "orderHistory": {
     "title": "Bestellungen",
@@ -420,6 +404,7 @@
     "showingProducts": "{count} Produkte werden angezeigt",
     "noProductsMatch": "Keine Produkte entsprechen deinen Filtern",
     "productType": "Produkttyp",
+    "world": "Welt",
     "apparel": "Kleidung",
     "accessories": "Zubehör",
     "applyFilters": "FILTER ANWENDEN",
@@ -496,6 +481,234 @@
     "questionsPrefix": "Wenn du Fragen zu dieser Richtlinie hast, bitte",
     "contactUs": "kontaktiere uns"
   },
+  "policies": {
+    "privacy": {
+      "title": "Datenschutzrichtlinie",
+      "description": "Wie wir deine personenbezogenen Daten erheben, verwenden und sch\u00fctzen.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "Daten, die wir erheben",
+          "content": "Personenbezogene Daten, die du bei der Kontoerstellung angibst (Name, E-Mail-Adresse, Lieferadresse)\nZahlungsinformationen, die sicher \u00fcber unsere Zahlungsanbieter verarbeitet werden\nBestellverlauf und Produktpr\u00e4ferenzen\nGer\u00e4te- und Browserinformationen zur Websiteoptimierung\nCookies und \u00e4hnliche Tracking-Technologien zur Verbesserung deines Erlebnisses"
+        },
+        "1": {
+          "heading": "Wie wir deine Daten verwenden",
+          "content": "Verarbeitung und Erf\u00fcllung deiner Bestellungen\nVersand von Bestellbest\u00e4tigungen und Versandaktualisierungen\nBereitstellung von Kundensupport und Beantwortung von Anfragen\nVersand von Werbe-E-Mails (mit deiner Einwilligung)\nVerbesserung unserer Website und Produktangebote\nBetrugspr\u00e4vention und Erh\u00f6hung der Sicherheit"
+        },
+        "2": {
+          "heading": "Weitergabe von Daten",
+          "content": "Wir verkaufen deine personenbezogenen Daten nicht an Dritte. Wir k\u00f6nnen deine Daten an vertrauensw\u00fcrdige Dienstleister weitergeben, die uns beim Betrieb unserer Website, bei der Zahlungsabwicklung und bei der Produktlieferung unterst\u00fctzen. Diese Partner sind durch Vertraulichkeitsvereinbarungen gebunden und d\u00fcrfen deine Daten nur insoweit verwenden, als dies zur Erbringung von Dienstleistungen f\u00fcr uns erforderlich ist."
+        },
+        "3": {
+          "heading": "Datensicherheit",
+          "content": "Wir setzen branchenstandard-konforme Sicherheitsma\u00dfnahmen zum Schutz deiner personenbezogenen Daten ein. Alle Zahlungsvorg\u00e4nge werden mit SSL-Technologie verschl\u00fcsselt. Allerdings ist keine \u00dcbertragungsmethode im Internet zu 100 % sicher, und wir k\u00f6nnen keine absolute Sicherheit garantieren."
+        },
+        "4": {
+          "heading": "Deine Rechte",
+          "content": "Zugang zu den personenbezogenen Daten, die wir \u00fcber dich gespeichert haben\nBerichtigung unrichtiger Daten anfordern\nL\u00f6schung deiner personenbezogenen Daten verlangen\nJederzeit dem Erhalt von Marketingmitteilungen widersprechen\nEine Kopie deiner Daten in einem portablen Format anfordern"
+        },
+        "5": {
+          "heading": "Kontakt",
+          "content": "Bei Fragen zu dieser Datenschutzrichtlinie oder wenn du deine Rechte aus\u00fcben m\u00f6chtest, kontaktiere uns bitte unter privacy@mizoke.com oder \u00fcber unsere Kontaktseite."
+        }
+      }
+    },
+    "terms": {
+      "title": "Allgemeine Gesch\u00e4ftsbedingungen",
+      "description": "Die Bedingungen f\u00fcr die Nutzung unserer Website und Dienstleistungen.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "Annahme der Bedingungen",
+          "content": "Durch den Zugriff auf und die Nutzung von Mizoke akzeptierst du diese Allgemeinen Gesch\u00e4ftsbedingungen und erkl\u00e4rst dich damit einverstanden, an sie gebunden zu sein. Wenn du mit diesen Bedingungen nicht einverstanden bist, nutze bitte unsere Website oder Dienste nicht."
+        },
+        "1": {
+          "heading": "Nutzung der Website",
+          "content": "Du musst mindestens 18 Jahre alt sein oder die Einwilligung deiner Eltern haben, um Eink\u00e4ufe zu t\u00e4tigen\nDu bist f\u00fcr die Wahrung der Vertraulichkeit deines Kontos verantwortlich\nDu stimmst zu, genaue und vollst\u00e4ndige Angaben zu machen\nDu darfst unsere Website nicht f\u00fcr illegale oder unerlaubte Zwecke nutzen\nWir behalten uns das Recht vor, jeder Person aus beliebigem Grund den Service zu verweigern"
+        },
+        "2": {
+          "heading": "Produkte und Preise",
+          "content": "Alle Produkte unterliegen der Verf\u00fcgbarkeit. Wir behalten uns das Recht vor, jedes Produkt jederzeit einzustellen. Preise k\u00f6nnen ohne Vorank\u00fcndigung ge\u00e4ndert werden. Wir bem\u00fchen uns um korrekte Preisangaben, jedoch k\u00f6nnen Fehler auftreten. Im Falle eines Preisfehlers behalten wir uns das Recht vor, Bestellungen zum falschen Preis zu stornieren."
+        },
+        "3": {
+          "heading": "Bestellungen und Zahlung",
+          "content": "Alle Bestellungen unterliegen der Best\u00e4tigung und Verf\u00fcgbarkeit\nDie Zahlung muss vor der Bestellbearbeitung eingehen\nWir akzeptieren g\u00e4ngige Kreditkarten und andere an der Kasse angezeigte Zahlungsmethoden\nDu bist f\u00fcr anfallende Steuern und Z\u00f6lle verantwortlich"
+        },
+        "4": {
+          "heading": "Geistiges Eigentum",
+          "content": "Alle Inhalte dieser Website, einschlie\u00dflich Bilder, Texte, Logos und Designs, sind Eigentum von Mizoke oder unserer Lizenzgeber. Du darfst keine Inhalte ohne unsere ausdr\u00fcckliche schriftliche Genehmigung vervielf\u00e4ltigen, verbreiten oder verwenden. Anime-Charaktere und -Franchises sind Marken ihrer jeweiligen Inhaber."
+        },
+        "5": {
+          "heading": "Haftungsbeschr\u00e4nkung",
+          "content": "Mizoke haftet nicht f\u00fcr indirekte, zuf\u00e4llige, besondere oder Folgesch\u00e4den, die sich aus der Nutzung unserer Website oder Produkte ergeben. Unsere Gesamthaftung \u00fcbersteigt nicht den Betrag, den du f\u00fcr die betreffenden Produkte bezahlt hast."
+        },
+        "6": {
+          "heading": "\u00c4nderungen der Bedingungen",
+          "content": "Wir behalten uns das Recht vor, diese Allgemeinen Gesch\u00e4ftsbedingungen jederzeit zu \u00e4ndern. \u00c4nderungen werden sofort nach Ver\u00f6ffentlichung wirksam. Deine weitere Nutzung der Website nach \u00c4nderungen gilt als Akzeptanz der neuen Bedingungen."
+        }
+      }
+    },
+    "shipping": {
+      "title": "Versandrichtlinie",
+      "description": "Informationen zu Versandmethoden, Lieferzeiten und Kosten.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "Bearbeitungszeit",
+          "content": "Bestellungen werden in der Regel innerhalb von 1\u20133 Werktagen bearbeitet. In Zeiten hohen Bestellaufkommens oder bei speziellen Drops kann die Bearbeitung bis zu 5 Werktage dauern. Vorbestellte Artikel werden gem\u00e4\u00df ihrem voraussichtlichen Erscheinungsdatum versendet."
+        },
+        "1": {
+          "heading": "Europa (Inland)",
+          "content": "Standardversand (5\u201312 Werktage): 5,99\u00a0\u20ac oder KOSTENLOS ab einem Bestellwert von 45\u00a0\u20ac"
+        },
+        "2": {
+          "heading": "Vereinigtes K\u00f6nigreich",
+          "content": "Standardversand (5\u201310 Werktage): 4,99\u00a0\u00a3 oder KOSTENLOS ab einem Bestellwert von 40\u00a0\u00a3"
+        },
+        "3": {
+          "heading": "Kanada",
+          "content": "Standardversand (7\u201314 Werktage): 9,99\u00a0CAD oder KOSTENLOS ab einem Bestellwert von 73\u00a0CAD"
+        },
+        "4": {
+          "heading": "Australien",
+          "content": "Standardversand (10\u201320 Werktage): 11\u00a0AUD oder KOSTENLOS ab einem Bestellwert von 80\u00a0AUD"
+        },
+        "5": {
+          "heading": "Rest der Welt",
+          "content": "Asien-Pazifik: 14\u201328 Werktage. Andere Regionen: 14\u201335 Werktage. Die Versandkosten variieren je nach Land und werden an der Kasse anhand deines Standorts und Bestellgewichts berechnet."
+        },
+        "6": {
+          "heading": "Vereinigte Staaten",
+          "content": "Der Versand in die Vereinigten Staaten ist derzeit aufgrund laufender Zoll\u00e4nderungen ausgesetzt. Wir entschuldigen uns f\u00fcr die Unannehmlichkeiten und beobachten die Situation aufmerksam. Bitte schau sp\u00e4ter noch einmal vorbei oder melde dich f\u00fcr unseren Newsletter an, um benachrichtigt zu werden, wenn der US-Versand wieder aufgenommen wird."
+        },
+        "7": {
+          "heading": "Zoll und Abgaben",
+          "content": "Bei internationalen Bestellungen k\u00f6nnen Zollgeb\u00fchren, Einfuhrz\u00f6lle und Steuern anfallen. Diese Kosten tr\u00e4gt der Empf\u00e4nger und sind nicht in unseren Versandpreisen enthalten. Wir \u00fcbernehmen keine Verantwortung f\u00fcr Verz\u00f6gerungen durch die Zollabfertigung."
+        },
+        "8": {
+          "heading": "Sendungsverfolgung",
+          "content": "Sobald deine Bestellung versandt wurde, erh\u00e4ltst du eine E-Mail mit Tracking-Informationen. Du kannst deine Bestellung auch verfolgen, indem du dich in dein Konto einloggst oder unsere Seite zur Sendungsverfolgung besuchst. Bitte erlaube 24\u201348 Stunden f\u00fcr die Aktualisierung der Tracking-Daten."
+        },
+        "9": {
+          "heading": "Versandbeschr\u00e4nkungen",
+          "content": "Einige Produkte k\u00f6nnen Versandbeschr\u00e4nkungen f\u00fcr bestimmte Regionen haben. Wenn wir nicht an deinen Standort liefern k\u00f6nnen, wirst du w\u00e4hrend des Bestellvorgangs benachrichtigt. Derzeit liefern wir nicht an Postf\u00e4cher bei Express- oder \u00dcbernachtlieferungen."
+        },
+        "10": {
+          "heading": "Verlorene oder besch\u00e4digte Pakete",
+          "content": "Wenn dein Paket verloren geht oder besch\u00e4digt ankommt, kontaktiere uns bitte innerhalb von 7 Tagen nach dem voraussichtlichen Lieferdatum. Wir werden mit dem Versanddienstleister zusammenarbeiten, um das Problem zu l\u00f6sen, und k\u00f6nnen nach eigenem Ermessen einen Ersatz oder eine R\u00fcckerstattung anbieten."
+        }
+      }
+    },
+    "returns": {
+      "title": "R\u00fccksendungen & Erstattungen",
+      "description": "Unsere Richtlinien f\u00fcr R\u00fccksendungen, Umtausch und Erstattungen.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "R\u00fccksenderichtlinie",
+          "content": "Wir m\u00f6chten, dass du mit deinem Kauf zufrieden bist! Wenn du nicht vollst\u00e4ndig zufrieden bist, kannst du die meisten Artikel innerhalb von 30 Tagen nach Lieferung gegen volle R\u00fcckerstattung oder Umtausch zur\u00fccksenden. Die Artikel m\u00fcssen unbenutzt, ungetragen und in der Originalverpackung mit allen Etiketten sein."
+        },
+        "1": {
+          "heading": "Nicht r\u00fcckgabef\u00e4hige Artikel",
+          "content": "Limitierte oder exklusive Drop-Artikel (als \u201eFinalverkauf\u201c gekennzeichnet)\nGe\u00f6ffnete Sammelst\u00fccke und Figuren\nPersonalisierte oder ma\u00dfgefertigte Artikel\nArtikel im Abverkauf oder Finalverkauf\nGeschenkgutscheine"
+        },
+        "2": {
+          "heading": "So leitest du eine R\u00fccksendung ein",
+          "content": "Logge dich in dein Konto ein und gehe zum Bestellverlauf\nW\u00e4hle die Bestellung und die Artikel aus, die du zur\u00fccksenden m\u00f6chtest\nW\u00e4hle den R\u00fccksendungsgrund und sende die Anfrage ab\nDu erh\u00e4ltst die R\u00fccksendungsadresse und Anweisungen per E-Mail\nVerpacke die Artikel sicher und versende sie auf eigene Kosten mit einem verfolgbaren Versanddienst"
+        },
+        "3": {
+          "heading": "Umtausch",
+          "content": "Wenn du einen Artikel in einer anderen Gr\u00f6\u00dfe oder Farbe umtauschen m\u00f6chtest, gib dies bitte bei der R\u00fccksendung an. Vorbehaltlich der Verf\u00fcgbarkeit versenden wir den Umtauschartikel, sobald wir deine R\u00fccksendung erhalten haben. Ist der Umtauschartikel nicht verf\u00fcgbar, erstatten wir dir den Betrag."
+        },
+        "4": {
+          "heading": "Erstattungsbearbeitung",
+          "content": "Erstattungen werden innerhalb von 5\u20137 Werktagen nach Eingang deiner R\u00fccksendung bearbeitet. Die Erstattung wird deinem urspr\u00fcnglichen Zahlungsmittel gutgeschrieben. Bitte erlaube zus\u00e4tzliche 3\u20135 Werktage, bis die Erstattung auf deinem Kontoauszug erscheint."
+        },
+        "5": {
+          "heading": "R\u00fccksendungsversand",
+          "content": "Die R\u00fccksendungskosten tr\u00e4gt der Kunde. Wir empfehlen einen verfolgbaren Versanddienst, damit deine R\u00fccksendung sicher bei uns ankommt. Geht die R\u00fccksendung auf unseren Fehler zur\u00fcck (falscher Artikel, defektes Produkt), \u00fcbernehmen wir die R\u00fccksendungskosten."
+        },
+        "6": {
+          "heading": "Besch\u00e4digte oder defekte Artikel",
+          "content": "Wenn du einen besch\u00e4digten oder defekten Artikel erh\u00e4ltst, kontaktiere uns bitte innerhalb von 48 Stunden nach Lieferung mit Fotos des Schadens. Wir organisieren eine kostenlose R\u00fccksendung und senden einen Ersatz oder erstatten dir den vollen Betrag nach deiner Wahl."
+        }
+      }
+    },
+    "accessibility": {
+      "title": "Barrierefreiheit",
+      "description": "Unser Engagement f\u00fcr eine barrierefreie Website f\u00fcr alle.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "Unser Engagement",
+          "content": "Mizoke setzt sich daf\u00fcr ein, die digitale Barrierefreiheit f\u00fcr Menschen aller F\u00e4higkeiten sicherzustellen. Wir verbessern kontinuierlich das Nutzererlebnis f\u00fcr alle und wenden relevante Standards f\u00fcr Barrierefreiheit an, um gleichberechtigten Zugang f\u00fcr alle Nutzer zu gew\u00e4hrleisten."
+        },
+        "1": {
+          "heading": "Standards f\u00fcr Barrierefreiheit",
+          "content": "Wir streben die Einhaltung der Web Content Accessibility Guidelines (WCAG) 2.1 Level AA an. Unsere Website ist so konzipiert, dass sie mit Hilfstechnologien wie Screenreadern, Tastaturnavigation und Bildschirmlupen kompatibel ist."
+        },
+        "2": {
+          "heading": "Barrierefreiheitsfunktionen",
+          "content": "Tastaturnavigation auf der gesamten Website\nAlternativtexte f\u00fcr Bilder\nAusreichende Farbkontraste\nVer\u00e4nderbare Textgr\u00f6\u00dfe ohne Funktionsverlust\nKlare und konsistente Navigation\nFormularbeschriftungen und Fehlererkennung\n\u00dcberspringungslinks f\u00fcr die Navigation\nARIA-Orientierungspunkte und -Beschriftungen"
+        },
+        "3": {
+          "heading": "Fortlaufende Bem\u00fchungen",
+          "content": "Wir testen unsere Website regelm\u00e4\u00dfig mit Hilfstechnologien und Barrierefreiheits-Evaluationstools. Unser Team wird in bew\u00e4hrten Verfahren der Barrierefreiheit geschult, und wir ber\u00fccksichtigen Barrierefreiheit in unseren Design- und Entwicklungsprozessen."
+        },
+        "4": {
+          "heading": "Bekannte Einschr\u00e4nkungen",
+          "content": "Obwohl wir nach vollst\u00e4ndiger Barrierefreiheit streben, sind einige Drittanbieter-Inhalte oder -Funktionen m\u00f6glicherweise nicht vollst\u00e4ndig barrierefrei. Wir arbeiten mit unseren Anbietern daran, die Barrierefreiheit in allen Bereichen unserer Website zu verbessern."
+        },
+        "5": {
+          "heading": "Feedback",
+          "content": "Wir freuen uns \u00fcber dein Feedback zur Barrierefreiheit von Mizoke. Wenn du auf Barrieren sto\u00dft oder Verbesserungsvorschl\u00e4ge hast, kontaktiere uns bitte unter accessibility@mizoke.com oder \u00fcber unsere Kontaktseite. Wir nehmen jedes Feedback ernst und arbeiten daran, alle Probleme zu beheben."
+        },
+        "6": {
+          "heading": "Alternativer Zugang",
+          "content": "Wenn du auf Inhalte oder Funktionen unserer Website nicht zugreifen kannst, kontaktiere bitte unser Kundenservice-Team. Wir werden mit dir zusammenarbeiten, um dir die ben\u00f6tigten Informationen oder Dienstleistungen auf einem alternativen Weg bereitzustellen."
+        }
+      }
+    },
+    "imprint": {
+      "title": "Impressum",
+      "description": "Rechtliche Informationen \u00fcber das Unternehmen, das diese Website betreibt.",
+      "lastUpdated": "2026-02-26",
+      "sections": {
+        "0": {
+          "heading": "Unternehmensinformationen",
+          "content": "Neo Stage Collective\nGesch\u00e4ftsf\u00fchrer: [Name wird noch erg\u00e4nzt]\nE-Mail: contact@mizoke.com\nWebsite: https://www.mizoke.com"
+        },
+        "1": {
+          "heading": "Adresse",
+          "content": "[Firmenadresse wird vor dem Launch erg\u00e4nzt]"
+        },
+        "2": {
+          "heading": "Umsatzsteuer-Identifikationsnummer",
+          "content": "USt-IdNr.: [Wird vor dem Launch erg\u00e4nzt]"
+        },
+        "3": {
+          "heading": "Verantwortlich f\u00fcr den Inhalt",
+          "content": "Verantwortlich gem\u00e4\u00df \u00a7 55 Abs. 2 RStV: [Name wird noch erg\u00e4nzt]"
+        },
+        "4": {
+          "heading": "EU-Plattform zur Online-Streitbeilegung",
+          "content": "Die Europ\u00e4ische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: https://ec.europa.eu/consumers/odr. Unsere E-Mail-Adresse finden Sie oben. Wir sind weder bereit noch verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen."
+        },
+        "5": {
+          "heading": "Haftung f\u00fcr Inhalte",
+          "content": "Als Diensteanbieter sind wir gem\u00e4\u00df \u00a7 7 Abs. 1 TMG f\u00fcr eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach \u00a7\u00a7 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, \u00fcbermittelte oder gespeicherte fremde Informationen zu \u00fcberwachen oder nach Umst\u00e4nden zu forschen, die auf eine rechtswidrige T\u00e4tigkeit hinweisen."
+        },
+        "6": {
+          "heading": "Haftung f\u00fcr Links",
+          "content": "Unsere Website enth\u00e4lt Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb k\u00f6nnen wir f\u00fcr diese fremden Inhalte auch keine Gew\u00e4hr \u00fcbernehmen. F\u00fcr die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich."
+        },
+        "7": {
+          "heading": "Urheberrecht",
+          "content": "Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem Urheberrecht. Die Vervielf\u00e4ltigung, Bearbeitung, Verbreitung und jede Art der Verwertung au\u00dferhalb der Grenzen des Urheberrechts bed\u00fcrfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Anime-Charaktere und -Franchises sind Marken ihrer jeweiligen Inhaber."
+        }
+      }
+    }
+  },
   "sizeGuide": {
     "title": "{type} Größentabelle",
     "allMeasurementsIn": "Alle Maße in",
@@ -508,7 +721,41 @@
     "hips": "Hüfte",
     "hipsDescription": "Miss um die breiteste Stelle deiner Hüfte",
     "length": "Länge",
-    "lengthDescription": "Miss von der Schulter bis zum Saum"
+    "lengthDescription": "Miss von der Schulter bis zum Saum",
+    "columns": {
+      "size": "Größe",
+      "chest": "Brust",
+      "length": "Länge",
+      "shoulder": "Schulter",
+      "sleeve": "Ärmel",
+      "waist": "Taille",
+      "hips": "Hüfte",
+      "inseam": "Schrittlänge"
+    },
+    "productTypes": {
+      "tshirt": "T-Shirt",
+      "hoodie": "Hoodie",
+      "pants": "Hose",
+      "jacket": "Jacke",
+      "shorts": "Shorts",
+      "dress": "Kleid",
+      "default": "Bekleidung"
+    },
+    "noteKeys": {
+      "measurementsInCm": "Maße sind in Zentimetern angegeben",
+      "sizeUpForRelaxed": "Für eine lockere Passform eine Größe größer wählen",
+      "chestTolerance": "Brustmaße beinhalten eine Toleranz von 2-3 cm",
+      "hoodiesOversized": "Hoodies haben eine Oversize-Passform",
+      "lengthFromShoulder": "Länge wird von der Schulter bis zum Saum gemessen",
+      "waistNatural": "Taille wird an der natürlichen Taillenlinie gemessen",
+      "inseamCrotchToAnkle": "Schrittlänge ist vom Schritt bis zum Knöchel",
+      "allowLayering": "Platz für Schichten einplanen",
+      "jacketFromCollar": "Jackenlänge wird vom Kragen bis zum Saum gemessen",
+      "lengthWaistToHem": "Länge vom Bund bis zum Saum gemessen",
+      "lengthShoulderToHem": "Länge von der Schulter bis zum Saum gemessen",
+      "generalGuide": "Dies ist eine allgemeine Größentabelle",
+      "individualVariation": "Einzelne Produkte können leicht abweichen"
+    }
   },
   "reviews": {
     "title": "Kundenbewertungen",
@@ -627,7 +874,7 @@
   "home": {
     "chooseYour": "WÄHLE DEINE",
     "world": "WELT",
-    "heroTagline": "Drops, Bundles und Sammlerstücke — tippe auf ein Universum.",
+    "heroTagline": "Personalisiertes Anime-Merch nur für dich. Wähle dein Universum und mach es persönlich.",
     "newArrivals": "NEUHEITEN",
     "dropRunway": "DROP RUNWAY",
     "bestSellers": "BESTSELLER",
@@ -762,26 +1009,6 @@
     "supportDescription": "Keine Antwort gefunden? Unser Support-Team hilft dir gerne weiter.",
     "contactSupport": "Kontakt"
   },
-  "gacha": {
-    "heroTitle1": "MYSTERY",
-    "heroTitle2": "BOXEN",
-    "heroSubtitle": "Versuche dein Glück und entdecke seltene Sammlerstücke. Jede Box enthält Artikel aus ihrer exklusiven Kollektion.",
-    "howItWorks": "So funktioniert's",
-    "howItWorksSubtitle": "Ein einfacher Ablauf, um deinen Mystery-Artikel zu entdecken",
-    "step1Title": "1. Box wählen",
-    "step1Desc": "Durchsuche thematische Mystery-Boxen und schau dir Inhalte und Wahrscheinlichkeiten an.",
-    "step2Title": "2. Code erhalten",
-    "step2Desc": "Nach dem Kauf erhältst du einen einzigartigen Einlösecode.",
-    "step3Title": "3. Enthüllen",
-    "step3Desc": "Nutze deinen Code, um deinen Artikel mit einer aufregenden Animation zu enthüllen.",
-    "step4Title": "4. Einlösen & Versenden",
-    "step4Desc": "Gib deine Lieferadresse ein und wir senden dir deinen Gewinn.",
-    "giftTitle": "Eine Mystery-Box verschenken",
-    "giftDesc": "Teile die Aufregung! Du kannst deinen Einlösecode an Freunde weitergeben. Sie können das Geheimnis lüften und den Gewinn selbst einlösen.",
-    "noBoxesTitle": "Keine Mystery-Boxen verfügbar",
-    "noBoxesDesc": "Mystery-Boxen sind derzeit nicht verfügbar. Schau bald wieder vorbei!",
-    "disclaimer": "Mystery-Boxen enthalten zufällige Artikel aus ihrer thematischen Kollektion. Alle Wahrscheinlichkeiten werden zur Transparenz angezeigt. Ergebnisse werden durch einen kryptografisch sicheren Zufallsalgorithmus zum Zeitpunkt der Enthüllung bestimmt. Jede Box enthält garantiert ein Produkt. Nur für Personen ab 18 Jahren. Bitte spiele verantwortungsbewusst."
-  },
   "cookies": {
     "banner": "Wir verwenden Cookies, um Ihr Erlebnis zu verbessern. Sie können Ihre Einstellungen unten anpassen.",
     "acceptAll": "Alle akzeptieren",
@@ -798,5 +1025,45 @@
     "marketingDesc": "Werden verwendet, um relevante Anzeigen zu liefern und die Kampagnenleistung zu verfolgen.",
     "marketingCookies": "Shopify Marketing-Pixel (Conversion-Tracking)",
     "privacyLink": "Datenschutzrichtlinie"
+  },
+  "shopByType": {
+    "breadcrumbHome": "Startseite",
+    "breadcrumbShop": "Shop",
+    "hubTitle": "Nach Typ shoppen",
+    "hubSubtitle": "Entdecke Produkte aus allen Anime-Universen, sortiert nach Kategorie. Finde deinen Lieblingsstil aus allen Welten auf einmal.",
+    "hubMetaTitle": "Nach Typ shoppen — Alle Kategorien | Mizoke",
+    "hubMetaDescription": "Anime-Merchandise nach Kategorie. Hoodies, T-Shirts, Namensschilder, Schlüsselanhänger und Magnete aus allen Anime-Universen.",
+    "hub": {
+      "eyebrow": "Anime Merch shoppen",
+      "title": "Nach Kategorie",
+      "subtitle": "Individuelle Anime-Merchandise aus jedem Universum. Personalisierte Hoodies, T-Shirts, Namensschilder, Schlüsselanhänger und Magnete aus One Piece, Demon Slayer, Dragon Ball, Jujutsu Kaisen und mehr — weltweiter Versand.",
+      "items": "Artikel",
+      "enter": "Öffnen",
+      "crosslink": "Lieber nach Anime-Welt shoppen?"
+    },
+    "metaTitle": "{type} — Alle Anime-Universen | Mizoke",
+    "metaDescription": "Entdecke {type} aus allen Anime-Universen an einem Ort. Individuelle Designs aus One Piece, Demon Slayer, Attack on Titan und mehr.",
+    "types": {
+      "hoodies": {
+        "title": "Hoodies",
+        "subtitle": "Premium Anime-Hoodies aus jedem Universum"
+      },
+      "tshirts": {
+        "title": "T-Shirts",
+        "subtitle": "Individuelle Anime-Shirts aus allen Welten"
+      },
+      "name-signs": {
+        "title": "Namensschilder",
+        "subtitle": "Personalisierte Schilder inspiriert von deinem Lieblingsanime"
+      },
+      "keychains": {
+        "title": "Schlüsselanhänger",
+        "subtitle": "Anime-Schlüsselanhänger aus jedem Universum"
+      },
+      "magnets": {
+        "title": "Magnete",
+        "subtitle": "Sammelbare Anime-Magnete aus allen Welten"
+      }
+    }
   }
 }

@@ -3,8 +3,9 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
-import { Search, ShoppingBag, User, Heart } from 'lucide-react'
+import { Menu, Search, ShoppingBag, User, Heart } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
+import { MizokeLogo } from '@/components/ui/MizokeLogo'
 import { useUIStore } from '@/stores/uiStore'
 import { useCartStore } from '@/stores/cartStore'
 import { useAuthStore } from '@/stores/authStore'
@@ -15,9 +16,8 @@ interface HeaderProps {
 }
 
 export function Header({ className }: HeaderProps) {
-  const t = useTranslations('header')
   const tCommon = useTranslations('common')
-  const { openCart, openSearch } = useUIStore()
+  const { openCart, openSearch, openMobileMenu } = useUIStore()
   const totalQuantity = useCartStore((state) => state.totalQuantity)
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
   const wishlistCount = useWishlistStore((state) => state.getItemCount())
@@ -33,38 +33,31 @@ export function Header({ className }: HeaderProps) {
       )}
     >
       <div className="flex items-center justify-between h-full px-4 max-w-7xl mx-auto">
-        {/* Left: Logo (desktop) / Spacer (mobile) */}
+        {/* Left: Hamburger (mobile) + Logo + Desktop Nav */}
         <div className="flex items-center">
-          {/* Logo - Left on desktop, centered on mobile */}
-          <Link href="/" className="hidden lg:flex flex-col items-start group">
-            <motion.span
-              className={cn(
-                'font-display text-2xl font-bold',
-                'text-white',
-                'tracking-wider'
-              )}
-              style={{
-                textShadow: '0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3)',
-              }}
-              whileHover={{ scale: 1.02 }}
-            >
-              MIZOKE
-            </motion.span>
-            <span
-              className={cn(
-                'font-display text-[10px]',
-                'text-white/60',
-                'tracking-[3px]',
-                'group-hover:text-white/80 transition-colors duration-200'
-              )}
-            >
-              {t('tagline').toUpperCase()}
-            </span>
+          {/* Hamburger - Mobile only */}
+          <button
+            onClick={openMobileMenu}
+            className={cn(
+              'lg:hidden w-10 h-10 -ml-2 mr-0 flex items-center justify-center',
+              'text-white/70 hover:text-white transition-colors',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan rounded-lg'
+            )}
+            aria-label="Open menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+
+          <Link href="/" className="flex items-center">
+            <motion.div whileHover={{ scale: 1.02 }} className="flex items-center">
+              <MizokeLogo className="h-6 lg:h-8 w-auto" />
+            </motion.div>
           </Link>
           {/* Desktop navigation links */}
           <nav className="hidden lg:flex items-center gap-6 ml-8">
             {[
               { href: '/worlds', label: tCommon('worlds') },
+              { href: '/shop', label: tCommon('shop') },
               { href: '/new', label: tCommon('newArrivals') },
               { href: '/drops', label: tCommon('drops') },
               { href: '/sale', label: tCommon('sale') },
@@ -78,57 +71,26 @@ export function Header({ className }: HeaderProps) {
               </Link>
             ))}
           </nav>
-          {/* Spacer for mobile to keep logo centered */}
-          <div className="w-10 h-10 lg:hidden" />
         </div>
-
-        {/* Center: Logo (mobile only) */}
-        <Link href="/" className="flex lg:hidden flex-col items-center group">
-          <motion.span
-            className={cn(
-              'font-display text-xl font-bold',
-              'text-white',
-              'tracking-wider'
-            )}
-            style={{
-              textShadow: '0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3)',
-            }}
-            whileHover={{ scale: 1.02 }}
-          >
-            MIZOKE
-          </motion.span>
-          <span
-            className={cn(
-              'font-display text-[8px]',
-              'text-white/60',
-              'tracking-[3px]',
-              'group-hover:text-white/80 transition-colors duration-200'
-            )}
-          >
-            {t('tagline').toUpperCase()}
-          </span>
-        </Link>
 
         {/* Right: Search, Wishlist, Cart & Profile */}
         <div className="flex items-center gap-2 lg:gap-3">
-          {/* Search - Icon on mobile, text button on desktop */}
+          {/* Search - Desktop only (mobile has bottom nav) */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={openSearch}
             title={tCommon('search')}
             className={cn(
-              'flex items-center justify-center',
+              'hidden lg:flex items-center justify-center',
               'text-neon-cyan/70 hover:text-neon-cyan',
               'transition-all duration-200',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary rounded-lg',
-              'w-10 h-10',
               'lg:w-auto lg:h-auto lg:px-4 lg:py-2 lg:border lg:border-white/20 lg:hover:border-neon-cyan/50 lg:hover:bg-neon-cyan/5 lg:rounded-full'
             )}
             aria-label={tCommon('search')}
           >
-            <Search className="w-6 h-6 lg:hidden" style={{ filter: 'drop-shadow(0 0 3px rgba(0, 245, 255, 0.5))' }} />
-            <span className="hidden lg:flex items-center gap-2 text-sm font-medium">
+            <span className="flex items-center gap-2 text-sm font-medium">
               <Search className="w-4 h-4" />
               {tCommon('search')}
             </span>
@@ -218,7 +180,7 @@ export function Header({ className }: HeaderProps) {
             {/* Profile - Desktop only (mobile has bottom nav) */}
             <Link
               href={isAuthenticated ? '/account/dashboard' : '/account/login'}
-              className=""
+              className="hidden lg:block"
               title={isAuthenticated ? tCommon('account') : tCommon('login')}
             >
               <motion.div

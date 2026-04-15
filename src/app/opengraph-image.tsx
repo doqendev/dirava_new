@@ -67,7 +67,7 @@ export default function OGImage() {
             marginTop: 24,
           }}
         >
-          Premium Anime Merchandise &amp; Mystery Boxes
+          Premium Anime Merchandise &amp; Collectibles
         </span>
       </div>
     ),

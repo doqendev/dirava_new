@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     const customer = customerData.customer
 
     console.log(
-      `[GDPR] Data deletion requested for customer: ${customer.email} (ID: ${customer.id})`
+      `[GDPR] Data deletion requested for customer ID: ${customer.id}`
     )
 
     // Notify store admin via Shopify contact form (delivers to store owner email)

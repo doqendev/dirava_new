@@ -3,7 +3,6 @@ import { persist } from 'zustand/middleware'
 import { shopifyClient } from '@/lib/shopify/client'
 import { CREATE_CART, ADD_TO_CART, UPDATE_CART_LINE, REMOVE_FROM_CART, CART_DISCOUNT_CODES_UPDATE } from '@/lib/shopify/mutations'
 import { GET_CART } from '@/lib/shopify/queries'
-import { useToastStore } from '@/stores/toastStore'
 import type { ShopifyCartLine, ShopifyMoney, ShopifyDiscountCode } from '@/types/shopify'
 
 // Debounce tracking for rapid quantity changes
@@ -152,19 +151,16 @@ export const useCartStore = create<CartState>()(
           const { cart, userErrors } = response.cartLinesAdd
           if (userErrors && userErrors.length > 0) {
             set({ error: userErrors[0]!.message, isLoading: false })
-            useToastStore.getState().add({ type: 'error', message: userErrors[0]!.message })
             return
           }
 
           applyCartResponse(set, cart)
-          useToastStore.getState().add({ type: 'success', message: 'Item added to cart' })
         } catch (error) {
           console.error('Failed to add item:', error)
           set({
             error: 'Failed to add item to cart',
             isLoading: false,
           })
-          useToastStore.getState().add({ type: 'error', message: 'Failed to add item to cart' })
         }
       },
 
@@ -216,7 +212,6 @@ export const useCartStore = create<CartState>()(
             error: 'Failed to add bundle to cart',
             isLoading: false,
           })
-          useToastStore.getState().add({ type: 'error', message: 'Failed to add bundle to cart' })
           return { success: false, error: 'Failed to add bundle to cart' }
         }
       },
@@ -278,7 +273,6 @@ export const useCartStore = create<CartState>()(
             } else {
               set({ loadingItems: nextLoading })
             }
-            useToastStore.getState().add({ type: 'error', message: 'Failed to update item' })
           }
         }, 300))
       },
@@ -320,7 +314,6 @@ export const useCartStore = create<CartState>()(
           const doneLoading = new Set(get().loadingItems)
           doneLoading.delete(lineId)
           set({ lines: previousLines, totalQuantity: previousTotal, loadingItems: doneLoading })
-          useToastStore.getState().add({ type: 'error', message: 'Failed to remove item' })
         }
       },
 

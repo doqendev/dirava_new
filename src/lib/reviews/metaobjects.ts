@@ -458,6 +458,76 @@ export async function updateReviewStatus(
 }
 
 /**
+ * Update review content fields (author, rating, title, content, verified)
+ * Only provided fields are updated.
+ */
+export async function updateReview(
+  reviewId: string,
+  data: {
+    authorName?: string
+    rating?: number
+    title?: string
+    content?: string
+    verifiedPurchase?: boolean
+    countryCode?: string
+  }
+): Promise<Review | null> {
+  try {
+    const fields: Array<{ key: string; value: string }> = []
+
+    if (data.authorName !== undefined) {
+      fields.push({ key: 'author_name', value: data.authorName })
+    }
+    if (data.rating !== undefined) {
+      if (data.rating < 1 || data.rating > 5) {
+        console.error('Rating must be between 1 and 5')
+        return null
+      }
+      fields.push({ key: 'rating', value: data.rating.toString() })
+    }
+    if (data.title !== undefined) {
+      fields.push({ key: 'title', value: data.title })
+    }
+    if (data.content !== undefined) {
+      fields.push({ key: 'content', value: data.content })
+    }
+    if (data.verifiedPurchase !== undefined) {
+      fields.push({ key: 'verified_purchase', value: data.verifiedPurchase.toString() })
+    }
+    if (data.countryCode !== undefined) {
+      fields.push({ key: 'country_code', value: data.countryCode })
+    }
+
+    if (fields.length === 0) {
+      console.error('No fields provided to update')
+      return null
+    }
+
+    const response = await adminFetch<UpdateMetaobjectResponse>(
+      UPDATE_REVIEW,
+      { id: reviewId, fields }
+    )
+
+    if (response.metaobjectUpdate.userErrors.length > 0) {
+      console.error(
+        'Failed to update review:',
+        response.metaobjectUpdate.userErrors
+      )
+      return null
+    }
+
+    if (!response.metaobjectUpdate.metaobject) {
+      return null
+    }
+
+    return parseReviewFromMetaobject(response.metaobjectUpdate.metaobject)
+  } catch (error) {
+    console.error('Error updating review:', error)
+    return null
+  }
+}
+
+/**
  * Get all reviews by a specific email
  */
 export async function getReviewsByEmail(email: string): Promise<Review[]> {

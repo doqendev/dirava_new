@@ -43,16 +43,20 @@
     "outOfStock": "Out of Stock",
     "inStock": "In Stock",
     "lowStock": "Low Stock",
-    "soldOut": "Sold Out"
+    "soldOut": "Sold Out",
+    "bundles": "Bundles",
+    "contact": "Contact",
+    "faq": "FAQ"
   },
   "nav": {
     "account": "Account",
     "bundles": "Bundles",
     "drops": "Drops",
-    "gacha": "Gacha",
     "home": "Home",
     "profile": "Profile",
+    "search": "Search",
     "searchPlaceholder": "Search products...",
+    "shop": "Shop",
     "worlds": "Worlds"
   },
   "header": {
@@ -134,6 +138,7 @@
     "returnsExchanges": "Exchanges available for different sizes or colors, subject to availability.",
     "returnsRefund": "Refunds processed within 5-7 business days after receiving your return.",
     "returnsFinalSale": "Personalized and limited edition items are final sale.",
+    "preview3D": "Preview in 3D",
     "preview3dLoading": "Loading...",
     "preview3dUpdating": "Updating...",
     "preview3dNotAvailable": "3D preview not available",
@@ -143,7 +148,7 @@
     "trustFreeShipping": "Free Shipping",
     "trustSecureCheckout": "Secure Checkout",
     "trustReturns": "30-Day Returns",
-    "trustLicensed": "Official Licensed",
+    "trustLicensed": "Custom Designs",
     "whatYouGet": "What You Get",
     "highlightLedSign": "Custom LED neon-style sign with your name",
     "highlightAcrylicBase": "High-quality acrylic base",
@@ -178,7 +183,12 @@
     "decreaseQuantity": "Decrease quantity",
     "increaseQuantity": "Increase quantity",
     "youMightLike": "You Might Also Like",
-    "quickView": "Quick View"
+    "quickView": "Quick View",
+    "itemAdded": "Item added to cart",
+    "failedToAdd": "Failed to add item to cart",
+    "failedToAddBundle": "Failed to add bundle to cart",
+    "failedToUpdate": "Failed to update item",
+    "failedToRemove": "Failed to remove item"
   },
   "discount": {
     "haveCode": "Have a discount code?",
@@ -230,32 +240,6 @@
     "exploreDescription": "Choose your universe and discover exclusive merchandise from your favorite anime.",
     "home": "Home",
     "worlds": "Worlds"
-  },
-  "codes": {
-    "revealNow": "Reveal Now",
-    "claimPrize": "Claim Prize",
-    "viewDetails": "View Details",
-    "back": "Back",
-    "signInRequired": "Sign In Required",
-    "signInToView": "Please sign in to view your redemption codes.",
-    "signIn": "Sign In",
-    "loadingCodes": "Loading your codes...",
-    "somethingWrong": "Something Went Wrong",
-    "loadError": "We couldn't load your codes. Please try again.",
-    "tryAgain": "Try Again",
-    "backToAccount": "Back to Account",
-    "myRedemptionCodes": "My Redemption Codes",
-    "codesTotal": "{count} {count, plural, one {code} other {codes}} total",
-    "noCodesYet": "No Codes Yet",
-    "noCodesDescription": "Purchase a mystery box to get your first redemption code!",
-    "browseMysteryBoxes": "Browse Mystery Boxes",
-    "haveCode": "Have a code to redeem?",
-    "haveCodeDescription": "If someone shared a code with you, enter it to reveal the mystery.",
-    "enterCode": "Enter a Code",
-    "statusUnused": "Ready to Reveal",
-    "statusRevealed": "Revealed",
-    "statusClaimed": "Claimed",
-    "statusShipped": "Shipped"
   },
   "orderHistory": {
     "title": "Orders",
@@ -420,6 +404,7 @@
     "showingProducts": "Showing {count} products",
     "noProductsMatch": "No products match your filters",
     "productType": "Product Type",
+    "world": "World",
     "apparel": "Apparel",
     "accessories": "Accessories",
     "applyFilters": "APPLY FILTERS",
@@ -496,6 +481,234 @@
     "questionsPrefix": "If you have questions about this policy, please",
     "contactUs": "contact us"
   },
+  "policies": {
+    "privacy": {
+      "title": "Privacy Policy",
+      "description": "How we collect, use, and protect your personal information.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "Information We Collect",
+          "content": "Personal information you provide when creating an account (name, email address, shipping address)\nPayment information processed securely through our payment providers\nOrder history and product preferences\nDevice and browser information for site optimization\nCookies and similar tracking technologies to enhance your experience"
+        },
+        "1": {
+          "heading": "How We Use Your Information",
+          "content": "Process and fulfill your orders\nSend order confirmations and shipping updates\nProvide customer support and respond to inquiries\nSend promotional emails (with your consent)\nImprove our website and product offerings\nPrevent fraud and enhance security"
+        },
+        "2": {
+          "heading": "Information Sharing",
+          "content": "We do not sell your personal information to third parties. We may share your information with trusted service providers who assist us in operating our website, processing payments, and delivering products. These partners are bound by confidentiality agreements and are only permitted to use your information as necessary to provide services to us."
+        },
+        "3": {
+          "heading": "Data Security",
+          "content": "We implement industry-standard security measures to protect your personal information. All payment transactions are encrypted using SSL technology. However, no method of transmission over the internet is 100% secure, and we cannot guarantee absolute security."
+        },
+        "4": {
+          "heading": "Your Rights",
+          "content": "Access the personal information we hold about you\nRequest correction of inaccurate information\nRequest deletion of your personal data\nOpt-out of marketing communications at any time\nRequest a copy of your data in a portable format"
+        },
+        "5": {
+          "heading": "Contact Us",
+          "content": "If you have questions about this Privacy Policy or wish to exercise your rights, please contact us at privacy@mizoke.com or through our Contact page."
+        }
+      }
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "description": "The terms and conditions governing your use of our website and services.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "Acceptance of Terms",
+          "content": "By accessing and using Mizoke, you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our website or services."
+        },
+        "1": {
+          "heading": "Use of Website",
+          "content": "You must be at least 18 years old or have parental consent to make purchases\nYou are responsible for maintaining the confidentiality of your account\nYou agree to provide accurate and complete information\nYou may not use our website for any illegal or unauthorized purpose\nWe reserve the right to refuse service to anyone for any reason"
+        },
+        "2": {
+          "heading": "Products and Pricing",
+          "content": "All products are subject to availability. We reserve the right to discontinue any product at any time. Prices are subject to change without notice. We make every effort to display accurate pricing, but errors may occur. In the event of a pricing error, we reserve the right to cancel any orders placed at the incorrect price."
+        },
+        "3": {
+          "heading": "Orders and Payment",
+          "content": "All orders are subject to acceptance and availability\nPayment must be received before order processing\nWe accept major credit cards and other payment methods as displayed at checkout\nYou are responsible for any applicable taxes and duties"
+        },
+        "4": {
+          "heading": "Intellectual Property",
+          "content": "All content on this website, including images, text, logos, and designs, is the property of Mizoke or our licensors. You may not reproduce, distribute, or use any content without our express written permission. Anime characters and franchises are trademarks of their respective owners."
+        },
+        "5": {
+          "heading": "Limitation of Liability",
+          "content": "Mizoke shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of our website or products. Our total liability shall not exceed the amount you paid for the products in question."
+        },
+        "6": {
+          "heading": "Changes to Terms",
+          "content": "We reserve the right to modify these Terms of Service at any time. Changes will be effective immediately upon posting. Your continued use of the website after changes constitutes acceptance of the new terms."
+        }
+      }
+    },
+    "shipping": {
+      "title": "Shipping Policy",
+      "description": "Information about shipping methods, delivery times, and costs.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "Processing Time",
+          "content": "Orders are typically processed within 1-3 business days. During high-volume periods or special drops, processing may take up to 5 business days. Pre-order items will be shipped according to their estimated release dates."
+        },
+        "1": {
+          "heading": "Europe (Domestic)",
+          "content": "Standard Shipping (5-12 business days): \u20ac5.99 or FREE on orders over \u20ac45"
+        },
+        "2": {
+          "heading": "United Kingdom",
+          "content": "Standard Shipping (5-10 business days): \u00a34.99 or FREE on orders over \u00a340"
+        },
+        "3": {
+          "heading": "Canada",
+          "content": "Standard Shipping (7-14 business days): $9.99 CAD or FREE on orders over $73 CAD"
+        },
+        "4": {
+          "heading": "Australia",
+          "content": "Standard Shipping (10-20 business days): $11 AUD or FREE on orders over $80 AUD"
+        },
+        "5": {
+          "heading": "Rest of World",
+          "content": "Asia Pacific: 14-28 business days. Other regions: 14-35 business days. Shipping costs vary by country and are calculated at checkout based on your location and order weight."
+        },
+        "6": {
+          "heading": "United States",
+          "content": "Shipping to the United States is currently suspended due to ongoing tariff changes. We apologize for any inconvenience and are monitoring the situation closely. Please check back for updates or sign up for our newsletter to be notified when US shipping resumes."
+        },
+        "7": {
+          "heading": "Customs and Duties",
+          "content": "International orders may be subject to customs fees, import duties, and taxes. These charges are the responsibility of the recipient and are not included in our shipping prices. We are not responsible for delays caused by customs processing."
+        },
+        "8": {
+          "heading": "Order Tracking",
+          "content": "Once your order ships, you will receive an email with tracking information. You can also track your order by logging into your account or visiting our Order Tracking page. Please allow 24-48 hours for tracking information to update."
+        },
+        "9": {
+          "heading": "Shipping Restrictions",
+          "content": "Some products may have shipping restrictions to certain regions. If we are unable to ship to your location, you will be notified during checkout. We currently do not ship to P.O. boxes for express or overnight orders."
+        },
+        "10": {
+          "heading": "Lost or Damaged Packages",
+          "content": "If your package is lost or arrives damaged, please contact us within 7 days of the expected delivery date. We will work with the carrier to resolve the issue and may offer a replacement or refund at our discretion."
+        }
+      }
+    },
+    "returns": {
+      "title": "Returns & Refunds",
+      "description": "Our policies for returns, exchanges, and refunds.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "Return Policy",
+          "content": "We want you to love your purchase! If you are not completely satisfied, you may return most items within 30 days of delivery for a full refund or exchange. Items must be unused, unworn, and in their original packaging with all tags attached."
+        },
+        "1": {
+          "heading": "Non-Returnable Items",
+          "content": "Limited edition or exclusive drop items (marked as \"Final Sale\")\nOpened collectibles and figures\nPersonalized or custom items\nItems marked as clearance or final sale\nGift cards"
+        },
+        "2": {
+          "heading": "How to Initiate a Return",
+          "content": "Log into your account and go to Order History\nSelect the order and items you wish to return\nChoose your reason for return and submit the request\nYou will receive the return address and instructions via email\nPack items securely and ship using a tracked service at your own cost"
+        },
+        "3": {
+          "heading": "Exchanges",
+          "content": "If you would like to exchange an item for a different size or color, please indicate this when initiating your return. Subject to availability, we will ship the exchange item once we receive your return. If the exchange item is unavailable, we will issue a refund."
+        },
+        "4": {
+          "heading": "Refund Processing",
+          "content": "Refunds are processed within 5-7 business days after we receive your return. The refund will be credited to your original payment method. Please allow an additional 3-5 business days for the refund to appear on your statement."
+        },
+        "5": {
+          "heading": "Return Shipping",
+          "content": "Return shipping costs are the responsibility of the customer. We recommend using a tracked shipping service to ensure your return reaches us safely. If the return is due to our error (wrong item, defective product), we will cover the return shipping costs."
+        },
+        "6": {
+          "heading": "Damaged or Defective Items",
+          "content": "If you receive a damaged or defective item, please contact us within 48 hours of delivery with photos of the damage. We will arrange for a free return and send a replacement or issue a full refund at your preference."
+        }
+      }
+    },
+    "accessibility": {
+      "title": "Accessibility",
+      "description": "Our commitment to making our website accessible to everyone.",
+      "lastUpdated": "2024-01-15",
+      "sections": {
+        "0": {
+          "heading": "Our Commitment",
+          "content": "Mizoke is committed to ensuring digital accessibility for people of all abilities. We are continually improving the user experience for everyone and applying relevant accessibility standards to guarantee we provide equal access to all users."
+        },
+        "1": {
+          "heading": "Accessibility Standards",
+          "content": "We strive to conform to Web Content Accessibility Guidelines (WCAG) 2.1 Level AA standards. Our website is designed to be compatible with assistive technologies including screen readers, keyboard navigation, and screen magnifiers."
+        },
+        "2": {
+          "heading": "Accessibility Features",
+          "content": "Keyboard navigation support throughout the website\nAlternative text for images\nSufficient color contrast ratios\nResizable text without loss of functionality\nClear and consistent navigation\nForm labels and error identification\nSkip navigation links\nARIA landmarks and labels"
+        },
+        "3": {
+          "heading": "Ongoing Efforts",
+          "content": "We regularly test our website using assistive technologies and accessibility evaluation tools. Our team receives training on accessibility best practices, and we include accessibility considerations in our design and development processes."
+        },
+        "4": {
+          "heading": "Known Limitations",
+          "content": "While we strive for full accessibility, some third-party content or features may not be fully accessible. We are working with our vendors to improve accessibility across all aspects of our website."
+        },
+        "5": {
+          "heading": "Feedback",
+          "content": "We welcome your feedback on the accessibility of Mizoke. If you encounter any accessibility barriers or have suggestions for improvement, please contact us at accessibility@mizoke.com or use our Contact page. We take all feedback seriously and will work to address any issues."
+        },
+        "6": {
+          "heading": "Alternative Access",
+          "content": "If you are unable to access any content or feature on our website, please contact our customer service team. We will work with you to provide the information or service you need through an alternative method."
+        }
+      }
+    },
+    "imprint": {
+      "title": "Imprint (Impressum)",
+      "description": "Legal information about the company operating this website.",
+      "lastUpdated": "2026-02-26",
+      "sections": {
+        "0": {
+          "heading": "Company Information",
+          "content": "Neo Stage Collective\nManaging Director: [Name to be added]\nEmail: contact@mizoke.com\nWebsite: https://www.mizoke.com"
+        },
+        "1": {
+          "heading": "Address",
+          "content": "[Company address to be added before launch]"
+        },
+        "2": {
+          "heading": "VAT Identification Number",
+          "content": "VAT ID: [To be added before launch]"
+        },
+        "3": {
+          "heading": "Responsible for Content",
+          "content": "Responsible according to \u00a7 55 Abs. 2 RStV: [Name to be added]"
+        },
+        "4": {
+          "heading": "EU Online Dispute Resolution",
+          "content": "The European Commission provides a platform for online dispute resolution (ODR): https://ec.europa.eu/consumers/odr. Our email address can be found above. We are not willing or obliged to participate in dispute resolution proceedings before a consumer arbitration board."
+        },
+        "5": {
+          "heading": "Liability for Content",
+          "content": "As a service provider, we are responsible for our own content on these pages according to general laws (\u00a7 7 Abs. 1 TMG). According to \u00a7\u00a7 8 to 10 TMG, however, we are not obligated to monitor transmitted or stored third-party information or to investigate circumstances that indicate illegal activity."
+        },
+        "6": {
+          "heading": "Liability for Links",
+          "content": "Our website contains links to external third-party websites over whose content we have no influence. Therefore, we cannot accept any liability for this external content. The respective provider or operator of the linked pages is always responsible for the content of the linked pages."
+        },
+        "7": {
+          "heading": "Copyright",
+          "content": "The content and works on these pages created by the site operators are subject to copyright law. Duplication, processing, distribution, and any kind of use beyond the limits of copyright law require the written consent of the respective author or creator. Anime characters and franchises are trademarks of their respective owners."
+        }
+      }
+    }
+  },
   "sizeGuide": {
     "title": "{type} Size Guide",
     "allMeasurementsIn": "All measurements in",
@@ -508,7 +721,41 @@
     "hips": "Hips",
     "hipsDescription": "Measure around the fullest part of your hips",
     "length": "Length",
-    "lengthDescription": "Measure from shoulder to hem"
+    "lengthDescription": "Measure from shoulder to hem",
+    "columns": {
+      "size": "Size",
+      "chest": "Chest",
+      "length": "Length",
+      "shoulder": "Shoulder",
+      "sleeve": "Sleeve",
+      "waist": "Waist",
+      "hips": "Hips",
+      "inseam": "Inseam"
+    },
+    "productTypes": {
+      "tshirt": "T-Shirt",
+      "hoodie": "Hoodie",
+      "pants": "Pants",
+      "jacket": "Jacket",
+      "shorts": "Shorts",
+      "dress": "Dress",
+      "default": "Apparel"
+    },
+    "noteKeys": {
+      "measurementsInCm": "Measurements are in centimeters",
+      "sizeUpForRelaxed": "For a relaxed fit, size up",
+      "chestTolerance": "Chest measurements include 2-3cm tolerance",
+      "hoodiesOversized": "Hoodies have an oversized fit",
+      "lengthFromShoulder": "Length is measured from shoulder to hem",
+      "waistNatural": "Waist is measured at natural waistline",
+      "inseamCrotchToAnkle": "Inseam is from crotch to ankle",
+      "allowLayering": "Allow room for layering",
+      "jacketFromCollar": "Jacket length is measured from collar to hem",
+      "lengthWaistToHem": "Length measured from waist to hem",
+      "lengthShoulderToHem": "Length measured from shoulder to hem",
+      "generalGuide": "This is a general size guide",
+      "individualVariation": "Individual products may vary slightly"
+    }
   },
   "reviews": {
     "title": "Customer Reviews",
@@ -627,7 +874,7 @@
   "home": {
     "chooseYour": "CHOOSE YOUR",
     "world": "WORLD",
-    "heroTagline": "Drops, bundles, and collectibles — tap a universe.",
+    "heroTagline": "Custom anime merch made for you. Pick your universe and make it personal.",
     "newArrivals": "NEW ARRIVALS",
     "dropRunway": "DROP RUNWAY",
     "bestSellers": "BEST SELLERS",
@@ -701,7 +948,7 @@
   "seo": {
     "siteName": "Mizoke",
     "siteDescription": "Shop premium anime merch, exclusive drops & limited edition collectibles. One Piece, Demon Slayer, Dragon Ball & more. Free shipping over €45.",
-    "homeTitle": "Mizoke – Premium Anime Merch, Hoodies & Collectibles | Official Store",
+    "homeTitle": "Mizoke – Custom Anime Merch, Hoodies & Collectibles",
     "homeDescription": "Shop exclusive anime merchandise from One Piece, Demon Slayer, Dragon Ball & more. Premium hoodies, t-shirts, keychains & collectibles. Free shipping €45+ | Fast worldwide delivery.",
     "dropsTitle": "Exclusive Limited Drops – Rare Anime Merch | Mizoke",
     "dropsDescription": "Don't miss out! Shop exclusive limited edition anime drops before they sell out forever. Rare collectibles, premium apparel & one-time releases. When they're gone, they're gone.",
@@ -762,26 +1009,6 @@
     "supportDescription": "Can't find the answer you're looking for? Our support team is here to help.",
     "contactSupport": "Contact Us"
   },
-  "gacha": {
-    "heroTitle1": "MYSTERY",
-    "heroTitle2": "BOXES",
-    "heroSubtitle": "Take a chance and discover rare collectibles. Each themed box contains items from its exclusive collection.",
-    "howItWorks": "How It Works",
-    "howItWorksSubtitle": "A simple process to discover your mystery item",
-    "step1Title": "1. Choose a Box",
-    "step1Desc": "Browse themed mystery boxes and inspect their contents and odds.",
-    "step2Title": "2. Get Your Code",
-    "step2Desc": "After purchase, you'll receive a unique redemption code.",
-    "step3Title": "3. Reveal",
-    "step3Desc": "Use your code to reveal your item with an exciting animation.",
-    "step4Title": "4. Claim & Ship",
-    "step4Desc": "Enter your shipping address and we'll send your prize.",
-    "giftTitle": "Gift a Mystery Box",
-    "giftDesc": "Share the excitement! You can share your redemption code with friends. They can reveal the mystery and claim the prize themselves.",
-    "noBoxesTitle": "No Mystery Boxes Available",
-    "noBoxesDesc": "Mystery boxes are currently not available. Check back soon!",
-    "disclaimer": "Mystery boxes contain random items from their themed collection. All odds are displayed for transparency. Results are determined by a cryptographically secure random algorithm at the time of reveal. Each box is guaranteed to contain a product. Must be 18+ to purchase. Please gamble responsibly."
-  },
   "cookies": {
     "banner": "We use cookies to enhance your experience. You can customize your preferences below.",
     "acceptAll": "Accept All",
@@ -798,5 +1025,45 @@
     "marketingDesc": "Used to deliver relevant ads and track campaign performance.",
     "marketingCookies": "Shopify marketing pixels (conversion tracking)",
     "privacyLink": "Privacy Policy"
+  },
+  "shopByType": {
+    "breadcrumbHome": "Home",
+    "breadcrumbShop": "Shop",
+    "hubTitle": "Shop by Type",
+    "hubSubtitle": "Browse products across every anime universe, sorted by category. Find your favorite style from all worlds at once.",
+    "hubMetaTitle": "Shop by Type — Browse All Categories | Mizoke",
+    "hubMetaDescription": "Shop anime merchandise by category. Find hoodies, t-shirts, name signs, keychains and magnets across every anime universe.",
+    "hub": {
+      "eyebrow": "Shop Anime Merchandise",
+      "title": "By Category",
+      "subtitle": "Custom anime merch across every universe. Personalized hoodies, tees, name signs, keychains and magnets from One Piece, Demon Slayer, Dragon Ball, Jujutsu Kaisen and more — worldwide shipping.",
+      "items": "items",
+      "enter": "Enter",
+      "crosslink": "Prefer to shop by anime world?"
+    },
+    "metaTitle": "{type} — All Anime Universes | Mizoke",
+    "metaDescription": "Browse {type} from every anime universe in one place. Custom designs from One Piece, Demon Slayer, Attack on Titan and more.",
+    "types": {
+      "hoodies": {
+        "title": "Hoodies",
+        "subtitle": "Premium anime hoodies from every universe"
+      },
+      "tshirts": {
+        "title": "T-Shirts",
+        "subtitle": "Custom anime tees across all worlds"
+      },
+      "name-signs": {
+        "title": "Name Signs",
+        "subtitle": "Personalized signs inspired by your favorite anime"
+      },
+      "keychains": {
+        "title": "Keychains",
+        "subtitle": "Anime keychains from every universe"
+      },
+      "magnets": {
+        "title": "Magnets",
+        "subtitle": "Collectible anime magnets across all worlds"
+      }
+    }
   }
 }

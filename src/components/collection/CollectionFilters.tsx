@@ -13,6 +13,12 @@ import {
   hasActiveFilters,
 } from '@/lib/utils/filters'
 
+export interface UniverseFilterOption {
+  slug: string
+  name: string
+  color: string
+}
+
 interface CollectionFiltersProps {
   filters: FilterState
   priceRange: { min: number; max: number }
@@ -20,6 +26,8 @@ interface CollectionFiltersProps {
   productCount: number
   basePath: string
   currentParams: Record<string, string>
+  hideProductTypeFilter?: boolean
+  universeOptions?: UniverseFilterOption[]
 }
 
 // Filter Checkbox Component
@@ -214,6 +222,8 @@ function DesktopFilters({
   productCount,
   onFilterChange,
   onClearFilters,
+  hideProductTypeFilter,
+  universeOptions,
   t,
 }: {
   filters: FilterState
@@ -222,6 +232,8 @@ function DesktopFilters({
   productCount: number
   onFilterChange: (key: string, value: unknown) => void
   onClearFilters: () => void
+  hideProductTypeFilter?: boolean
+  universeOptions?: UniverseFilterOption[]
   t: ReturnType<typeof useTranslations>
 }) {
   const toggleProductType = (type: ProductTypeFilter) => {
@@ -230,6 +242,14 @@ function DesktopFilters({
       ? current.filter((t) => t !== type)
       : [...current, type]
     onFilterChange('types', newTypes.length > 0 ? newTypes.join(',') : null)
+  }
+
+  const toggleUniverse = (slug: string) => {
+    const current = filters.universes
+    const next = current.includes(slug)
+      ? current.filter((u) => u !== slug)
+      : [...current, slug]
+    onFilterChange('universes', next.length > 0 ? next.join(',') : null)
   }
 
   const hasFilters = hasActiveFilters(filters)
@@ -260,14 +280,30 @@ function DesktopFilters({
           </p>
 
           {/* Product Type */}
-          <FilterSection title={t('productType')}>
-            <div className="space-y-1">
-              {/* Apparel Group */}
-              <p className="text-xs text-white/40 uppercase tracking-wider mt-2 mb-1">
-                {t('apparel')}
-              </p>
-              {PRODUCT_TYPE_OPTIONS.filter((opt) => opt.group === 'Apparel').map(
-                (option) => (
+          {!hideProductTypeFilter && (
+            <FilterSection title={t('productType')}>
+              <div className="space-y-1">
+                {/* Apparel Group */}
+                <p className="text-xs text-white/40 uppercase tracking-wider mt-2 mb-1">
+                  {t('apparel')}
+                </p>
+                {PRODUCT_TYPE_OPTIONS.filter((opt) => opt.group === 'Apparel').map(
+                  (option) => (
+                    <FilterCheckbox
+                      key={option.value}
+                      checked={filters.productTypes.includes(option.value)}
+                      onToggle={() => toggleProductType(option.value)}
+                      label={option.label}
+                      themeColor={themeColor}
+                    />
+                  )
+                )}
+
+                {/* Other Products */}
+                <p className="text-xs text-white/40 uppercase tracking-wider mt-4 mb-1">
+                  {t('accessories')}
+                </p>
+                {PRODUCT_TYPE_OPTIONS.filter((opt) => !opt.group).map((option) => (
                   <FilterCheckbox
                     key={option.value}
                     checked={filters.productTypes.includes(option.value)}
@@ -275,24 +311,27 @@ function DesktopFilters({
                     label={option.label}
                     themeColor={themeColor}
                   />
-                )
-              )}
+                ))}
+              </div>
+            </FilterSection>
+          )}
 
-              {/* Other Products */}
-              <p className="text-xs text-white/40 uppercase tracking-wider mt-4 mb-1">
-                {t('accessories')}
-              </p>
-              {PRODUCT_TYPE_OPTIONS.filter((opt) => !opt.group).map((option) => (
-                <FilterCheckbox
-                  key={option.value}
-                  checked={filters.productTypes.includes(option.value)}
-                  onToggle={() => toggleProductType(option.value)}
-                  label={option.label}
-                  themeColor={themeColor}
-                />
-              ))}
-            </div>
-          </FilterSection>
+          {/* Universe (World) */}
+          {universeOptions && universeOptions.length > 0 && (
+            <FilterSection title={t('world')}>
+              <div className="space-y-1">
+                {universeOptions.map((option) => (
+                  <FilterCheckbox
+                    key={option.slug}
+                    checked={filters.universes.includes(option.slug)}
+                    onToggle={() => toggleUniverse(option.slug)}
+                    label={option.name}
+                    themeColor={option.color}
+                  />
+                ))}
+              </div>
+            </FilterSection>
+          )}
 
           {/* Price Range */}
           <FilterSection title={t('priceRange')}>
@@ -323,6 +362,8 @@ function MobileFilterDrawer({
   onFilterChange,
   onClearFilters,
   onClose,
+  hideProductTypeFilter,
+  universeOptions,
   t,
 }: {
   filters: FilterState
@@ -332,6 +373,8 @@ function MobileFilterDrawer({
   onFilterChange: (key: string, value: unknown) => void
   onClearFilters: () => void
   onClose: () => void
+  hideProductTypeFilter?: boolean
+  universeOptions?: UniverseFilterOption[]
   t: ReturnType<typeof useTranslations>
 }) {
   const toggleProductType = (type: ProductTypeFilter) => {
@@ -340,6 +383,14 @@ function MobileFilterDrawer({
       ? current.filter((t) => t !== type)
       : [...current, type]
     onFilterChange('types', newTypes.length > 0 ? newTypes.join(',') : null)
+  }
+
+  const toggleUniverse = (slug: string) => {
+    const current = filters.universes
+    const next = current.includes(slug)
+      ? current.filter((u) => u !== slug)
+      : [...current, slug]
+    onFilterChange('universes', next.length > 0 ? next.join(',') : null)
   }
 
   const hasFilters = hasActiveFilters(filters)
@@ -394,13 +445,28 @@ function MobileFilterDrawer({
           )}
 
           {/* Product Type */}
-          <FilterSection title={t('productType')}>
-            <div className="space-y-1">
-              <p className="text-xs text-white/40 uppercase tracking-wider mt-2 mb-1">
-                {t('apparel')}
-              </p>
-              {PRODUCT_TYPE_OPTIONS.filter((opt) => opt.group === 'Apparel').map(
-                (option) => (
+          {!hideProductTypeFilter && (
+            <FilterSection title={t('productType')}>
+              <div className="space-y-1">
+                <p className="text-xs text-white/40 uppercase tracking-wider mt-2 mb-1">
+                  {t('apparel')}
+                </p>
+                {PRODUCT_TYPE_OPTIONS.filter((opt) => opt.group === 'Apparel').map(
+                  (option) => (
+                    <FilterCheckbox
+                      key={option.value}
+                      checked={filters.productTypes.includes(option.value)}
+                      onToggle={() => toggleProductType(option.value)}
+                      label={option.label}
+                      themeColor={themeColor}
+                    />
+                  )
+                )}
+
+                <p className="text-xs text-white/40 uppercase tracking-wider mt-4 mb-1">
+                  {t('accessories')}
+                </p>
+                {PRODUCT_TYPE_OPTIONS.filter((opt) => !opt.group).map((option) => (
                   <FilterCheckbox
                     key={option.value}
                     checked={filters.productTypes.includes(option.value)}
@@ -408,23 +474,27 @@ function MobileFilterDrawer({
                     label={option.label}
                     themeColor={themeColor}
                   />
-                )
-              )}
+                ))}
+              </div>
+            </FilterSection>
+          )}
 
-              <p className="text-xs text-white/40 uppercase tracking-wider mt-4 mb-1">
-                {t('accessories')}
-              </p>
-              {PRODUCT_TYPE_OPTIONS.filter((opt) => !opt.group).map((option) => (
-                <FilterCheckbox
-                  key={option.value}
-                  checked={filters.productTypes.includes(option.value)}
-                  onToggle={() => toggleProductType(option.value)}
-                  label={option.label}
-                  themeColor={themeColor}
-                />
-              ))}
-            </div>
-          </FilterSection>
+          {/* Universe (World) */}
+          {universeOptions && universeOptions.length > 0 && (
+            <FilterSection title={t('world')}>
+              <div className="space-y-1">
+                {universeOptions.map((option) => (
+                  <FilterCheckbox
+                    key={option.slug}
+                    checked={filters.universes.includes(option.slug)}
+                    onToggle={() => toggleUniverse(option.slug)}
+                    label={option.name}
+                    themeColor={option.color}
+                  />
+                ))}
+              </div>
+            </FilterSection>
+          )}
 
           {/* Price Range */}
           <FilterSection title={t('priceRange')}>
@@ -465,6 +535,8 @@ export function CollectionFilters({
   productCount,
   basePath,
   currentParams,
+  hideProductTypeFilter,
+  universeOptions,
 }: CollectionFiltersProps) {
   const t = useTranslations('filters')
   const { isFilterDrawerOpen, closeFilterDrawer } = useUIStore()
@@ -496,6 +568,8 @@ export function CollectionFilters({
         productCount={productCount}
         onFilterChange={updateFilters}
         onClearFilters={clearFilters}
+        hideProductTypeFilter={hideProductTypeFilter}
+        universeOptions={universeOptions}
         t={t}
       />
 
@@ -510,6 +584,8 @@ export function CollectionFilters({
             onFilterChange={updateFilters}
             onClearFilters={clearFilters}
             onClose={closeFilterDrawer}
+            hideProductTypeFilter={hideProductTypeFilter}
+            universeOptions={universeOptions}
             t={t}
           />
         )}
