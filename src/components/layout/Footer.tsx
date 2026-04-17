@@ -210,6 +210,8 @@ export function Footer() {
     { label: t('returnsRefunds'), href: '/policies/returns' },
     { label: t('imprint'), href: '/policies/imprint' },
     { label: t('faq'), href: '/faq' },
+    { label: t('about'), href: '/about' },
+    { label: t('guides'), href: '/guides' },
     { label: t('contactUs'), href: '/contact' },
   ]
 

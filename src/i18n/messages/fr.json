@@ -87,6 +87,8 @@
     "returnsRefunds": "Retours et remboursements",
     "imprint": "Mentions légales",
     "faq": "FAQ",
+    "about": "À propos",
+    "guides": "Guides",
     "contactUs": "Nous contacter"
   },
   "product": {
@@ -1002,6 +1004,19 @@
     "revealOrderTitle": "Révélation de commande | Mizoke",
     "revealOrderDescription": "Consulte les résultats de ta révélation mystery box."
   },
+  "aboutIntro": {
+    "heading": "Qu'est-ce que Mizoke ?",
+    "paragraph1": "Mizoke est une boutique en ligne de merchandising anime personnalisable. Nous concevons et produisons des enseignes LED, des lightboxes, des porte-clés, des magnets et des vêtements aux couleurs de One Piece, Demon Slayer, Dragon Ball, Attack on Titan, Hunter x Hunter, Jujutsu Kaisen, Bleach et Digimon.",
+    "paragraph2": "Créée par Neo Stage Collective, Mizoke organise son catalogue en « mondes » anime, chacun avec son esthétique néon unique. Nos enseignes personnalisées et lightboxes LED sont fabriquées à la commande : choisissez un personnage, ajoutez un nom et visualisez l'aperçu 3D en direct avant de valider. Livraison gratuite en Europe dès 45 €.",
+    "fact1Label": "Fabriqué sur commande",
+    "fact1Value": "Personnalisé par personnage et nom avec aperçu 3D",
+    "fact2Label": "Livraison mondiale",
+    "fact2Value": "30+ pays · livraison UE gratuite dès 45 €",
+    "fact3Label": "Catalogue",
+    "fact3Value": "8 univers anime · enseignes, porte-clés, magnets, vêtements",
+    "learnMore": "En savoir plus sur Mizoke",
+    "readFaq": "Lire la FAQ"
+  },
   "faq": {
     "title": "Questions fréquemment posées",
     "subtitle": "Trouve des réponses aux questions courantes sur nos produits, la livraison et plus encore.",
@@ -1017,7 +1032,7 @@
     "save": "Enregistrer les préférences",
     "necessary": "Nécessaires",
     "necessaryDesc": "Essentiels au fonctionnement du site. Ne peuvent pas être désactivés.",
-    "necessaryCookies": "mizoke-locale (langue), mizoke-currency (devise), mizoke-cookie-consent (choix de consentement), mizoke-auth (session), Shopify Cart ID (panier)",
+    "necessaryCookies": "mizoke-locale (langue), mizoke-currency (devise), mizoke-cookie-consent (choix de consentement), mizoke-session (session), Shopify Cart ID (panier)",
     "analytics": "Analytiques",
     "analyticsDesc": "Nous aident à comprendre comment les visiteurs interagissent avec notre site.",
     "analyticsCookies": "Vercel Analytics (pages vues, performance), Vercel Speed Insights (Core Web Vitals), Sentry (suivi d'erreurs, replay de session)",

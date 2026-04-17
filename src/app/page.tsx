@@ -5,6 +5,7 @@ import { UniverseGrid, UniverseGridSkeleton } from '@/components/home/UniverseGr
 import { DropRunway, DropRunwaySkeleton } from '@/components/home/DropRunway'
 import { NewsletterBanner } from '@/components/home/NewsletterBanner'
 import { TrustBadges } from '@/components/home/TrustBadges'
+import { AboutIntro } from '@/components/home/AboutIntro'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_UNIVERSES, GET_DROP_PRODUCTS, GET_NEW_ARRIVALS, GET_BEST_SELLERS } from '@/lib/shopify/queries'
 import { extractNodes, getCollectionUniverse, getCollectionProductCount } from '@/lib/shopify/utils'
@@ -190,6 +191,8 @@ export default function HomePage() {
       <Suspense fallback={<DropRunwaySkeleton />}>
         <BestSellersSection />
       </Suspense>
+
+      <AboutIntro />
 
       <NewsletterBanner />
 

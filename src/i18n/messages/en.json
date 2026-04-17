@@ -87,6 +87,8 @@
     "returnsRefunds": "Returns & Refunds",
     "imprint": "Imprint",
     "faq": "FAQ",
+    "about": "About",
+    "guides": "Guides",
     "contactUs": "Contact Us"
   },
   "product": {
@@ -1002,6 +1004,19 @@
     "revealOrderTitle": "Reveal Order | Mizoke",
     "revealOrderDescription": "View your mystery box reveal results."
   },
+  "aboutIntro": {
+    "heading": "What is Mizoke?",
+    "paragraph1": "Mizoke is an online store for custom, personalized anime merchandise. We design and produce LED signs, lightbox signs, keychains, magnets, and apparel featuring characters from One Piece, Demon Slayer, Dragon Ball, Attack on Titan, Hunter x Hunter, Jujutsu Kaisen, Bleach, and Digimon.",
+    "paragraph2": "Built by Neo Stage Collective, Mizoke organises its catalogue into anime \"worlds\", each with its own neon-themed aesthetic. Our signature custom signs and LED lightboxes are made to order — pick your character, add a name if you want, and see a live 3D preview before checkout. Free shipping across Europe on orders over €45.",
+    "fact1Label": "Made-to-order",
+    "fact1Value": "Customised by character & name with live 3D preview",
+    "fact2Label": "Ships worldwide",
+    "fact2Value": "30+ countries · free EU shipping over €45",
+    "fact3Label": "Catalogue",
+    "fact3Value": "8 anime worlds · signs, keychains, magnets, apparel",
+    "learnMore": "Learn more about Mizoke",
+    "readFaq": "Read FAQ"
+  },
   "faq": {
     "title": "Frequently Asked Questions",
     "subtitle": "Find answers to common questions about our products, shipping, and more.",
@@ -1017,7 +1032,7 @@
     "save": "Save Preferences",
     "necessary": "Necessary",
     "necessaryDesc": "Essential for the website to function. Cannot be disabled.",
-    "necessaryCookies": "mizoke-locale (language), mizoke-currency (currency), mizoke-cookie-consent (consent choices), mizoke-auth (login session), Shopify cart ID (shopping cart)",
+    "necessaryCookies": "mizoke-locale (language), mizoke-currency (currency), mizoke-cookie-consent (consent choices), mizoke-session (login session), Shopify cart ID (shopping cart)",
     "analytics": "Analytics",
     "analyticsDesc": "Help us understand how visitors interact with our website.",
     "analyticsCookies": "Vercel Analytics (page views, performance), Vercel Speed Insights (Core Web Vitals), Sentry (error tracking, session replay)",

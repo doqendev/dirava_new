@@ -87,6 +87,8 @@
     "returnsRefunds": "Rückgabe & Erstattung",
     "imprint": "Impressum",
     "faq": "FAQ",
+    "about": "Über uns",
+    "guides": "Ratgeber",
     "contactUs": "Kontakt"
   },
   "product": {
@@ -1002,6 +1004,19 @@
     "revealOrderTitle": "Bestellung enthüllen | Mizoke",
     "revealOrderDescription": "Ergebnisse deiner Mystery-Box-Enthüllung ansehen."
   },
+  "aboutIntro": {
+    "heading": "Was ist Mizoke?",
+    "paragraph1": "Mizoke ist ein Online-Shop für individuell personalisierbare Anime-Merchandise. Wir entwerfen und produzieren LED-Schilder, Lightbox-Schilder, Schlüsselanhänger, Magnete und Bekleidung mit Charakteren aus One Piece, Demon Slayer, Dragon Ball, Attack on Titan, Hunter x Hunter, Jujutsu Kaisen, Bleach und Digimon.",
+    "paragraph2": "Mizoke wird von Neo Stage Collective entwickelt und gliedert sein Sortiment in Anime-„Welten“ mit jeweils eigener Neon-Ästhetik. Unsere individuellen Schilder und LED-Lightboxes werden auf Bestellung gefertigt – Charakter auswählen, Name hinzufügen und eine 3D-Live-Vorschau vor dem Kauf sehen. Kostenloser Versand in Europa ab 45 €.",
+    "fact1Label": "Auf Bestellung",
+    "fact1Value": "Nach Charakter & Name mit 3D-Live-Vorschau",
+    "fact2Label": "Weltweiter Versand",
+    "fact2Value": "30+ Länder · EU-Versand ab 45 € kostenlos",
+    "fact3Label": "Sortiment",
+    "fact3Value": "8 Anime-Welten · Schilder, Schlüsselanhänger, Magnete, Kleidung",
+    "learnMore": "Mehr über Mizoke erfahren",
+    "readFaq": "FAQ lesen"
+  },
   "faq": {
     "title": "Häufig gestellte Fragen",
     "subtitle": "Finde Antworten auf häufige Fragen zu unseren Produkten, Versand und mehr.",
@@ -1017,7 +1032,7 @@
     "save": "Einstellungen speichern",
     "necessary": "Notwendig",
     "necessaryDesc": "Unverzichtbar für die Funktion der Website. Kann nicht deaktiviert werden.",
-    "necessaryCookies": "mizoke-locale (Sprache), mizoke-currency (Währung), mizoke-cookie-consent (Einwilligungen), mizoke-auth (Anmeldung), Shopify Cart-ID (Warenkorb)",
+    "necessaryCookies": "mizoke-locale (Sprache), mizoke-currency (Währung), mizoke-cookie-consent (Einwilligungen), mizoke-session (Anmeldung), Shopify Cart-ID (Warenkorb)",
     "analytics": "Analytik",
     "analyticsDesc": "Helfen uns zu verstehen, wie Besucher mit unserer Website interagieren.",
     "analyticsCookies": "Vercel Analytics (Seitenaufrufe, Leistung), Vercel Speed Insights (Core Web Vitals), Sentry (Fehlerverfolgung, Sitzungsaufzeichnung)",

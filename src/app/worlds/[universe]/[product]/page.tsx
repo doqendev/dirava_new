@@ -10,6 +10,8 @@ import { RecentlyViewed } from '@/components/product/RecentlyViewed'
 import ReviewList from '@/components/product/ReviewList'
 import { ProductLifestyleGallery } from '@/components/product/ProductLifestyleGallery'
 import { ProductFAQ } from '@/components/product/ProductFAQ'
+import { faqs as generalFaqs } from '@/data/faq'
+import { getProductFaqs, generalFaqIndices } from '@/data/productFaqs'
 import { getReviewsByProduct, getReviewStats } from '@/lib/reviews/metaobjects'
 import type { ShopifyProduct } from '@/types/shopify'
 import type { Review } from '@/types/reviews'
@@ -237,6 +239,24 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     }),
   }
 
+  // FAQPage JSON-LD schema — mirrors the FAQ list rendered by ProductFAQ
+  const productSpecificFaqs = getProductFaqs(productHandle) || []
+  const generalProductFaqs = generalFaqIndices
+    .map((i) => generalFaqs[i])
+    .filter((f): f is NonNullable<typeof f> => f !== undefined)
+  const faqList = [...productSpecificFaqs, ...generalProductFaqs]
+  const faqSchema = faqList.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqList.map((faq) => ({
+          '@type': 'Question',
+          name: faq.question,
+          acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+        })),
+      }
+    : null
+
   // BreadcrumbList JSON-LD schema
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
@@ -273,6 +293,12 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
 
       <ProductDetailClient universe={universe} product={{ ...product, rating: reviewStats }} />
 

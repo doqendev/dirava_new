@@ -18,6 +18,8 @@ import { CookieConsent } from '@/components/layout/CookieConsent'
 import { ToastContainer } from '@/components/ui/Toast'
 import { LocaleProvider } from '@/components/providers/LocaleProvider'
 import { AnalyticsProvider } from '@/components/providers/AnalyticsProvider'
+import { AuthProvider } from '@/components/providers/AuthProvider'
+import { TrackingProvider } from '@/components/providers/TrackingProvider'
 import './globals.css'
 
 const orbitron = Orbitron({
@@ -102,14 +104,39 @@ export default async function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Mizoke',
-    description: 'Your Anime Spirit - Premium anime merchandise',
+    alternateName: 'Mizoke Anime Store',
+    description:
+      'Mizoke is an online store for custom anime merchandise — LED signs, lightbox signs, keychains, magnets, and apparel personalized with characters from One Piece, Demon Slayer, Dragon Ball, Attack on Titan, Hunter x Hunter, Jujutsu Kaisen, Bleach, and Digimon.',
     url: SITE_URL,
     logo: `${SITE_URL}/opengraph-image`,
     sameAs: SOCIAL_LINKS.map((link) => link.href),
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
+      email: 'support@mizoke.com',
       url: `${SITE_URL}/contact`,
+      availableLanguage: ['English', 'German', 'French', 'Spanish', 'Portuguese'],
+    },
+  }
+
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Mizoke',
+    url: SITE_URL,
+    inLanguage: ['en', 'de', 'fr', 'es', 'pt'],
+    publisher: {
+      '@type': 'Organization',
+      name: 'Mizoke',
+      url: SITE_URL,
+    },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${SITE_URL}/search?q={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
     },
   }
 
@@ -129,22 +156,29 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
         <MotionProvider>
           <NextIntlClientProvider locale={locale} messages={messages}>
             <LocaleProvider initialLocale={locale} initialCurrency={currency}>
-              <Header />
-              <main id="main-content" className="pt-16 pb-20 lg:pb-0 overflow-visible">
-                {children}
-              </main>
-              <Footer />
-              <BottomNav />
-              <CartDrawer />
-              <MobileMenu />
-              <SearchModal />
-              <QuickViewModal />
-              <CookieConsent />
-              <ToastContainer />
-              <AnalyticsProvider />
+              <AuthProvider>
+                <Header />
+                <main id="main-content" className="pt-16 pb-20 lg:pb-0 overflow-visible">
+                  {children}
+                </main>
+                <Footer />
+                <BottomNav />
+                <CartDrawer />
+                <MobileMenu />
+                <SearchModal />
+                <QuickViewModal />
+                <CookieConsent />
+                <ToastContainer />
+                <TrackingProvider />
+                <AnalyticsProvider />
+              </AuthProvider>
             </LocaleProvider>
           </NextIntlClientProvider>
         </MotionProvider>
