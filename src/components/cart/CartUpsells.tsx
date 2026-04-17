@@ -49,7 +49,10 @@ export function CartUpsells({ cartLines, onClose }: CartUpsellsProps) {
 
   useEffect(() => {
     async function fetchUpsells() {
-      setIsLoading(true)
+      // Only show loading spinner on initial fetch, not re-fetches
+      if (products.length === 0) {
+        setIsLoading(true)
+      }
 
       try {
         const params = new URLSearchParams()
@@ -75,9 +78,11 @@ export function CartUpsells({ cartLines, onClose }: CartUpsellsProps) {
     if (cartLines.length > 0) {
       fetchUpsells()
     } else {
+      setProducts([])
       setIsLoading(false)
     }
-  }, [cartLines.length, detectedUniverse, excludeIds])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cartLines.length, detectedUniverse])
 
   const handleQuickView = (product: UpsellProduct) => {
     // Close cart drawer first, then open quick view
@@ -103,12 +108,14 @@ export function CartUpsells({ cartLines, onClose }: CartUpsellsProps) {
   }
 
   return (
-    <div className="px-4 py-3 border-t border-border-subtle">
-      <h3 className="text-xs font-medium text-white/50 uppercase tracking-wider mb-3">
+    <div className="pt-3 pb-2 border-t border-border-subtle">
+      <h3 className="px-4 text-[11px] font-medium text-white/50 uppercase tracking-wider mb-2">
         {t('youMightLike')}
       </h3>
-      <div className="flex gap-3">
-        {products.map((product) => {
+      <div
+        className="cart-upsells-scroll flex gap-2 overflow-x-auto overflow-y-hidden px-4 pb-1 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {products.slice(0, 6).map((product) => {
           const productUrl = product.universe
             ? `/worlds/${product.universe}/${product.handle}`
             : `/products/${product.handle}`
@@ -116,20 +123,20 @@ export function CartUpsells({ cartLines, onClose }: CartUpsellsProps) {
           return (
             <motion.div
               key={product.id}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex-1 min-w-0"
+              className="snap-start flex-shrink-0 w-[110px]"
             >
               <div className={cn(
-                'rounded-lg overflow-hidden',
+                'relative rounded-lg overflow-hidden',
                 'bg-bg-secondary border border-border-subtle',
                 'hover:border-neon-cyan/30 transition-colors'
               )}>
-                {/* Image */}
+                {/* Thumbnail */}
                 <Link
                   href={productUrl}
                   onClick={onClose}
-                  className="block relative aspect-square"
+                  className="relative block aspect-square"
                 >
                   {product.image ? (
                     <Image
@@ -137,43 +144,37 @@ export function CartUpsells({ cartLines, onClose }: CartUpsellsProps) {
                       alt={product.image.altText || product.title}
                       fill
                       className="object-cover"
-                      sizes="150px"
+                      sizes="110px"
                     />
                   ) : (
                     <div className="w-full h-full bg-bg-secondary" />
                   )}
                 </Link>
 
-                {/* Info */}
-                <div className="p-2">
-                  <Link
-                    href={productUrl}
-                    onClick={onClose}
-                    className="block"
-                  >
-                    <h4 className="text-xs text-white truncate hover:text-neon-cyan transition-colors">
-                      {product.title}
-                    </h4>
-                    <p className="text-xs font-mono text-neon-cyan mt-0.5">
-                      {formatPrice(product.price.amount, product.price.currencyCode)}
-                    </p>
-                  </Link>
-
-                  {/* Quick View button */}
-                  <button
-                    onClick={() => handleQuickView(product)}
-                    className={cn(
-                      'w-full mt-2 py-1.5 rounded text-xs font-medium',
-                      'flex items-center justify-center gap-1',
-                      'transition-all duration-200',
-                      'bg-white/5 text-white/70 hover:bg-neon-cyan/20 hover:text-neon-cyan border border-transparent hover:border-neon-cyan/30'
-                    )}
-                  >
-                    <Eye className="w-3 h-3" />
-                    {t('quickView')}
-                  </button>
-                </div>
+                {/* Quick View — overlaid on thumb */}
+                <button
+                  onClick={() => handleQuickView(product)}
+                  className="absolute top-1 right-1 p-1 rounded bg-black/60 backdrop-blur-sm text-white/80 hover:text-neon-cyan hover:bg-black/80 transition-colors"
+                  title={t('quickView')}
+                  aria-label={t('quickView')}
+                >
+                  <Eye className="w-3 h-3" />
+                </button>
               </div>
+
+              {/* Info below thumb */}
+              <Link
+                href={productUrl}
+                onClick={onClose}
+                className="block mt-1.5"
+              >
+                <h4 className="text-[11px] text-white truncate hover:text-neon-cyan transition-colors leading-tight">
+                  {product.title}
+                </h4>
+                <p className="text-[10px] font-mono text-neon-cyan mt-0.5">
+                  {formatPrice(product.price.amount, product.price.currencyCode)}
+                </p>
+              </Link>
             </motion.div>
           )
         })}
