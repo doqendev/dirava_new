@@ -18,8 +18,6 @@ import { CookieConsent } from '@/components/layout/CookieConsent'
 import { ToastContainer } from '@/components/ui/Toast'
 import { LocaleProvider } from '@/components/providers/LocaleProvider'
 import { AnalyticsProvider } from '@/components/providers/AnalyticsProvider'
-import { AuthProvider } from '@/components/providers/AuthProvider'
-import { TrackingProvider } from '@/components/providers/TrackingProvider'
 import './globals.css'
 
 const orbitron = Orbitron({
@@ -163,22 +161,19 @@ export default async function RootLayout({
         <MotionProvider>
           <NextIntlClientProvider locale={locale} messages={messages}>
             <LocaleProvider initialLocale={locale} initialCurrency={currency}>
-              <AuthProvider>
-                <Header />
-                <main id="main-content" className="pt-16 pb-20 lg:pb-0 overflow-visible">
-                  {children}
-                </main>
-                <Footer />
-                <BottomNav />
-                <CartDrawer />
-                <MobileMenu />
-                <SearchModal />
-                <QuickViewModal />
-                <CookieConsent />
-                <ToastContainer />
-                <TrackingProvider />
-                <AnalyticsProvider />
-              </AuthProvider>
+              <Header />
+              <main id="main-content" className="pt-16 pb-20 lg:pb-0 overflow-visible">
+                {children}
+              </main>
+              <Footer />
+              <BottomNav />
+              <CartDrawer />
+              <MobileMenu />
+              <SearchModal />
+              <QuickViewModal />
+              <CookieConsent />
+              <ToastContainer />
+              <AnalyticsProvider />
             </LocaleProvider>
           </NextIntlClientProvider>
         </MotionProvider>
