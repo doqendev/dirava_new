@@ -52,11 +52,9 @@ export function CollectionSort({
           'bg-bg-card border border-border-subtle rounded-lg',
           'text-white text-sm',
           'focus:outline-none focus:border-neon-cyan',
-          'transition-colors duration-200'
+          'transition-colors duration-200',
+          'min-w-[140px] sm:min-w-[180px]'
         )}
-        style={{
-          minWidth: '180px',
-        }}
       >
         {SORT_OPTIONS.map((option) => (
           <option

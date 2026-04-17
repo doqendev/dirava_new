@@ -21,8 +21,8 @@ export function CollectionToolbar({
   const hasFilters = hasActiveFilters(filters)
 
   return (
-    <div className="flex items-center justify-between gap-4 mb-6">
-      <div className="flex items-center gap-3">
+    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 mb-6">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
         <MobileFilterButton
           themeColor={themeColor}
           hasFilters={hasFilters}
