@@ -132,8 +132,8 @@
     "shippingProcessing": "Los pedidos se procesan en 1-3 días hábiles.",
     "shippingEurope": "Europa: 5-12 días hábiles — Gratis a partir de 45 €",
     "shippingUK": "UK: 5-10 días hábiles — Gratis a partir de £40",
-    "shippingCanada": "Canadá: 7-14 días hábiles — Gratis a partir de $73 CAD",
-    "shippingAustralia": "Australia: 10-20 días hábiles — Gratis a partir de $80 AUD",
+    "shippingCanada": "Canadá: 7-14 días hábiles — Gratis a partir de $65 CAD",
+    "shippingAustralia": "Australia: 10-20 días hábiles — Gratis a partir de $75 AUD",
     "shippingCustoms": "Se pueden aplicar aranceles y derechos de aduana en pedidos internacionales.",
     "returnsTitle": "Devoluciones y Cambios",
     "returnsPolicy": "Política de devolución de 30 días para artículos sin usar en su embalaje original.",
@@ -565,19 +565,19 @@
         },
         "2": {
           "heading": "Reino Unido",
-          "content": "Envío estándar (5-10 días hábiles): 4,99 £ o GRATIS en pedidos superiores a 40 £"
+          "content": "Envío estándar (5-10 días hábiles): 4,99 £ o GRATIS en pedidos superiores a 40 £ (≈ 45 € equivalente)"
         },
         "3": {
           "heading": "Canadá",
-          "content": "Envío estándar (7-14 días hábiles): 9,99 CAD o GRATIS en pedidos superiores a 73 CAD"
+          "content": "Envío estándar (7-14 días hábiles): 9,99 CAD o GRATIS en pedidos superiores a 65 CAD (≈ 45 € equivalente)"
         },
         "4": {
           "heading": "Australia",
-          "content": "Envío estándar (10-20 días hábiles): 11 AUD o GRATIS en pedidos superiores a 80 AUD"
+          "content": "Envío estándar (10-20 días hábiles): 11 AUD o GRATIS en pedidos superiores a 75 AUD (≈ 45 € equivalente)"
         },
         "5": {
           "heading": "Resto del mundo",
-          "content": "Asia-Pacífico: 14-28 días hábiles. Otras regiones: 14-35 días hábiles. Los costes de envío varían según el país y se calculan en el proceso de pago según tu ubicación y el peso del pedido."
+          "content": "Asia-Pacífico: 14-28 días hábiles. Otras regiones: 14-35 días hábiles. GRATIS en pedidos superiores al equivalente de 45 € en moneda local (calculado en el pago). Los costes de envío estándar varían según el país y también se calculan en el pago según tu ubicación y el peso del pedido."
         },
         "6": {
           "heading": "Estados Unidos",
@@ -1006,14 +1006,14 @@
   },
   "aboutIntro": {
     "heading": "¿Qué es Mizoke?",
-    "paragraph1": "Mizoke es una tienda online de merchandising anime personalizado. Diseñamos y producimos carteles LED, lightboxes, llaveros, imanes y ropa con personajes de One Piece, Demon Slayer, Dragon Ball, Attack on Titan, Hunter x Hunter, Jujutsu Kaisen, Bleach y Digimon.",
-    "paragraph2": "Creada por Neo Stage Collective, Mizoke organiza su catálogo en «mundos» de anime, cada uno con su propia estética neón. Nuestros carteles personalizados y lightboxes LED se fabrican bajo pedido: elige un personaje, añade un nombre y mira la vista previa 3D en vivo antes de pagar. Envío gratis en Europa a partir de 45 €.",
+    "paragraph1": "Mizoke es una tienda online de merchandising anime personalizado. Diseñamos y producimos carteles LED, desk signs (sin iluminación), llaveros, imanes y ropa con personajes de One Piece, Demon Slayer, Dragon Ball, Attack on Titan, Hunter x Hunter, Jujutsu Kaisen, Bleach y Digimon — con nuevos mundos y productos añadidos regularmente.",
+    "paragraph2": "Creada por Neo Stage Collective en Portugal, Mizoke organiza su catálogo en «mundos» de anime, cada uno con su propia estética neón. Nuestros carteles LED se fabrican bajo pedido: elige un personaje, añade un nombre de hasta 12 caracteres, y en productos seleccionados previsualiza el diseño en 3D antes de pagar. Envío gratis a todo el mundo (excepto EE. UU.) a partir del equivalente a 45 € en tu moneda local.",
     "fact1Label": "Bajo pedido",
-    "fact1Value": "Personalizado por personaje y nombre con vista 3D en vivo",
+    "fact1Value": "Fabricado en 1–3 días hábiles tras el pedido",
     "fact2Label": "Envío mundial",
-    "fact2Value": "30+ países · envío UE gratis desde 45 €",
+    "fact2Value": "La mayoría de países (excepto EE. UU.) · gratis desde el equivalente a 45 €",
     "fact3Label": "Catálogo",
-    "fact3Value": "8 mundos de anime · carteles, llaveros, imanes, ropa",
+    "fact3Value": "8+ mundos de anime · carteles LED, desk signs, llaveros, imanes, ropa",
     "learnMore": "Saber más sobre Mizoke",
     "readFaq": "Leer FAQ"
   },

@@ -20,25 +20,25 @@ export const metadata: Metadata = {
 
 const guides = [
   {
-    slug: 'led-sign-vs-lightbox',
-    title: 'LED Sign vs Lightbox: Which Anime Sign Should You Buy?',
+    slug: 'led-vs-desk-sign',
+    title: 'Custom Anime Name Plates: LED vs Non-Illuminated Desk Signs',
     description:
-      'Side-by-side comparison of LED acrylic signs and lightbox signs — light output, mounting, power, price, and which fits your room best.',
-    readTime: '6 min read',
+      'Side-by-side comparison of Mizoke\'s two sign formats: illuminated LED signs and non-illuminated desk signs. Materials, production time, mounting, power, price, and which to pick.',
+    readTime: '5 min read',
   },
   {
     slug: 'custom-anime-sign-care-guide',
-    title: 'How to Clean and Care for a Custom Anime Acrylic Sign',
+    title: 'How to Clean and Care for a Custom Anime Sign (Acrylic & PLA)',
     description:
-      'Step-by-step care guide for acrylic LED signs and lightboxes. Cleaning, mounting, storage, and what to avoid.',
+      'Step-by-step care guide for both acrylic LED signs and painted PLA desk signs. Cleaning, mounting, storage, and what to avoid.',
     readTime: '4 min read',
   },
   {
     slug: 'anime-gift-guide',
-    title: 'The Best Anime Gifts for Fans in 2026',
+    title: 'The Best Custom Anime Gifts for Fans in 2026',
     description:
-      'Gift ideas for anime fans by budget and series. Custom signs, keychains, mystery boxes — and how to personalise them.',
-    readTime: '7 min read',
+      'Gift ideas for anime fans by price and series. Custom LED signs, desk signs, keychains, magnets, apparel — and how to personalise them.',
+    readTime: '6 min read',
   },
 ]
 

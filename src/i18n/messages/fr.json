@@ -132,8 +132,8 @@
     "shippingProcessing": "Les commandes sont traitées sous 1 à 3 jours ouvrables.",
     "shippingEurope": "Europe : 5-12 jours ouvrables — Gratuit dès 45 €",
     "shippingUK": "UK : 5-10 jours ouvrables — Gratuit dès £40",
-    "shippingCanada": "Canada : 7-14 jours ouvrables — Gratuit dès 73 $ CAD",
-    "shippingAustralia": "Australie : 10-20 jours ouvrables — Gratuit dès 80 $ AUD",
+    "shippingCanada": "Canada : 7-14 jours ouvrables — Gratuit dès 65 $ CAD",
+    "shippingAustralia": "Australie : 10-20 jours ouvrables — Gratuit dès 75 $ AUD",
     "shippingCustoms": "Des droits de douane peuvent s'appliquer pour les commandes internationales.",
     "returnsTitle": "Retours & Échanges",
     "returnsPolicy": "Politique de retour de 30 jours pour les articles non utilisés dans leur emballage d'origine.",
@@ -565,19 +565,19 @@
         },
         "2": {
           "heading": "Royaume-Uni",
-          "content": "Livraison standard (5-10 jours ouvrables) : 4,99 £ ou GRATUIT pour les commandes supérieures à 40 £"
+          "content": "Livraison standard (5-10 jours ouvrables) : 4,99 £ ou GRATUIT pour les commandes supérieures à 40 £ (≈ 45 € équivalent)"
         },
         "3": {
           "heading": "Canada",
-          "content": "Livraison standard (7-14 jours ouvrables) : 9,99 CAD ou GRATUIT pour les commandes supérieures à 73 CAD"
+          "content": "Livraison standard (7-14 jours ouvrables) : 9,99 CAD ou GRATUIT pour les commandes supérieures à 65 CAD (≈ 45 € équivalent)"
         },
         "4": {
           "heading": "Australie",
-          "content": "Livraison standard (10-20 jours ouvrables) : 11 AUD ou GRATUIT pour les commandes supérieures à 80 AUD"
+          "content": "Livraison standard (10-20 jours ouvrables) : 11 AUD ou GRATUIT pour les commandes supérieures à 75 AUD (≈ 45 € équivalent)"
         },
         "5": {
           "heading": "Reste du monde",
-          "content": "Asie-Pacifique : 14-28 jours ouvrables. Autres régions : 14-35 jours ouvrables. Les frais d'expédition varient selon le pays et sont calculés lors du règlement en fonction de votre localisation et du poids de la commande."
+          "content": "Asie-Pacifique : 14-28 jours ouvrables. Autres régions : 14-35 jours ouvrables. GRATUIT pour les commandes supérieures à l'équivalent de 45 € en monnaie locale (calculé au paiement). Les frais d'expédition standard varient selon le pays et sont également calculés au paiement en fonction de votre localisation et du poids de la commande."
         },
         "6": {
           "heading": "États-Unis",
@@ -1006,14 +1006,14 @@
   },
   "aboutIntro": {
     "heading": "Qu'est-ce que Mizoke ?",
-    "paragraph1": "Mizoke est une boutique en ligne de merchandising anime personnalisable. Nous concevons et produisons des enseignes LED, des lightboxes, des porte-clés, des magnets et des vêtements aux couleurs de One Piece, Demon Slayer, Dragon Ball, Attack on Titan, Hunter x Hunter, Jujutsu Kaisen, Bleach et Digimon.",
-    "paragraph2": "Créée par Neo Stage Collective, Mizoke organise son catalogue en « mondes » anime, chacun avec son esthétique néon unique. Nos enseignes personnalisées et lightboxes LED sont fabriquées à la commande : choisissez un personnage, ajoutez un nom et visualisez l'aperçu 3D en direct avant de valider. Livraison gratuite en Europe dès 45 €.",
+    "paragraph1": "Mizoke est une boutique en ligne de merchandising anime personnalisable. Nous concevons et produisons des enseignes LED, des desk signs (non lumineux), des porte-clés, des magnets et des vêtements aux couleurs de One Piece, Demon Slayer, Dragon Ball, Attack on Titan, Hunter x Hunter, Jujutsu Kaisen, Bleach et Digimon — avec de nouveaux univers et produits ajoutés régulièrement.",
+    "paragraph2": "Créée par Neo Stage Collective au Portugal, Mizoke organise son catalogue en « mondes » anime, chacun avec son esthétique néon unique. Nos enseignes LED sont fabriquées à la commande : choisissez un personnage, ajoutez un nom jusqu'à 12 caractères, et sur certains produits visualisez l'aperçu 3D avant de valider. Livraison gratuite dans le monde entier (sauf États-Unis) dès l'équivalent de 45 € dans votre monnaie locale.",
     "fact1Label": "Fabriqué sur commande",
-    "fact1Value": "Personnalisé par personnage et nom avec aperçu 3D",
+    "fact1Value": "Produit en 1 à 3 jours ouvrables après commande",
     "fact2Label": "Livraison mondiale",
-    "fact2Value": "30+ pays · livraison UE gratuite dès 45 €",
+    "fact2Value": "La plupart des pays (sauf US) · gratuit dès l'équivalent de 45 €",
     "fact3Label": "Catalogue",
-    "fact3Value": "8 univers anime · enseignes, porte-clés, magnets, vêtements",
+    "fact3Value": "8+ univers anime · enseignes LED, desk signs, porte-clés, magnets, vêtements",
     "learnMore": "En savoir plus sur Mizoke",
     "readFaq": "Lire la FAQ"
   },

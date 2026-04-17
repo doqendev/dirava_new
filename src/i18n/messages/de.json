@@ -132,8 +132,8 @@
     "shippingProcessing": "Bestellungen werden innerhalb von 1-3 Werktagen bearbeitet.",
     "shippingEurope": "Europa: 5-12 Werktage — Kostenlos ab €45",
     "shippingUK": "UK: 5-10 Werktage — Kostenlos ab £40",
-    "shippingCanada": "Kanada: 7-14 Werktage — Kostenlos ab $73 CAD",
-    "shippingAustralia": "Australien: 10-20 Werktage — Kostenlos ab $80 AUD",
+    "shippingCanada": "Kanada: 7-14 Werktage — Kostenlos ab $65 CAD",
+    "shippingAustralia": "Australien: 10-20 Werktage — Kostenlos ab $75 AUD",
     "shippingCustoms": "Zölle und Abgaben können für internationale Bestellungen anfallen.",
     "returnsTitle": "Rückgaben & Umtausch",
     "returnsPolicy": "30-tägige Rückgaberichtlinie für unbenutzte Artikel in Originalverpackung.",
@@ -565,19 +565,19 @@
         },
         "2": {
           "heading": "Vereinigtes K\u00f6nigreich",
-          "content": "Standardversand (5\u201310 Werktage): 4,99\u00a0\u00a3 oder KOSTENLOS ab einem Bestellwert von 40\u00a0\u00a3"
+          "content": "Standardversand (5\u201310 Werktage): 4,99\u00a0\u00a3 oder KOSTENLOS ab einem Bestellwert von 40\u00a0\u00a3 (\u2248\u00a045\u00a0\u20ac entspricht)"
         },
         "3": {
           "heading": "Kanada",
-          "content": "Standardversand (7\u201314 Werktage): 9,99\u00a0CAD oder KOSTENLOS ab einem Bestellwert von 73\u00a0CAD"
+          "content": "Standardversand (7\u201314 Werktage): 9,99\u00a0CAD oder KOSTENLOS ab einem Bestellwert von 65\u00a0CAD (\u2248\u00a045\u00a0\u20ac entspricht)"
         },
         "4": {
           "heading": "Australien",
-          "content": "Standardversand (10\u201320 Werktage): 11\u00a0AUD oder KOSTENLOS ab einem Bestellwert von 80\u00a0AUD"
+          "content": "Standardversand (10\u201320 Werktage): 11\u00a0AUD oder KOSTENLOS ab einem Bestellwert von 75\u00a0AUD (\u2248\u00a045\u00a0\u20ac entspricht)"
         },
         "5": {
           "heading": "Rest der Welt",
-          "content": "Asien-Pazifik: 14\u201328 Werktage. Andere Regionen: 14\u201335 Werktage. Die Versandkosten variieren je nach Land und werden an der Kasse anhand deines Standorts und Bestellgewichts berechnet."
+          "content": "Asien-Pazifik: 14\u201328 Werktage. Andere Regionen: 14\u201335 Werktage. KOSTENLOS bei Bestellungen ab dem Gegenwert von 45\u00a0\u20ac in der Landesw\u00e4hrung (an der Kasse berechnet). Die Standard-Versandkosten variieren je nach Land und werden ebenfalls an der Kasse anhand deines Standorts und Bestellgewichts berechnet."
         },
         "6": {
           "heading": "Vereinigte Staaten",
@@ -1006,14 +1006,14 @@
   },
   "aboutIntro": {
     "heading": "Was ist Mizoke?",
-    "paragraph1": "Mizoke ist ein Online-Shop für individuell personalisierbare Anime-Merchandise. Wir entwerfen und produzieren LED-Schilder, Lightbox-Schilder, Schlüsselanhänger, Magnete und Bekleidung mit Charakteren aus One Piece, Demon Slayer, Dragon Ball, Attack on Titan, Hunter x Hunter, Jujutsu Kaisen, Bleach und Digimon.",
-    "paragraph2": "Mizoke wird von Neo Stage Collective entwickelt und gliedert sein Sortiment in Anime-„Welten“ mit jeweils eigener Neon-Ästhetik. Unsere individuellen Schilder und LED-Lightboxes werden auf Bestellung gefertigt – Charakter auswählen, Name hinzufügen und eine 3D-Live-Vorschau vor dem Kauf sehen. Kostenloser Versand in Europa ab 45 €.",
+    "paragraph1": "Mizoke ist ein Online-Shop für individuell personalisierbare Anime-Merchandise. Wir entwerfen und produzieren LED-Schilder, Desk-Signs, Schlüsselanhänger, Magnete und Bekleidung mit Charakteren aus One Piece, Demon Slayer, Dragon Ball, Attack on Titan, Hunter x Hunter, Jujutsu Kaisen, Bleach und Digimon – laufend erweitert um neue Welten und Produkte.",
+    "paragraph2": "Mizoke wird von Neo Stage Collective in Portugal entwickelt und gliedert sein Sortiment in Anime-„Welten“ mit jeweils eigener Neon-Ästhetik. Unsere LED-Schilder werden auf Bestellung gefertigt – Charakter auswählen, Name bis zu 12 Zeichen hinzufügen und bei ausgewählten Produkten das Design in 3D vorab ansehen. Kostenloser Versand weltweit (außer USA) ab dem Gegenwert von 45 € in Ihrer Landeswährung.",
     "fact1Label": "Auf Bestellung",
-    "fact1Value": "Nach Charakter & Name mit 3D-Live-Vorschau",
+    "fact1Value": "Produziert in 1–3 Werktagen nach Bestellung",
     "fact2Label": "Weltweiter Versand",
-    "fact2Value": "30+ Länder · EU-Versand ab 45 € kostenlos",
+    "fact2Value": "Die meisten Länder (außer USA) · kostenlos ab 45 € Gegenwert",
     "fact3Label": "Sortiment",
-    "fact3Value": "8 Anime-Welten · Schilder, Schlüsselanhänger, Magnete, Kleidung",
+    "fact3Value": "8+ Anime-Welten · LED-Schilder, Desk-Signs, Schlüsselanhänger, Magnete, Kleidung",
     "learnMore": "Mehr über Mizoke erfahren",
     "readFaq": "FAQ lesen"
   },

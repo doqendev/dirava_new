@@ -6,14 +6,14 @@ import { SITE_URL } from '@/lib/utils/siteUrl'
 export const metadata: Metadata = {
   title: 'About Mizoke — Custom Anime Merchandise Store',
   description:
-    'Mizoke is an online store for custom, personalized anime merchandise. Learn about our mission, catalogue, and how our made-to-order LED signs, lightboxes, keychains, and apparel are produced.',
+    'Mizoke is an online store for custom, personalized anime merchandise, built by Neo Stage Collective in Portugal. Learn about our catalogue, how our custom LED signs are made, and how we ship worldwide.',
   alternates: {
     canonical: `${SITE_URL}/about`,
   },
   openGraph: {
     title: 'About Mizoke — Custom Anime Merchandise Store',
     description:
-      'Mizoke is an online store for custom, personalized anime merchandise, built by Neo Stage Collective.',
+      'Mizoke is an online store for custom, personalized anime merchandise, built by Neo Stage Collective in Portugal.',
     images: [`${SITE_URL}/opengraph-image`],
   },
 }
@@ -34,17 +34,27 @@ const aboutSchema = {
       '@type': 'Organization',
       name: 'Neo Stage Collective',
     },
+    address: {
+      '@type': 'PostalAddress',
+      addressCountry: 'PT',
+    },
     description:
-      'Mizoke is an online store for custom, personalized anime merchandise. We produce LED signs, lightbox signs, keychains, magnets, and apparel featuring characters from eight anime universes, including One Piece, Demon Slayer, Dragon Ball, Attack on Titan, Hunter x Hunter, Jujutsu Kaisen, Bleach, and Digimon.',
-    areaServed: 'Worldwide',
+      'Mizoke is an online store for custom, personalized anime merchandise. We produce custom LED signs, desk signs, keychains, magnets, and apparel featuring characters from eight anime universes, including One Piece, Demon Slayer, Dragon Ball, Attack on Titan, Hunter x Hunter, Jujutsu Kaisen, Bleach, and Digimon.',
+    areaServed: 'Worldwide excluding United States',
     knowsAbout: [
-      'Anime merchandise',
-      'Custom LED signs',
-      'Personalized lightbox signs',
-      'Custom keychains',
+      'Custom anime LED signs',
+      'Personalized anime desk signs',
+      'Custom anime keychains',
+      'Anime magnets',
       'Anime apparel',
-      'Made-to-order products',
+      'Made-to-order anime merchandise',
     ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer service',
+      email: 'support@mizoke.com',
+      availableLanguage: ['English', 'German', 'French', 'Spanish', 'Portuguese'],
+    },
   },
 }
 
@@ -73,7 +83,7 @@ export default function AboutPage() {
 
       <ContentPageLayout
         title="About Mizoke"
-        description="Custom, personalized anime merchandise — made to order."
+        description="Custom, personalized anime merchandise — made to order in Portugal."
         breadcrumbs={breadcrumbs}
         glowColor="cyan"
       >
@@ -83,18 +93,17 @@ export default function AboutPage() {
               What is Mizoke?
             </h2>
             <p className="mb-4">
-              Mizoke is an online store for custom, personalized anime merchandise.
-              We design and produce LED signs, lightbox signs, keychains, magnets,
-              and apparel featuring characters from eight anime universes: One
-              Piece, Demon Slayer, Dragon Ball, Attack on Titan, Hunter x Hunter,
-              Jujutsu Kaisen, Bleach, and Digimon. Every customisable product is
-              made to order based on the character and name you choose at
-              checkout.
+              Mizoke is an online store for custom, personalized anime
+              merchandise. We design and produce custom LED signs, desk signs,
+              keychains, magnets, and apparel featuring characters from eight
+              anime universes: One Piece, Demon Slayer, Dragon Ball, Attack on
+              Titan, Hunter x Hunter, Jujutsu Kaisen, Bleach, and Digimon. We
+              add new worlds and products to the catalogue regularly.
             </p>
             <p>
-              The store is built and operated by Neo Stage Collective. We ship
-              to over 30 countries, with free shipping across Europe on orders
-              above €45.
+              Mizoke is built and operated by Neo Stage Collective in Portugal.
+              We ship worldwide (except the United States) with free shipping on
+              orders above the local-currency equivalent of €45.
             </p>
           </section>
 
@@ -103,10 +112,10 @@ export default function AboutPage() {
               How our custom signs are made
             </h2>
             <p className="mb-4">
-              Our signature custom signs and LED lightboxes start in a 3D
-              configurator: you pick the anime world, select a character, and
-              optionally add a name. The live preview renders the exact geometry
-              that will be manufactured, so what you see is what you get.
+              Our signature custom LED signs are made to order. You choose the
+              anime world, select a character, and optionally add a name of up
+              to 12 characters. On select products, a live 3D preview shows you
+              the exact geometry that will be manufactured.
             </p>
             <ul className="list-disc list-outside ml-6 space-y-2">
               <li>
@@ -116,19 +125,26 @@ export default function AboutPage() {
               </li>
               <li>
                 <strong className="text-white">Personalised text:</strong> add a
-                name in the anime-themed display font. Supported on Custom Sign
-                and Custom LED Lightbox products.
+                name up to 12 characters in the anime-themed display font on
+                Custom Sign products.
               </li>
               <li>
                 <strong className="text-white">Production:</strong>{' '}
-                made-to-order in 3–7 business days. LED lightboxes include a
-                USB-C power cable and remote.
+                made-to-order in 1–3 business days. LED signs ship with a
+                USB-A power cable with an in-line switch; no wall adapter or
+                remote is included.
+              </li>
+              <li>
+                <strong className="text-white">Mounting:</strong> all LED signs
+                stand on their own. If you want to wall-mount, you'll need
+                mounting tape (not included).
               </li>
               <li>
                 <strong className="text-white">Shipping:</strong> tracked
-                worldwide delivery. Free on EU orders over €45. Typical transit
-                5–12 business days in Europe, 5–10 days in the UK, 7–14 days in
-                North America.
+                worldwide delivery. Free above €45 equivalent. Typical transit
+                5–10 business days in Europe and the UK, 7–14 days in Canada,
+                10–20 days in Australia. Shipping to the United States is
+                currently suspended due to tariff changes.
               </li>
             </ul>
           </section>
@@ -184,6 +200,10 @@ export default function AboutPage() {
                 </Link>
               </li>
             </ul>
+            <p className="mt-4 text-white/60">
+              New worlds are added regularly — check back or sign up to the
+              newsletter for updates.
+            </p>
           </section>
 
           <section>
@@ -192,30 +212,45 @@ export default function AboutPage() {
             </h2>
             <dl className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <dt className="font-display text-white mb-1">Custom signs</dt>
-                <dd>3D-printed acrylic name signs with character motifs. Desk or shelf-sized.</dd>
+                <dt className="font-display text-white mb-1">Custom LED signs</dt>
+                <dd>Illuminated acrylic or PLA signs with character motifs. Personalised by character and optional name. USB-powered with in-line switch.</dd>
               </div>
               <div>
-                <dt className="font-display text-white mb-1">LED lightbox signs</dt>
-                <dd>Back-lit acrylic panels with USB-C power and remote-controlled RGB.</dd>
+                <dt className="font-display text-white mb-1">Desk signs</dt>
+                <dd>Non-illuminated acrylic or PLA signs for desk or wall. Painted or UV-printed finishes.</dd>
               </div>
               <div>
                 <dt className="font-display text-white mb-1">Keychains</dt>
-                <dd>Double-sided acrylic keychains with metal clasp.</dd>
+                <dd>Acrylic or PLA single-sided keychains, custom variants available.</dd>
               </div>
               <div>
                 <dt className="font-display text-white mb-1">Magnets</dt>
-                <dd>Printed fridge magnets with fan-favourite character art.</dd>
+                <dd>Printed character magnets. Custom and non-custom variants.</dd>
               </div>
               <div>
                 <dt className="font-display text-white mb-1">Apparel</dt>
-                <dd>Hoodies and t-shirts with original anime-themed designs.</dd>
+                <dd>T-shirts and hoodies with anime-themed DTF prints. Custom variants available.</dd>
               </div>
               <div>
-                <dt className="font-display text-white mb-1">Mystery boxes</dt>
-                <dd>Gacha-style reveal boxes containing 1 of 4 tiered products (common → legendary).</dd>
+                <dt className="font-display text-white mb-1">New categories</dt>
+                <dd>We add new product types regularly as the catalogue expands.</dd>
               </div>
             </dl>
+          </section>
+
+          <section>
+            <h2 className="font-display text-xl md:text-2xl text-white uppercase tracking-wider mb-4">
+              Materials and finishes
+            </h2>
+            <p className="mb-3">
+              Depending on the product, Mizoke uses:
+            </p>
+            <ul className="list-disc list-outside ml-6 space-y-2">
+              <li><strong className="text-white">Acrylic</strong> — for edge-lit LED signs and some keychains.</li>
+              <li><strong className="text-white">PLA (3D-printed plastic)</strong> — for desk signs, some keychains, and structural parts.</li>
+              <li><strong className="text-white">Painted PLA or UV-printed PLA</strong> — for coloured character finishes.</li>
+              <li><strong className="text-white">DTF (direct-to-film) printing</strong> — on t-shirts and hoodies.</li>
+            </ul>
           </section>
 
           <section>
@@ -224,27 +259,39 @@ export default function AboutPage() {
             </h2>
             <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex gap-3">
-                <dt className="text-neon-cyan font-display min-w-[120px]">Founded</dt>
+                <dt className="text-neon-cyan font-display min-w-[140px]">Founded</dt>
                 <dd>2024, by Neo Stage Collective</dd>
               </div>
               <div className="flex gap-3">
-                <dt className="text-neon-cyan font-display min-w-[120px]">Ships to</dt>
-                <dd>30+ countries worldwide</dd>
+                <dt className="text-neon-cyan font-display min-w-[140px]">Based in</dt>
+                <dd>Portugal</dd>
               </div>
               <div className="flex gap-3">
-                <dt className="text-neon-cyan font-display min-w-[120px]">Languages</dt>
+                <dt className="text-neon-cyan font-display min-w-[140px]">Ships to</dt>
+                <dd>Worldwide except United States</dd>
+              </div>
+              <div className="flex gap-3">
+                <dt className="text-neon-cyan font-display min-w-[140px]">Languages</dt>
                 <dd>English, German, French, Spanish, Portuguese</dd>
               </div>
               <div className="flex gap-3">
-                <dt className="text-neon-cyan font-display min-w-[120px]">Free shipping</dt>
-                <dd>EU orders over €45</dd>
+                <dt className="text-neon-cyan font-display min-w-[140px]">Production</dt>
+                <dd>1–3 business days for custom items</dd>
               </div>
               <div className="flex gap-3">
-                <dt className="text-neon-cyan font-display min-w-[120px]">Returns</dt>
+                <dt className="text-neon-cyan font-display min-w-[140px]">Free shipping</dt>
+                <dd>Over €45 equivalent in local currency</dd>
+              </div>
+              <div className="flex gap-3">
+                <dt className="text-neon-cyan font-display min-w-[140px]">Returns</dt>
                 <dd>30 days on non-custom items</dd>
               </div>
               <div className="flex gap-3">
-                <dt className="text-neon-cyan font-display min-w-[120px]">Contact</dt>
+                <dt className="text-neon-cyan font-display min-w-[140px]">Guarantee</dt>
+                <dd>Broken or defective items replaced free of charge</dd>
+              </div>
+              <div className="flex gap-3">
+                <dt className="text-neon-cyan font-display min-w-[140px]">Contact</dt>
                 <dd>
                   <a href="mailto:support@mizoke.com" className="text-neon-cyan hover:underline">
                     support@mizoke.com
@@ -259,8 +306,12 @@ export default function AboutPage() {
               Questions? Read our{' '}
               <Link href="/faq" className="text-neon-cyan hover:underline">
                 FAQ
-              </Link>{' '}
-              or{' '}
+              </Link>
+              {', see '}
+              <Link href="/policies/shipping" className="text-neon-cyan hover:underline">
+                shipping details
+              </Link>
+              {', or '}
               <Link href="/contact" className="text-neon-cyan hover:underline">
                 contact us
               </Link>

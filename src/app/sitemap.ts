@@ -85,7 +85,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/contact', priority: 0.6, changeFrequency: 'monthly' as const },
     { path: '/faq', priority: 0.5, changeFrequency: 'monthly' as const },
     { path: '/guides', priority: 0.7, changeFrequency: 'weekly' as const },
-    { path: '/guides/led-sign-vs-lightbox', priority: 0.6, changeFrequency: 'monthly' as const },
+    { path: '/guides/led-vs-desk-sign', priority: 0.6, changeFrequency: 'monthly' as const },
     { path: '/guides/custom-anime-sign-care-guide', priority: 0.6, changeFrequency: 'monthly' as const },
     { path: '/guides/anime-gift-guide', priority: 0.6, changeFrequency: 'monthly' as const },
     { path: '/policies/privacy', priority: 0.4, changeFrequency: 'yearly' as const },

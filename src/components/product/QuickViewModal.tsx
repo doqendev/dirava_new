@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ChevronLeft, ChevronRight, Loader2, ExternalLink, Box } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
+import { MAX_PERSONALIZATION_LENGTH } from '@/lib/utils/constants'
 import { formatPrice } from '@/lib/utils/formatPrice'
 import { useUIStore } from '@/stores/uiStore'
 import { VariantSelector } from '@/components/product/VariantSelector'
@@ -539,7 +540,12 @@ export function QuickViewModal() {
                             ref={personalizationInputRef}
                             type="text"
                             value={personalizationName}
-                            onChange={(e) => setPersonalizationName(e.target.value)}
+                            maxLength={MAX_PERSONALIZATION_LENGTH}
+                            onChange={(e) =>
+                              setPersonalizationName(
+                                e.target.value.slice(0, MAX_PERSONALIZATION_LENGTH)
+                              )
+                            }
                             placeholder={t('personalizationPlaceholder')}
                             className={cn(
                               'w-full px-3 py-2 text-sm bg-black/80 border rounded-lg text-white placeholder-white/40 focus:outline-none transition-colors',
@@ -548,6 +554,9 @@ export function QuickViewModal() {
                                 : 'border-border-subtle focus:border-neon-cyan'
                             )}
                           />
+                          <p className="mt-1 text-xs text-white/40">
+                            {personalizationName.length} / {MAX_PERSONALIZATION_LENGTH}
+                          </p>
                         </div>
                       )}
 

@@ -132,8 +132,8 @@
     "shippingProcessing": "Os pedidos são processados em 1-3 dias úteis.",
     "shippingEurope": "Europa: 5-12 dias úteis — Grátis acima de 45 €",
     "shippingUK": "UK: 5-10 dias úteis — Grátis acima de £40",
-    "shippingCanada": "Canadá: 7-14 dias úteis — Grátis acima de $73 CAD",
-    "shippingAustralia": "Austrália: 10-20 dias úteis — Grátis acima de $80 AUD",
+    "shippingCanada": "Canadá: 7-14 dias úteis — Grátis acima de $65 CAD",
+    "shippingAustralia": "Austrália: 10-20 dias úteis — Grátis acima de $75 AUD",
     "shippingCustoms": "Taxas alfandegárias podem ser aplicadas em pedidos internacionais.",
     "returnsTitle": "Devoluções e Trocas",
     "returnsPolicy": "Política de devolução de 30 dias para artigos não utilizados na embalagem original.",
@@ -565,19 +565,19 @@
         },
         "2": {
           "heading": "Reino Unido",
-          "content": "Envio padrão (5-10 dias úteis): 4,99 £ ou GRÁTIS em encomendas superiores a 40 £"
+          "content": "Envio padrão (5-10 dias úteis): 4,99 £ ou GRÁTIS em encomendas superiores a 40 £ (≈ 45 € equivalente)"
         },
         "3": {
           "heading": "Canadá",
-          "content": "Envio padrão (7-14 dias úteis): 9,99 CAD ou GRÁTIS em encomendas superiores a 73 CAD"
+          "content": "Envio padrão (7-14 dias úteis): 9,99 CAD ou GRÁTIS em encomendas superiores a 65 CAD (≈ 45 € equivalente)"
         },
         "4": {
           "heading": "Austrália",
-          "content": "Envio padrão (10-20 dias úteis): 11 AUD ou GRÁTIS em encomendas superiores a 80 AUD"
+          "content": "Envio padrão (10-20 dias úteis): 11 AUD ou GRÁTIS em encomendas superiores a 75 AUD (≈ 45 € equivalente)"
         },
         "5": {
           "heading": "Resto do mundo",
-          "content": "Ásia-Pacífico: 14-28 dias úteis. Outras regiões: 14-35 dias úteis. Os custos de envio variam consoante o país e são calculados no checkout com base na tua localização e no peso da encomenda."
+          "content": "Ásia-Pacífico: 14-28 dias úteis. Outras regiões: 14-35 dias úteis. GRÁTIS em encomendas acima do equivalente a 45 € na moeda local (calculado no checkout). Os custos de envio padrão variam consoante o país e também são calculados no checkout com base na tua localização e no peso da encomenda."
         },
         "6": {
           "heading": "Estados Unidos",
@@ -1006,14 +1006,14 @@
   },
   "aboutIntro": {
     "heading": "O que é a Mizoke?",
-    "paragraph1": "A Mizoke é uma loja online de merchandise de anime personalizável. Desenhamos e produzimos placas LED, lightboxes, porta-chaves, ímanes e vestuário com personagens de One Piece, Demon Slayer, Dragon Ball, Attack on Titan, Hunter x Hunter, Jujutsu Kaisen, Bleach e Digimon.",
-    "paragraph2": "Criada pela Neo Stage Collective, a Mizoke organiza o seu catálogo em «mundos» de anime, cada um com a sua estética neon. As nossas placas personalizadas e lightboxes LED são feitas por encomenda: escolhe o personagem, adiciona um nome e vê a pré-visualização 3D ao vivo antes de finalizar. Envio grátis na Europa em compras acima de 45 €.",
+    "paragraph1": "A Mizoke é uma loja online de merchandise de anime personalizável. Desenhamos e produzimos placas LED, desk signs (sem iluminação), porta-chaves, ímanes e vestuário com personagens de One Piece, Demon Slayer, Dragon Ball, Attack on Titan, Hunter x Hunter, Jujutsu Kaisen, Bleach e Digimon — com novos mundos e produtos adicionados regularmente.",
+    "paragraph2": "Criada pela Neo Stage Collective em Portugal, a Mizoke organiza o seu catálogo em «mundos» de anime, cada um com a sua estética neon. As nossas placas LED são feitas por encomenda: escolhe o personagem, adiciona um nome até 12 caracteres e em produtos selecionados pré-visualiza o design em 3D antes de finalizar. Envio grátis em todo o mundo (exceto EUA) em compras acima do equivalente a 45 € na tua moeda local.",
     "fact1Label": "Feito por encomenda",
-    "fact1Value": "Personalizado por personagem e nome com pré-visualização 3D",
+    "fact1Value": "Produzido em 1–3 dias úteis após a encomenda",
     "fact2Label": "Envio mundial",
-    "fact2Value": "30+ países · envio UE grátis acima de 45 €",
+    "fact2Value": "Maioria dos países (exceto EUA) · grátis acima do equivalente a 45 €",
     "fact3Label": "Catálogo",
-    "fact3Value": "8 mundos de anime · placas, porta-chaves, ímanes, vestuário",
+    "fact3Value": "8+ mundos de anime · placas LED, desk signs, porta-chaves, ímanes, vestuário",
     "learnMore": "Saber mais sobre a Mizoke",
     "readFaq": "Ver FAQ"
   },

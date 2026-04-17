@@ -6,6 +6,12 @@ export const SITE_NAME = 'Mizoke'
 export const SITE_TAGLINE = 'Your Anime Spirit'
 
 /**
+ * Max length (in characters) for custom personalisation input on custom products.
+ * Enforced in the name input and also documented in /about, /guides, and FAQ.
+ */
+export const MAX_PERSONALIZATION_LENGTH = 12
+
+/**
  * Universe configuration with theme colors and metadata
  */
 export const UNIVERSE_CONFIG = {

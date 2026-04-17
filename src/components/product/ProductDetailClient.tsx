@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl'
 import { ArrowLeft, Box, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { formatPrice } from '@/lib/utils/formatPrice'
-import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
+import { UNIVERSE_CONFIG, MAX_PERSONALIZATION_LENGTH } from '@/lib/utils/constants'
 import { ProductGallery } from '@/components/product/ProductGallery'
 import type { ProductGalleryHandle } from '@/components/product/ProductGallery'
 import { VariantSelector } from '@/components/product/VariantSelector'
@@ -22,6 +22,7 @@ import { SizeGuideModal } from '@/components/product/SizeGuideModal'
 import { ReviewSummary } from '@/components/product/ReviewSummary'
 import { StickyAddToCart } from '@/components/product/StickyAddToCart'
 import { useTrackProductView } from '@/hooks/useTrackProductView'
+import { trackViewContent } from '@/lib/tracking/trackClear'
 import { getSizeGuide } from '@/data/sizeGuides'
 import { getPreviewConfig, getVariantImages } from '@/lib/preview'
 import { getPreviewDisplayText } from '@/lib/preview/textTransform'
@@ -173,6 +174,18 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
     universe,
     variantId: product.variants[0]?.id,
   })
+
+  // Track ViewContent for ad platforms (fires once on mount)
+  useEffect(() => {
+    trackViewContent({
+      variantId: product.variants[0]?.id,
+      title: product.title,
+      productType: product.productType,
+      price: parseFloat(product.priceRange.minVariantPrice.amount),
+      currency: product.priceRange.minVariantPrice.currencyCode,
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product.id])
 
   // Find selected variant
   const selectedVariant = useMemo(() => {
@@ -365,8 +378,13 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                       ref={personalizationInputRef}
                       type="text"
                       value={personalizationName}
-                      onChange={(e) => setPersonalizationName(previewConfig ? getPreviewDisplayText(e.target.value, previewConfig, '') : e.target.value)}
+                      maxLength={MAX_PERSONALIZATION_LENGTH}
+                      onChange={(e) => {
+                        const sliced = e.target.value.slice(0, MAX_PERSONALIZATION_LENGTH)
+                        setPersonalizationName(previewConfig ? getPreviewDisplayText(sliced, previewConfig, '') : sliced)
+                      }}
                       placeholder={t('personalizationPlaceholder')}
+                      aria-describedby="personalization-char-count"
                       className={cn(
                         'flex-1 min-w-0 px-4 py-3 bg-black/80 border rounded-lg text-white placeholder-white/40 focus:outline-none transition-colors',
                         personalizationName.trim()
@@ -391,6 +409,9 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                       </button>
                     )}
                   </div>
+                  <p id="personalization-char-count" className="text-xs text-white/40">
+                    {personalizationName.length} / {MAX_PERSONALIZATION_LENGTH}
+                  </p>
                   {previewConfig && (
                     <button
                       type="button"
