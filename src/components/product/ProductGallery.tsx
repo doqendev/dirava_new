@@ -267,7 +267,8 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                   )}
                   onClick={() => setIsZoomed(!isZoomed)}
                   priority={currentIndex === 0}
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  quality={90}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 640px"
                 />
               </motion.div>
             )}
