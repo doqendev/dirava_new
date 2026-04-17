@@ -22,7 +22,6 @@ import { SizeGuideModal } from '@/components/product/SizeGuideModal'
 import { ReviewSummary } from '@/components/product/ReviewSummary'
 import { StickyAddToCart } from '@/components/product/StickyAddToCart'
 import { useTrackProductView } from '@/hooks/useTrackProductView'
-import { trackViewContent } from '@/lib/tracking/trackClear'
 import { getSizeGuide } from '@/data/sizeGuides'
 import { getPreviewConfig, getVariantImages } from '@/lib/preview'
 import { getPreviewDisplayText } from '@/lib/preview/textTransform'
@@ -174,18 +173,6 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
     universe,
     variantId: product.variants[0]?.id,
   })
-
-  // Track ViewContent for ad platforms (fires once on mount)
-  useEffect(() => {
-    trackViewContent({
-      variantId: product.variants[0]?.id,
-      title: product.title,
-      productType: product.productType,
-      price: parseFloat(product.priceRange.minVariantPrice.amount),
-      currency: product.priceRange.minVariantPrice.currencyCode,
-    })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [product.id])
 
   // Find selected variant
   const selectedVariant = useMemo(() => {
