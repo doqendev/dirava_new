@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useMessages } from 'next-intl'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
-import { faqs } from '@/data/faq'
-import { getProductFaqs, generalFaqIndices } from '@/data/productFaqs'
+import { getLocalizedFaqs } from '@/data/faq'
+import { getLocalizedProductFaqs, generalFaqIndices } from '@/data/productFaqs'
 import type { FAQItem } from '@/types/content'
 
 interface ProductFAQProps {
@@ -14,14 +14,16 @@ interface ProductFAQProps {
 
 export function ProductFAQ({ productHandle }: ProductFAQProps) {
   const t = useTranslations('product')
+  const messages = useMessages()
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
-  const productSpecificFaqs = getProductFaqs(productHandle)
+  const productSpecificFaqs = getLocalizedProductFaqs(productHandle, messages)
+  const localisedGeneralFaqs = getLocalizedFaqs(messages)
   const generalFaqs = generalFaqIndices
-    .map((i) => faqs[i])
+    .map((i) => localisedGeneralFaqs[i])
     .filter((faq): faq is FAQItem => faq !== undefined)
 
-  const allFaqs = [...(productSpecificFaqs || []), ...generalFaqs]
+  const allFaqs = [...productSpecificFaqs, ...generalFaqs]
 
   if (allFaqs.length === 0) return null
 

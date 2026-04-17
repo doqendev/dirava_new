@@ -10,8 +10,10 @@ import { RecentlyViewed } from '@/components/product/RecentlyViewed'
 import ReviewList from '@/components/product/ReviewList'
 import { ProductLifestyleGallery } from '@/components/product/ProductLifestyleGallery'
 import { ProductFAQ } from '@/components/product/ProductFAQ'
-import { faqs as generalFaqs } from '@/data/faq'
-import { getProductFaqs, generalFaqIndices } from '@/data/productFaqs'
+import { getLocalizedFaqs } from '@/data/faq'
+import { getLocalizedProductFaqs, generalFaqIndices } from '@/data/productFaqs'
+import { getLocale } from '@/i18n/request'
+import { getMessages } from '@/i18n/messages'
 import { getReviewsByProduct, getReviewStats } from '@/lib/reviews/metaobjects'
 import type { ShopifyProduct } from '@/types/shopify'
 import type { Review } from '@/types/reviews'
@@ -240,9 +242,12 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   }
 
   // FAQPage JSON-LD schema — mirrors the FAQ list rendered by ProductFAQ
-  const productSpecificFaqs = getProductFaqs(productHandle) || []
+  const locale = await getLocale()
+  const messages = getMessages(locale)
+  const productSpecificFaqs = getLocalizedProductFaqs(productHandle, messages)
+  const localisedGeneralFaqs = getLocalizedFaqs(messages)
   const generalProductFaqs = generalFaqIndices
-    .map((i) => generalFaqs[i])
+    .map((i) => localisedGeneralFaqs[i])
     .filter((f): f is NonNullable<typeof f> => f !== undefined)
   const faqList = [...productSpecificFaqs, ...generalProductFaqs]
   const faqSchema = faqList.length > 0

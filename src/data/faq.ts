@@ -1,5 +1,26 @@
 import type { FAQItem } from '@/types/content'
 
+/**
+ * Returns FAQ items translated to the caller's locale, with English
+ * (from `faqs` below) as a fallback for any missing entries.
+ *
+ * `messages` is the full `getMessages(locale)` result. Localised items are
+ * read from `messages.faq.items.{index}` keyed by string index "0".."11".
+ */
+export function getLocalizedFaqs(messages: unknown): FAQItem[] {
+  const items = (
+    messages as {
+      faq?: { items?: Record<string, { question?: string; answer?: string }> }
+    }
+  )?.faq?.items
+  return faqs.map((fallback, index) => {
+    const localized = items?.[String(index)]
+    const question = localized?.question ?? fallback.question
+    const answer = localized?.answer ?? fallback.answer
+    return { question, answer }
+  })
+}
+
 export const faqs: FAQItem[] = [
   {
     question: 'How long does shipping take?',

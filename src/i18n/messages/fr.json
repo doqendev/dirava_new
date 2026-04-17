@@ -1017,8 +1017,68 @@
     "learnMore": "En savoir plus sur Mizoke",
     "readFaq": "Lire la FAQ"
   },
+  "productFaq": {
+    "changeName": {
+      "question": "Puis-je changer le nom après la commande ?",
+      "answer": "Oui, vous pouvez changer le nom tant que vous nous contactez avant le début de la production. La production commence généralement dans les 1 à 3 jours ouvrables, contactez donc support@mizoke.com dès que possible. Une fois la production commencée, les modifications ne sont plus possibles."
+    },
+    "nameLimit": {
+      "question": "Quelle est la limite de caractères pour le nom personnalisé ?",
+      "answer": "Le nom personnalisé est limité à 12 caractères. Si vous avez besoin d'un nom plus long pour un design particulier, contactez support@mizoke.com avant de commander — dans certains cas, nous pouvons accepter plus de caractères selon la taille et la disposition du produit."
+    }
+  },
   "faq": {
     "title": "Questions fréquemment posées",
+    "items": {
+      "0": {
+        "question": "Combien de temps prend la livraison ?",
+        "answer": "Les commandes en Europe et au Royaume-Uni arrivent généralement en 5-10 jours ouvrables. Canada 7-14 jours, Australie 10-20 jours, autres destinations internationales 14-35 jours. Livraison gratuite dans le monde entier pour les commandes supérieures à l'équivalent local de 45 € (40 £ UK, 65 CAD, 75 AUD). Les articles personnalisés sont fabriqués à la commande en 1 à 3 jours ouvrables ; les articles non personnalisés sont traités en 1 à 3 jours ouvrables avant expédition. La livraison vers les États-Unis est actuellement suspendue en raison des changements tarifaires."
+      },
+      "1": {
+        "question": "Livrez-vous à l'international ?",
+        "answer": "Oui ! Nous livrons dans la plupart des pays. Les frais de livraison internationale sont calculés au moment du paiement en fonction de votre localisation et du poids de la commande. Les commandes internationales peuvent être soumises à des frais de douane et droits d'importation, à la charge du destinataire. Note : la livraison vers les États-Unis est actuellement suspendue en raison des changements tarifaires."
+      },
+      "2": {
+        "question": "Quelle est votre politique de retour ?",
+        "answer": "Nous acceptons les retours dans les 30 jours suivant la livraison pour la plupart des articles non personnalisés. Les produits doivent être inutilisés, non portés et dans leur emballage d'origine avec toutes les étiquettes. Les articles personnalisés (enseignes LED, desk signs, porte-clés ou vêtements avec nom personnalisé) ne sont pas éligibles au retour une fois la production commencée, chaque pièce étant fabriquée à votre demande. Les drops en édition limitée, collectibles ouverts et articles en solde finale ne sont pas non plus éligibles. En revanche, si un article arrive cassé ou présente un défaut, nous le remplaçons gratuitement — écrivez à support@mizoke.com avec des photos. Visitez notre page Retours pour initier un retour."
+      },
+      "3": {
+        "question": "Comment suivre ma commande ?",
+        "answer": "Une fois votre commande expédiée, vous recevrez un e-mail avec les informations de suivi. Vous pouvez aussi suivre votre commande en vous connectant à votre compte et en visitant la section Historique des commandes, ou en visitant notre page de Suivi de commande et en entrant votre numéro de commande et votre adresse e-mail."
+      },
+      "4": {
+        "question": "Qui conçoit les produits ?",
+        "answer": "Les produits Mizoke sont des créations originales de Neo Stage Collective, inspirées par des personnages et séries anime populaires. Nos enseignes personnalisées, porte-clés, magnets et vêtements présentent des interprétations de fan-art produites au Portugal. Chaque article est fait à la main ou imprimé en DTF à la commande. Si vous avez des questions sur un design spécifique, contactez support@mizoke.com."
+      },
+      "5": {
+        "question": "Quels moyens de paiement acceptez-vous ?",
+        "answer": "Nous acceptons toutes les principales cartes de crédit (Visa, Mastercard, American Express, Discover), PayPal, Apple Pay, Google Pay et Shop Pay. Toutes les transactions sont sécurisées par chiffrement SSL pour protéger vos informations de paiement."
+      },
+      "6": {
+        "question": "Puis-je annuler ou modifier ma commande ?",
+        "answer": "Les articles personnalisés (enseignes LED, desk signs, porte-clés, vêtements personnalisés) peuvent être modifiés ou annulés tant que la production n'a pas commencé. Comme la production démarre généralement dans les 1 à 3 jours ouvrables, contactez support@mizoke.com dès que possible. Une fois la production en cours, les articles personnalisés ne peuvent plus être annulés ni modifiés. Les articles non personnalisés peuvent être annulés à tout moment avant l'expédition. Une fois la commande expédiée, elle ne peut plus être annulée."
+      },
+      "7": {
+        "question": "Qu'est-ce qu'un « Drop » et comment ça marche ?",
+        "answer": "Les drops sont des sorties de produits en édition limitée, disponibles pendant une durée ou en quantité limitée. Quand un drop est actif, vous pouvez acheter tant qu'il reste du stock. Certains drops peuvent nécessiter d'être connecté ou inscrit aux notifications. Une fois un drop épuisé, les articles ne sont généralement pas réapprovisionnés."
+      },
+      "8": {
+        "question": "Proposez-vous des échanges de taille ?",
+        "answer": "Oui, nous proposons des échanges de taille dans les 30 jours suivant la livraison, sous réserve de disponibilité. Initiez simplement un retour depuis votre compte et sélectionnez « Échange » comme motif. Les frais de retour sont à la charge du client. Si votre taille préférée n'est pas disponible, vous pouvez opter pour un remboursement."
+      },
+      "9": {
+        "question": "Comment choisir ma taille ?",
+        "answer": "Chaque page produit inclut un tableau des tailles détaillé avec les mesures. Nous recommandons de mesurer un vêtement qui vous va bien et de le comparer à notre tableau. En cas de doute entre deux tailles, nous recommandons généralement la taille supérieure. N'hésitez pas à nous contacter si vous avez besoin de conseils."
+      },
+      "10": {
+        "question": "Que faire si mon article arrive endommagé ?",
+        "answer": "Si votre article arrive endommagé ou défectueux, contactez-nous dans les 48 heures suivant la livraison avec des photos des dommages. Nous organiserons un retour gratuit et vous enverrons un remplacement ou un remboursement complet, au choix. Conservez tous les emballages d'origine jusqu'à la résolution du problème."
+      },
+      "11": {
+        "question": "Comment contacter le support client ?",
+        "answer": "Vous pouvez joindre notre équipe de support via notre page Contact, par e-mail à support@mizoke.com, ou via nos réseaux sociaux. Nous répondons généralement sous 24-48 heures pendant les jours ouvrables. Pour les problèmes urgents, incluez votre numéro de commande dans votre message."
+      }
+    },
     "subtitle": "Trouve des réponses aux questions courantes sur nos produits, la livraison et plus encore.",
     "stillHaveQuestions": "Tu as encore des questions ?",
     "supportDescription": "Tu ne trouves pas la réponse ? Notre équipe support est là pour t'aider.",

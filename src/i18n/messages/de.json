@@ -1017,8 +1017,68 @@
     "learnMore": "Mehr über Mizoke erfahren",
     "readFaq": "FAQ lesen"
   },
+  "productFaq": {
+    "changeName": {
+      "question": "Kann ich den Namen nach der Bestellung ändern?",
+      "answer": "Ja, du kannst den Namen ändern, solange du uns kontaktierst, bevor die Produktion beginnt. Die Produktion startet in der Regel innerhalb von 1-3 Werktagen, schreibe also so schnell wie möglich an support@mizoke.com. Sobald die Produktion begonnen hat, sind keine Änderungen mehr möglich."
+    },
+    "nameLimit": {
+      "question": "Wie viele Zeichen sind für den personalisierten Namen erlaubt?",
+      "answer": "Der personalisierte Name ist auf 12 Zeichen begrenzt. Wenn du einen längeren Namen für ein bestimmtes Design benötigst, kontaktiere vor der Bestellung support@mizoke.com — in einigen Fällen können wir je nach Produktgröße und Layout mehr Zeichen unterbringen."
+    }
+  },
   "faq": {
     "title": "Häufig gestellte Fragen",
+    "items": {
+      "0": {
+        "question": "Wie lange dauert der Versand?",
+        "answer": "Bestellungen nach Europa und UK kommen in der Regel innerhalb von 5-10 Werktagen an. Kanada 7-14 Tage, Australien 10-20 Tage und andere internationale Ziele 14-35 Tage. Kostenloser Versand weltweit bei Bestellungen über dem Landeswährungs-Äquivalent von 45 € (40 £ UK, 65 CAD, 75 AUD). Individuelle Artikel werden auf Bestellung in 1-3 Werktagen gefertigt; nicht-individuelle Artikel werden in 1-3 Werktagen vor dem Versand bearbeitet. Der Versand in die USA ist derzeit aufgrund von Zolländerungen ausgesetzt."
+      },
+      "1": {
+        "question": "Versendet ihr international?",
+        "answer": "Ja! Wir versenden in die meisten Länder weltweit. Die internationalen Versandkosten werden an der Kasse anhand deines Standorts und des Bestellgewichts berechnet. Bitte beachte, dass internationale Bestellungen Zollgebühren und Einfuhrabgaben unterliegen können, die vom Empfänger zu tragen sind. Hinweis: Der Versand in die USA ist derzeit aufgrund von Zolländerungen ausgesetzt."
+      },
+      "2": {
+        "question": "Wie ist eure Rückgaberichtlinie?",
+        "answer": "Wir akzeptieren Rückgaben innerhalb von 30 Tagen nach Lieferung für die meisten nicht-individuellen Artikel. Produkte müssen unbenutzt, ungetragen und in der Originalverpackung mit allen Etiketten sein. Individuelle oder personalisierte Artikel (wie LED-Schilder, Desk-Signs, Schlüsselanhänger oder Bekleidung mit personalisiertem Namen) sind nach Produktionsbeginn nicht rückgabefähig, da jedes Stück für dich gefertigt wird. Limitierte Drops, geöffnete Sammelobjekte und Final-Sale-Artikel sind ebenfalls nicht rückgabefähig. Wenn ein Artikel beschädigt ankommt oder einen Defekt aufweist, ersetzen wir ihn kostenlos — schreibe an support@mizoke.com mit Fotos. Besuche unsere Rückgabeseite, um eine Rückgabe zu starten."
+      },
+      "3": {
+        "question": "Wie verfolge ich meine Bestellung?",
+        "answer": "Sobald deine Bestellung versendet wurde, erhältst du eine E-Mail mit den Versandinformationen. Du kannst deine Bestellung auch verfolgen, indem du dich in dein Konto einloggst und den Bestellverlauf besuchst, oder unsere Sendungsverfolgungsseite besuchst und deine Bestellnummer und E-Mail-Adresse eingibst."
+      },
+      "4": {
+        "question": "Wer designt die Produkte?",
+        "answer": "Mizoke-Produkte sind Originaldesigns von Neo Stage Collective, inspiriert von beliebten Anime-Charakteren und Serien. Unsere individuellen Schilder, Schlüsselanhänger, Magnete und Bekleidung zeigen Fan-Art-Interpretationen, die in Portugal produziert werden. Jeder Artikel wird von Hand gefertigt oder im DTF-Verfahren auf Bestellung bedruckt. Bei Fragen zu einem bestimmten Design kontaktiere support@mizoke.com."
+      },
+      "5": {
+        "question": "Welche Zahlungsmethoden akzeptiert ihr?",
+        "answer": "Wir akzeptieren alle gängigen Kreditkarten (Visa, Mastercard, American Express, Discover), PayPal, Apple Pay, Google Pay und Shop Pay. Alle Transaktionen sind durch SSL-Verschlüsselung geschützt, um deine Zahlungsinformationen zu sichern."
+      },
+      "6": {
+        "question": "Kann ich meine Bestellung stornieren oder ändern?",
+        "answer": "Individuelle Artikel (LED-Schilder, Desk-Signs, Schlüsselanhänger, Bekleidung) können geändert oder storniert werden, solange die Produktion noch nicht begonnen hat. Da die Produktion in der Regel innerhalb von 1-3 Werktagen beginnt, kontaktiere support@mizoke.com so schnell wie möglich. Sobald die Produktion läuft, können individuelle Artikel nicht mehr storniert oder geändert werden. Nicht-individuelle Artikel können jederzeit vor dem Versand storniert werden. Nach dem Versand ist keine Stornierung mehr möglich."
+      },
+      "7": {
+        "question": "Was sind „Drops\" und wie funktionieren sie?",
+        "answer": "Drops sind Produktveröffentlichungen in limitierter Auflage, die für eine begrenzte Zeit oder in begrenzter Stückzahl verfügbar sind. Solange ein Drop aktiv ist, kannst du kaufen, solange der Vorrat reicht. Einige Drops erfordern Anmeldung oder Benachrichtigungs-Abonnement. Sobald ein Drop ausverkauft ist, werden Artikel in der Regel nicht nachbestellt."
+      },
+      "8": {
+        "question": "Bietet ihr Größenumtausch an?",
+        "answer": "Ja, wir bieten Größenumtausch innerhalb von 30 Tagen nach Lieferung an, vorbehaltlich der Verfügbarkeit. Starte einfach eine Rückgabe über dein Konto und wähle „Umtausch\" als Grund. Die Versandkosten der Rückgabe trägt der Kunde. Wenn deine Wunschgröße nicht verfügbar ist, kannst du stattdessen eine Rückerstattung wählen."
+      },
+      "9": {
+        "question": "Wie finde ich die richtige Größe?",
+        "answer": "Jede Produktseite enthält eine detaillierte Größentabelle mit Maßen. Wir empfehlen, ein gut passendes Kleidungsstück zu messen und mit unserer Tabelle zu vergleichen. Wenn du zwischen zwei Größen liegst, empfehlen wir in der Regel die größere Größe. Kontaktiere uns gerne bei Fragen zur Größenwahl."
+      },
+      "10": {
+        "question": "Was tun, wenn mein Artikel beschädigt ankommt?",
+        "answer": "Wenn dein Artikel beschädigt oder defekt ankommt, kontaktiere uns innerhalb von 48 Stunden nach Lieferung mit Fotos der Beschädigung. Wir organisieren eine kostenlose Rückgabe und senden einen Ersatz oder erstatten den vollen Kaufpreis, je nach deiner Wahl. Bewahre die Originalverpackung auf, bis das Problem gelöst ist."
+      },
+      "11": {
+        "question": "Wie kontaktiere ich den Kundensupport?",
+        "answer": "Du erreichst unser Support-Team über unsere Kontaktseite, per E-Mail an support@mizoke.com oder über unsere Social-Media-Kanäle. Wir antworten in der Regel innerhalb von 24-48 Stunden an Werktagen. Bei dringenden Bestellproblemen füge bitte deine Bestellnummer bei."
+      }
+    },
     "subtitle": "Finde Antworten auf häufige Fragen zu unseren Produkten, Versand und mehr.",
     "stillHaveQuestions": "Noch Fragen?",
     "supportDescription": "Keine Antwort gefunden? Unser Support-Team hilft dir gerne weiter.",

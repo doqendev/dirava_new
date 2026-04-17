@@ -1,8 +1,10 @@
 import Link from 'next/link'
 import { ContentPageLayout } from '@/components/content/ContentPageLayout'
-import { faqs } from '@/data/faq'
+import { getLocalizedFaqs } from '@/data/faq'
 import { FAQAccordion } from './FAQAccordion'
 import { getTranslations } from 'next-intl/server'
+import { getLocale } from '@/i18n/request'
+import { getMessages } from '@/i18n/messages'
 import { SITE_URL } from '@/lib/utils/siteUrl'
 
 export async function generateMetadata() {
@@ -24,6 +26,9 @@ export async function generateMetadata() {
 export default async function FAQPage() {
   const t = await getTranslations('faq')
   const tCommon = await getTranslations('common')
+  const locale = await getLocale()
+  const messages = getMessages(locale)
+  const faqs = getLocalizedFaqs(messages)
   const breadcrumbs = [{ label: 'FAQ', href: '/faq' }]
 
   const faqSchema = {
