@@ -130,7 +130,7 @@
     "viewFullDetails": "Voir tous les détails",
     "shippingTitle": "Livraison",
     "shippingProcessing": "Les commandes sont traitées sous 1 à 3 jours ouvrables.",
-    "shippingEurope": "Europe : 5-12 jours ouvrables — Gratuit dès 45 €",
+    "shippingEurope": "Europe : 5-10 jours ouvrables — Gratuit dès 45 €",
     "shippingUK": "UK : 5-10 jours ouvrables — Gratuit dès £40",
     "shippingCanada": "Canada : 7-14 jours ouvrables — Gratuit dès 65 $ CAD",
     "shippingAustralia": "Australie : 10-20 jours ouvrables — Gratuit dès 75 $ AUD",
@@ -561,19 +561,19 @@
         },
         "1": {
           "heading": "Europe (national)",
-          "content": "Livraison standard (5-12 jours ouvrables) : 5,99 € ou GRATUIT pour les commandes supérieures à 45 €"
+          "content": "Livraison standard (5-10 jours ouvrables) : 4,99 € ou GRATUIT pour les commandes supérieures à 45 €"
         },
         "2": {
           "heading": "Royaume-Uni",
-          "content": "Livraison standard (5-10 jours ouvrables) : 4,99 £ ou GRATUIT pour les commandes supérieures à 40 £ (≈ 45 € équivalent)"
+          "content": "Livraison standard (5-10 jours ouvrables) : 4,49 £ ou GRATUIT pour les commandes supérieures à 40 £ (≈ 45 € équivalent)"
         },
         "3": {
           "heading": "Canada",
-          "content": "Livraison standard (7-14 jours ouvrables) : 9,99 CAD ou GRATUIT pour les commandes supérieures à 65 CAD (≈ 45 € équivalent)"
+          "content": "Livraison standard (7-14 jours ouvrables) : 7,49 CAD ou GRATUIT pour les commandes supérieures à 65 CAD (≈ 45 € équivalent)"
         },
         "4": {
           "heading": "Australie",
-          "content": "Livraison standard (10-20 jours ouvrables) : 11 AUD ou GRATUIT pour les commandes supérieures à 75 AUD (≈ 45 € équivalent)"
+          "content": "Livraison standard (10-20 jours ouvrables) : 7,99 AUD ou GRATUIT pour les commandes supérieures à 75 AUD (≈ 45 € équivalent)"
         },
         "5": {
           "heading": "Reste du monde",

@@ -4,7 +4,7 @@ export const faqs: FAQItem[] = [
   {
     question: 'How long does shipping take?',
     answer:
-      'European orders typically arrive within 5-12 business days. UK orders take 5-10 days, Canada 7-14 days, Australia 10-20 days, and other international destinations 14-35 days. Free shipping is available in most regions above certain order values. All orders are processed within 1-3 business days before shipping. Please note that shipping and manufacturing times may increase during high-demand seasons.',
+      'European and UK orders typically arrive within 5-10 business days. Canada takes 7-14 days, Australia 10-20 days, and other international destinations 14-35 days. Free shipping is available worldwide on orders over the local-currency equivalent of €45 (£40 UK, $65 CAD, $75 AUD). Custom items are made to order in 1-3 business days; non-custom items are processed in 1-3 business days before shipping. Shipping to the United States is currently suspended due to tariff changes.',
   },
   {
     question: 'Do you ship internationally?',
@@ -14,7 +14,7 @@ export const faqs: FAQItem[] = [
   {
     question: 'What is your return policy?',
     answer:
-      'We accept returns within 30 days of delivery for most items. Products must be unused, unworn, and in original packaging with tags attached. Some items, including limited edition drops, opened collectibles, and final sale items, are not eligible for return. Visit our Returns page to initiate a return.',
+      'We accept returns within 30 days of delivery on most non-custom items. Products must be unused, unworn, and in original packaging with tags attached. Custom or personalised items (such as custom LED signs, custom desk signs, custom keychains, or custom apparel with personalised names) are not eligible for return once production has started, since each is made to order for you. Limited edition drops, opened collectibles, and final sale items are also not eligible. Separately, if any item arrives broken or develops a defect, we replace it free of charge — email support@mizoke.com with photos. Visit our Returns page to initiate a return.',
   },
   {
     question: 'How do I track my order?',
@@ -22,9 +22,9 @@ export const faqs: FAQItem[] = [
       'Once your order ships, you\'ll receive an email with tracking information. You can also track your order by logging into your account and visiting the Order History section, or by visiting our Order Tracking page and entering your order number and email address.',
   },
   {
-    question: 'Are your products officially licensed?',
+    question: 'Who designs the products?',
     answer:
-      'Yes, all products sold on Mizoke are officially licensed merchandise. We work directly with licensors and authorized distributors to ensure authenticity. Each product includes proper licensing information and meets quality standards.',
+      'Mizoke products are original designs created by Neo Stage Collective, inspired by popular anime characters and series. Our custom signs, keychains, magnets, and apparel feature fan-art interpretations produced in Portugal. Each item is handmade or DTF-printed to order. If you have concerns about a specific design, contact support@mizoke.com.',
   },
   {
     question: 'What payment methods do you accept?',
@@ -34,7 +34,7 @@ export const faqs: FAQItem[] = [
   {
     question: 'Can I cancel or modify my order?',
     answer:
-      'Orders can be cancelled or modified within 1 hour of placement. After this window, orders enter processing and cannot be changed. Please contact our customer service team immediately if you need to make changes. Once an order has shipped, it cannot be cancelled.',
+      'Custom items (custom LED signs, custom desk signs, custom keychains, custom apparel) can be modified or cancelled as long as production has not started. Since production typically begins within 1-3 business days, contact support@mizoke.com as soon as possible if you need a change. Once production is underway, custom items cannot be cancelled or modified. Non-custom items can be cancelled any time before the package ships. Once an order has shipped, it cannot be cancelled.',
   },
   {
     question: 'What are "Drops" and how do they work?',

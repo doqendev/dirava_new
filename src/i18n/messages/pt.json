@@ -130,7 +130,7 @@
     "viewFullDetails": "Ver detalhes completos",
     "shippingTitle": "Envio",
     "shippingProcessing": "Os pedidos são processados em 1-3 dias úteis.",
-    "shippingEurope": "Europa: 5-12 dias úteis — Grátis acima de 45 €",
+    "shippingEurope": "Europa: 5-10 dias úteis — Grátis acima de 45 €",
     "shippingUK": "UK: 5-10 dias úteis — Grátis acima de £40",
     "shippingCanada": "Canadá: 7-14 dias úteis — Grátis acima de $65 CAD",
     "shippingAustralia": "Austrália: 10-20 dias úteis — Grátis acima de $75 AUD",
@@ -561,19 +561,19 @@
         },
         "1": {
           "heading": "Europa (nacional)",
-          "content": "Envio padrão (5-12 dias úteis): 5,99 € ou GRÁTIS em encomendas superiores a 45 €"
+          "content": "Envio padrão (5-10 dias úteis): 4,99 € ou GRÁTIS em encomendas superiores a 45 €"
         },
         "2": {
           "heading": "Reino Unido",
-          "content": "Envio padrão (5-10 dias úteis): 4,99 £ ou GRÁTIS em encomendas superiores a 40 £ (≈ 45 € equivalente)"
+          "content": "Envio padrão (5-10 dias úteis): 4,49 £ ou GRÁTIS em encomendas superiores a 40 £ (≈ 45 € equivalente)"
         },
         "3": {
           "heading": "Canadá",
-          "content": "Envio padrão (7-14 dias úteis): 9,99 CAD ou GRÁTIS em encomendas superiores a 65 CAD (≈ 45 € equivalente)"
+          "content": "Envio padrão (7-14 dias úteis): 7,49 CAD ou GRÁTIS em encomendas superiores a 65 CAD (≈ 45 € equivalente)"
         },
         "4": {
           "heading": "Austrália",
-          "content": "Envio padrão (10-20 dias úteis): 11 AUD ou GRÁTIS em encomendas superiores a 75 AUD (≈ 45 € equivalente)"
+          "content": "Envio padrão (10-20 dias úteis): 7,99 AUD ou GRÁTIS em encomendas superiores a 75 AUD (≈ 45 € equivalente)"
         },
         "5": {
           "heading": "Resto do mundo",

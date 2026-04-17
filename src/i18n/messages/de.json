@@ -130,7 +130,7 @@
     "viewFullDetails": "Alle Details ansehen",
     "shippingTitle": "Versand",
     "shippingProcessing": "Bestellungen werden innerhalb von 1-3 Werktagen bearbeitet.",
-    "shippingEurope": "Europa: 5-12 Werktage — Kostenlos ab €45",
+    "shippingEurope": "Europa: 5-10 Werktage — Kostenlos ab €45",
     "shippingUK": "UK: 5-10 Werktage — Kostenlos ab £40",
     "shippingCanada": "Kanada: 7-14 Werktage — Kostenlos ab $65 CAD",
     "shippingAustralia": "Australien: 10-20 Werktage — Kostenlos ab $75 AUD",
@@ -561,19 +561,19 @@
         },
         "1": {
           "heading": "Europa (Inland)",
-          "content": "Standardversand (5\u201312 Werktage): 5,99\u00a0\u20ac oder KOSTENLOS ab einem Bestellwert von 45\u00a0\u20ac"
+          "content": "Standardversand (5\u201310 Werktage): 4,99\u00a0\u20ac oder KOSTENLOS ab einem Bestellwert von 45\u00a0\u20ac"
         },
         "2": {
           "heading": "Vereinigtes K\u00f6nigreich",
-          "content": "Standardversand (5\u201310 Werktage): 4,99\u00a0\u00a3 oder KOSTENLOS ab einem Bestellwert von 40\u00a0\u00a3 (\u2248\u00a045\u00a0\u20ac entspricht)"
+          "content": "Standardversand (5\u201310 Werktage): 4,49\u00a0\u00a3 oder KOSTENLOS ab einem Bestellwert von 40\u00a0\u00a3 (\u2248\u00a045\u00a0\u20ac entspricht)"
         },
         "3": {
           "heading": "Kanada",
-          "content": "Standardversand (7\u201314 Werktage): 9,99\u00a0CAD oder KOSTENLOS ab einem Bestellwert von 65\u00a0CAD (\u2248\u00a045\u00a0\u20ac entspricht)"
+          "content": "Standardversand (7\u201314 Werktage): 7,49\u00a0CAD oder KOSTENLOS ab einem Bestellwert von 65\u00a0CAD (\u2248\u00a045\u00a0\u20ac entspricht)"
         },
         "4": {
           "heading": "Australien",
-          "content": "Standardversand (10\u201320 Werktage): 11\u00a0AUD oder KOSTENLOS ab einem Bestellwert von 75\u00a0AUD (\u2248\u00a045\u00a0\u20ac entspricht)"
+          "content": "Standardversand (10\u201320 Werktage): 7,99\u00a0AUD oder KOSTENLOS ab einem Bestellwert von 75\u00a0AUD (\u2248\u00a045\u00a0\u20ac entspricht)"
         },
         "5": {
           "heading": "Rest der Welt",
