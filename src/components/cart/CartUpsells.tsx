@@ -108,14 +108,14 @@ export function CartUpsells({ cartLines, onClose }: CartUpsellsProps) {
   }
 
   return (
-    <div className="pt-2 pb-2 border-t border-border-subtle">
-      <h3 className="px-4 text-[10px] font-medium text-white/50 uppercase tracking-wider mb-1.5">
+    <div className="pt-3 pb-2 border-t border-border-subtle">
+      <h3 className="px-4 text-[11px] font-medium text-white/50 uppercase tracking-wider mb-2">
         {t('youMightLike')}
       </h3>
       <div
-        className="flex gap-1.5 overflow-x-auto overflow-y-hidden px-4 pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex gap-2 overflow-x-auto overflow-y-hidden px-4 pb-1 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {products.slice(0, 8).map((product) => {
+        {products.slice(0, 6).map((product) => {
           const productUrl = product.universe
             ? `/worlds/${product.universe}/${product.handle}`
             : `/products/${product.handle}`
@@ -123,46 +123,58 @@ export function CartUpsells({ cartLines, onClose }: CartUpsellsProps) {
           return (
             <motion.div
               key={product.id}
-              initial={{ opacity: 0, y: 3 }}
+              initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex-shrink-0 w-[64px] group"
-              title={product.title}
+              className="snap-start flex-shrink-0 w-[110px]"
             >
+              <div className={cn(
+                'relative rounded-lg overflow-hidden',
+                'bg-bg-secondary border border-border-subtle',
+                'hover:border-neon-cyan/30 transition-colors'
+              )}>
+                {/* Thumbnail */}
+                <Link
+                  href={productUrl}
+                  onClick={onClose}
+                  className="relative block aspect-square"
+                >
+                  {product.image ? (
+                    <Image
+                      src={product.image.url}
+                      alt={product.image.altText || product.title}
+                      fill
+                      className="object-cover"
+                      sizes="110px"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-bg-secondary" />
+                  )}
+                </Link>
+
+                {/* Quick View — overlaid on thumb */}
+                <button
+                  onClick={() => handleQuickView(product)}
+                  className="absolute top-1 right-1 p-1 rounded bg-black/60 backdrop-blur-sm text-white/80 hover:text-neon-cyan hover:bg-black/80 transition-colors"
+                  title={t('quickView')}
+                  aria-label={t('quickView')}
+                >
+                  <Eye className="w-3 h-3" />
+                </button>
+              </div>
+
+              {/* Info below thumb */}
               <Link
                 href={productUrl}
                 onClick={onClose}
-                className={cn(
-                  'relative block aspect-square rounded-md overflow-hidden',
-                  'bg-bg-secondary border border-border-subtle',
-                  'group-hover:border-neon-cyan/40 transition-colors'
-                )}
+                className="block mt-1.5"
               >
-                {product.image ? (
-                  <Image
-                    src={product.image.url}
-                    alt={product.image.altText || product.title}
-                    fill
-                    className="object-cover"
-                    sizes="64px"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-bg-secondary" />
-                )}
-                <button
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    handleQuickView(product)
-                  }}
-                  className="absolute top-0.5 right-0.5 p-0.5 rounded bg-black/60 backdrop-blur-sm text-white/80 hover:text-neon-cyan hover:bg-black/80 transition-colors"
-                  aria-label={t('quickView')}
-                >
-                  <Eye className="w-2.5 h-2.5" />
-                </button>
+                <h4 className="text-[11px] text-white truncate hover:text-neon-cyan transition-colors leading-tight">
+                  {product.title}
+                </h4>
+                <p className="text-[10px] font-mono text-neon-cyan mt-0.5">
+                  {formatPrice(product.price.amount, product.price.currencyCode)}
+                </p>
               </Link>
-              <p className="mt-1 text-[9px] font-mono text-neon-cyan text-center leading-tight">
-                {formatPrice(product.price.amount, product.price.currencyCode)}
-              </p>
             </motion.div>
           )
         })}

@@ -68,7 +68,6 @@ export function AddToCartButton({
     try {
       await addItem(variantId, quantity, attributes)
       setState('success')
-      addToast({ type: 'success', message: tCart('itemAdded') })
 
       // Open cart after success
       setTimeout(() => {
