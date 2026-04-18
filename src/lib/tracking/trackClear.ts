@@ -12,11 +12,13 @@
 
 import { getClickIds } from './clickIds'
 
-const INGEST_URL = process.env.NEXT_PUBLIC_TC_INGEST_URL
-const API_KEY = process.env.NEXT_PUBLIC_TC_API_KEY
+// Client fires to our own same-origin proxy (/api/track) which forwards to
+// Track Clear server-to-server. This avoids CORS preflight on the
+// Authorization header and keeps the API key off the client bundle.
+const PROXY_PATH = '/api/track'
 
 function canTrack(): boolean {
-  return typeof window !== 'undefined' && !!INGEST_URL && !!API_KEY
+  return typeof window !== 'undefined'
 }
 
 function nowIso(): string {
@@ -58,11 +60,10 @@ async function send(eventName: string, data: Record<string, unknown>): Promise<v
     })
 
     // keepalive lets the request survive a navigation (e.g. checkout redirect).
-    await fetch(INGEST_URL!, {
+    await fetch(PROXY_PATH, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${API_KEY}`,
       },
       body,
       keepalive: true,
