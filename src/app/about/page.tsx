@@ -136,7 +136,7 @@ export default function AboutPage() {
               </li>
               <li>
                 <strong className="text-white">Mounting:</strong> all LED signs
-                stand on their own. If you want to wall-mount, you'll need
+                stand on their own. If you want to wall-mount, you&apos;ll need
                 mounting tape (not included).
               </li>
               <li>
