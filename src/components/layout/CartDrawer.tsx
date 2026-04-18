@@ -12,6 +12,9 @@ import { useUIStore } from '@/stores/uiStore'
 import { useCartStore } from '@/stores/cartStore'
 import { useWishlistStore } from '@/stores/wishlistStore'
 import { useToastStore } from '@/stores/toastStore'
+import { useCookieConsentStore } from '@/stores/cookieConsentStore'
+import { syncCartClickIds } from '@/lib/tracking/syncCartClickIds'
+import { trackInitiateCheckout } from '@/lib/tracking/trackClear'
 import { Button } from '@/components/ui/Button'
 import { CartUpsells } from '@/components/cart/CartUpsells'
 import { DiscountCodeInput } from '@/components/cart/DiscountCodeInput'
@@ -376,6 +379,26 @@ export function CartDrawer() {
                   glow="cyan"
                   className="w-full"
                   disabled={!checkoutUrl}
+                  onClick={(e: React.MouseEvent) => {
+                    const store = useCartStore.getState()
+                    if (!store.cartId || !checkoutUrl) return
+                    const consent = useCookieConsentStore.getState()
+                    if (!consent.consentGiven || !consent.preferences.marketing) return
+
+                    // Fire tracking + sync click IDs, then redirect to checkout.
+                    e.preventDefault()
+                    trackInitiateCheckout({
+                      lines: lines.map((l) => ({
+                        variantId: l.merchandise.id,
+                        quantity: l.quantity,
+                      })),
+                      totalValue: parseFloat(total?.amount || subtotal?.amount || '0'),
+                      currency: total?.currencyCode || subtotal?.currencyCode || 'EUR',
+                    })
+                    syncCartClickIds(store.cartId).finally(() => {
+                      window.location.href = checkoutUrl
+                    })
+                  }}
                 >
                   {t('checkout').toUpperCase()}
                 </Button>

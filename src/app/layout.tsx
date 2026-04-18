@@ -18,6 +18,7 @@ import { CookieConsent } from '@/components/layout/CookieConsent'
 import { ToastContainer } from '@/components/ui/Toast'
 import { LocaleProvider } from '@/components/providers/LocaleProvider'
 import { AnalyticsProvider } from '@/components/providers/AnalyticsProvider'
+import { TrackingProvider } from '@/components/providers/TrackingProvider'
 import './globals.css'
 
 const orbitron = Orbitron({
@@ -173,6 +174,7 @@ export default async function RootLayout({
               <QuickViewModal />
               <CookieConsent />
               <ToastContainer />
+              <TrackingProvider />
               <AnalyticsProvider />
             </LocaleProvider>
           </NextIntlClientProvider>

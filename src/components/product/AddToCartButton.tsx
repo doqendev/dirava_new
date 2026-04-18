@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/Button'
 import { useCartStore } from '@/stores/cartStore'
 import { useUIStore } from '@/stores/uiStore'
 import { useToastStore } from '@/stores/toastStore'
+import { useCookieConsentStore } from '@/stores/cookieConsentStore'
+import { trackAddToCart } from '@/lib/tracking/trackClear'
 
 interface AddToCartButtonProps {
   variantId: string
@@ -68,6 +70,12 @@ export function AddToCartButton({
     try {
       await addItem(variantId, quantity, attributes)
       setState('success')
+
+      // Fire Track Clear AddToCart event (gated by marketing consent)
+      const consent = useCookieConsentStore.getState()
+      if (consent.consentGiven && consent.preferences.marketing) {
+        trackAddToCart({ variantId, price: 0, currency: 'EUR', quantity })
+      }
 
       // Open cart after success
       setTimeout(() => {
