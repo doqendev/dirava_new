@@ -2,13 +2,16 @@
  * GET /api/account/data-export
  *
  * GDPR: Export all customer data as JSON.
- * Requires X-Customer-Access-Token header.
  */
 
 import { NextResponse } from 'next/server'
+import { getAuthenticatedCustomer, getCustomerAccessToken } from '@/lib/auth/customer'
 import { shopifyClient } from '@/lib/shopify/client'
 import { GET_CUSTOMER, GET_CUSTOMER_ORDERS } from '@/lib/shopify/customerQueries'
 import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimit'
+import { appendCustomerComplianceEvent } from '@/lib/shopify/customerCompliance'
+
+export const dynamic = 'force-dynamic'
 
 interface CustomerResponse {
   customer: {
@@ -45,12 +48,43 @@ export async function GET(request: Request) {
       )
     }
 
-    const accessToken = request.headers.get('X-Customer-Access-Token')
+    const { customer: authenticatedCustomer, response, session } =
+      await getAuthenticatedCustomer(request)
+    if (response) {
+      return response
+    }
+
+    if (!authenticatedCustomer || !session) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+    }
+
+    if (session.mode === 'mock') {
+      const exportData = {
+        exportedAt: new Date().toISOString(),
+        profile: {
+          email: authenticatedCustomer.email,
+          firstName: authenticatedCustomer.firstName,
+          lastName: authenticatedCustomer.lastName,
+          phone: authenticatedCustomer.phone,
+          acceptsMarketing: authenticatedCustomer.acceptsMarketing,
+        },
+        addresses: authenticatedCustomer.addresses.edges.map((edge) => edge.node),
+        orders: [],
+      }
+
+      return NextResponse.json(exportData, {
+        headers: {
+          'Content-Disposition': `attachment; filename="mizoke-data-export-${Date.now()}.json"`,
+          'Cache-Control': 'no-store',
+        },
+      })
+    }
+
+    const accessToken = getCustomerAccessToken(session)
     if (!accessToken) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
-    // Fetch customer profile and orders in parallel
     const [customerData, ordersData] = await Promise.all([
       shopifyClient.request<CustomerResponse>(GET_CUSTOMER, {
         customerAccessToken: accessToken,
@@ -80,6 +114,16 @@ export async function GET(request: Request) {
       },
       addresses,
       orders,
+    }
+
+    try {
+      await appendCustomerComplianceEvent(customer.id, 'data_export_requests', {
+        requestedAt: exportData.exportedAt,
+        email: customer.email,
+        orderCount: orders.length,
+      })
+    } catch (auditError) {
+      console.error('Failed to record data export audit event:', auditError)
     }
 
     return NextResponse.json(exportData, {

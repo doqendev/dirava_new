@@ -1,97 +1,21 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
-import { shopifyClient } from '@/lib/shopify/client'
-import {
-  CUSTOMER_CREATE,
-  CUSTOMER_ACCESS_TOKEN_CREATE,
-  CUSTOMER_ACCESS_TOKEN_DELETE,
-  CUSTOMER_RECOVER,
-  CUSTOMER_RESET_BY_URL,
-  CUSTOMER_UPDATE,
-} from '@/lib/shopify/customerMutations'
-import { GET_CUSTOMER } from '@/lib/shopify/customerQueries'
 import type {
-  ShopifyCustomer,
-  ShopifyCustomerAccessToken,
   CustomerUserError,
+  ShopifyCustomer,
+  LoginFormData,
+  RegisterFormData,
 } from '@/types/customer'
-
-// Mock customer for development/testing
-const MOCK_CUSTOMER: ShopifyCustomer = {
-  id: 'gid://shopify/Customer/dev-test-123',
-  email: 'test@example.com',
-  firstName: 'Test',
-  lastName: 'User',
-  phone: '+1234567890',
-  acceptsMarketing: true,
-  defaultAddress: {
-    id: 'gid://shopify/MailingAddress/dev-addr-1',
-    firstName: 'Test',
-    lastName: 'User',
-    company: 'Mizoke',
-    address1: '123 Test Street',
-    address2: 'Suite 100',
-    city: 'Los Angeles',
-    province: 'California',
-    provinceCode: 'CA',
-    country: 'United States',
-    countryCodeV2: 'US',
-    zip: '90001',
-    phone: '+1234567890',
-    formatted: ['123 Test Street', 'Suite 100', 'Los Angeles CA 90001', 'United States'],
-  },
-  addresses: {
-    edges: [
-      {
-        node: {
-          id: 'gid://shopify/MailingAddress/dev-addr-1',
-          firstName: 'Test',
-          lastName: 'User',
-          company: 'Mizoke',
-          address1: '123 Test Street',
-          address2: 'Suite 100',
-          city: 'Los Angeles',
-          province: 'California',
-          provinceCode: 'CA',
-          country: 'United States',
-          countryCodeV2: 'US',
-          zip: '90001',
-          phone: '+1234567890',
-          formatted: ['123 Test Street', 'Suite 100', 'Los Angeles CA 90001', 'United States'],
-        },
-      },
-      {
-        node: {
-          id: 'gid://shopify/MailingAddress/dev-addr-2',
-          firstName: 'Test',
-          lastName: 'User',
-          company: null,
-          address1: '456 Backup Ave',
-          address2: null,
-          city: 'San Francisco',
-          province: 'California',
-          provinceCode: 'CA',
-          country: 'United States',
-          countryCodeV2: 'US',
-          zip: '94102',
-          phone: null,
-          formatted: ['456 Backup Ave', 'San Francisco CA 94102', 'United States'],
-        },
-      },
-    ],
-  },
-}
 
 interface AuthState {
   customer: ShopifyCustomer | null
-  accessToken: string | null
-  expiresAt: string | null
   isLoading: boolean
+  isInitialized: boolean
   error: string | null
-
-  // Actions
-  login: (email: string, password: string) => Promise<{ success: boolean; errors?: CustomerUserError[] }>
-  devLogin: () => void // Development login with mock data
+  login: (
+    email: string,
+    password: string
+  ) => Promise<{ success: boolean; errors?: CustomerUserError[] }>
+  devLogin: () => Promise<void>
   register: (
     email: string,
     password: string,
@@ -99,319 +23,403 @@ interface AuthState {
     lastName: string
   ) => Promise<{ success: boolean; errors?: CustomerUserError[]; requiresActivation?: boolean }>
   logout: () => Promise<void>
-  recoverPassword: (email: string) => Promise<{ success: boolean; errors?: CustomerUserError[] }>
+  recoverPassword: (
+    email: string
+  ) => Promise<{ success: boolean; errors?: CustomerUserError[] }>
   resetPassword: (
     resetUrl: string,
     password: string
   ) => Promise<{ success: boolean; errors?: CustomerUserError[] }>
   updateCustomer: (
-    updates: Partial<{ firstName: string; lastName: string; email: string; phone: string; acceptsMarketing: boolean }>
+    updates: Partial<{
+      firstName: string
+      lastName: string
+      email: string
+      phone: string
+      acceptsMarketing: boolean
+    }>
   ) => Promise<{ success: boolean; errors?: CustomerUserError[] }>
+  initializeSession: () => Promise<void>
   fetchCustomer: () => Promise<void>
   isAuthenticated: () => boolean
   setError: (error: string | null) => void
   clearAuth: () => void
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set, get) => ({
-      customer: null,
-      accessToken: null,
-      expiresAt: null,
-      isLoading: false,
-      error: null,
+type AuthRouteErrorResponse = {
+  error?: string
+  errors?: CustomerUserError[]
+}
 
-      login: async (email, password) => {
-        set({ isLoading: true, error: null })
+type AuthSuccessResponse = {
+  success?: boolean
+  customer?: ShopifyCustomer
+  authenticated?: boolean
+  requiresActivation?: boolean
+}
 
-        try {
-          // Create access token
-          const response = await shopifyClient.request<{
-            customerAccessTokenCreate: {
-              customerAccessToken: ShopifyCustomerAccessToken | null
-              customerUserErrors: CustomerUserError[]
-            }
-          }>(CUSTOMER_ACCESS_TOKEN_CREATE, {
-            input: { email, password },
-          })
+async function readJsonResponse<T>(response: Response): Promise<T | null> {
+  try {
+    return (await response.json()) as T
+  } catch {
+    return null
+  }
+}
 
-          const { customerAccessToken, customerUserErrors } =
-            response.customerAccessTokenCreate
+async function postJson<T>(
+  url: string,
+  body: Record<string, unknown>
+): Promise<{ ok: boolean; status: number; data: T | null }> {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
 
-          if (customerUserErrors.length > 0) {
-            set({ isLoading: false, error: customerUserErrors[0]?.message ?? 'An error occurred' })
-            return { success: false, errors: customerUserErrors }
-          }
+  return {
+    ok: response.ok,
+    status: response.status,
+    data: await readJsonResponse<T>(response),
+  }
+}
 
-          if (!customerAccessToken) {
-            set({ isLoading: false, error: 'Failed to create access token' })
-            return { success: false }
-          }
+export const useAuthStore = create<AuthState>()((set, get) => ({
+  customer: null,
+  isLoading: false,
+  isInitialized: false,
+  error: null,
 
-          // Store token
-          set({
-            accessToken: customerAccessToken.accessToken,
-            expiresAt: customerAccessToken.expiresAt,
-          })
+  initializeSession: async () => {
+    if (get().isInitialized || get().isLoading) {
+      return
+    }
 
-          // Set auth flag cookie for middleware (boolean signal only)
-          document.cookie = 'mizoke-auth=1; path=/; max-age=2592000; SameSite=Lax; Secure'
+    set({ isLoading: true, error: null })
 
-          // Fetch customer data
-          await get().fetchCustomer()
+    try {
+      const response = await fetch('/api/auth/session', {
+        cache: 'no-store',
+      })
+      const data = await readJsonResponse<AuthSuccessResponse>(response)
 
-          set({ isLoading: false })
-          return { success: true }
-        } catch (error) {
-          console.error('Login failed:', error)
-          set({ isLoading: false, error: 'Login failed. Please try again.' })
-          return { success: false }
-        }
-      },
+      set({
+        customer: data?.authenticated ? data.customer ?? null : null,
+        isLoading: false,
+        isInitialized: true,
+        error: null,
+      })
+    } catch (error) {
+      console.error('Failed to initialize customer session:', error)
+      set({
+        customer: null,
+        isLoading: false,
+        isInitialized: true,
+        error: null,
+      })
+    }
+  },
 
-      // Development login - bypasses Shopify auth with mock data
-      devLogin: () => {
-        const futureDate = new Date()
-        futureDate.setFullYear(futureDate.getFullYear() + 1)
+  login: async (email, password) => {
+    set({ isLoading: true, error: null })
 
-        set({
-          customer: MOCK_CUSTOMER,
-          accessToken: 'dev-mock-token-12345',
-          expiresAt: futureDate.toISOString(),
-          isLoading: false,
-          error: null,
-        })
+    try {
+      const { ok, data } = await postJson<AuthSuccessResponse & AuthRouteErrorResponse>(
+        '/api/auth/login',
+        { email, password } satisfies LoginFormData
+      )
 
-        // Set auth flag cookie for middleware
-        document.cookie = 'mizoke-auth=1; path=/; max-age=2592000; SameSite=Lax; Secure'
-      },
-
-      register: async (email, password, firstName, lastName) => {
-        set({ isLoading: true, error: null })
-
-        try {
-          // Create customer
-          const response = await shopifyClient.request<{
-            customerCreate: {
-              customer: { id: string; email: string } | null
-              customerUserErrors: CustomerUserError[]
-            }
-          }>(CUSTOMER_CREATE, {
-            input: { email, password, firstName, lastName },
-          })
-
-          const { customer, customerUserErrors } = response.customerCreate
-
-          if (customerUserErrors.length > 0) {
-            set({ isLoading: false, error: customerUserErrors[0]?.message ?? 'An error occurred' })
-            return { success: false, errors: customerUserErrors }
-          }
-
-          if (!customer) {
-            set({ isLoading: false, error: 'Failed to create account' })
-            return { success: false }
-          }
-
-          // Try auto-login after registration
-          const loginResult = await get().login(email, password)
-
-          // If login fails, the store likely requires email activation
-          // Return success with a flag indicating activation may be needed
-          if (!loginResult.success) {
-            set({ isLoading: false, error: null })
-            return {
-              success: true,
-              requiresActivation: true,
-            }
-          }
-
-          return loginResult
-        } catch (error) {
-          console.error('Registration failed:', error)
-          set({ isLoading: false, error: 'Registration failed. Please try again.' })
-          return { success: false }
-        }
-      },
-
-      logout: async () => {
-        const { accessToken } = get()
-
-        if (accessToken) {
-          try {
-            await shopifyClient.request(CUSTOMER_ACCESS_TOKEN_DELETE, {
-              customerAccessToken: accessToken,
-            })
-          } catch (error) {
-            console.error('Failed to delete access token:', error)
-          }
-        }
-
-        get().clearAuth()
-      },
-
-      recoverPassword: async (email) => {
-        set({ isLoading: true, error: null })
-
-        try {
-          const response = await shopifyClient.request<{
-            customerRecover: {
-              customerUserErrors: CustomerUserError[]
-            }
-          }>(CUSTOMER_RECOVER, { email })
-
-          const { customerUserErrors } = response.customerRecover
-
-          set({ isLoading: false })
-
-          if (customerUserErrors.length > 0) {
-            set({ error: customerUserErrors[0]?.message ?? 'An error occurred' })
-            return { success: false, errors: customerUserErrors }
-          }
-
-          return { success: true }
-        } catch (error) {
-          console.error('Password recovery failed:', error)
-          set({ isLoading: false, error: 'Failed to send recovery email.' })
-          return { success: false }
-        }
-      },
-
-      resetPassword: async (resetUrl, password) => {
-        set({ isLoading: true, error: null })
-
-        try {
-          const response = await shopifyClient.request<{
-            customerResetByUrl: {
-              customer: { id: string } | null
-              customerAccessToken: ShopifyCustomerAccessToken | null
-              customerUserErrors: CustomerUserError[]
-            }
-          }>(CUSTOMER_RESET_BY_URL, { resetUrl, password })
-
-          const { customerAccessToken, customerUserErrors } =
-            response.customerResetByUrl
-
-          if (customerUserErrors.length > 0) {
-            set({ isLoading: false, error: customerUserErrors[0]?.message ?? 'An error occurred' })
-            return { success: false, errors: customerUserErrors }
-          }
-
-          if (customerAccessToken) {
-            // Auto-login with new token
-            set({
-              accessToken: customerAccessToken.accessToken,
-              expiresAt: customerAccessToken.expiresAt,
-            })
-
-            // Set auth flag cookie for middleware
-            document.cookie = 'mizoke-auth=1; path=/; max-age=2592000; SameSite=Lax; Secure'
-
-            await get().fetchCustomer()
-          }
-
-          set({ isLoading: false })
-          return { success: true }
-        } catch (error) {
-          console.error('Password reset failed:', error)
-          set({ isLoading: false, error: 'Failed to reset password.' })
-          return { success: false }
-        }
-      },
-
-      updateCustomer: async (updates) => {
-        const { accessToken } = get()
-        if (!accessToken) {
-          return { success: false }
-        }
-
-        set({ isLoading: true, error: null })
-
-        try {
-          const response = await shopifyClient.request<{
-            customerUpdate: {
-              customer: ShopifyCustomer | null
-              customerUserErrors: CustomerUserError[]
-            }
-          }>(CUSTOMER_UPDATE, {
-            customerAccessToken: accessToken,
-            customer: updates,
-          })
-
-          const { customer, customerUserErrors } = response.customerUpdate
-
-          if (customerUserErrors.length > 0) {
-            set({ isLoading: false, error: customerUserErrors[0]?.message ?? 'An error occurred' })
-            return { success: false, errors: customerUserErrors }
-          }
-
-          if (customer) {
-            // Refetch full customer data to avoid shallow merge issues with nested objects
-            await get().fetchCustomer()
-          }
-
-          set({ isLoading: false })
-          return { success: true }
-        } catch (error) {
-          console.error('Customer update failed:', error)
-          set({ isLoading: false, error: 'Failed to update profile.' })
-          return { success: false }
-        }
-      },
-
-      fetchCustomer: async () => {
-        const { accessToken } = get()
-        if (!accessToken) return
-
-        try {
-          const response = await shopifyClient.request<{
-            customer: ShopifyCustomer | null
-          }>(GET_CUSTOMER, { customerAccessToken: accessToken })
-
-          if (response.customer) {
-            set({ customer: response.customer })
-          } else {
-            // Token might be invalid/expired
-            get().clearAuth()
-          }
-        } catch (error) {
-          console.error('Failed to fetch customer:', error)
-          get().clearAuth()
-        }
-      },
-
-      isAuthenticated: () => {
-        const { accessToken, expiresAt } = get()
-        if (!accessToken || !expiresAt) return false
-
-        // Check if token is expired
-        const expiry = new Date(expiresAt)
-        return expiry > new Date()
-      },
-
-      setError: (error) => set({ error }),
-
-      clearAuth: () => {
+      if (!ok || !data?.customer) {
+        const errorMessage = data?.error ?? 'Login failed. Please try again.'
         set({
           customer: null,
-          accessToken: null,
-          expiresAt: null,
           isLoading: false,
+          isInitialized: true,
+          error: errorMessage,
+        })
+        return { success: false, errors: data?.errors }
+      }
+
+      set({
+        customer: data.customer,
+        isLoading: false,
+        isInitialized: true,
+        error: null,
+      })
+      return { success: true }
+    } catch (error) {
+      console.error('Login failed:', error)
+      set({
+        customer: null,
+        isLoading: false,
+        isInitialized: true,
+        error: 'Login failed. Please try again.',
+      })
+      return { success: false }
+    }
+  },
+
+  devLogin: async () => {
+    set({ isLoading: true, error: null })
+
+    try {
+      const response = await fetch('/api/auth/dev-login', {
+        method: 'POST',
+      })
+      const data = await readJsonResponse<AuthSuccessResponse & AuthRouteErrorResponse>(response)
+
+      if (!response.ok || !data?.customer) {
+        set({
+          customer: null,
+          isLoading: false,
+          isInitialized: true,
+          error: data?.error ?? 'Development login failed.',
+        })
+        return
+      }
+
+      set({
+        customer: data.customer,
+        isLoading: false,
+        isInitialized: true,
+        error: null,
+      })
+    } catch (error) {
+      console.error('Development login failed:', error)
+      set({
+        customer: null,
+        isLoading: false,
+        isInitialized: true,
+        error: 'Development login failed.',
+      })
+    }
+  },
+
+  register: async (email, password, firstName, lastName) => {
+    set({ isLoading: true, error: null })
+
+    try {
+      const { ok, data } = await postJson<AuthSuccessResponse & AuthRouteErrorResponse>(
+        '/api/auth/register',
+        { email, password, firstName, lastName } satisfies RegisterFormData
+      )
+
+      if (!ok || !data) {
+        const errorMessage = data?.error ?? 'Registration failed. Please try again.'
+        set({
+          customer: null,
+          isLoading: false,
+          isInitialized: true,
+          error: errorMessage,
+        })
+        return { success: false, errors: data?.errors }
+      }
+
+      if (data.requiresActivation) {
+        set({
+          customer: null,
+          isLoading: false,
+          isInitialized: true,
           error: null,
         })
+        return {
+          success: true,
+          requiresActivation: true,
+        }
+      }
 
-        // Clear auth flag cookie for middleware
-        document.cookie = 'mizoke-auth=; path=/; max-age=0; Secure'
-      },
-    }),
-    {
-      name: 'mizoke-auth',
-      partialize: (state) => ({
-        customer: state.customer,
-        accessToken: state.accessToken,
-        expiresAt: state.expiresAt,
-      }),
+      if (!data.customer) {
+        set({
+          customer: null,
+          isLoading: false,
+          isInitialized: true,
+          error: 'Registration failed. Please try again.',
+        })
+        return { success: false }
+      }
+
+      set({
+        customer: data.customer,
+        isLoading: false,
+        isInitialized: true,
+        error: null,
+      })
+      return { success: true }
+    } catch (error) {
+      console.error('Registration failed:', error)
+      set({
+        customer: null,
+        isLoading: false,
+        isInitialized: true,
+        error: 'Registration failed. Please try again.',
+      })
+      return { success: false }
     }
-  )
-)
+  },
 
+  logout: async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+      })
+    } catch (error) {
+      console.error('Failed to logout cleanly:', error)
+    } finally {
+      get().clearAuth()
+    }
+  },
+
+  recoverPassword: async (email) => {
+    set({ isLoading: true, error: null })
+
+    try {
+      const { ok, data } = await postJson<AuthRouteErrorResponse>('/api/auth/recover', {
+        email,
+      })
+
+      set({ isLoading: false, isInitialized: true })
+
+      if (!ok) {
+        const errorMessage = data?.error ?? 'Failed to send the password reset email.'
+        set({ error: errorMessage })
+        return { success: false, errors: data?.errors }
+      }
+
+      return { success: true }
+    } catch (error) {
+      console.error('Password recovery failed:', error)
+      set({
+        isLoading: false,
+        isInitialized: true,
+        error: 'Failed to send the password reset email.',
+      })
+      return { success: false }
+    }
+  },
+
+  resetPassword: async (resetUrl, password) => {
+    set({ isLoading: true, error: null })
+
+    try {
+      const { ok, data } = await postJson<AuthSuccessResponse & AuthRouteErrorResponse>(
+        '/api/auth/reset-password',
+        { resetUrl, password }
+      )
+
+      if (!ok || !data?.customer) {
+        const errorMessage = data?.error ?? 'Failed to reset the password.'
+        set({
+          customer: null,
+          isLoading: false,
+          isInitialized: true,
+          error: errorMessage,
+        })
+        return { success: false, errors: data?.errors }
+      }
+
+      set({
+        customer: data.customer,
+        isLoading: false,
+        isInitialized: true,
+        error: null,
+      })
+      return { success: true }
+    } catch (error) {
+      console.error('Password reset failed:', error)
+      set({
+        customer: null,
+        isLoading: false,
+        isInitialized: true,
+        error: 'Failed to reset the password.',
+      })
+      return { success: false }
+    }
+  },
+
+  updateCustomer: async (updates) => {
+    set({ isLoading: true, error: null })
+
+    try {
+      const response = await fetch('/api/account/customer', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      })
+      const data = await readJsonResponse<AuthSuccessResponse & AuthRouteErrorResponse>(response)
+
+      if (!response.ok || !data?.customer) {
+        const errorMessage = data?.error ?? 'Failed to update the profile.'
+        set({
+          isLoading: false,
+          isInitialized: true,
+          error: errorMessage,
+        })
+        return { success: false, errors: data?.errors }
+      }
+
+      set({
+        customer: data.customer,
+        isLoading: false,
+        isInitialized: true,
+        error: null,
+      })
+      return { success: true }
+    } catch (error) {
+      console.error('Customer update failed:', error)
+      set({
+        isLoading: false,
+        isInitialized: true,
+        error: 'Failed to update the profile.',
+      })
+      return { success: false }
+    }
+  },
+
+  fetchCustomer: async () => {
+    set({ isLoading: true, error: null })
+
+    try {
+      const response = await fetch('/api/account/customer', {
+        cache: 'no-store',
+      })
+      const data = await readJsonResponse<AuthSuccessResponse & AuthRouteErrorResponse>(response)
+
+      if (!response.ok || !data?.customer) {
+        set({
+          customer: null,
+          isLoading: false,
+          isInitialized: true,
+          error: null,
+        })
+        return
+      }
+
+      set({
+        customer: data.customer,
+        isLoading: false,
+        isInitialized: true,
+        error: null,
+      })
+    } catch (error) {
+      console.error('Failed to fetch customer:', error)
+      set({
+        customer: null,
+        isLoading: false,
+        isInitialized: true,
+        error: null,
+      })
+    }
+  },
+
+  isAuthenticated: () => get().customer !== null,
+
+  setError: (error) => set({ error }),
+
+  clearAuth: () => {
+    set({
+      customer: null,
+      isLoading: false,
+      isInitialized: true,
+      error: null,
+    })
+  },
+}))

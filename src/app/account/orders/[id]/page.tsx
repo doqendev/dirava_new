@@ -6,9 +6,7 @@ import Image from 'next/image'
 import { useLocale, useTranslations } from 'next-intl'
 import { ArrowLeft, Package, Loader2, MapPin } from 'lucide-react'
 import { AccountLayout } from '@/components/account/AccountLayout'
-import { useAuthStore } from '@/stores/authStore'
-import { shopifyClient } from '@/lib/shopify/client'
-import { GET_ORDER } from '@/lib/shopify/customerQueries'
+import { useRequireAuth } from '@/hooks/useRequireAuth'
 import { formatPrice } from '@/lib/utils/formatPrice'
 import { cn } from '@/lib/utils/cn'
 import type { ShopifyOrder } from '@/types/customer'
@@ -26,30 +24,32 @@ const statusColors: Record<string, string> = {
 export default function OrderDetailPage({ params }: { params: { id: string } }) {
   const t = useTranslations('orderHistory')
   const locale = useLocale()
-  const { accessToken } = useAuthStore()
+  const { isAuthenticated } = useRequireAuth()
   const [order, setOrder] = useState<ShopifyOrder | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchOrder() {
-      if (!accessToken) {
+      if (!isAuthenticated) {
         setIsLoading(false)
         return
       }
 
       try {
-        // Decode the base64 URL param to get the Shopify GID
-        const orderId = atob(decodeURIComponent(params.id))
+        const response = await fetch(`/api/account/orders/${params.id}`, {
+          cache: 'no-store',
+        })
+        const data = (await response.json()) as {
+          success: boolean
+          order?: ShopifyOrder
+          error?: string
+        }
 
-        const response = await shopifyClient.request<{
-          node: ShopifyOrder | null
-        }>(GET_ORDER, { id: orderId })
-
-        if (response.node) {
-          setOrder(response.node)
+        if (response.ok && data.success && data.order) {
+          setOrder(data.order)
         } else {
-          setError('Order not found')
+          setError(data.error || 'Order not found')
         }
       } catch (err) {
         console.error('Failed to fetch order:', err)
@@ -59,8 +59,8 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
       }
     }
 
-    fetchOrder()
-  }, [accessToken, params.id])
+    void fetchOrder()
+  }, [isAuthenticated, params.id])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString(locale, {

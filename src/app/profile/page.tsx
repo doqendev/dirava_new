@@ -8,16 +8,16 @@ import { useAuth } from '@/hooks/useRequireAuth'
 
 export default function ProfilePage() {
   const router = useRouter()
-  const { isAuthenticated, isLoading } = useAuth()
+  const { isAuthenticated, isLoading, isInitialized } = useAuth()
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
+    if (isInitialized && !isLoading && isAuthenticated) {
       router.replace('/account/dashboard')
     }
-  }, [isAuthenticated, isLoading, router])
+  }, [isAuthenticated, isInitialized, isLoading, router])
 
   // Show nothing while checking auth or redirecting
-  if (isLoading || isAuthenticated) {
+  if (!isInitialized || isLoading || isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-neon-cyan border-t-transparent rounded-full animate-spin" />
@@ -58,11 +58,11 @@ export default function ProfilePage() {
 
         <p className="mt-8 text-sm text-white/40">
           By continuing, you agree to our{' '}
-          <Link href="/policies/terms-of-service" className="text-neon-cyan hover:underline">
+          <Link href="/policies/terms" className="text-neon-cyan hover:underline">
             Terms of Service
           </Link>{' '}
           and{' '}
-          <Link href="/policies/privacy-policy" className="text-neon-cyan hover:underline">
+          <Link href="/policies/privacy" className="text-neon-cyan hover:underline">
             Privacy Policy
           </Link>
           .

@@ -7,20 +7,13 @@ import { AddressForm } from '@/components/account/AddressForm'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
 import { useRequireAuth } from '@/hooks/useRequireAuth'
-import { useAuthStore } from '@/stores/authStore'
-import { shopifyClient } from '@/lib/shopify/client'
-import {
-  CUSTOMER_ADDRESS_CREATE,
-  CUSTOMER_ADDRESS_UPDATE,
-  CUSTOMER_ADDRESS_DELETE,
-  CUSTOMER_DEFAULT_ADDRESS_UPDATE,
-} from '@/lib/shopify/customerMutations'
 import { cn } from '@/lib/utils/cn'
 import type { ShopifyCustomerAddress, AddressFormData } from '@/types/customer'
+import { useAuthStore } from '@/stores/authStore'
 
 export default function AddressesPage() {
   const { customer } = useRequireAuth()
-  const { accessToken, fetchCustomer } = useAuthStore()
+  const { fetchCustomer } = useAuthStore()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingAddress, setEditingAddress] = useState<ShopifyCustomerAddress | null>(null)
@@ -47,24 +40,20 @@ export default function AddressesPage() {
   }
 
   const handleSubmit = async (data: AddressFormData) => {
-    if (!accessToken) return
-
     setIsSubmitting(true)
 
     try {
-      if (editingAddress) {
-        // Update existing address
-        await shopifyClient.request(CUSTOMER_ADDRESS_UPDATE, {
-          customerAccessToken: accessToken,
-          id: editingAddress.id,
-          address: data,
-        })
-      } else {
-        // Create new address
-        await shopifyClient.request(CUSTOMER_ADDRESS_CREATE, {
-          customerAccessToken: accessToken,
-          address: data,
-        })
+      const response = await fetch(
+        editingAddress ? `/api/account/addresses/${encodeURIComponent(editingAddress.id)}` : '/api/account/addresses',
+        {
+          method: editingAddress ? 'PATCH' : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to save the address.')
       }
 
       await fetchCustomer()
@@ -77,15 +66,19 @@ export default function AddressesPage() {
   }
 
   const handleDelete = async (addressId: string) => {
-    if (!accessToken || !confirm('Are you sure you want to delete this address?')) return
+    if (!confirm('Are you sure you want to delete this address?')) return
 
     setDeletingId(addressId)
 
     try {
-      await shopifyClient.request(CUSTOMER_ADDRESS_DELETE, {
-        customerAccessToken: accessToken,
-        id: addressId,
+      const response = await fetch(`/api/account/addresses/${encodeURIComponent(addressId)}`, {
+        method: 'DELETE',
       })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete the address.')
+      }
+
       await fetchCustomer()
     } catch (error) {
       console.error('Failed to delete address:', error)
@@ -95,15 +88,19 @@ export default function AddressesPage() {
   }
 
   const handleSetDefault = async (addressId: string) => {
-    if (!accessToken) return
-
     setSettingDefaultId(addressId)
 
     try {
-      await shopifyClient.request(CUSTOMER_DEFAULT_ADDRESS_UPDATE, {
-        customerAccessToken: accessToken,
-        addressId,
+      const response = await fetch('/api/account/addresses/default', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ addressId }),
       })
+
+      if (!response.ok) {
+        throw new Error('Failed to set the default address.')
+      }
+
       await fetchCustomer()
     } catch (error) {
       console.error('Failed to set default address:', error)

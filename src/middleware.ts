@@ -1,26 +1,34 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import {
+  CUSTOMER_SESSION_COOKIE,
+  decryptCustomerSession,
+} from '@/lib/auth/session'
 
 /**
  * Edge middleware for:
  * 1. Protecting /account/* routes (redirect to login if no auth token)
  * 2. Adding security headers
  */
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Protect account routes (except login, register, reset)
-  const publicAccountRoutes = ['/account/login', '/account/register', '/account/reset']
+  const publicAccountRoutes = [
+    '/account/login',
+    '/account/register',
+    '/account/forgot-password',
+    '/account/reset-password',
+  ]
   const isAccountRoute = pathname.startsWith('/account')
   const isPublicAccountRoute = publicAccountRoutes.some((route) => pathname.startsWith(route))
 
   if (isAccountRoute && !isPublicAccountRoute) {
-    // Check for auth token in cookies (set by authStore on login)
-    const authCookie = request.cookies.get('mizoke-auth')
+    const sessionCookie = request.cookies.get(CUSTOMER_SESSION_COOKIE)
+    const session = await decryptCustomerSession(sessionCookie?.value)
 
-    if (!authCookie?.value) {
+    if (!session) {
       const loginUrl = new URL('/account/login', request.url)
-      loginUrl.searchParams.set('redirect', pathname)
+      loginUrl.searchParams.set('returnUrl', pathname)
       return NextResponse.redirect(loginUrl)
     }
   }

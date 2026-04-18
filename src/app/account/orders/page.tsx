@@ -6,9 +6,7 @@ import Image from 'next/image'
 import { Package, Loader2, ShoppingBag, ArrowRight } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 import { AccountLayout } from '@/components/account/AccountLayout'
-import { useAuthStore } from '@/stores/authStore'
-import { shopifyClient } from '@/lib/shopify/client'
-import { GET_CUSTOMER_ORDERS } from '@/lib/shopify/customerQueries'
+import { useRequireAuth } from '@/hooks/useRequireAuth'
 import { formatPrice } from '@/lib/utils/formatPrice'
 import { cn } from '@/lib/utils/cn'
 import type { ShopifyOrder } from '@/types/customer'
@@ -36,23 +34,27 @@ const statusTranslationMap: Record<string, string> = {
 export default function OrdersPage() {
   const t = useTranslations('orderHistory')
   const locale = useLocale()
-  const { accessToken } = useAuthStore()
+  const { isAuthenticated } = useRequireAuth()
   const [orders, setOrders] = useState<ShopifyOrder[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     async function fetchOrders() {
-      if (!accessToken) return
+      if (!isAuthenticated) {
+        return
+      }
 
       try {
-        const response = await shopifyClient.request<{
-          customer: {
-            orders: { edges: Array<{ node: ShopifyOrder }> }
-          } | null
-        }>(GET_CUSTOMER_ORDERS, { customerAccessToken: accessToken })
+        const response = await fetch('/api/account/orders', {
+          cache: 'no-store',
+        })
+        const data = (await response.json()) as {
+          success: boolean
+          orders?: ShopifyOrder[]
+        }
 
-        if (response.customer?.orders) {
-          setOrders(response.customer.orders.edges.map((edge) => edge.node))
+        if (response.ok && data.success && data.orders) {
+          setOrders(data.orders)
         }
       } catch (error) {
         console.error('Failed to fetch orders:', error)
@@ -61,8 +63,8 @@ export default function OrdersPage() {
       }
     }
 
-    fetchOrders()
-  }, [accessToken])
+    void fetchOrders()
+  }, [isAuthenticated])
 
   return (
     <AccountLayout title={t('title')} description={t('description')}>

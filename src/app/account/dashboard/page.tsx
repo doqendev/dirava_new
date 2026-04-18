@@ -36,12 +36,9 @@ export default function DashboardPage() {
     <AccountLayout title={t('dashboard')} description={t('dashboardDescription')}>
       {/* Welcome Card */}
       <div className="bg-bg-card/50 backdrop-blur-sm border border-border-subtle rounded-xl p-6 mb-6">
-        <h2 className="font-display text-xl text-white mb-2">
+        <h2 className="font-display text-xl text-white">
           {t('welcomeBack', { name: customer?.firstName || 'there' })}
         </h2>
-        <p className="text-white/60">
-          {t('dashboardDescription')}
-        </p>
       </div>
 
       {/* Quick Links */}

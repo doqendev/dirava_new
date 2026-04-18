@@ -40,8 +40,10 @@ export function useIsMobile(): boolean {
 }
 
 export function useIsTablet(): boolean {
-  return useMediaQuery(`(min-width: ${BREAKPOINTS.md}px)`) &&
-         !useMediaQuery(`(min-width: ${BREAKPOINTS.lg}px)`)
+  const isMobileUp = useMediaQuery(`(min-width: ${BREAKPOINTS.md}px)`)
+  const isDesktopUp = useMediaQuery(`(min-width: ${BREAKPOINTS.lg}px)`)
+
+  return isMobileUp && !isDesktopUp
 }
 
 export function useIsDesktop(): boolean {

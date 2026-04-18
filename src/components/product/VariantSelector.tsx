@@ -55,7 +55,7 @@ export function VariantSelector({
     })
   }
 
-  const useImageTiles = (optionName: string) =>
+  const shouldUseImageTiles = (optionName: string) =>
     !!optionImages && optionName === imageOptionName
 
   return (
@@ -64,7 +64,7 @@ export function VariantSelector({
         <div key={option.name}>
           {/* Label hidden — option name not needed for visual selector */}
 
-          {useImageTiles(option.name) ? (
+          {shouldUseImageTiles(option.name) ? (
             /* Image tile grid */
             <div className="grid grid-cols-5 sm:grid-cols-8 gap-2">
               {option.values.map((value) => {

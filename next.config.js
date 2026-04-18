@@ -38,7 +38,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' https://cdn.shopify.com data: blob:",
               "font-src 'self' data:",
-              "connect-src 'self' https://*.shopify.com https://*.myshopify.com https://*.sentry.io https://va.vercel-scripts.com https://vitals.vercel-insights.com wss://*.shopify.com",
+              "connect-src 'self' https://*.shopify.com https://*.myshopify.com https://*.sentry.io https://va.vercel-scripts.com https://vitals.vercel-insights.com https://trackclear.io https://www.trackclear.io https://api.trackclear.io wss://*.shopify.com",
               "media-src 'self' blob:",
               "worker-src 'self' blob:",
               "frame-ancestors 'none'",

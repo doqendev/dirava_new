@@ -22,10 +22,17 @@ export function CartDrawer() {
   const tProduct = useTranslations('product')
   const { isCartOpen, closeCart } = useUIStore()
   const tDiscount = useTranslations('discount')
-  const { lines, totalQuantity, subtotal, total, discountAmount, checkoutUrl, updateItem, removeItem, loadingItems, error } =
+  const { lines, totalQuantity, subtotal, total, discountAmount, checkoutUrl, updateItem, removeItem, loadingItems, error, cartId, initializeCart } =
     useCartStore()
   const { addItem: addToWishlist, isInWishlist } = useWishlistStore()
   const addToast = useToastStore((state) => state.add)
+
+  // Hydrate cart from Shopify on mount if cartId exists but lines aren't loaded
+  useEffect(() => {
+    if (cartId && lines.length === 0) {
+      initializeCart()
+    }
+  }, [cartId, lines.length, initializeCart])
 
   const handleSaveForLater = (line: typeof lines[0]) => {
     // Add to wishlist

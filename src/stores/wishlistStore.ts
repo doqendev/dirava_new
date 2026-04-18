@@ -16,8 +16,8 @@ interface WishlistState {
   getItemCount: () => number
 
   // Sync actions
-  syncFromShopify: (accessToken: string) => Promise<void>
-  syncToShopify: (accessToken: string) => Promise<void>
+  syncFromShopify: () => Promise<void>
+  syncToShopify: () => Promise<void>
   mergeWithRemote: (remoteItems: WishlistItem[]) => void
 }
 
@@ -88,18 +88,12 @@ export const useWishlistStore = create<WishlistState>()(
       },
 
       // Fetch wishlist from Shopify and merge with local
-      syncFromShopify: async (accessToken) => {
-        if (!accessToken) {
-          return
-        }
-
+      syncFromShopify: async () => {
         set({ isSyncing: true })
 
         try {
           const response = await fetch('/api/wishlist', {
-            headers: {
-              'X-Customer-Access-Token': accessToken,
-            },
+            cache: 'no-store',
           })
 
           if (!response.ok) {
@@ -118,7 +112,7 @@ export const useWishlistStore = create<WishlistState>()(
           })
 
           // After merge, sync back to ensure consistency
-          await get().syncToShopify(accessToken)
+          await get().syncToShopify()
         } catch (error) {
           console.error('[Wishlist] Failed to sync from Shopify:', error)
           set({ isSyncing: false })
@@ -126,11 +120,7 @@ export const useWishlistStore = create<WishlistState>()(
       },
 
       // Save current wishlist to Shopify
-      syncToShopify: async (accessToken) => {
-        if (!accessToken) {
-          return
-        }
-
+      syncToShopify: async () => {
         const { items } = get()
 
         try {
@@ -138,7 +128,6 @@ export const useWishlistStore = create<WishlistState>()(
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'X-Customer-Access-Token': accessToken,
             },
             body: JSON.stringify({ items }),
           })
@@ -228,11 +217,10 @@ function debouncedSync() {
     try {
       const useAuthStore = await getAuthStore()
       const authState = useAuthStore.getState()
-      const accessToken = authState.accessToken
       const isAuth = authState.isAuthenticated()
 
-      if (accessToken && isAuth) {
-        await useWishlistStore.getState().syncToShopify(accessToken)
+      if (isAuth) {
+        await useWishlistStore.getState().syncToShopify()
       }
     } catch (err) {
       console.error('[Wishlist] Debounced sync error:', err)

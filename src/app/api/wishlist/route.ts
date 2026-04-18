@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { gql } from 'graphql-request'
 import { shopifyClient } from '@/lib/shopify/client'
 import { adminFetch } from '@/lib/shopify/adminClient'
+import { getAuthenticatedCustomer, getCustomerAccessToken } from '@/lib/auth/customer'
 import type { WishlistItem } from '@/types/wishlist'
 
 const METAFIELD_NAMESPACE = 'custom'
 const METAFIELD_KEY = 'wishlist'
+export const dynamic = 'force-dynamic'
 
 // Storefront API query to get customer ID from access token
 const GET_CUSTOMER_ID = gql`
@@ -62,18 +64,25 @@ async function getCustomerIdFromToken(accessToken: string): Promise<string | nul
 
 // GET - Fetch customer's wishlist
 export async function GET(request: NextRequest) {
-  const accessToken = request.headers.get('X-Customer-Access-Token')
+  const { customer, response, session } = await getAuthenticatedCustomer(request)
+  if (response) {
+    return response
+  }
 
-  if (!accessToken) {
+  if (!customer || !session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  if (session.mode === 'mock') {
     return NextResponse.json(
-      { error: 'Unauthorized' },
-      { status: 401 }
+      { items: [] },
+      { headers: { 'Cache-Control': 'no-store' } }
     )
   }
 
   try {
-    // Validate token and get customer ID
-    const customerId = await getCustomerIdFromToken(accessToken)
+    const accessToken = getCustomerAccessToken(session)
+    const customerId = accessToken ? await getCustomerIdFromToken(accessToken) : null
 
     if (!customerId) {
       return NextResponse.json(
@@ -119,18 +128,25 @@ export async function GET(request: NextRequest) {
 
 // POST - Save customer's wishlist
 export async function POST(request: NextRequest) {
-  const accessToken = request.headers.get('X-Customer-Access-Token')
+  const { customer, response, session } = await getAuthenticatedCustomer(request)
+  if (response) {
+    return response
+  }
 
-  if (!accessToken) {
-    return NextResponse.json(
-      { error: 'Unauthorized' },
-      { status: 401 }
-    )
+  if (!customer || !session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   try {
-    // Validate token and get customer ID
-    const customerId = await getCustomerIdFromToken(accessToken)
+    const body = await request.json()
+    const items: WishlistItem[] = body.items || []
+
+    if (session.mode === 'mock') {
+      return NextResponse.json({ success: true, items })
+    }
+
+    const accessToken = getCustomerAccessToken(session)
+    const customerId = accessToken ? await getCustomerIdFromToken(accessToken) : null
 
     if (!customerId) {
       return NextResponse.json(
@@ -138,9 +154,6 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       )
     }
-
-    const body = await request.json()
-    const items: WishlistItem[] = body.items || []
 
     // Save wishlist to metafield using Admin API
     const response = await adminFetch<{

@@ -1,18 +1,18 @@
 import { test, expect } from '@playwright/test'
 
+async function openSearch(page: import('@playwright/test').Page) {
+  const searchButton = page.getByRole('button', { name: /search/i }).first()
+  await expect(searchButton).toBeVisible()
+  await searchButton.click()
+  await expect(page.getByRole('dialog', { name: /search products/i })).toBeVisible()
+}
+
 test.describe('Search Functionality', () => {
   test('search modal opens on click', async ({ page }) => {
     await page.goto('/')
     await page.waitForLoadState('networkidle')
 
-    // Click search button
-    const searchButton = page.getByRole('button', { name: /search/i })
-    await searchButton.click()
-    await page.waitForTimeout(500)
-
-    // Search modal/overlay should be visible
-    const searchModal = page.locator('[role="dialog"]').or(page.locator('[class*="search"]').filter({ hasText: /search/i }))
-    await expect(searchModal.first()).toBeVisible({ timeout: 5000 })
+    await openSearch(page)
   })
 
   test('can type in search input', async ({ page }) => {
@@ -20,9 +20,7 @@ test.describe('Search Functionality', () => {
     await page.waitForLoadState('networkidle')
 
     // Open search
-    const searchButton = page.getByRole('button', { name: /search/i })
-    await searchButton.click()
-    await page.waitForTimeout(500)
+    await openSearch(page)
 
     // Find search input
     const searchInput = page.locator('input[type="search"], input[placeholder*="search" i]').first()
@@ -42,9 +40,7 @@ test.describe('Search Functionality', () => {
     await page.waitForLoadState('networkidle')
 
     // Open search
-    const searchButton = page.getByRole('button', { name: /search/i })
-    await searchButton.click()
-    await page.waitForTimeout(500)
+    await openSearch(page)
 
     // Type search query
     const searchInput = page.locator('input[type="search"], input[placeholder*="search" i]').first()
@@ -68,9 +64,7 @@ test.describe('Search Functionality', () => {
     await page.waitForLoadState('networkidle')
 
     // Open search
-    const searchButton = page.getByRole('button', { name: /search/i })
-    await searchButton.click()
-    await page.waitForTimeout(500)
+    await openSearch(page)
 
     // Search for a product
     const searchInput = page.locator('input[type="search"], input[placeholder*="search" i]').first()
@@ -95,12 +89,10 @@ test.describe('Search Functionality', () => {
     await page.waitForLoadState('networkidle')
 
     // Open search
-    const searchButton = page.getByRole('button', { name: /search/i })
-    await searchButton.click()
-    await page.waitForTimeout(500)
+    await openSearch(page)
 
     // Modal should be visible
-    const searchModal = page.locator('[role="dialog"]').first()
+    const searchModal = page.getByRole('dialog', { name: /search products/i })
     if ((await searchModal.count()) > 0) {
       await expect(searchModal).toBeVisible()
 
@@ -118,9 +110,7 @@ test.describe('Search Functionality', () => {
     await page.waitForLoadState('networkidle')
 
     // Open search
-    const searchButton = page.getByRole('button', { name: /search/i })
-    await searchButton.click()
-    await page.waitForTimeout(500)
+    await openSearch(page)
 
     // Search input should be empty initially
     const searchInput = page.locator('input[type="search"], input[placeholder*="search" i]').first()
@@ -137,9 +127,7 @@ test.describe('Search Functionality', () => {
     await page.waitForLoadState('networkidle')
 
     // Open search
-    const searchButton = page.getByRole('button', { name: /search/i })
-    await searchButton.click()
-    await page.waitForTimeout(500)
+    await openSearch(page)
 
     // Search for something unlikely to exist
     const searchInput = page.locator('input[type="search"], input[placeholder*="search" i]').first()
@@ -158,9 +146,7 @@ test.describe('Search Functionality', () => {
     await page.waitForLoadState('networkidle')
 
     // Open search
-    const searchButton = page.getByRole('button', { name: /search/i })
-    await searchButton.click()
-    await page.waitForTimeout(500)
+    await openSearch(page)
 
     // Look for close button (X icon or close text)
     const closeButton = page.getByRole('button', { name: /close/i }).or(

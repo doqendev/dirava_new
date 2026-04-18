@@ -109,7 +109,7 @@ function TestimonialCard({ testimonial, t }: { testimonial: Testimonial; t: Retu
 
       {/* Review text */}
       <p className="text-white/70 text-sm md:text-base leading-relaxed mb-4">
-        "{testimonial.text}"
+        &ldquo;{testimonial.text}&rdquo;
       </p>
 
       {/* Product tag */}

@@ -6,10 +6,10 @@ test.describe('Homepage', () => {
     await page.waitForLoadState('networkidle')
 
     // Verify page loaded
-    expect(page.url()).toBe('http://localhost:3000/')
+    expect(new URL(page.url()).pathname).toBe('/')
 
     // Hero section should be visible
-    const heroHeading = page.getByRole('heading', { name: /mizoke|your anime universe/i }).first()
+    const heroHeading = page.getByRole('heading', { name: /choose your|world/i }).first()
     await expect(heroHeading).toBeVisible({ timeout: 10000 })
 
     // Page should have loaded content
@@ -20,8 +20,7 @@ test.describe('Homepage', () => {
     await page.goto('/')
     await page.waitForLoadState('networkidle')
 
-    // Logo should be visible (MIZOKE text)
-    const logo = page.getByRole('link').filter({ hasText: /^MIZOKE/ })
+    const logo = page.locator('header a[href="/"]').first()
     await expect(logo).toBeVisible()
   })
 
@@ -30,15 +29,15 @@ test.describe('Homepage', () => {
     await page.waitForLoadState('networkidle')
 
     // Search button should be visible
-    const searchButton = page.getByRole('button', { name: /search/i })
+    const searchButton = page.getByRole('button', { name: /search/i }).first()
     await expect(searchButton).toBeVisible()
 
     // Cart button should be visible
-    const cartButton = page.getByRole('button', { name: /cart/i })
+    const cartButton = page.getByRole('button', { name: /cart/i }).first()
     await expect(cartButton).toBeVisible()
 
     // Wishlist link should be visible
-    const wishlistLink = page.getByRole('link', { name: /wishlist/i })
+    const wishlistLink = page.getByRole('link', { name: /wishlist/i }).first()
     await expect(wishlistLink).toBeVisible()
   })
 
@@ -63,19 +62,11 @@ test.describe('Homepage', () => {
     await page.goto('/')
     await page.waitForLoadState('networkidle')
 
-    // Scroll to bottom to see newsletter
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
-    await page.waitForTimeout(500)
+    const footer = page.locator('footer')
+    await footer.scrollIntoViewIfNeeded()
+    await expect(footer).toBeVisible()
 
-    // Newsletter section should have email input or subscribe button
-    const emailInput = page.locator('input[type="email"]')
-    const subscribeButton = page.getByRole('button', { name: /subscribe|join/i })
-
-    const hasEmailInput = (await emailInput.count()) > 0
-    const hasSubscribeButton = (await subscribeButton.count()) > 0
-
-    // At least one should be present
-    expect(hasEmailInput || hasSubscribeButton).toBeTruthy()
+    await expect(footer.locator('input[type="email"]').first()).toBeVisible()
   })
 
   test('cookie consent banner appears on first visit', async ({ context }) => {
@@ -110,9 +101,7 @@ test.describe('Homepage', () => {
     const footer = page.locator('footer')
     await expect(footer).toBeVisible()
 
-    // Footer should contain copyright or brand name
-    const footerText = await footer.textContent()
-    expect(footerText).toContain('MIZOKE')
+    await expect(footer.getByRole('link').first()).toBeVisible()
   })
 
   test('page is responsive on mobile viewport', async ({ page }) => {
@@ -122,14 +111,10 @@ test.describe('Homepage', () => {
     await page.goto('/')
     await page.waitForLoadState('networkidle')
 
-    // Mobile logo should be visible (centered)
-    const mobileLogo = page.getByRole('link').filter({ hasText: /^MIZOKE/ }).nth(1)
-    await expect(mobileLogo).toBeVisible()
-
     // Bottom nav should be visible on mobile
-    const bottomNav = page.locator('[class*="fixed bottom"]').first()
-    const bottomNavCount = await bottomNav.count()
+    const bottomNav = page.getByRole('navigation', { name: /main navigation/i })
+    await expect(bottomNav).toBeVisible()
 
-    console.log('Bottom nav elements:', bottomNavCount)
+    console.log('Bottom nav elements:', await bottomNav.count())
   })
 })

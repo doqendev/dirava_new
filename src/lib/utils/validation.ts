@@ -113,6 +113,9 @@ export function validateReview(body: unknown): {
   if (!anonymous && !authorName) return { valid: false, error: 'Name is required' }
   if (!anonymous && authorEmail && !isValidEmail(authorEmail)) return { valid: false, error: 'Please enter a valid email' }
   if (isNaN(rating) || rating < 1 || rating > 5) return { valid: false, error: 'Rating must be between 1 and 5' }
+  if (content && content.length < 10) {
+    return { valid: false, error: 'Review content must be at least 10 characters long' }
+  }
 
   return {
     valid: true,

@@ -7,7 +7,7 @@
  */
 const CURRENCY_LOCALE_MAP: Record<string, string> = {
   USD: 'en-US',
-  EUR: 'de-DE',
+  EUR: 'en-IE',
   GBP: 'en-GB',
   CAD: 'en-CA',
   AUD: 'en-AU',

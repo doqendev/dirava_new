@@ -22,8 +22,21 @@ interface CompositeSignSceneProps {
   sceneRef?: React.Ref<THREE.Group>
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type OpentypeFont = any
+type FontCommand = {
+  type: string
+  x?: number
+  y?: number
+  x1?: number
+  y1?: number
+  x2?: number
+  y2?: number
+}
+
+type OpentypeFont = {
+  getPath: (text: string, x: number, y: number, fontSize: number) => {
+    commands: FontCommand[]
+  }
+}
 
 type ParsedSvg = ReturnType<SVGLoader['parse']>
 
@@ -417,7 +430,6 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
 
     // Render each character individually, classify contours per-character to avoid
     // cross-character contamination when glyphs overlap at zero spacing
-    type Cmd = { type: string; x?: number; y?: number; x1?: number; y1?: number; x2?: number; y2?: number }
     const allShapes: THREE.Shape[] = []
     const perCharShapes: THREE.Shape[][] = []
     let cursorX = 0
@@ -425,7 +437,7 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
     for (let ci = 0; ci < displayText.length; ci++) {
       const char = displayText[ci]!
       const charPath = font.getPath(char, 0, 0, textFontSize)
-      const charCmds = charPath.commands as Cmd[]
+      const charCmds = charPath.commands
       const yScale = HEIGHT_SCALE[char.toUpperCase()] ?? 1
       const yOff = Y_OFFSET[char.toUpperCase()] ?? 0
 
@@ -445,9 +457,9 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
 
       // Transform commands: shift X + scale Y
       const offsetX = cursorX - minX
-      const transformed: Cmd[] = []
+      const transformed: FontCommand[] = []
       for (const cmd of charCmds) {
-        const shifted: Cmd = { ...cmd }
+        const shifted: FontCommand = { ...cmd }
         if (shifted.x !== undefined) shifted.x += offsetX
         if (shifted.x1 !== undefined) shifted.x1 += offsetX
         if (shifted.x2 !== undefined) shifted.x2 += offsetX
@@ -460,8 +472,8 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
       }
 
       // Split this character's commands into contours (M...Z sequences)
-      const charContours: Cmd[][] = []
-      let cur: Cmd[] = []
+      const charContours: FontCommand[][] = []
+      let cur: FontCommand[] = []
       for (const cmd of transformed) {
         if (cmd.type === 'M' && cur.length > 0) {
           charContours.push(cur)

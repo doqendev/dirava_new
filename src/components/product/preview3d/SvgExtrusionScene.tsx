@@ -20,6 +20,23 @@ interface SvgExtrusionSceneProps {
   text?: string
 }
 
+type FontCommand = {
+  type: string
+  x?: number
+  y?: number
+  x1?: number
+  y1?: number
+  x2?: number
+  y2?: number
+}
+
+type OpentypeFont = {
+  getPath: (text: string, x: number, y: number, fontSize: number) => {
+    commands: FontCommand[]
+  }
+  getAdvanceWidth: (text: string, fontSize: number) => number
+}
+
 const DEPTH_SCALE = 0.08
 const INTRO_DURATION = 1.1
 const INTRO_START_ROTATION: [number, number, number] = [0, 0, 0]
@@ -42,8 +59,7 @@ function easeOutBack(t: number): number {
 
 export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionSceneProps) {
   const [svgData, setSvgData] = useState<ReturnType<SVGLoader['parse']> | null>(null)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [font, setFont] = useState<any>(null)
+  const [font, setFont] = useState<OpentypeFont | null>(null)
   const [loading, setLoading] = useState(true)
   const groupRef = useRef<THREE.Group>(null)
   const introProgressRef = useRef(0)
@@ -169,14 +185,13 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
     if (!font) return null
 
     const fontSize = effectiveFontSize
-    type Cmd = { type: string; x?: number; y?: number; x1?: number; y1?: number; x2?: number; y2?: number }
     const allShapes: THREE.Shape[] = []
     let cursorX = 0
 
     for (let ci = 0; ci < displayText.length; ci++) {
       const char = displayText[ci]!
       const charPath = font.getPath(char, 0, 0, fontSize)
-      const charCmds = charPath.commands as Cmd[]
+      const charCmds = charPath.commands
 
       let minX = Infinity, maxX = -Infinity
       for (const cmd of charCmds) {
@@ -187,16 +202,16 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
       if (minX === Infinity) continue
 
       const offsetX = cursorX - minX
-      const transformed: Cmd[] = charCmds.map(cmd => {
-        const shifted: Cmd = { ...cmd }
+      const transformed: FontCommand[] = charCmds.map((cmd) => {
+        const shifted: FontCommand = { ...cmd }
         if (shifted.x !== undefined) shifted.x += offsetX
         if (shifted.x1 !== undefined) shifted.x1 += offsetX
         if (shifted.x2 !== undefined) shifted.x2 += offsetX
         return shifted
       })
 
-      const charContours: Cmd[][] = []
-      let cur: Cmd[] = []
+      const charContours: FontCommand[][] = []
+      let cur: FontCommand[] = []
       for (const cmd of transformed) {
         if (cmd.type === 'M' && cur.length > 0) { charContours.push(cur); cur = [] }
         cur.push(cmd)

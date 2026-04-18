@@ -72,20 +72,15 @@ export function LoginForm() {
     const result = await login(formData.email, formData.password)
 
     if (result.success) {
-      // Get the new access token from the store after login
-      const newToken = useAuthStore.getState().accessToken
-      if (newToken) {
-        // Sync wishlist from Shopify (don't await, let it happen in background)
-        syncWishlist(newToken).catch((err) => {
-          console.error('Failed to sync wishlist after login:', err)
-        })
-      }
+      syncWishlist().catch((err) => {
+        console.error('Failed to sync wishlist after login:', err)
+      })
       router.push(decodeURIComponent(returnUrl))
     }
   }
 
-  const handleDevLogin = () => {
-    devLogin()
+  const handleDevLogin = async () => {
+    await devLogin()
     router.push(decodeURIComponent(returnUrl))
   }
 

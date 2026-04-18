@@ -33,12 +33,18 @@ export async function POST(request: Request) {
       )
     }
 
-    // Submit to Shopify's built-in contact form endpoint
-    // Shopify sends the email to the store owner's email address
+    if (!SHOPIFY_STORE_DOMAIN) {
+      console.error('[Contact Form] NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN is not configured')
+      return NextResponse.json(
+        { error: 'Contact form is temporarily unavailable' },
+        { status: 503 }
+      )
+    }
+
     const shopifyUrl = `https://${SHOPIFY_STORE_DOMAIN}/contact#contact_form`
     const formData = new URLSearchParams({
-      'form_type': 'contact',
-      'utf8': '✓',
+      form_type: 'contact',
+      utf8: 'yes',
       'contact[email]': email.trim(),
       'contact[name]': name.trim(),
       'contact[subject]': subject.trim(),
@@ -52,7 +58,6 @@ export async function POST(request: Request) {
       redirect: 'manual',
     })
 
-    // Shopify returns a 302 redirect on success
     if (shopifyResponse.status !== 302 && !shopifyResponse.ok) {
       console.error('[Contact Form] Shopify submission failed:', shopifyResponse.status)
       return NextResponse.json({ error: 'Failed to send message' }, { status: 500 })
@@ -62,7 +67,8 @@ export async function POST(request: Request) {
       { success: true, message: 'Message sent successfully' },
       { status: 200, headers: { 'Cache-Control': 'no-store' } }
     )
-  } catch {
+  } catch (error) {
+    console.error('[Contact Form] Failed to process request:', error)
     return NextResponse.json({ error: 'Failed to process your message' }, { status: 500 })
   }
 }

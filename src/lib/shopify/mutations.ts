@@ -363,3 +363,21 @@ export const CART_DISCOUNT_CODES_UPDATE = gql`
     }
   }
 `
+
+/**
+ * Update cart attributes (used to pass click IDs for cross-domain attribution)
+ */
+export const CART_ATTRIBUTES_UPDATE = gql`
+  mutation CartAttributesUpdate($cartId: ID!, $attributes: [AttributeInput!]!) {
+    cartAttributesUpdate(attributes: $attributes, cartId: $cartId) {
+      cart {
+        id
+        checkoutUrl
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`

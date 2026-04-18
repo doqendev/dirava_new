@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { gql } from 'graphql-request'
-import { adminFetch } from '@/lib/shopify/adminClient'
+import { adminFetch, hasAdminApiCredentials } from '@/lib/shopify/adminClient'
 import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimit'
 
-// Admin API mutation to create a marketing subscriber
+export const dynamic = 'force-dynamic'
+
 const CREATE_MARKETING_SUBSCRIBER = gql`
   mutation customerCreate($input: CustomerInput!) {
     customerCreate(input: $input) {
@@ -22,7 +23,6 @@ const CREATE_MARKETING_SUBSCRIBER = gql`
   }
 `
 
-// Admin API mutation to update marketing consent for existing customer
 const UPDATE_MARKETING_CONSENT = gql`
   mutation customerEmailMarketingConsentUpdate($input: CustomerEmailMarketingConsentUpdateInput!) {
     customerEmailMarketingConsentUpdate(input: $input) {
@@ -40,7 +40,6 @@ const UPDATE_MARKETING_CONSENT = gql`
   }
 `
 
-// Query to find customer by email
 const FIND_CUSTOMER_BY_EMAIL = gql`
   query findCustomerByEmail($query: String!) {
     customers(first: 1, query: $query) {
@@ -92,7 +91,6 @@ interface CustomerSearchResponse {
 
 export async function POST(request: NextRequest) {
   try {
-    // Rate limit: 5 subscription attempts per 10 minutes per IP
     const ip = getClientIp(request)
     const rl = await checkRateLimit(`newsletter:${ip}`, { maxRequests: 5, windowSeconds: 600 })
     if (rl.limited) {
@@ -102,17 +100,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    if (!hasAdminApiCredentials()) {
+      console.error('Newsletter subscription unavailable: Shopify Admin API credentials are missing')
+      return NextResponse.json(
+        { error: 'Newsletter signups are temporarily unavailable' },
+        { status: 503 }
+      )
+    }
+
     const body = await request.json()
     const { email } = body
 
     if (!email || typeof email !== 'string') {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 })
     }
 
-    // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     const normalizedEmail = email.toLowerCase().trim()
     if (!emailRegex.test(normalizedEmail)) {
@@ -122,13 +124,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Double opt-in: Shopify handles confirmation emails when marketingOptInLevel
-    // is set to CONFIRMED_OPT_IN. The customer receives a confirmation email from
-    // Shopify and must click the link before their status changes to SUBSCRIBED.
-    // Ensure "Email marketing" → "Require double opt-in" is enabled in Shopify Admin
-    // under Settings → Notifications → Customer notifications.
-
-    // First, check if customer already exists
     const searchResponse = await adminFetch<CustomerSearchResponse>(
       FIND_CUSTOMER_BY_EMAIL,
       { query: `email:${normalizedEmail}` }
@@ -137,7 +132,6 @@ export async function POST(request: NextRequest) {
     const existingCustomer = searchResponse.customers.edges[0]?.node
 
     if (existingCustomer) {
-      // Customer exists - check if already subscribed
       if (existingCustomer.emailMarketingConsent?.marketingState === 'SUBSCRIBED') {
         return NextResponse.json({
           success: true,
@@ -146,7 +140,6 @@ export async function POST(request: NextRequest) {
         })
       }
 
-      // Update their marketing consent
       const updateResponse = await adminFetch<CustomerUpdateResponse>(
         UPDATE_MARKETING_CONSENT,
         {
@@ -175,7 +168,6 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Create new marketing subscriber (no password required with Admin API)
     const createResponse = await adminFetch<CustomerCreateResponse>(
       CREATE_MARKETING_SUBSCRIBER,
       {

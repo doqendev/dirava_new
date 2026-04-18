@@ -12,26 +12,38 @@ import { useAuthStore } from '@/stores/authStore'
 export function useRequireAuth() {
   const router = useRouter()
   const pathname = usePathname()
-  const { customer, accessToken, isAuthenticated, fetchCustomer, isLoading } = useAuthStore()
+  const { customer, initializeSession, isAuthenticated, fetchCustomer, isLoading, isInitialized } =
+    useAuthStore()
 
   useEffect(() => {
-    // Check authentication status
+    if (!isInitialized) {
+      void initializeSession()
+      return
+    }
+
     if (!isAuthenticated()) {
-      // Redirect to login with return URL
       const returnUrl = encodeURIComponent(pathname)
       router.replace(`/account/login?returnUrl=${returnUrl}`)
       return
     }
 
-    // Fetch fresh customer data if we have a token but no customer data
-    if (accessToken && !customer && !isLoading) {
-      fetchCustomer()
+    if (!customer && !isLoading) {
+      void fetchCustomer()
     }
-  }, [accessToken, customer, isAuthenticated, fetchCustomer, isLoading, pathname, router])
+  }, [
+    customer,
+    fetchCustomer,
+    initializeSession,
+    isAuthenticated,
+    isInitialized,
+    isLoading,
+    pathname,
+    router,
+  ])
 
   return {
     customer,
-    isLoading: isLoading || (!customer && isAuthenticated()),
+    isLoading: !isInitialized || isLoading || (!customer && isAuthenticated()),
     isAuthenticated: isAuthenticated(),
   }
 }
@@ -40,13 +52,20 @@ export function useRequireAuth() {
  * Hook to check if user is authenticated (without redirect)
  */
 export function useAuth() {
-  const { customer, accessToken, isAuthenticated, isLoading, error } = useAuthStore()
+  const { customer, isAuthenticated, isLoading, error, isInitialized, initializeSession } =
+    useAuthStore()
+
+  useEffect(() => {
+    if (!isInitialized && !isLoading) {
+      void initializeSession()
+    }
+  }, [initializeSession, isInitialized, isLoading])
 
   return {
     customer,
-    accessToken,
     isAuthenticated: isAuthenticated(),
     isLoading,
+    isInitialized,
     error,
   }
 }

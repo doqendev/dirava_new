@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev -H 0.0.0.0",
-    "build": "next build",
+    "preflight": "node scripts/preflight.js",
+    "build": "pnpm preflight && next build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "test": "vitest",
-    "test:e2e": "playwright test"
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "verify": "pnpm type-check && pnpm lint && pnpm exec vitest run"
   },
   "dependencies": {
     "@react-three/drei": "^9.92.0",
@@ -28,7 +30,7 @@
     "isomorphic-dompurify": "^3.7.1",
     "lucide-react": "^0.330.0",
     "next": "^14.2.0",
-    "next-intl": "^4.7.0",
+    "next-intl": "^4.9.1",
     "opentype.js": "^1.3.4",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",

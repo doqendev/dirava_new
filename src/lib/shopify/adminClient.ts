@@ -1,12 +1,6 @@
 import { GraphQLClient } from 'graphql-request'
 
-const domain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN
-
-if (!domain) {
-  throw new Error('NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN is not defined')
-}
-
-const endpoint = `https://${domain}/admin/api/2024-01/graphql.json`
+const API_VERSION = '2024-01'
 
 // --- Token cache (in-memory, per-process) ---
 
@@ -14,6 +8,27 @@ let cachedToken: string | null = null
 let tokenExpiresAt = 0 // unix ms
 
 const REFRESH_MARGIN_MS = 5 * 60 * 1000 // refresh 5 min before expiry
+
+function getShopifyAdminDomain(): string {
+  const domain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN
+
+  if (!domain) {
+    throw new Error('NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN is not defined')
+  }
+
+  return domain
+}
+
+function getAdminEndpoint(): string {
+  return `https://${getShopifyAdminDomain()}/admin/api/${API_VERSION}/graphql.json`
+}
+
+export function hasAdminApiCredentials(): boolean {
+  return Boolean(
+    process.env.SHOPIFY_ADMIN_ACCESS_TOKEN ||
+      (process.env.SHOPIFY_ADMIN_CLIENT_ID && process.env.SHOPIFY_ADMIN_CLIENT_SECRET)
+  )
+}
 
 /**
  * Fetch an access token using Shopify's client credentials OAuth flow.
@@ -33,7 +48,7 @@ async function fetchClientCredentialsToken(): Promise<{
   }
 
   const res = await fetch(
-    `https://${domain}/admin/oauth/access_token`,
+    `https://${getShopifyAdminDomain()}/admin/oauth/access_token`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -92,7 +107,7 @@ async function getAccessToken(forceRefresh = false): Promise<string> {
 async function getAdminClient(): Promise<GraphQLClient> {
   const token = await getAccessToken()
 
-  return new GraphQLClient(endpoint, {
+  return new GraphQLClient(getAdminEndpoint(), {
     headers: {
       'X-Shopify-Access-Token': token,
       'Content-Type': 'application/json',
@@ -121,7 +136,7 @@ export async function adminFetch<T>(
 
     if (status === 401) {
       const freshToken = await getAccessToken(true)
-      const retryClient = new GraphQLClient(endpoint, {
+      const retryClient = new GraphQLClient(getAdminEndpoint(), {
         headers: {
           'X-Shopify-Access-Token': freshToken,
           'Content-Type': 'application/json',
