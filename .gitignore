@@ -64,3 +64,6 @@ nul
 *.pen
 screenshots/
 images/
+
+# Local scratch / throwaway audit scripts
+tmp/
