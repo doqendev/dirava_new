@@ -359,29 +359,40 @@ export async function createReview(data: {
 }
 
 /**
- * Get reviews for a product, optionally filtered by status
+ * Get reviews for a product, optionally filtered by status.
+ *
+ * Returns [] on any Shopify Admin API failure so that callers (product
+ * pages) never break if reviews are temporarily unavailable.
  */
 export async function getReviewsByProduct(
   productHandle: string,
   status?: string
 ): Promise<Review[]> {
-  // Fetch all shop_review metaobjects and filter in-memory
-  // Shopify metaobject query filtering is unreliable for field values
-  const response = await adminFetch<GetMetaobjectsResponse>(
-    GET_ALL_REVIEWS,
-    { type: 'shop_review', first: 250 }
-  )
+  try {
+    // Fetch all shop_review metaobjects and filter in-memory
+    // Shopify metaobject query filtering is unreliable for field values
+    const response = await adminFetch<GetMetaobjectsResponse>(
+      GET_ALL_REVIEWS,
+      { type: 'shop_review', first: 250 }
+    )
 
-  const getField = (node: MetaobjectNode, key: string) =>
-    node.fields.find(f => f.key === key)?.value || ''
+    const getField = (node: MetaobjectNode, key: string) =>
+      node.fields.find(f => f.key === key)?.value || ''
 
-  const filtered = response.metaobjects.nodes.filter((node) => {
-    if (getField(node, 'product_handle') !== productHandle) return false
-    if (status && getField(node, 'status') !== status) return false
-    return true
-  })
+    const filtered = response.metaobjects.nodes.filter((node) => {
+      if (getField(node, 'product_handle') !== productHandle) return false
+      if (status && getField(node, 'status') !== status) return false
+      return true
+    })
 
-  return filtered.map(parseReviewFromMetaobject)
+    return filtered.map(parseReviewFromMetaobject)
+  } catch (error) {
+    console.error(
+      `[reviews] getReviewsByProduct failed for "${productHandle}":`,
+      error instanceof Error ? error.message : error
+    )
+    return []
+  }
 }
 
 /**
