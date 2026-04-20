@@ -12,10 +12,14 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export const runtime = 'edge'
 
-// Read from NEXT_PUBLIC_ for back-compat with the currently provisioned
-// Vercel env vars, but prefer server-only TC_* if set.
+// Prefer server-only TC_* vars. Fall back to NEXT_PUBLIC_TC_* for
+// back-compat with the currently provisioned Vercel env. Final fallback to
+// Track Clear's production URL so a stale/wrong env var doesn't silently
+// break tracking (the old www.trackclear.io value was returning CORS 401s).
 const INGEST_URL =
-  process.env.TC_INGEST_URL || process.env.NEXT_PUBLIC_TC_INGEST_URL
+  process.env.TC_INGEST_URL ||
+  process.env.NEXT_PUBLIC_TC_INGEST_URL ||
+  'https://api.trackclear.io/api/events/ingest'
 const API_KEY = process.env.TC_API_KEY || process.env.NEXT_PUBLIC_TC_API_KEY
 
 export async function POST(req: NextRequest) {
@@ -46,22 +50,15 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // Track Clear rejected both Authorization: Bearer and X-API-Key with
-    // 401 "Missing API key". Third-most-common pattern is ?api_key= query
-    // param. Also sending api_key in the body in case they read it there.
-    // Leaving all previously-tried headers too — harmless if unused.
-    const url = new URL(INGEST_URL)
-    url.searchParams.set('api_key', API_KEY)
-
-    const res = await fetch(url.toString(), {
+    // Track Clear's ingest reads X-TL-API-Key (confirmed from their pixel
+    // source). Neither X-API-Key nor Authorization: Bearer are recognised.
+    const res = await fetch(INGEST_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-API-Key': API_KEY,
-        apikey: API_KEY,
-        Authorization: `Bearer ${API_KEY}`,
+        'X-TL-API-Key': API_KEY,
       },
-      body: JSON.stringify({ ...enriched, api_key: API_KEY }),
+      body: JSON.stringify(enriched),
     })
 
     // Read body for diagnostics. Track Clear returning 2xx but an error
