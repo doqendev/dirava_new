@@ -376,7 +376,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   {t('personalizationName')} <span className="text-neon-pink">*</span>
                 </label>
                 <div className="flex flex-col gap-2">
-                  <div className="flex gap-2">
+                  <div className="flex items-stretch gap-2">
                     <input
                       ref={personalizationInputRef}
                       type="text"
@@ -399,8 +399,9 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                       <button
                         type="button"
                         onClick={() => galleryRef.current?.goTo3D()}
+                        aria-label={t('preview3D')}
                         className={cn(
-                          'hidden sm:flex flex-shrink-0 items-center gap-1.5 px-3 py-3 rounded-lg',
+                          'flex flex-shrink-0 items-center justify-center gap-1.5 rounded-lg px-3 py-3 sm:px-4',
                           'bg-neon-cyan/10 border border-neon-cyan/30',
                           'text-neon-cyan text-sm font-medium',
                           'hover:bg-neon-cyan/20 hover:border-neon-cyan/50',
@@ -408,29 +409,14 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                         )}
                       >
                         <Box className="w-4 h-4" />
-                        3D
+                        <span className="sm:hidden">3D</span>
+                        <span className="hidden sm:inline">{t('preview3D')}</span>
                       </button>
                     )}
                   </div>
                   <p id="personalization-char-count" className="text-xs text-white/40">
                     {personalizationName.length} / {MAX_PERSONALIZATION_LENGTH}
                   </p>
-                  {previewConfig && (
-                    <button
-                      type="button"
-                      onClick={() => galleryRef.current?.goTo3D()}
-                      className={cn(
-                        'sm:hidden flex items-center justify-center gap-2 w-full py-2.5 rounded-lg',
-                        'bg-neon-cyan/10 border border-neon-cyan/30',
-                        'text-neon-cyan text-sm font-medium',
-                        'hover:bg-neon-cyan/20 hover:border-neon-cyan/50',
-                        'transition-colors'
-                      )}
-                    >
-                      <Box className="w-4 h-4" />
-                      {t('preview3D')}
-                    </button>
-                  )}
                 </div>
               </div>
             )}
@@ -444,22 +430,20 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             )}
 
             {/* Add to Cart & Wishlist */}
-            <div ref={cartButtonRef} className="pt-4 flex flex-col sm:flex-row gap-3">
-              <div className="flex-1">
-                <AddToCartButton
-                  variantId={selectedVariant?.id || ''}
-                  quantity={quantity}
-                  available={selectedVariant?.availableForSale ?? false}
-                  requiresPersonalization={product.personalization}
-                  personalizationValue={personalizationName}
-                  onPersonalizationError={handlePersonalizationError}
-                  attributes={
-                    product.personalization && personalizationName.trim()
-                      ? [{ key: 'Personalization', value: personalizationName.trim() }]
-                      : undefined
-                  }
-                />
-              </div>
+            <div ref={cartButtonRef} className="pt-4 flex flex-col gap-3">
+              <AddToCartButton
+                variantId={selectedVariant?.id || ''}
+                quantity={quantity}
+                available={selectedVariant?.availableForSale ?? false}
+                requiresPersonalization={product.personalization}
+                personalizationValue={personalizationName}
+                onPersonalizationError={handlePersonalizationError}
+                attributes={
+                  product.personalization && personalizationName.trim()
+                    ? [{ key: 'Personalization', value: personalizationName.trim() }]
+                    : undefined
+                }
+              />
               <WishlistButton
                 product={{
                   productId: product.id,
@@ -473,6 +457,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 }}
                 variant="button"
                 size="lg"
+                className="w-full justify-center py-3"
               />
             </div>
 
