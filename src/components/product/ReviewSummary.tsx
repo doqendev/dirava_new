@@ -9,6 +9,8 @@ interface ReviewSummaryProps {
   showBreakdown?: boolean
   size?: 'sm' | 'md' | 'lg'
   className?: string
+  /** Universe accent color for stars + breakdown bars (defaults to yellow). */
+  color?: string
 }
 
 export function ReviewSummary({
@@ -16,6 +18,7 @@ export function ReviewSummary({
   showBreakdown = false,
   size = 'md',
   className,
+  color,
 }: ReviewSummaryProps) {
   const { averageRating, reviewCount, ratingBreakdown } = rating
 
@@ -35,7 +38,7 @@ export function ReviewSummary({
     <div className={cn('flex flex-col', className)}>
       {/* Main rating display */}
       <div className="flex items-center gap-2">
-        <StarRating rating={averageRating} size={size} />
+        <StarRating rating={averageRating} size={size} color={color} />
         <span
           className={cn(
             'text-white/60',
@@ -61,8 +64,14 @@ export function ReviewSummary({
                 <span className="text-xs text-white/60 w-6">{star}★</span>
                 <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-yellow-400 rounded-full transition-all duration-300"
-                    style={{ width: `${percentage}%` }}
+                    className={cn(
+                      'h-full rounded-full transition-all duration-300',
+                      !color && 'bg-yellow-400'
+                    )}
+                    style={{
+                      width: `${percentage}%`,
+                      ...(color ? { backgroundColor: color } : {}),
+                    }}
                   />
                 </div>
                 <span className="text-xs text-white/40 w-8 text-right">{count}</span>

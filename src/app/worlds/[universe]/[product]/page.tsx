@@ -18,6 +18,7 @@ import { getReviewsByProduct, getReviewStats } from '@/lib/reviews/metaobjects'
 import type { ShopifyProduct } from '@/types/shopify'
 import type { Review } from '@/types/reviews'
 import { SITE_URL } from '@/lib/utils/siteUrl'
+import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
 
 // Revalidate every 60 seconds
 export const revalidate = 60
@@ -326,7 +327,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
       {/* Reviews */}
       <div id="reviews" className="px-4 py-12 max-w-7xl mx-auto border-t border-border-subtle">
-        <ReviewList productHandle={product.handle} />
+        <ReviewList
+          productHandle={product.handle}
+          color={UNIVERSE_CONFIG[universe as keyof typeof UNIVERSE_CONFIG]?.color}
+        />
       </div>
 
       {/* Product FAQ */}

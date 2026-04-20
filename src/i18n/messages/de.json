@@ -171,7 +171,33 @@
     "highlightDimensions": "20–25 cm je nach Namenslänge",
     "highlightJollyRoger": "Charakterspezifisches Jolly-Roger-Design",
     "faqTitle": "Häufig gestellte Fragen",
-    "lifestyleGalleryTitle": "Erlebe es in Aktion"
+    "lifestyleGalleryTitle": "Erlebe es in Aktion",
+    "orderSteps": {
+      "title": "Deine Bestellung · Schritt für Schritt",
+      "eta": "Lieferung · 7-12 Tage",
+      "step1Title": "Bestellt",
+      "step1Sub": "Tag 1",
+      "step2Title": "Designed",
+      "step2Sub": "Tag 2",
+      "step3Title": "Gefertigt",
+      "step3Sub": "Tag 2-3",
+      "step4Title": "Lackiert",
+      "step4Sub": "Tag 2-3",
+      "step5Title": "Versandt",
+      "step5Sub": "Tag 4",
+      "step6Title": "Geliefert",
+      "step6Sub": "Tag 7-12"
+    },
+    "trustBadges": {
+      "freeShippingTitle": "Kostenloser Versand",
+      "freeShippingSub": "ab Bestellungen über {threshold}",
+      "securePaymentsTitle": "Sichere Zahlung",
+      "securePaymentsSub": "Stripe · SCA-konform",
+      "uniquePieceTitle": "Einzelstück",
+      "uniquePieceSub": "individuell & auf Bestellung",
+      "shipsWorldwideTitle": "Weltweiter Versand",
+      "shipsWorldwideSub": "42 Länder"
+    }
   },
   "cart": {
     "title": "Dein Warenkorb",

@@ -121,7 +121,16 @@
       "Bash(find /e/doqendev/dirava_new -type f -iname *gacha*)",
       "Bash(rm -rf src/app/account/codes)",
       "Bash(rm -rf src/app/api/webhooks/orders)",
-      "Bash(GIT_AUTHOR_NAME=\"\" GIT_AUTHOR_EMAIL=\"\" GIT_COMMITTER_NAME=\"\" GIT_COMMITTER_EMAIL=\"\" vercel --prod --yes --force)"
+      "Bash(GIT_AUTHOR_NAME=\"\" GIT_AUTHOR_EMAIL=\"\" GIT_COMMITTER_NAME=\"\" GIT_COMMITTER_EMAIL=\"\" vercel --prod --yes --force)",
+      "Bash(GIT_AUTHOR_NAME=\"\" GIT_AUTHOR_EMAIL=\"\" GIT_COMMITTER_NAME=\"\" GIT_COMMITTER_EMAIL=\"\" vercel --prod --yes --force --debug)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(find *)",
+      "Bash(git rm *)",
+      "WebFetch(domain:medium.com)",
+      "Bash(pnpm exec *)",
+      "Read(//e/downloads_new/mizoke/assets//**)",
+      "Read(//e/downloads_new/mizoke//**)"
     ]
   }
 }

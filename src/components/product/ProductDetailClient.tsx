@@ -21,6 +21,8 @@ import { SizeGuideButton } from '@/components/product/SizeGuideButton'
 import { SizeGuideModal } from '@/components/product/SizeGuideModal'
 import { ReviewSummary } from '@/components/product/ReviewSummary'
 import { StickyAddToCart } from '@/components/product/StickyAddToCart'
+import { OrderSteps } from '@/components/product/OrderSteps'
+import { TrustBadges } from '@/components/product/TrustBadges'
 import { useTrackProductView } from '@/hooks/useTrackProductView'
 import { useCookieConsentStore } from '@/stores/cookieConsentStore'
 import { trackViewContent } from '@/lib/tracking/trackClear'
@@ -283,6 +285,13 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   : undefined,
               } : undefined}
             />
+
+            {/* Order steps + trust badges — desktop only (below thumbnails).
+                On mobile they render inside the info column, after Add-to-Cart. */}
+            <div className="mt-6 hidden space-y-4 lg:block">
+              <OrderSteps accent={themeColor} />
+              <TrustBadges accent={themeColor} />
+            </div>
           </div>
 
           {/* Product Info */}
@@ -309,7 +318,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             {/* Reviews/Rating */}
             {product.rating && product.rating.reviewCount > 0 && (
               <a href="#reviews" className="block w-fit hover:opacity-80 transition-opacity">
-                <ReviewSummary rating={product.rating} size="md" />
+                <ReviewSummary rating={product.rating} size="md" color={themeColor} />
               </a>
             )}
 
@@ -506,6 +515,12 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Order steps + trust badges — mobile placement (after buy-box, before description). */}
+            <div className="space-y-4 lg:hidden">
+              <OrderSteps accent={themeColor} />
+              <TrustBadges accent={themeColor} />
             </div>
 
             {/* Description (collapsible) */}

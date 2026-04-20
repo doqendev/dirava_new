@@ -23,9 +23,11 @@ function countryCodeToFlag(code: string): string {
 
 interface ReviewListProps {
   productHandle: string
+  /** Universe accent color used to theme stars and breakdown bars. */
+  color?: string
 }
 
-export default function ReviewList({ productHandle }: ReviewListProps) {
+export default function ReviewList({ productHandle, color }: ReviewListProps) {
   const t = useTranslations('reviews')
   const locale = useLocale()
   const [reviews, setReviews] = useState<Review[]>([])
@@ -132,7 +134,7 @@ export default function ReviewList({ productHandle }: ReviewListProps) {
   return (
     <div className="space-y-8">
       {/* Review Summary */}
-      {stats && <ReviewSummary rating={stats} showBreakdown={true} />}
+      {stats && <ReviewSummary rating={stats} showBreakdown={true} color={color} />}
 
       {/* Reviews List */}
       <div className="space-y-4">
@@ -170,7 +172,7 @@ export default function ReviewList({ productHandle }: ReviewListProps) {
                 {/* Rating and Author */}
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <div>
-                    <StarRating rating={review.rating} size="sm" />
+                    <StarRating rating={review.rating} size="sm" color={color} />
                     <div className="flex items-center gap-1.5 mt-2">
                       {review.countryCode && (
                         <span className="text-sm" title={review.countryCode}>

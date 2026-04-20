@@ -171,7 +171,33 @@
     "highlightDimensions": "20–25 cm selon la longueur du nom",
     "highlightJollyRoger": "Design Jolly Roger spécifique au personnage",
     "faqTitle": "Questions fréquentes",
-    "lifestyleGalleryTitle": "Voyez-le en action"
+    "lifestyleGalleryTitle": "Voyez-le en action",
+    "orderSteps": {
+      "title": "Votre commande · étape par étape",
+      "eta": "Livraison · 7-12 jours",
+      "step1Title": "Commandé",
+      "step1Sub": "Jour 1",
+      "step2Title": "Conçu",
+      "step2Sub": "Jour 2",
+      "step3Title": "Fabriqué",
+      "step3Sub": "Jour 2-3",
+      "step4Title": "Peint",
+      "step4Sub": "Jour 2-3",
+      "step5Title": "Expédié",
+      "step5Sub": "Jour 4",
+      "step6Title": "Livré",
+      "step6Sub": "Jour 7-12"
+    },
+    "trustBadges": {
+      "freeShippingTitle": "Livraison gratuite",
+      "freeShippingSub": "dès {threshold} d'achat",
+      "securePaymentsTitle": "Paiement sécurisé",
+      "securePaymentsSub": "Stripe · conforme SCA",
+      "uniquePieceTitle": "Pièce unique",
+      "uniquePieceSub": "sur mesure & fait à la commande",
+      "shipsWorldwideTitle": "Expédition mondiale",
+      "shipsWorldwideSub": "42 pays"
+    }
   },
   "cart": {
     "title": "Ton panier",

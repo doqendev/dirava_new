@@ -9,6 +9,8 @@ interface StarRatingProps {
   size?: 'sm' | 'md' | 'lg'
   showValue?: boolean
   className?: string
+  /** Override fill color (defaults to yellow-400). Accepts any CSS color. */
+  color?: string
 }
 
 const sizeClasses = {
@@ -29,9 +31,11 @@ export function StarRating({
   size = 'md',
   showValue = false,
   className,
+  color,
 }: StarRatingProps) {
   // Clamp rating between 0 and maxRating
   const clampedRating = Math.min(Math.max(0, rating), maxRating)
+  const fillStyle = color ? { color } : undefined
 
   return (
     <div className={cn('flex items-center gap-1', className)}>
@@ -54,7 +58,8 @@ export function StarRating({
                   style={{ width: `${fillPercentage}%` }}
                 >
                   <Star
-                    className={cn(sizeClasses[size], 'text-yellow-400')}
+                    className={cn(sizeClasses[size], !color && 'text-yellow-400')}
+                    style={fillStyle}
                     fill="currentColor"
                   />
                 </div>
