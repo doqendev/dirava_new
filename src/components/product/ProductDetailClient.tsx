@@ -397,7 +397,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                       />
                       <span
                         aria-hidden="true"
-                        className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-xs font-mono text-white/35"
+                        className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-[11px] font-mono tabular-nums text-white/25"
                       >
                         {personalizationName.length}/{MAX_PERSONALIZATION_LENGTH}
                       </span>
@@ -409,9 +409,9 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                         aria-label={t('preview3D')}
                         className={cn(
                           'flex flex-shrink-0 items-center justify-center gap-1.5 rounded-lg px-3 py-3 sm:px-4',
-                          'bg-neon-cyan/10 border border-neon-cyan/30',
-                          'text-neon-cyan text-sm font-medium',
-                          'hover:bg-neon-cyan/20 hover:border-neon-cyan/50',
+                          'bg-neon-cyan/[0.06] border border-neon-cyan/20',
+                          'text-neon-cyan/85 text-sm font-medium',
+                          'hover:bg-neon-cyan/[0.1] hover:border-neon-cyan/35 hover:text-neon-cyan',
                           'transition-colors'
                         )}
                       >
@@ -434,7 +434,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             )}
 
             {/* Add to Cart & Wishlist */}
-            <div ref={cartButtonRef} className="pt-4 flex flex-col gap-3">
+            <div ref={cartButtonRef} className="pt-2 flex flex-col gap-2.5">
               <AddToCartButton
                 variantId={selectedVariant?.id || ''}
                 quantity={quantity}

@@ -74,8 +74,8 @@ export function WishlistButton({
           'font-display tracking-wider uppercase text-sm',
           'transition-all duration-200',
           isInList
-            ? 'bg-neon-pink/20 text-neon-pink border border-neon-pink/50'
-            : 'bg-bg-card border border-border-subtle text-white hover:border-neon-pink/50 hover:text-neon-pink',
+            ? 'bg-neon-pink/15 text-neon-pink border border-neon-pink/45 hover:bg-neon-pink/20'
+            : 'bg-white/[0.03] border border-white/15 text-white/90 hover:bg-white/[0.06] hover:border-white/28 hover:text-white',
           className
         )}
       >
