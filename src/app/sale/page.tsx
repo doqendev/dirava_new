@@ -103,7 +103,7 @@ async function SaleContent({
   const products = await getSaleProducts()
   const t = await getTranslations('salePage')
 
-  const themeColor = '#ff2d6a' // Pink/red for sale
+  const themeColor = '#00f5ff' // Cyan — matches site brand (replaced pink/red for visual consistency)
 
   // Parse filters from URL
   const filters = parseFiltersFromParams(searchParams)
@@ -219,15 +219,15 @@ export default async function SalePage({ searchParams }: Props) {
             {t('breadcrumbHome')}
           </Link>
           <ChevronRight className="w-4 h-4 text-white/30" />
-          <span className="text-neon-pink">{t('title')}</span>
+          <span className="text-neon-cyan">{t('title')}</span>
         </nav>
 
         {/* Collection Title */}
         <h1
           className="font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-wider uppercase mb-6"
           style={{
-            color: '#ff2d6a',
-            textShadow: '0 0 20px rgba(255, 45, 106, 0.4), 0 0 40px rgba(255, 45, 106, 0.2)',
+            color: '#00f5ff',
+            textShadow: '0 0 20px rgba(0, 245, 255, 0.4), 0 0 40px rgba(0, 245, 255, 0.2)',
           }}
         >
           {t('title')}

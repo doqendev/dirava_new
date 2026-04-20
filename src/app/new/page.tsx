@@ -85,7 +85,7 @@ async function NewArrivalsContent({
 }) {
   const products = await getNewArrivals()
 
-  const themeColor = '#7c3aed' // Purple for new arrivals
+  const themeColor = '#00f5ff' // Cyan — matches site brand across /new header + filter UI
 
   // Parse filters from URL
   const filters = parseFiltersFromParams(searchParams)

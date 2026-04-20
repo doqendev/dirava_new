@@ -3,7 +3,6 @@ import { getTranslations } from 'next-intl/server'
 import { HeroSection } from '@/components/home/HeroSection'
 import { UniverseGrid, UniverseGridSkeleton } from '@/components/home/UniverseGrid'
 import { DropRunway, DropRunwaySkeleton } from '@/components/home/DropRunway'
-import { NewsletterBanner } from '@/components/home/NewsletterBanner'
 import { TrustBadges } from '@/components/home/TrustBadges'
 import { AboutIntro } from '@/components/home/AboutIntro'
 import { shopifyFetch } from '@/lib/shopify/client'
@@ -193,8 +192,6 @@ export default function HomePage() {
       </Suspense>
 
       <AboutIntro />
-
-      <NewsletterBanner />
 
       <TrustBadges />
 
