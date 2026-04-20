@@ -39,9 +39,12 @@ export function StickyAddToCart({
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Show sticky bar when original button is NOT visible
+        // Only show the sticky bar after the main purchase block has been
+        // scrolled past. If the block is still below the fold on first load,
+        // keep the sticky bar hidden.
         if (entry) {
-          setIsVisible(!entry.isIntersecting)
+          const hasScrolledPast = !entry.isIntersecting && entry.boundingClientRect.bottom <= 0
+          setIsVisible(hasScrolledPast)
         }
       },
       { threshold: 0 }
