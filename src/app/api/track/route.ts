@@ -54,8 +54,33 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify(enriched),
     })
-    return NextResponse.json({ ok: res.ok })
-  } catch {
+
+    // Read body for diagnostics. Track Clear returning 2xx but an error
+    // body is a common way events silently drop.
+    const text = await res.text().catch(() => '')
+    const eventName =
+      (body as { event?: string } | null)?.event || 'unknown'
+
+    if (!res.ok) {
+      console.error(
+        `[api/track] upstream rejected ${eventName}: ${res.status} ${text.slice(0, 400)}`
+      )
+      return NextResponse.json(
+        { ok: false, status: res.status, upstream: text.slice(0, 400) },
+        { status: 200 }
+      )
+    }
+
+    // Log successful ingest for visibility while we're debugging attribution.
+    console.log(
+      `[api/track] upstream ok ${eventName} (${res.status}) ${text.slice(0, 200)}`
+    )
+    return NextResponse.json({ ok: true, status: res.status })
+  } catch (err) {
+    console.error(
+      '[api/track] fetch failed:',
+      err instanceof Error ? err.message : err
+    )
     return NextResponse.json({ ok: false, error: 'fetch-failed' })
   }
 }
