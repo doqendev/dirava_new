@@ -46,17 +46,22 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // Track Clear returns 401 "Missing API key" when sent as Authorization:
-    // Bearer. They read X-API-Key. Also include the legacy Authorization
-    // header as a harmless fallback in case their API ever accepts it.
-    const res = await fetch(INGEST_URL, {
+    // Track Clear rejected both Authorization: Bearer and X-API-Key with
+    // 401 "Missing API key". Third-most-common pattern is ?api_key= query
+    // param. Also sending api_key in the body in case they read it there.
+    // Leaving all previously-tried headers too — harmless if unused.
+    const url = new URL(INGEST_URL)
+    url.searchParams.set('api_key', API_KEY)
+
+    const res = await fetch(url.toString(), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-API-Key': API_KEY,
+        apikey: API_KEY,
         Authorization: `Bearer ${API_KEY}`,
       },
-      body: JSON.stringify(enriched),
+      body: JSON.stringify({ ...enriched, api_key: API_KEY }),
     })
 
     // Read body for diagnostics. Track Clear returning 2xx but an error
