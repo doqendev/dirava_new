@@ -46,10 +46,14 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // Track Clear returns 401 "Missing API key" when sent as Authorization:
+    // Bearer. They read X-API-Key. Also include the legacy Authorization
+    // header as a harmless fallback in case their API ever accepts it.
     const res = await fetch(INGEST_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-API-Key': API_KEY,
         Authorization: `Bearer ${API_KEY}`,
       },
       body: JSON.stringify(enriched),
