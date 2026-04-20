@@ -9,7 +9,7 @@ import type { PreviewConfig } from './types'
  * 3. If the preview type is new, create a scene component for it
  */
 const previewConfigs: Record<string, PreviewConfig> = {
-  'attack-on-titan-custom-logo': {
+  'attack-on-titan-custom-sign': {
     type: 'text-extrusion',
     font: '/fonts/preview/attack-on-titan.ttf',
     layers: [
@@ -41,7 +41,7 @@ const previewConfigs: Record<string, PreviewConfig> = {
     background: '#0a0a12',
   },
 
-  'jujutsu-kaisen-custom-logo': {
+  'jujutsu-kaisen-custom-sign': {
     type: 'text-extrusion',
     font: '/fonts/preview/qetod.ttf',
     layers: [
@@ -2645,7 +2645,7 @@ const previewConfigs: Record<string, PreviewConfig> = {
     background: '#0a1022',
   },
 
-  'anime-custom-logo-display-sign': {
+  'demon-slayer-custom-sign': {
     type: 'svg-extrusion',
     svg: '/svgs/preview/demonslayer-logo.svg',
     font: '/fonts/preview/bloodcrow.ttf',
@@ -2766,15 +2766,26 @@ const variantImagesOnly: Record<string, Record<string, string>> = {
   },
 }
 
+const previewHandleAliases: Record<string, string> = {
+  'attack-on-titan-custom-logo': 'attack-on-titan-custom-sign',
+  'jujutsu-kaisen-custom-logo': 'jujutsu-kaisen-custom-sign',
+  'anime-custom-logo-display-sign': 'demon-slayer-custom-sign',
+}
+
+function resolvePreviewHandle(handle: string): string {
+  return previewHandleAliases[handle] || handle
+}
+
 export function getPreviewConfig(handle: string): PreviewConfig | null {
-  return previewConfigs[handle] || null
+  return previewConfigs[resolvePreviewHandle(handle)] || null
 }
 
 export function hasPreviewConfig(handle: string): boolean {
-  return handle in previewConfigs
+  return resolvePreviewHandle(handle) in previewConfigs
 }
 
 /** Get variant selector images — from preview config or standalone map */
 export function getVariantImages(handle: string): Record<string, string> | undefined {
-  return previewConfigs[handle]?.variantImages || variantImagesOnly[handle]
+  const resolvedHandle = resolvePreviewHandle(handle)
+  return previewConfigs[resolvedHandle]?.variantImages || variantImagesOnly[resolvedHandle]
 }
