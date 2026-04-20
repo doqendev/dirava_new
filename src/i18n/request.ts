@@ -66,16 +66,17 @@ export async function getLocale(): Promise<Locale> {
     return savedLocale
   }
 
-  // 2. Try to detect from country
-  const country = await getCountryFromHeaders()
-  if (country && countryToLocale[country]) {
-    return countryToLocale[country]
-  }
-
-  // 3. Try to detect from Accept-Language header
+  // 2. Prefer the browser's declared language when there is no saved choice
   const browserLocale = await getLocaleFromAcceptLanguage()
   if (browserLocale) {
     return browserLocale
+  }
+
+  // 3. Fall back to coarse geo-detection only when the browser language
+  // does not map to a supported locale.
+  const country = await getCountryFromHeaders()
+  if (country && countryToLocale[country]) {
+    return countryToLocale[country]
   }
 
   // 4. Fall back to default

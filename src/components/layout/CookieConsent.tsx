@@ -48,23 +48,22 @@ export function CookieConsent() {
         exit={{ y: 100, opacity: 0 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         className={cn(
-          'fixed bottom-0 left-0 right-0 z-50',
-          'pb-20 lg:pb-0',
-          'p-4'
+          'fixed left-0 right-0 z-50 px-3 pb-24',
+          'bottom-0 md:left-auto md:right-6 md:bottom-6 md:w-[420px] md:px-0 md:pb-0'
         )}
       >
         <div
           className={cn(
-            'max-w-7xl mx-auto',
+            'mx-auto max-w-md',
             'bg-bg-card/95 backdrop-blur-md',
             'border border-white/10 rounded-xl',
-            'p-6 shadow-xl'
+            'p-4 md:p-5 shadow-xl'
           )}
         >
           {/* Main Content */}
-          <div className="space-y-4">
+          <div className="space-y-3.5">
             {/* Banner Text */}
-            <p className="text-sm text-white/80 leading-relaxed">
+            <p className="text-xs md:text-sm text-white/75 leading-relaxed">
               {t('banner')}{' '}
               <Link
                 href="/policies/privacy"
@@ -75,11 +74,11 @@ export function CookieConsent() {
             </p>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
               <button
                 onClick={handleAcceptAll}
                 className={cn(
-                  'px-6 py-2.5 rounded-lg font-medium transition-all',
+                  'px-5 py-2.5 rounded-lg font-medium transition-all',
                   'bg-neon-cyan text-bg-primary',
                   'hover:bg-neon-cyan/90',
                   'shadow-glow-sm-cyan hover:shadow-glow-cyan'
@@ -91,7 +90,7 @@ export function CookieConsent() {
               <button
                 onClick={handleRejectAll}
                 className={cn(
-                  'px-6 py-2.5 rounded-lg font-medium transition-all',
+                  'px-5 py-2.5 rounded-lg font-medium transition-all',
                   'bg-white/5 text-white/70 border border-white/10',
                   'hover:bg-white/10 hover:text-white'
                 )}
@@ -102,7 +101,7 @@ export function CookieConsent() {
               <button
                 onClick={() => setShowCustomize(!showCustomize)}
                 className={cn(
-                  'px-6 py-2.5 rounded-lg font-medium transition-all',
+                  'px-5 py-2.5 rounded-lg font-medium transition-all',
                   'bg-white/5 text-white/70 border border-white/10',
                   'hover:bg-white/10 hover:text-white',
                   'flex items-center justify-center gap-2'

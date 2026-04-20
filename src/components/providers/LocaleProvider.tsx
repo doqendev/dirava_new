@@ -15,26 +15,11 @@ export function LocaleProvider({
   initialLocale,
   initialCurrency,
 }: LocaleProviderProps) {
-  const { initialize, isInitialized, locale, currency } = useLocaleStore()
+  const { initialize } = useLocaleStore()
 
   useEffect(() => {
-    // Initialize store with server-detected values if not already initialized
-    if (!isInitialized) {
-      initialize(initialLocale, initialCurrency)
-    }
-  }, [initialLocale, initialCurrency, initialize, isInitialized])
-
-  // If we have stored preferences that differ from server, we might need to reload
-  // For now, just use what we have
-  useEffect(() => {
-    if (isInitialized && locale !== initialLocale) {
-      // User has a different locale preference stored - set cookie and reload might be needed
-      document.cookie = `mizoke-locale=${locale};path=/;max-age=31536000;SameSite=Lax;Secure`
-    }
-    if (isInitialized && currency !== initialCurrency) {
-      document.cookie = `mizoke-currency=${currency};path=/;max-age=31536000;SameSite=Lax;Secure`
-    }
-  }, [isInitialized, locale, currency, initialLocale, initialCurrency])
+    initialize(initialLocale, initialCurrency)
+  }, [initialLocale, initialCurrency, initialize])
 
   return <>{children}</>
 }

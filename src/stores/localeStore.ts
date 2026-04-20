@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 import type { Locale, Currency } from '@/i18n/config'
 import { defaultLocale, defaultCurrency, locales, currencies } from '@/i18n/config'
 
@@ -15,44 +14,34 @@ interface LocaleState {
 }
 
 export const useLocaleStore = create<LocaleState>()(
-  persist(
-    (set) => ({
-      locale: defaultLocale,
-      currency: defaultCurrency,
-      isInitialized: false,
+  (set) => ({
+    locale: defaultLocale,
+    currency: defaultCurrency,
+    isInitialized: false,
 
-      setLocale: (locale) => {
-        if (locales.includes(locale)) {
-          set({ locale })
-          // Also set cookie for server-side access
-          document.cookie = `mizoke-locale=${locale};path=/;max-age=31536000;SameSite=Lax;Secure`
-        }
-      },
+    setLocale: (locale) => {
+      if (locales.includes(locale)) {
+        set({ locale })
+        // Explicit user selection persists via cookie for SSR locale detection.
+        document.cookie = `mizoke-locale=${locale};path=/;max-age=31536000;SameSite=Lax;Secure`
+      }
+    },
 
-      setCurrency: (currency) => {
-        if (currencies.includes(currency)) {
-          set({ currency })
-          // Also set cookie for server-side access
-          document.cookie = `mizoke-currency=${currency};path=/;max-age=31536000;SameSite=Lax;Secure`
-        }
-      },
+    setCurrency: (currency) => {
+      if (currencies.includes(currency)) {
+        set({ currency })
+        document.cookie = `mizoke-currency=${currency};path=/;max-age=31536000;SameSite=Lax;Secure`
+      }
+    },
 
-      initialize: (locale, currency) => {
-        set({
-          locale,
-          currency,
-          isInitialized: true,
-        })
-      },
-    }),
-    {
-      name: 'mizoke-locale',
-      partialize: (state) => ({
-        locale: state.locale,
-        currency: state.currency,
-      }),
-    }
-  )
+    initialize: (locale, currency) => {
+      set({
+        locale,
+        currency,
+        isInitialized: true,
+      })
+    },
+  })
 )
 
 // Exchange rates (approximate - in production these should come from an API)
