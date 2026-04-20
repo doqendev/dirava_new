@@ -1,9 +1,26 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { shopifyClient } from '@/lib/shopify/client'
-import { CREATE_CART, ADD_TO_CART, UPDATE_CART_LINE, REMOVE_FROM_CART, CART_DISCOUNT_CODES_UPDATE } from '@/lib/shopify/mutations'
+import {
+  CREATE_CART,
+  ADD_TO_CART,
+  UPDATE_CART_LINE,
+  REMOVE_FROM_CART,
+  UPDATE_CART_BUYER,
+  CART_DISCOUNT_CODES_UPDATE,
+} from '@/lib/shopify/mutations'
 import { GET_CART } from '@/lib/shopify/queries'
+import { useLocaleStore } from '@/stores/localeStore'
 import type { ShopifyCartLine, ShopifyMoney, ShopifyDiscountCode } from '@/types/shopify'
+
+/**
+ * Read the shopper's active country from localeStore. Used for @inContext
+ * and buyerIdentity on every cart operation so cart totals + checkout stay
+ * in the market's presentment currency.
+ */
+function getCountryForCart(): string {
+  return useLocaleStore.getState().country
+}
 
 // Debounce tracking for rapid quantity changes
 const debounceTimers = new Map<string, ReturnType<typeof setTimeout>>()
@@ -41,6 +58,12 @@ interface CartState {
   applyDiscount: (code: string) => Promise<{ success: boolean; error?: string }>
   addBundle: (items: Array<{ variantId: string; quantity?: number }>, discountCode: string, bundleId: string) => Promise<{ success: boolean; error?: string }>
   removeDiscount: () => Promise<void>
+  /**
+   * Update the cart's buyer country so Shopify checkout uses the matching
+   * presentment currency. Called when the shopper picks a new country.
+   * No-op when no cart exists yet.
+   */
+  syncBuyerCountry: (country: string) => Promise<void>
   clearCart: () => void
   setError: (error: string | null) => void
 }
@@ -95,7 +118,7 @@ export const useCartStore = create<CartState>()(
             set({ isLoading: true, error: null })
             const response = await shopifyClient.request<{
               cart: ShopifyCartResponse | null
-            }>(GET_CART, { cartId })
+            }>(GET_CART, { cartId, country: getCountryForCart() })
 
             if (response.cart) {
               applyCartResponse(set, response.cart)
@@ -116,12 +139,13 @@ export const useCartStore = create<CartState>()(
 
         try {
           let currentCartId = cartId
+          const country = getCountryForCart()
 
           // Create cart if doesn't exist
           if (!currentCartId) {
             const createResponse = await shopifyClient.request<{
               cartCreate: { cart: { id: string; checkoutUrl: string } }
-            }>(CREATE_CART)
+            }>(CREATE_CART, { country })
 
             currentCartId = createResponse.cartCreate.cart.id
             set({
@@ -146,6 +170,7 @@ export const useCartStore = create<CartState>()(
           }>(ADD_TO_CART, {
             cartId: currentCartId,
             lines: [lineItem],
+            country,
           })
 
           const { cart, userErrors } = response.cartLinesAdd
@@ -170,12 +195,13 @@ export const useCartStore = create<CartState>()(
 
         try {
           let currentCartId = cartId
+          const country = getCountryForCart()
 
           // Create cart if doesn't exist
           if (!currentCartId) {
             const createResponse = await shopifyClient.request<{
               cartCreate: { cart: { id: string; checkoutUrl: string } }
-            }>(CREATE_CART)
+            }>(CREATE_CART, { country })
 
             currentCartId = createResponse.cartCreate.cart.id
             set({
@@ -197,6 +223,7 @@ export const useCartStore = create<CartState>()(
           }>(ADD_TO_CART, {
             cartId: currentCartId,
             lines,
+            country,
           })
 
           const cart = response.cartLinesAdd.cart
@@ -254,6 +281,7 @@ export const useCartStore = create<CartState>()(
             }>(UPDATE_CART_LINE, {
               cartId: currentCartId,
               lines: [{ id: lineId, quantity: get().lines.find((l) => l.id === lineId)?.quantity ?? quantity }],
+              country: getCountryForCart(),
             })
 
             const cart = response.cartLinesUpdate.cart
@@ -303,6 +331,7 @@ export const useCartStore = create<CartState>()(
           }>(REMOVE_FROM_CART, {
             cartId,
             lineIds: [lineId],
+            country: getCountryForCart(),
           })
 
           const cart = response.cartLinesRemove.cart
@@ -334,6 +363,7 @@ export const useCartStore = create<CartState>()(
           }>(CART_DISCOUNT_CODES_UPDATE, {
             cartId,
             discountCodes: [code],
+            country: getCountryForCart(),
           })
 
           if (response.cartDiscountCodesUpdate.userErrors.length > 0) {
@@ -369,6 +399,7 @@ export const useCartStore = create<CartState>()(
           }>(CART_DISCOUNT_CODES_UPDATE, {
             cartId,
             discountCodes: [],
+            country: getCountryForCart(),
           })
 
           const cart = response.cartDiscountCodesUpdate.cart
@@ -376,6 +407,34 @@ export const useCartStore = create<CartState>()(
         } catch (error) {
           console.error('Failed to remove discount:', error)
           set({ error: 'Failed to remove discount code', isApplyingDiscount: false })
+        }
+      },
+
+      syncBuyerCountry: async (country: string) => {
+        const { cartId } = get()
+        if (!cartId) return
+        const upper = country.toUpperCase()
+        if (!/^[A-Z]{2}$/.test(upper)) return
+        try {
+          const response = await shopifyClient.request<{
+            cartBuyerIdentityUpdate: {
+              cart: (ShopifyCartResponse & { checkoutUrl: string }) | null
+              userErrors: Array<{ field: string[]; message: string }>
+            }
+          }>(UPDATE_CART_BUYER, {
+            cartId,
+            buyerIdentity: { countryCode: upper },
+            country: upper,
+          })
+          const cart = response.cartBuyerIdentityUpdate.cart
+          if (cart) {
+            // Checkout URL + cost currency can change after market switch.
+            set({ checkoutUrl: cart.checkoutUrl })
+            // Refresh full cart so line prices re-render in new currency.
+            await get().initializeCart()
+          }
+        } catch (error) {
+          console.error('Failed to sync cart buyer country:', error)
         }
       },
 

@@ -1,6 +1,7 @@
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_ALL_PRODUCTS } from '@/lib/shopify/queries'
 import { extractNodes } from '@/lib/shopify/utils'
+import { getCountry } from '@/i18n/country'
 import { filterProducts, PRODUCT_TYPE_OPTIONS, type ProductTypeFilter } from '@/lib/utils/filters'
 import { expandProductsToVariantCards } from '@/lib/utils/variantExpansion'
 import type { ShopifyProduct } from '@/types/shopify'
@@ -22,9 +23,10 @@ export async function getCategoryPreviews(): Promise<Map<ProductTypeFilter, Cate
   })
 
   try {
+    const country = await getCountry()
     const data = await shopifyFetch<{
       products: { edges: Array<{ node: ShopifyProductNode }> }
-    }>(GET_ALL_PRODUCTS, { first: 250 })
+    }>(GET_ALL_PRODUCTS, { first: 250, country })
 
     const rawProducts = extractNodes(data.products)
 

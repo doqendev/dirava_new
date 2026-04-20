@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server'
 import { Clock, Flame } from 'lucide-react'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_DROP_PRODUCTS } from '@/lib/shopify/queries'
+import { getCountry } from '@/i18n/country'
 import { extractNodes, getFirstAvailableVariant } from '@/lib/shopify/utils'
 import { ProductCard } from '@/components/product/ProductCard'
 import { Badge } from '@/components/ui/Badge'
@@ -45,9 +46,10 @@ interface DropProduct extends ShopifyProduct {
 
 async function getDropProducts() {
   try {
+    const country = await getCountry()
     const data = await shopifyFetch<{
       products: { edges: Array<{ node: DropProduct }> }
-    }>(GET_DROP_PRODUCTS, { first: 20 })
+    }>(GET_DROP_PRODUCTS, { first: 20, country })
 
     const products = extractNodes(data.products)
 

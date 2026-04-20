@@ -1,6 +1,7 @@
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_PRODUCT } from '@/lib/shopify/queries'
 import { getFirstAvailableVariant } from '@/lib/shopify/utils'
+import { getCountry } from '@/i18n/country'
 import type { BundleConfig, BundleResolved } from '@/types/bundle'
 import type { ShopifyProduct } from '@/types/shopify'
 
@@ -8,9 +9,11 @@ export async function resolveBundleProducts(
   config: BundleConfig
 ): Promise<BundleResolved | null> {
   try {
+    const country = await getCountry()
     const productPromises = config.products.map((p) =>
       shopifyFetch<{ product: ShopifyProduct | null }>(GET_PRODUCT, {
         handle: p.handle,
+        country,
       })
     )
 

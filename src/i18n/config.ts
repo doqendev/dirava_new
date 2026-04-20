@@ -3,6 +3,12 @@ export type Locale = (typeof locales)[number]
 
 export const defaultLocale: Locale = 'en'
 
+/**
+ * Default country used when no geo / cookie / header signal exists.
+ * Drives currency and Shopify Markets presentment until a real signal arrives.
+ */
+export const defaultCountry = 'PT'
+
 // Map locales to their display names
 export const localeNames: Record<Locale, string> = {
   en: 'English',

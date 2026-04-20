@@ -32,7 +32,8 @@ const PRODUCT_FRAGMENT = gql`
 `
 
 /**
- * Get all universes (collections with custom.universe metafield)
+ * Get all universes (collections with custom.universe metafield).
+ * No @inContext needed — returns no money fields.
  */
 export const GET_UNIVERSES = gql`
   query GetUniverses {
@@ -85,7 +86,12 @@ export const GET_UNIVERSES = gql`
  */
 export const GET_UNIVERSE_PRODUCTS = gql`
   ${PRODUCT_FRAGMENT}
-  query GetUniverseProducts($handle: String!, $first: Int!, $after: String) {
+  query GetUniverseProducts(
+    $handle: String!
+    $first: Int!
+    $after: String
+    $country: CountryCode = PT
+  ) @inContext(country: $country) {
     collection(handle: $handle) {
       id
       handle
@@ -145,7 +151,8 @@ export const GET_UNIVERSE_PRODUCTS = gql`
  * Get a single product by handle
  */
 export const GET_PRODUCT = gql`
-  query GetProduct($handle: String!) {
+  query GetProduct($handle: String!, $country: CountryCode = PT)
+  @inContext(country: $country) {
     product(handle: $handle) {
       id
       handle
@@ -224,7 +231,8 @@ export const GET_PRODUCT = gql`
  */
 export const GET_DROP_PRODUCTS = gql`
   ${PRODUCT_FRAGMENT}
-  query GetDropProducts($first: Int!) {
+  query GetDropProducts($first: Int!, $country: CountryCode = PT)
+  @inContext(country: $country) {
     products(first: $first, sortKey: CREATED_AT, reverse: true) {
       edges {
         node {
@@ -248,7 +256,8 @@ export const GET_DROP_PRODUCTS = gql`
  * Get cart by ID
  */
 export const GET_CART = gql`
-  query GetCart($cartId: ID!) {
+  query GetCart($cartId: ID!, $country: CountryCode = PT)
+  @inContext(country: $country) {
     cart(id: $cartId) {
       id
       checkoutUrl
@@ -321,7 +330,8 @@ export const GET_CART = gql`
  */
 export const SEARCH_PRODUCTS = gql`
   ${PRODUCT_FRAGMENT}
-  query SearchProducts($query: String!, $first: Int!) {
+  query SearchProducts($query: String!, $first: Int!, $country: CountryCode = PT)
+  @inContext(country: $country) {
     products(first: $first, query: $query) {
       edges {
         node {
@@ -346,7 +356,8 @@ export const SEARCH_PRODUCTS = gql`
  * Predictive search
  */
 export const PREDICTIVE_SEARCH = gql`
-  query PredictiveSearch($query: String!) {
+  query PredictiveSearch($query: String!, $country: CountryCode = PT)
+  @inContext(country: $country) {
     predictiveSearch(query: $query, limit: 10, types: [PRODUCT]) {
       products {
         id
@@ -380,7 +391,8 @@ export const PREDICTIVE_SEARCH = gql`
  * Get Shopify ML-based product recommendations
  */
 export const GET_PRODUCT_RECOMMENDATIONS = gql`
-  query GetProductRecommendations($productId: ID!) {
+  query GetProductRecommendations($productId: ID!, $country: CountryCode = PT)
+  @inContext(country: $country) {
     productRecommendations(productId: $productId) {
       id
       handle
@@ -426,7 +438,11 @@ export const GET_PRODUCT_RECOMMENDATIONS = gql`
  * Get related products from the same collection
  */
 export const GET_RELATED_PRODUCTS = gql`
-  query GetRelatedProducts($collectionHandle: String!, $first: Int!) {
+  query GetRelatedProducts(
+    $collectionHandle: String!
+    $first: Int!
+    $country: CountryCode = PT
+  ) @inContext(country: $country) {
     collection(handle: $collectionHandle) {
       products(first: $first) {
         edges {
@@ -472,7 +488,8 @@ export const GET_RELATED_PRODUCTS = gql`
  */
 export const GET_NEW_ARRIVALS = gql`
   ${PRODUCT_FRAGMENT}
-  query GetNewArrivals($first: Int!) {
+  query GetNewArrivals($first: Int!, $country: CountryCode = PT)
+  @inContext(country: $country) {
     products(first: $first, sortKey: CREATED_AT, reverse: true) {
       edges {
         node {
@@ -491,7 +508,8 @@ export const GET_NEW_ARRIVALS = gql`
  */
 export const GET_BEST_SELLERS = gql`
   ${PRODUCT_FRAGMENT}
-  query GetBestSellers($first: Int!) {
+  query GetBestSellers($first: Int!, $country: CountryCode = PT)
+  @inContext(country: $country) {
     products(first: $first, sortKey: BEST_SELLING) {
       edges {
         node {
@@ -513,7 +531,8 @@ export const GET_BEST_SELLERS = gql`
  */
 export const GET_ALL_PRODUCTS = gql`
   ${PRODUCT_FRAGMENT}
-  query GetAllProducts($first: Int!) {
+  query GetAllProducts($first: Int!, $country: CountryCode = PT)
+  @inContext(country: $country) {
     products(first: $first, sortKey: CREATED_AT, reverse: true) {
       edges {
         node {
@@ -553,7 +572,7 @@ export const GET_ALL_PRODUCTS = gql`
 `
 
 /**
- * Get all products for sitemap (with collection handles and update timestamps)
+ * Get all products for sitemap (no money fields).
  */
 export const GET_SITEMAP_PRODUCTS = gql`
   query GetSitemapProducts($first: Int!, $after: String) {

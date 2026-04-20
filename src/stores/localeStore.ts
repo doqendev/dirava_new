@@ -1,51 +1,80 @@
 import { create } from 'zustand'
 import type { Locale, Currency } from '@/i18n/config'
-import { defaultLocale, defaultCurrency, locales, currencies } from '@/i18n/config'
+import {
+  defaultLocale,
+  defaultCurrency,
+  defaultCountry,
+  locales,
+  currencies,
+  countryToCurrency,
+} from '@/i18n/config'
 
 interface LocaleState {
   locale: Locale
   currency: Currency
+  /** ISO 3166-1 alpha-2 uppercase. Drives Shopify Markets presentment + currency. */
+  country: string
   isInitialized: boolean
 
-  // Actions
   setLocale: (locale: Locale) => void
   setCurrency: (currency: Currency) => void
-  initialize: (locale: Locale, currency: Currency) => void
+  /**
+   * Set the shopper's country. Persists via cookie (read by SSR on next
+   * navigation) and updates the derived currency. Side effects on cart
+   * buyerIdentity are handled by cartStore subscribers.
+   */
+  setCountry: (country: string) => void
+  initialize: (locale: Locale, currency: Currency, country: string) => void
 }
 
-export const useLocaleStore = create<LocaleState>()(
-  (set) => ({
-    locale: defaultLocale,
-    currency: defaultCurrency,
-    isInitialized: false,
+function writeCookie(name: string, value: string) {
+  if (typeof document === 'undefined') return
+  document.cookie = `${name}=${value};path=/;max-age=31536000;SameSite=Lax;Secure`
+}
 
-    setLocale: (locale) => {
-      if (locales.includes(locale)) {
-        set({ locale })
-        // Explicit user selection persists via cookie for SSR locale detection.
-        document.cookie = `mizoke-locale=${locale};path=/;max-age=31536000;SameSite=Lax;Secure`
-      }
-    },
+export const useLocaleStore = create<LocaleState>()((set, get) => ({
+  locale: defaultLocale,
+  currency: defaultCurrency,
+  country: defaultCountry,
+  isInitialized: false,
 
-    setCurrency: (currency) => {
-      if (currencies.includes(currency)) {
-        set({ currency })
-        document.cookie = `mizoke-currency=${currency};path=/;max-age=31536000;SameSite=Lax;Secure`
-      }
-    },
+  setLocale: (locale) => {
+    if (locales.includes(locale)) {
+      set({ locale })
+      writeCookie('mizoke-locale', locale)
+    }
+  },
 
-    initialize: (locale, currency) => {
-      set({
-        locale,
-        currency,
-        isInitialized: true,
-      })
-    },
-  })
-)
+  setCurrency: (currency) => {
+    if (currencies.includes(currency)) {
+      set({ currency })
+      writeCookie('mizoke-currency', currency)
+    }
+  },
 
-// Exchange rates (approximate - in production these should come from an API)
-// Base currency is EUR
+  setCountry: (country) => {
+    const upper = country.toUpperCase()
+    if (!/^[A-Z]{2}$/.test(upper)) return
+    if (upper === get().country) return
+    const derivedCurrency = countryToCurrency[upper] ?? defaultCurrency
+    set({ country: upper, currency: derivedCurrency })
+    writeCookie('mizoke-country', upper)
+    writeCookie('mizoke-currency', derivedCurrency)
+  },
+
+  initialize: (locale, currency, country) => {
+    set({
+      locale,
+      currency,
+      country: country.toUpperCase(),
+      isInitialized: true,
+    })
+  },
+}))
+
+// Legacy FX helpers kept for components that use them. Prefer showing the
+// price returned by Shopify (already localized via @inContext) over any
+// client-side conversion.
 const exchangeRates: Record<Currency, number> = {
   EUR: 1,
   GBP: 0.86,
@@ -54,13 +83,11 @@ const exchangeRates: Record<Currency, number> = {
   USD: 1.08,
 }
 
-// Convert price from EUR to target currency
 export function convertPrice(priceInEur: number, targetCurrency: Currency): number {
   const rate = exchangeRates[targetCurrency] || 1
   return priceInEur * rate
 }
 
-// Format price in the target currency
 export function formatPriceWithCurrency(
   amount: string | number,
   sourceCurrency: string,
@@ -68,12 +95,10 @@ export function formatPriceWithCurrency(
 ): string {
   const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount
 
-  // If source is already target currency, just format
   if (sourceCurrency === targetCurrency) {
     return formatCurrency(numAmount, targetCurrency)
   }
 
-  // Convert from source to EUR first, then to target
   const sourceRate = exchangeRates[sourceCurrency as Currency] || 1
   const amountInEur = numAmount / sourceRate
   const convertedAmount = convertPrice(amountInEur, targetCurrency)
@@ -81,7 +106,6 @@ export function formatPriceWithCurrency(
   return formatCurrency(convertedAmount, targetCurrency)
 }
 
-// Format a number as currency
 export function formatCurrency(amount: number, currency: Currency): string {
   const formatter = new Intl.NumberFormat(getLocaleForCurrency(currency), {
     style: 'currency',
@@ -93,7 +117,6 @@ export function formatCurrency(amount: number, currency: Currency): string {
   return formatter.format(amount)
 }
 
-// Get the appropriate locale for formatting a currency
 function getLocaleForCurrency(currency: Currency): string {
   switch (currency) {
     case 'EUR':

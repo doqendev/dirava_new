@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { getTranslations } from 'next-intl/server'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { SEARCH_PRODUCTS } from '@/lib/shopify/queries'
+import { getCountry } from '@/i18n/country'
 import { extractNodes } from '@/lib/shopify/utils'
 import { SearchBar } from '@/components/search/SearchBar'
 import { SearchResultsClient } from '@/components/search/SearchResultsClient'
@@ -49,11 +50,13 @@ async function searchProducts(query: string) {
   }
 
   try {
+    const country = await getCountry()
     const data = await shopifyFetch<{
       products: { edges: Array<{ node: SearchProductResult }> }
     }>(SEARCH_PRODUCTS, {
       query,
       first: 50, // Fetch more to have good filter results
+      country,
     })
 
     const products = extractNodes(data.products)

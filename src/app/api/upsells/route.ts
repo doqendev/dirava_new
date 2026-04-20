@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_RELATED_PRODUCTS, GET_BEST_SELLERS } from '@/lib/shopify/queries'
 import { extractNodes } from '@/lib/shopify/utils'
+import { getCountry } from '@/i18n/country'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -10,6 +11,7 @@ export async function GET(request: Request) {
   const excludeIds = excludeIdsParam ? excludeIdsParam.split(',') : []
 
   try {
+    const country = await getCountry()
     let upsellProducts: Array<{
       id: string
       handle: string
@@ -38,6 +40,7 @@ export async function GET(request: Request) {
       }>(GET_RELATED_PRODUCTS, {
         collectionHandle: universe,
         first: 10,
+        country,
       })
 
       if (data.collection) {
@@ -71,7 +74,7 @@ export async function GET(request: Request) {
             }
           }>
         }
-      }>(GET_BEST_SELLERS, { first: 10 })
+      }>(GET_BEST_SELLERS, { first: 10, country })
 
       const allProducts = extractNodes(data.products)
       upsellProducts = allProducts

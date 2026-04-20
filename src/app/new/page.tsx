@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server'
 import { ChevronRight } from 'lucide-react'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_NEW_ARRIVALS } from '@/lib/shopify/queries'
+import { getCountry } from '@/i18n/country'
 import { extractNodes } from '@/lib/shopify/utils'
 import {
   CollectionFilters,
@@ -52,10 +53,12 @@ interface Props {
 
 async function getNewArrivals() {
   try {
+    const country = await getCountry()
     const data = await shopifyFetch<{
       products: { edges: Array<{ node: ShopifyProduct & { universe?: { value: string } | null } }> }
     }>(GET_NEW_ARRIVALS, {
       first: 100,
+      country,
     })
 
     const products = extractNodes(data.products)

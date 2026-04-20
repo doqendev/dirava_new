@@ -1,11 +1,15 @@
 import { gql } from 'graphql-request'
 
 /**
- * Create a new cart
+ * Create a new (empty) cart.
+ * The `country` is both applied as the query-level @inContext (so the returned
+ * cart prices are in the right presentment currency) and set on buyerIdentity
+ * so Shopify checkout stays in that currency.
  */
 export const CREATE_CART = gql`
-  mutation CreateCart {
-    cartCreate {
+  mutation CreateCart($country: CountryCode = PT)
+  @inContext(country: $country) {
+    cartCreate(input: { buyerIdentity: { countryCode: $country } }) {
       cart {
         id
         checkoutUrl
@@ -19,11 +23,17 @@ export const CREATE_CART = gql`
 `
 
 /**
- * Create cart with initial line items
+ * Create cart with initial line items.
  */
 export const CREATE_CART_WITH_LINES = gql`
-  mutation CreateCartWithLines($lines: [CartLineInput!]!) {
-    cartCreate(input: { lines: $lines }) {
+  mutation CreateCartWithLines(
+    $lines: [CartLineInput!]!
+    $country: CountryCode = PT
+  ) @inContext(country: $country) {
+    cartCreate(input: {
+      lines: $lines
+      buyerIdentity: { countryCode: $country }
+    }) {
       cart {
         id
         checkoutUrl
@@ -82,7 +92,11 @@ export const CREATE_CART_WITH_LINES = gql`
  * Add lines to cart
  */
 export const ADD_TO_CART = gql`
-  mutation AddToCart($cartId: ID!, $lines: [CartLineInput!]!) {
+  mutation AddToCart(
+    $cartId: ID!
+    $lines: [CartLineInput!]!
+    $country: CountryCode = PT
+  ) @inContext(country: $country) {
     cartLinesAdd(cartId: $cartId, lines: $lines) {
       cart {
         id
@@ -146,7 +160,11 @@ export const ADD_TO_CART = gql`
  * Update cart line quantities
  */
 export const UPDATE_CART_LINE = gql`
-  mutation UpdateCartLine($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+  mutation UpdateCartLine(
+    $cartId: ID!
+    $lines: [CartLineUpdateInput!]!
+    $country: CountryCode = PT
+  ) @inContext(country: $country) {
     cartLinesUpdate(cartId: $cartId, lines: $lines) {
       cart {
         id
@@ -209,7 +227,11 @@ export const UPDATE_CART_LINE = gql`
  * Remove lines from cart
  */
 export const REMOVE_FROM_CART = gql`
-  mutation RemoveFromCart($cartId: ID!, $lineIds: [ID!]!) {
+  mutation RemoveFromCart(
+    $cartId: ID!
+    $lineIds: [ID!]!
+    $country: CountryCode = PT
+  ) @inContext(country: $country) {
     cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
       cart {
         id
@@ -269,14 +291,29 @@ export const REMOVE_FROM_CART = gql`
 `
 
 /**
- * Update buyer identity (for customer association)
+ * Update buyer identity. Also used to switch the cart's country when the
+ * shopper changes it via the country selector — updates checkout currency.
  */
 export const UPDATE_CART_BUYER = gql`
-  mutation UpdateCartBuyer($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!) {
+  mutation UpdateCartBuyer(
+    $cartId: ID!
+    $buyerIdentity: CartBuyerIdentityInput!
+    $country: CountryCode = PT
+  ) @inContext(country: $country) {
     cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {
       cart {
         id
         checkoutUrl
+        cost {
+          subtotalAmount {
+            amount
+            currencyCode
+          }
+          totalAmount {
+            amount
+            currencyCode
+          }
+        }
       }
       userErrors {
         field
@@ -290,7 +327,11 @@ export const UPDATE_CART_BUYER = gql`
  * Apply discount codes to cart
  */
 export const CART_DISCOUNT_CODES_UPDATE = gql`
-  mutation CartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]!) {
+  mutation CartDiscountCodesUpdate(
+    $cartId: ID!
+    $discountCodes: [String!]!
+    $country: CountryCode = PT
+  ) @inContext(country: $country) {
     cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
       cart {
         id

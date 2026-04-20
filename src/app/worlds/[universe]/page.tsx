@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { ChevronRight } from 'lucide-react'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_UNIVERSE_PRODUCTS } from '@/lib/shopify/queries'
+import { getCountry } from '@/i18n/country'
 import { extractNodes, getFirstAvailableVariant } from '@/lib/shopify/utils'
 import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
 import { SITE_URL } from '@/lib/utils/siteUrl'
@@ -64,11 +65,13 @@ async function getCollectionThemeColor(handle: string): Promise<string | null> {
 
 async function getUniverseProducts(handle: string) {
   try {
+    const country = await getCountry()
     const data = await shopifyFetch<{
       collection: ShopifyCollection | null
     }>(GET_UNIVERSE_PRODUCTS, {
       handle,
       first: 250, // Fetch all products for client-side filtering
+      country,
     })
 
     if (!data.collection) {

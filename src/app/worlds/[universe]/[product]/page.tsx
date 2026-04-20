@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_PRODUCT, GET_PRODUCT_RECOMMENDATIONS, GET_RELATED_PRODUCTS } from '@/lib/shopify/queries'
+import { getCountry } from '@/i18n/country'
 import { getProductRarity } from '@/lib/shopify/utils'
 import { ProductDetailClient } from '@/components/product/ProductDetailClient'
 import { YouMightAlsoLike } from '@/components/product/YouMightAlsoLike'
@@ -47,7 +48,8 @@ interface RecommendedProductNode {
 
 async function getProduct(handle: string) {
   try {
-    const data = await shopifyFetch<ProductQueryResponse>(GET_PRODUCT, { handle })
+    const country = await getCountry()
+    const data = await shopifyFetch<ProductQueryResponse>(GET_PRODUCT, { handle, country })
 
     if (!data.product) {
       return null
@@ -133,10 +135,11 @@ async function getRecommendedProducts(productId: string, collectionHandle: strin
 
   // 1. Fetch Shopify ML recommendations
   let recommendations: ReturnType<typeof mapRecommendedProduct>[] = []
+  const country = await getCountry()
   try {
     const data = await shopifyFetch<{
       productRecommendations: RecommendedProductNode[] | null
-    }>(GET_PRODUCT_RECOMMENDATIONS, { productId })
+    }>(GET_PRODUCT_RECOMMENDATIONS, { productId, country })
 
     if (data.productRecommendations) {
       recommendations = data.productRecommendations
@@ -153,7 +156,7 @@ async function getRecommendedProducts(productId: string, collectionHandle: strin
     try {
       const data = await shopifyFetch<{
         collection: { products?: { edges: Array<{ node: RecommendedProductNode }> } } | null
-      }>(GET_RELATED_PRODUCTS, { collectionHandle, first: TARGET + 5 })
+      }>(GET_RELATED_PRODUCTS, { collectionHandle, first: TARGET + 5, country })
 
       if (data.collection?.products?.edges) {
         const existingIds = new Set([productId, ...recommendations.map((r) => r.id)])

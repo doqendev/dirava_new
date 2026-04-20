@@ -10,10 +10,12 @@ import {
   type Currency
 } from './config'
 import { getMessages } from './messages'
+import { getCountry, COUNTRY_COOKIE } from './country'
 
 // Cookie names for storing user preferences
 export const LOCALE_COOKIE = 'mizoke-locale'
 export const CURRENCY_COOKIE = 'mizoke-currency'
+export { getCountry, COUNTRY_COOKIE }
 
 // Get country code from Cloudflare or Vercel headers
 async function getCountryFromHeaders(): Promise<string | null> {
@@ -83,24 +85,20 @@ export async function getLocale(): Promise<Locale> {
   return defaultLocale
 }
 
-// Get the user's preferred currency
+// Get the user's preferred currency.
+// Currency is now derived from country (resolved via cookie -> geo -> default);
+// the legacy mizoke-currency cookie still wins if present, for back-compat
+// with previously saved user preferences.
 export async function getCurrency(): Promise<Currency> {
   const cookieStore = await cookies()
 
-  // 1. Check cookie for saved preference
   const savedCurrency = cookieStore.get(CURRENCY_COOKIE)?.value as Currency | undefined
   if (savedCurrency) {
     return savedCurrency
   }
 
-  // 2. Try to detect from country
-  const country = await getCountryFromHeaders()
-  if (country && countryToCurrency[country]) {
-    return countryToCurrency[country]
-  }
-
-  // 3. Fall back to default
-  return defaultCurrency
+  const country = await getCountry()
+  return countryToCurrency[country] ?? defaultCurrency
 }
 
 export default getRequestConfig(async () => {

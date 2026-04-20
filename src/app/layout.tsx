@@ -3,7 +3,7 @@ import { Orbitron, Inter, JetBrains_Mono } from 'next/font/google'
 import { MotionProvider } from '@/components/providers/MotionProvider'
 import { NextIntlClientProvider } from 'next-intl'
 import { getTranslations } from 'next-intl/server'
-import { getLocale, getCurrency } from '@/i18n/request'
+import { getLocale, getCurrency, getCountry } from '@/i18n/request'
 import { getMessages } from '@/i18n/messages'
 import { SOCIAL_LINKS } from '@/lib/utils/constants'
 import { SITE_URL } from '@/lib/utils/siteUrl'
@@ -97,6 +97,7 @@ export default async function RootLayout({
 }) {
   const locale = await getLocale()
   const currency = await getCurrency()
+  const country = await getCountry()
   const messages = getMessages(locale)
 
   const organizationSchema = {
@@ -161,7 +162,11 @@ export default async function RootLayout({
         />
         <MotionProvider>
           <NextIntlClientProvider locale={locale} messages={messages}>
-            <LocaleProvider initialLocale={locale} initialCurrency={currency}>
+            <LocaleProvider
+              initialLocale={locale}
+              initialCurrency={currency}
+              initialCountry={country}
+            >
               <Header />
               <main id="main-content" className="pt-16 pb-20 lg:pb-0 overflow-visible">
                 {children}

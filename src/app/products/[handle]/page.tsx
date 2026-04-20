@@ -1,6 +1,7 @@
 import { redirect, notFound } from 'next/navigation'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_PRODUCT } from '@/lib/shopify/queries'
+import { getCountry } from '@/i18n/country'
 import type { ShopifyProduct, ShopifyMetafield } from '@/types/shopify'
 import type { Metadata } from 'next'
 
@@ -18,8 +19,10 @@ export const metadata: Metadata = {
 
 async function getProduct(handle: string) {
   try {
+    const country = await getCountry()
     const data = await shopifyFetch<{ product: ProductWithCollections | null }>(GET_PRODUCT, {
       handle,
+      country,
     })
     return data.product
   } catch (error) {

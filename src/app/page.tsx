@@ -7,6 +7,7 @@ import { TrustBadges } from '@/components/home/TrustBadges'
 import { AboutIntro } from '@/components/home/AboutIntro'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_UNIVERSES, GET_DROP_PRODUCTS, GET_NEW_ARRIVALS, GET_BEST_SELLERS } from '@/lib/shopify/queries'
+import { getCountry } from '@/i18n/country'
 import { extractNodes, getCollectionUniverse, getCollectionProductCount } from '@/lib/shopify/utils'
 import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
 import { SITE_URL } from '@/lib/utils/siteUrl'
@@ -68,12 +69,13 @@ async function getUniverses() {
 
 async function getDropProducts() {
   try {
+    const country = await getCountry()
     const data = await shopifyFetch<{
       products: { edges: Array<{ node: ShopifyProduct & {
         metafield?: { value: string } | null
         universe?: { value: string } | null
       } }> }
-    }>(GET_DROP_PRODUCTS, { first: 10 })
+    }>(GET_DROP_PRODUCTS, { first: 10, country })
 
     const products = extractNodes(data.products)
 
@@ -96,11 +98,12 @@ async function getDropProducts() {
 
 async function getNewArrivals() {
   try {
+    const country = await getCountry()
     const data = await shopifyFetch<{
       products: { edges: Array<{ node: ShopifyProduct & {
         universe?: { value: string } | null
       } }> }
-    }>(GET_NEW_ARRIVALS, { first: 12 })
+    }>(GET_NEW_ARRIVALS, { first: 12, country })
 
     const products = extractNodes(data.products)
 
@@ -120,12 +123,13 @@ async function getNewArrivals() {
 
 async function getBestSellers() {
   try {
+    const country = await getCountry()
     const data = await shopifyFetch<{
       products: { edges: Array<{ node: ShopifyProduct & {
         isBestseller?: { value: string } | null
         universe?: { value: string } | null
       } }> }
-    }>(GET_BEST_SELLERS, { first: 20 })
+    }>(GET_BEST_SELLERS, { first: 20, country })
 
     const products = extractNodes(data.products)
 

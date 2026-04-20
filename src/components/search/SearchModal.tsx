@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Search, X, Loader2, Clock, ArrowRight, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { useUIStore } from '@/stores/uiStore'
+import { useLocaleStore } from '@/stores/localeStore'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { PREDICTIVE_SEARCH } from '@/lib/shopify/queries'
 import { formatPrice } from '@/lib/utils/formatPrice'
@@ -179,6 +180,7 @@ export function SearchModal() {
       try {
         const data = await shopifyFetch<PredictiveSearchResponse>(PREDICTIVE_SEARCH, {
           query: query.trim(),
+          country: useLocaleStore.getState().country,
         })
         if (!cancelled) {
           setResults(data.predictiveSearch.products || [])
