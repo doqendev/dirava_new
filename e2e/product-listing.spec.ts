@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-const COLLECTION_URL = '/worlds/one-piece-1'
+const COLLECTION_URL = '/worlds/one-piece'
 
 test.describe('Product Listing', () => {
   test('universe/collection page loads products', async ({ page }) => {
@@ -9,7 +9,7 @@ test.describe('Product Listing', () => {
     await page.waitForTimeout(2000) // Wait for Shopify data
 
     // Should have product links
-    const productLinks = page.locator('a[href*="/worlds/one-piece-1/"]')
+    const productLinks = page.locator('a[href*="/worlds/one-piece/"]')
     const linkCount = await productLinks.count()
 
     console.log('Product links found:', linkCount)
@@ -22,7 +22,7 @@ test.describe('Product Listing', () => {
     await page.waitForTimeout(2000)
 
     // Check first product card has required elements
-    const firstProduct = page.locator('a[href*="/worlds/one-piece-1/"]').first()
+    const firstProduct = page.locator('a[href*="/worlds/one-piece/"]').first()
     await expect(firstProduct).toBeVisible()
 
     // Should have image
@@ -44,12 +44,12 @@ test.describe('Product Listing', () => {
     await page.waitForTimeout(2000)
 
     // Click first product
-    const firstProduct = page.locator('a[href*="/worlds/one-piece-1/"]').first()
+    const firstProduct = page.locator('a[href*="/worlds/one-piece/"]').first()
     await firstProduct.click()
     await page.waitForLoadState('networkidle')
 
     // Should navigate to product detail page
-    expect(page.url()).toContain('/worlds/one-piece-1/')
+    expect(page.url()).toContain('/worlds/one-piece/')
 
     // Should show product details
     const productTitle = page.locator('h1')
@@ -74,7 +74,7 @@ test.describe('Product Listing', () => {
     await page.waitForTimeout(2000)
 
     // Products should be in a grid
-    const products = page.locator('a[href*="/worlds/one-piece-1/"]')
+    const products = page.locator('a[href*="/worlds/one-piece/"]')
     const productCount = await products.count()
 
     console.log('Products in grid:', productCount)
@@ -132,7 +132,7 @@ test.describe('Product Listing', () => {
   })
 
   test('multiple product universes are accessible', async ({ page }) => {
-    const universes = ['one-piece-1', 'demon-slayer-1', 'dragon-ball-1']
+    const universes = ['one-piece', 'demon-slayer', 'dragon-ball']
 
     for (const universe of universes) {
       await page.goto(`/worlds/${universe}`)
@@ -155,7 +155,7 @@ test.describe('Product Listing', () => {
     await page.waitForTimeout(2000)
 
     // Hover over first product
-    const firstProduct = page.locator('a[href*="/worlds/one-piece-1/"]').first()
+    const firstProduct = page.locator('a[href*="/worlds/one-piece/"]').first()
     await firstProduct.hover()
     await page.waitForTimeout(500)
 

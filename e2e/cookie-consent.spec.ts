@@ -122,7 +122,7 @@ test.describe('Cookie Consent', () => {
       await page.waitForTimeout(500)
 
       // Navigate to another page
-      await page.goto('/worlds/one-piece-1')
+      await page.goto('/worlds/one-piece')
       await page.waitForLoadState('networkidle')
       await page.waitForTimeout(500)
 

@@ -3,16 +3,16 @@ import { test, expect } from '@playwright/test'
 test.describe('Navigation and Routing', () => {
   test('logo links to homepage from any page', async ({ page }) => {
     // Navigate to a product page first
-    await page.goto('/worlds/one-piece-1')
+    await page.goto('/worlds/one-piece')
     await page.waitForLoadState('networkidle')
 
     // Click logo
-    const logo = page.getByRole('link').filter({ hasText: /^MIZOKE/ }).first()
+    const logo = page.locator('header a[href="/"]').first()
     await logo.click()
     await page.waitForLoadState('networkidle')
 
     // Should be on homepage
-    expect(page.url()).toBe('http://localhost:3000/')
+    expect(new URL(page.url()).pathname).toBe('/')
   })
 
   test('header navigation elements work', async ({ page }) => {
@@ -48,7 +48,7 @@ test.describe('Navigation and Routing', () => {
       await homeLinks.last().click()
       await page.waitForLoadState('networkidle')
 
-      expect(page.url()).toContain('localhost:3000')
+      expect(new URL(page.url()).pathname).toBe('/')
     }
   })
 
@@ -57,7 +57,7 @@ test.describe('Navigation and Routing', () => {
     await page.waitForLoadState('networkidle')
 
     // Navigate to a collection
-    await page.goto('/worlds/one-piece-1')
+    await page.goto('/worlds/one-piece')
     await page.waitForLoadState('networkidle')
 
     // Use browser back button
@@ -65,7 +65,7 @@ test.describe('Navigation and Routing', () => {
     await page.waitForLoadState('networkidle')
 
     // Should be back on homepage
-    expect(page.url()).toBe('http://localhost:3000/')
+    expect(new URL(page.url()).pathname).toBe('/')
   })
 
   test('404 page shows for invalid routes', async ({ page }) => {
@@ -78,12 +78,12 @@ test.describe('Navigation and Routing', () => {
   })
 
   test('universe collection page is accessible', async ({ page }) => {
-    await page.goto('/worlds/one-piece-1')
+    await page.goto('/worlds/one-piece')
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(2000)
 
     // Page should load successfully
-    expect(page.url()).toContain('/worlds/one-piece-1')
+    expect(page.url()).toContain('/worlds/one-piece')
 
     // Should have products or collection title
     const heading = page.locator('h1').first()

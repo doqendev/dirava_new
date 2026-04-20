@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 
-const PRODUCT_URL = '/worlds/one-piece-1/gear-5-luffy-hoodie'
-const ALTERNATIVE_PRODUCT = '/worlds/one-piece-1/one-piece-custom-sign'
+const PRODUCT_URL = '/worlds/one-piece/one-piece-custom-sign'
+const ALTERNATIVE_PRODUCT = '/worlds/one-piece/one-piece-custom-sign'
 
 test.describe('Product Detail Page', () => {
   test('product page loads with title, price, and images', async ({ page }) => {

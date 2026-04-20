@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-const PRODUCT_URL = '/worlds/one-piece-1/gear-5-luffy-hoodie'
+const PRODUCT_URL = '/worlds/one-piece/one-piece-custom-sign'
 
 async function gotoProductPage(page: import('@playwright/test').Page) {
   await page.goto(PRODUCT_URL)

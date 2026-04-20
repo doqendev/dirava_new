@@ -11,7 +11,7 @@ test.describe('Mobile Responsiveness', () => {
     await expect(page.locator('body')).toBeVisible()
 
     // Mobile logo should be visible (centered)
-    const logo = page.getByRole('link').filter({ hasText: /^MIZOKE/ })
+    const logo = page.locator('header a[href="/"]')
     await expect(logo.first()).toBeVisible()
   })
 
@@ -43,7 +43,7 @@ test.describe('Mobile Responsiveness', () => {
     await page.waitForLoadState('networkidle')
 
     // Logo should be centered on mobile
-    const mobileLogo = page.getByRole('link').filter({ hasText: /^MIZOKE/ }).nth(1)
+    const mobileLogo = page.locator('header a[href="/"]').nth(1)
     await expect(mobileLogo).toBeVisible()
 
     // Icons should be compact
@@ -77,12 +77,12 @@ test.describe('Mobile Responsiveness', () => {
   test('product grid adjusts columns on mobile', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 })
 
-    await page.goto('/worlds/one-piece-1')
+    await page.goto('/worlds/one-piece')
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(2000)
 
     // Products should be visible
-    const products = page.locator('a[href*="/worlds/one-piece-1/"]')
+    const products = page.locator('a[href*="/worlds/one-piece/"]')
     const productCount = await products.count()
 
     console.log('Products visible on mobile:', productCount)
@@ -133,7 +133,7 @@ test.describe('Mobile Responsiveness', () => {
   test('product detail page is mobile-friendly', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 })
 
-    await page.goto('/worlds/one-piece-1/gear-5-luffy-hoodie')
+    await page.goto('/worlds/one-piece/one-piece-custom-sign')
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(1000)
 
@@ -175,7 +175,7 @@ test.describe('Mobile Responsiveness', () => {
     await expect(page.locator('body')).toBeVisible()
 
     // Logo should be visible
-    const logo = page.getByRole('link').filter({ hasText: /^MIZOKE/ })
+    const logo = page.locator('header a[href="/"]')
     await expect(logo.first()).toBeVisible()
 
     // Navigation should work
@@ -186,12 +186,12 @@ test.describe('Mobile Responsiveness', () => {
   test('touch interactions work on mobile', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 })
 
-    await page.goto('/worlds/one-piece-1')
+    await page.goto('/worlds/one-piece')
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(2000)
 
     // Tap on first product
-    const firstProduct = page.locator('a[href*="/worlds/one-piece-1/"]').first()
+    const firstProduct = page.locator('a[href*="/worlds/one-piece/"]').first()
     const productCount = await firstProduct.count()
 
     if (productCount > 0) {
@@ -199,7 +199,7 @@ test.describe('Mobile Responsiveness', () => {
       await page.waitForLoadState('networkidle')
 
       // Should navigate
-      expect(page.url()).toContain('/worlds/one-piece-1/')
+      expect(page.url()).toContain('/worlds/one-piece/')
     }
   }, { timeout: 15000 })
 
@@ -228,7 +228,7 @@ test.describe('Mobile Responsiveness', () => {
   test('images scale properly on mobile', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 })
 
-    await page.goto('/worlds/one-piece-1/gear-5-luffy-hoodie')
+    await page.goto('/worlds/one-piece/one-piece-custom-sign')
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(1000)
 

@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test'
 
 // Known product URL from the debug tests
-const PRODUCT_URL = '/worlds/one-piece-1/gear-5-luffy-hoodie'
-const ALTERNATIVE_PRODUCT_URL = '/worlds/one-piece-1/one-piece-custom-sign'
+const PRODUCT_URL = '/worlds/one-piece/one-piece-custom-sign'
+const ALTERNATIVE_PRODUCT_URL = '/worlds/one-piece/one-piece-custom-sign'
 
 test.describe('Product Page Features', () => {
   test('Size Guide button is visible and modal opens', async ({ page }) => {
@@ -151,7 +151,7 @@ test.describe('Product Page Features', () => {
 
     // Verify the viewed product is in the list
     const viewedProduct = recentlyViewed.state.items.find(
-      (item: { handle: string }) => item.handle === 'gear-5-luffy-hoodie'
+      (item: { handle: string }) => item.handle === 'one-piece-custom-sign'
     )
     expect(viewedProduct).toBeTruthy()
   })
@@ -304,17 +304,17 @@ test.describe('Navigation and Routing', () => {
     await page.goto('/')
     await page.waitForLoadState('networkidle')
 
-    expect(page.url()).toContain('localhost:3000')
+    expect(new URL(page.url()).pathname).toBe('/')
     await expect(page.locator('body')).toBeVisible()
   })
 
   test('Collection page loads with products', async ({ page }) => {
-    await page.goto('/worlds/one-piece-1')
+    await page.goto('/worlds/one-piece')
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(2000)
 
     // Should have product links
-    const productLinks = page.locator('a[href*="/worlds/one-piece-1/"]')
+    const productLinks = page.locator('a[href*="/worlds/one-piece/"]')
     const count = await productLinks.count()
 
     console.log('Product links on collection page:', count)
