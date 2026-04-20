@@ -811,7 +811,8 @@
     "viewImage": "View image {number}",
     "loading": "Loading...",
     "view3DPreview": "View 3D Preview",
-    "close3DPreview": "Close 3D preview"
+    "close3DPreview": "Close 3D preview",
+    "preview3DDisclaimer": "3D preview is a guide only. Final spacing is refined manually before production."
   },
   "claim": {
     "title": "Claim Your Prize",

@@ -811,7 +811,8 @@
     "viewImage": "Ver imagen {number}",
     "loading": "Cargando...",
     "view3DPreview": "Ver vista previa 3D",
-    "close3DPreview": "Cerrar vista previa 3D"
+    "close3DPreview": "Cerrar vista previa 3D",
+    "preview3DDisclaimer": "La vista previa 3D es solo orientativa. El espaciado final se ajusta manualmente antes de la producción."
   },
   "claim": {
     "title": "Reclama tu premio",

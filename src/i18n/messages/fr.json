@@ -811,7 +811,8 @@
     "viewImage": "Voir l'image {number}",
     "loading": "Chargement...",
     "view3DPreview": "Voir l'aperçu 3D",
-    "close3DPreview": "Fermer l'aperçu 3D"
+    "close3DPreview": "Fermer l'aperçu 3D",
+    "preview3DDisclaimer": "L'aperçu 3D est indicatif. L'espacement final est ajusté manuellement avant la production."
   },
   "claim": {
     "title": "Réclamez votre prix",

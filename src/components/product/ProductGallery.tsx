@@ -209,6 +209,15 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                   <Preview3DCanvas config={previewConfig} text={previewCanvasText} selectedVariantName={selectedVariantName} />
                 </Suspense>
 
+                <div className="absolute inset-x-3 bottom-16 z-20 pointer-events-none sm:bottom-[4.5rem]">
+                  <div
+                    className="rounded-lg border border-white/10 bg-black/45 px-3 py-2 text-[11px] leading-relaxed text-white/70 backdrop-blur-sm"
+                    style={{ boxShadow: '0 10px 30px rgba(0, 0, 0, 0.18)' }}
+                  >
+                    {t('preview3DDisclaimer')}
+                  </div>
+                </div>
+
                 {/* Bottom bar: input + Add to Cart */}
                 {(onPreviewTextChange || canvasCart) && (
                   <div className="absolute bottom-0 inset-x-0 z-20">

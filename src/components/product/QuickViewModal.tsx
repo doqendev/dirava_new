@@ -53,6 +53,7 @@ interface QuickViewProduct {
 
 export function QuickViewModal() {
   const t = useTranslations('product')
+  const tGallery = useTranslations('gallery')
   const tCommon = useTranslations('common')
   const { quickViewProduct, closeQuickView } = useUIStore()
   const [product, setProduct] = useState<QuickViewProduct | null>(null)
@@ -318,6 +319,15 @@ export function QuickViewModal() {
                               >
                                 <Preview3DCanvas config={previewConfig} text={previewCanvasText} selectedVariantName={selectedVariantName} />
                               </Suspense>
+
+                              <div className="absolute inset-x-3 bottom-16 z-20 pointer-events-none">
+                                <div
+                                  className="rounded-lg border border-white/10 bg-black/45 px-3 py-2 text-[11px] leading-relaxed text-white/70 backdrop-blur-sm"
+                                  style={{ boxShadow: '0 10px 30px rgba(0, 0, 0, 0.18)' }}
+                                >
+                                  {tGallery('preview3DDisclaimer')}
+                                </div>
+                              </div>
 
                               {/* Personalization input overlay on 3D */}
                               {product.personalization && (

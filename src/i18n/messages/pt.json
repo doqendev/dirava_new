@@ -811,7 +811,8 @@
     "viewImage": "Ver imagem {number}",
     "loading": "A carregar...",
     "view3DPreview": "Ver pré-visualização 3D",
-    "close3DPreview": "Fechar pré-visualização 3D"
+    "close3DPreview": "Fechar pré-visualização 3D",
+    "preview3DDisclaimer": "A pré-visualização 3D é apenas indicativa. O espaçamento final é ajustado manualmente antes da produção."
   },
   "claim": {
     "title": "Resgatar o seu prémio",
