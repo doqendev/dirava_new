@@ -812,6 +812,8 @@
     "loading": "Chargement...",
     "view3DPreview": "Voir l'aperçu 3D",
     "close3DPreview": "Fermer l'aperçu 3D",
+    "preview3DShortLabel": "Aperçu seulement",
+    "preview3DInfoLabel": "Information sur l'aperçu",
     "preview3DDisclaimer": "L'aperçu 3D est indicatif. L'espacement final est ajusté manuellement avant la production."
   },
   "claim": {

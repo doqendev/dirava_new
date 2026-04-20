@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, lazy, Suspense, forwardRef, useImperativeH
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, ZoomIn, Box, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ZoomIn, Box, X, Info } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { AddToCartButton } from '@/components/product/AddToCartButton'
 import { Preview3DLoadingIndicator } from '@/components/product/preview3d/LoadingSpinner'
@@ -69,6 +69,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
     const containerRef = useRef<HTMLDivElement>(null)
     const [currentIndex, setCurrentIndex] = useState(initialImageIndex ?? 0)
     const [isZoomed, setIsZoomed] = useState(false)
+    const [isPreviewInfoOpen, setIsPreviewInfoOpen] = useState(false)
     const touchStartRef = useRef<{ x: number; y: number } | null>(null)
 
     const hasMultipleImages = images.length > 1
@@ -164,6 +165,12 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
       }
     }, [show3DTab, is3DActive])
 
+    useEffect(() => {
+      if (!is3DActive) {
+        setIsPreviewInfoOpen(false)
+      }
+    }, [is3DActive])
+
     const totalSlides = images.length + (show3DTab ? 1 : 0)
     const displayIndex = is3DActive ? totalSlides : currentIndex + 1
 
@@ -209,12 +216,29 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                   <Preview3DCanvas config={previewConfig} text={previewCanvasText} selectedVariantName={selectedVariantName} />
                 </Suspense>
 
-                <div className="absolute inset-x-3 bottom-16 z-20 pointer-events-none sm:bottom-[4.5rem]">
-                  <div
-                    className="rounded-lg border border-white/10 bg-black/45 px-3 py-2 text-[11px] leading-relaxed text-white/70 backdrop-blur-sm"
-                    style={{ boxShadow: '0 10px 30px rgba(0, 0, 0, 0.18)' }}
-                  >
-                    {t('preview3DDisclaimer')}
+                <div className="absolute left-3 bottom-16 z-20 sm:bottom-[4.5rem]">
+                  <div className="relative">
+                    <div className="flex items-center gap-1.5 rounded-full border border-white/10 bg-black/45 px-2.5 py-1.5 text-[11px] font-medium text-white/75 backdrop-blur-sm">
+                      <span>{t('preview3DShortLabel')}</span>
+                      <button
+                        type="button"
+                        onClick={() => setIsPreviewInfoOpen((prev) => !prev)}
+                        className="pointer-events-auto inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/15 text-white/70 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan"
+                        aria-label={t('preview3DInfoLabel')}
+                        aria-expanded={isPreviewInfoOpen}
+                      >
+                        <Info className="h-2.5 w-2.5" />
+                      </button>
+                    </div>
+
+                    {isPreviewInfoOpen && (
+                      <div
+                        className="pointer-events-auto absolute left-0 bottom-full mb-2 w-56 rounded-lg border border-white/10 bg-black/75 px-3 py-2 text-[11px] leading-relaxed text-white/75 backdrop-blur-md"
+                        style={{ boxShadow: '0 10px 30px rgba(0, 0, 0, 0.18)' }}
+                      >
+                        {t('preview3DDisclaimer')}
+                      </div>
+                    )}
                   </div>
                 </div>
 

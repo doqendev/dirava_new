@@ -812,6 +812,8 @@
     "loading": "Loading...",
     "view3DPreview": "View 3D Preview",
     "close3DPreview": "Close 3D preview",
+    "preview3DShortLabel": "Preview only",
+    "preview3DInfoLabel": "Preview disclaimer",
     "preview3DDisclaimer": "3D preview is a guide only. Final spacing is refined manually before production."
   },
   "claim": {

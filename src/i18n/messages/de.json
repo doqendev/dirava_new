@@ -812,6 +812,8 @@
     "loading": "Lädt...",
     "view3DPreview": "3D-Vorschau anzeigen",
     "close3DPreview": "3D-Vorschau schließen",
+    "preview3DShortLabel": "Nur Vorschau",
+    "preview3DInfoLabel": "Hinweis zur Vorschau",
     "preview3DDisclaimer": "Die 3D-Vorschau dient nur als Orientierung. Der finale Zeichenabstand wird vor der Produktion manuell verfeinert."
   },
   "claim": {

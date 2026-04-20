@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, ChevronLeft, ChevronRight, Loader2, ExternalLink, Box } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, Loader2, ExternalLink, Box, Info } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { MAX_PERSONALIZATION_LENGTH } from '@/lib/utils/constants'
 import { formatPrice } from '@/lib/utils/formatPrice'
@@ -60,6 +60,7 @@ export function QuickViewModal() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [isPreviewInfoOpen, setIsPreviewInfoOpen] = useState(false)
 
   // Form state
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({})
@@ -176,6 +177,12 @@ export function QuickViewModal() {
     () => (previewConfig ? getPreviewDisplayText(personalizationName, previewConfig, 'Name') : 'Name'),
     [personalizationName, previewConfig]
   )
+
+  useEffect(() => {
+    if (!is3DActive) {
+      setIsPreviewInfoOpen(false)
+    }
+  }, [is3DActive])
 
   // Find selected variant
   const selectedVariant = useMemo(() => {
@@ -320,12 +327,29 @@ export function QuickViewModal() {
                                 <Preview3DCanvas config={previewConfig} text={previewCanvasText} selectedVariantName={selectedVariantName} />
                               </Suspense>
 
-                              <div className="absolute inset-x-3 bottom-16 z-20 pointer-events-none">
-                                <div
-                                  className="rounded-lg border border-white/10 bg-black/45 px-3 py-2 text-[11px] leading-relaxed text-white/70 backdrop-blur-sm"
-                                  style={{ boxShadow: '0 10px 30px rgba(0, 0, 0, 0.18)' }}
-                                >
-                                  {tGallery('preview3DDisclaimer')}
+                              <div className="absolute left-3 bottom-16 z-20">
+                                <div className="relative">
+                                  <div className="flex items-center gap-1.5 rounded-full border border-white/10 bg-black/45 px-2.5 py-1.5 text-[11px] font-medium text-white/75 backdrop-blur-sm">
+                                    <span>{tGallery('preview3DShortLabel')}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setIsPreviewInfoOpen((prev) => !prev)}
+                                      className="pointer-events-auto inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/15 text-white/70 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan"
+                                      aria-label={tGallery('preview3DInfoLabel')}
+                                      aria-expanded={isPreviewInfoOpen}
+                                    >
+                                      <Info className="h-2.5 w-2.5" />
+                                    </button>
+                                  </div>
+
+                                  {isPreviewInfoOpen && (
+                                    <div
+                                      className="pointer-events-auto absolute left-0 bottom-full mb-2 w-56 rounded-lg border border-white/10 bg-black/75 px-3 py-2 text-[11px] leading-relaxed text-white/75 backdrop-blur-md"
+                                      style={{ boxShadow: '0 10px 30px rgba(0, 0, 0, 0.18)' }}
+                                    >
+                                      {tGallery('preview3DDisclaimer')}
+                                    </div>
+                                  )}
                                 </div>
                               </div>
 

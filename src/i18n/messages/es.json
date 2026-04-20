@@ -812,6 +812,8 @@
     "loading": "Cargando...",
     "view3DPreview": "Ver vista previa 3D",
     "close3DPreview": "Cerrar vista previa 3D",
+    "preview3DShortLabel": "Solo vista previa",
+    "preview3DInfoLabel": "Información de la vista previa",
     "preview3DDisclaimer": "La vista previa 3D es solo orientativa. El espaciado final se ajusta manualmente antes de la producción."
   },
   "claim": {
