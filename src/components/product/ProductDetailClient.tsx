@@ -377,24 +377,31 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 </label>
                 <div className="flex flex-col gap-2">
                   <div className="flex items-stretch gap-2">
-                    <input
-                      ref={personalizationInputRef}
-                      type="text"
-                      value={personalizationName}
-                      maxLength={MAX_PERSONALIZATION_LENGTH}
-                      onChange={(e) => {
-                        const sliced = e.target.value.slice(0, MAX_PERSONALIZATION_LENGTH)
-                        setPersonalizationName(previewConfig ? getPreviewDisplayText(sliced, previewConfig, '') : sliced)
-                      }}
-                      placeholder={t('personalizationPlaceholder')}
-                      aria-describedby="personalization-char-count"
-                      className={cn(
-                        'flex-1 min-w-0 px-4 py-3 bg-black/80 border rounded-lg text-white placeholder-white/40 focus:outline-none transition-colors',
-                        personalizationName.trim()
-                          ? 'border-neon-green/50 focus:border-neon-green'
-                          : 'border-border-subtle focus:border-neon-cyan'
-                      )}
-                    />
+                    <div className="relative flex-1 min-w-0">
+                      <input
+                        ref={personalizationInputRef}
+                        type="text"
+                        value={personalizationName}
+                        maxLength={MAX_PERSONALIZATION_LENGTH}
+                        onChange={(e) => {
+                          const sliced = e.target.value.slice(0, MAX_PERSONALIZATION_LENGTH)
+                          setPersonalizationName(previewConfig ? getPreviewDisplayText(sliced, previewConfig, '') : sliced)
+                        }}
+                        placeholder={t('personalizationPlaceholder')}
+                        className={cn(
+                          'w-full min-w-0 px-4 py-3 pr-16 bg-black/80 border rounded-lg text-white placeholder-white/40 focus:outline-none transition-colors',
+                          personalizationName.trim()
+                            ? 'border-neon-green/50 focus:border-neon-green'
+                            : 'border-border-subtle focus:border-neon-cyan'
+                        )}
+                      />
+                      <span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-xs font-mono text-white/35"
+                      >
+                        {personalizationName.length}/{MAX_PERSONALIZATION_LENGTH}
+                      </span>
+                    </div>
                     {previewConfig && (
                       <button
                         type="button"
@@ -414,9 +421,6 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                       </button>
                     )}
                   </div>
-                  <p id="personalization-char-count" className="text-xs text-white/40">
-                    {personalizationName.length} / {MAX_PERSONALIZATION_LENGTH}
-                  </p>
                 </div>
               </div>
             )}
