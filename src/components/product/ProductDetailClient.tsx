@@ -4,7 +4,7 @@ import { useState, useMemo, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { ArrowLeft, Box, ChevronDown } from 'lucide-react'
+import { ArrowLeft, Box, ChevronDown, Clock3, ShieldCheck, Sparkles, Truck } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { formatPrice } from '@/lib/utils/formatPrice'
 import { UNIVERSE_CONFIG, MAX_PERSONALIZATION_LENGTH } from '@/lib/utils/constants'
@@ -463,6 +463,49 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 size="lg"
                 className="w-full justify-center py-3"
               />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <div className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2.5">
+                <div className="flex items-start gap-2">
+                  <Clock3 className="mt-0.5 h-4 w-4 flex-shrink-0 text-neon-cyan/85" />
+                  <div>
+                    <p className="text-xs font-medium text-white">{t('buyBoxMadeToOrderTitle')}</p>
+                    <p className="mt-0.5 text-[11px] leading-relaxed text-white/50">{t('buyBoxMadeToOrderDesc')}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2.5">
+                <div className="flex items-start gap-2">
+                  <Truck className="mt-0.5 h-4 w-4 flex-shrink-0 text-neon-cyan/85" />
+                  <div>
+                    <p className="text-xs font-medium text-white">{t('buyBoxShippingTitle')}</p>
+                    <p className="mt-0.5 text-[11px] leading-relaxed text-white/50">{t('buyBoxShippingDesc')}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2.5">
+                <div className="flex items-start gap-2">
+                  <ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-neon-cyan/85" />
+                  <div>
+                    <p className="text-xs font-medium text-white">{t('buyBoxCheckoutTitle')}</p>
+                    <p className="mt-0.5 text-[11px] leading-relaxed text-white/50">{t('buyBoxCheckoutDesc')}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2.5">
+                <div className="flex items-start gap-2">
+                  <Sparkles className="mt-0.5 h-4 w-4 flex-shrink-0 text-neon-cyan/85" />
+                  <div>
+                    <p className="text-xs font-medium text-white">
+                      {previewConfig ? t('buyBoxPreviewTitle') : t('buyBoxFinishTitle')}
+                    </p>
+                    <p className="mt-0.5 text-[11px] leading-relaxed text-white/50">
+                      {previewConfig ? t('buyBoxPreviewDesc') : t('buyBoxFinishDesc')}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Description (collapsible) */}
