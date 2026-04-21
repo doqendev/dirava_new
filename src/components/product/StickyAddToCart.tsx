@@ -17,6 +17,8 @@ interface StickyAddToCartProps {
   quantity?: number
   /** Ref to the main Add to Cart area — used to detect when it scrolls out of view */
   cartButtonRef: React.RefObject<HTMLDivElement | null>
+  /** Universe accent color applied to price label and Add-to-Cart button. */
+  themeColor?: string
 }
 
 export function StickyAddToCart({
@@ -30,6 +32,7 @@ export function StickyAddToCart({
   attributes,
   quantity = 1,
   cartButtonRef,
+  themeColor,
 }: StickyAddToCartProps) {
   const [isVisible, setIsVisible] = useState(false)
 
@@ -61,7 +64,10 @@ export function StickyAddToCart({
       <div className="flex items-center gap-3 max-w-lg mx-auto">
         <div className="flex-1 min-w-0">
           <p className="text-white text-sm font-medium truncate">{productTitle}</p>
-          <p className="text-neon-cyan font-mono text-sm font-bold">
+          <p
+            className={themeColor ? 'font-mono text-sm font-bold' : 'text-neon-cyan font-mono text-sm font-bold'}
+            style={themeColor ? { color: themeColor } : undefined}
+          >
             {formatPrice(price.amount, price.currencyCode)}
           </p>
         </div>
@@ -75,6 +81,7 @@ export function StickyAddToCart({
             onPersonalizationError={onPersonalizationError}
             attributes={attributes}
             size="sm"
+            themeColor={themeColor}
           />
         </div>
       </div>

@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { ProductCard } from '@/components/product/ProductCard'
 import { cn } from '@/lib/utils/cn'
+import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
 
 interface RecommendedProduct {
   id: string
@@ -37,22 +38,27 @@ export function YouMightAlsoLike({
       </h2>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={{
-              id: product.id,
-              handle: product.handle,
-              title: product.title,
-              price: product.price,
-              compareAtPrice: product.compareAtPrice,
-              image: product.image,
-              variantId: product.variantId,
-            }}
-            universe={product.universe || undefined}
-            showQuickView={!!product.variantId}
-          />
-        ))}
+        {products.map((product) => {
+          const cardThemeColor =
+            UNIVERSE_CONFIG[product.universe as keyof typeof UNIVERSE_CONFIG]?.color
+          return (
+            <ProductCard
+              key={product.id}
+              product={{
+                id: product.id,
+                handle: product.handle,
+                title: product.title,
+                price: product.price,
+                compareAtPrice: product.compareAtPrice,
+                image: product.image,
+                variantId: product.variantId,
+              }}
+              universe={product.universe || undefined}
+              themeColor={cardThemeColor}
+              showQuickView={!!product.variantId}
+            />
+          )
+        })}
       </div>
     </section>
   )

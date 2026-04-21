@@ -90,6 +90,17 @@ async function getProduct(handle: string) {
     )
     const personalization = personalizationMetafield?.value === 'true'
 
+    // Get the product's true universe from its own metafield/collections, so
+    // theming always matches the product itself rather than the URL segment
+    // (a shopper may land here from a cross-universe recommended card).
+    const universeFromMetafield = product.metafields?.find(
+      (mf) => mf?.key === 'universe'
+    )?.value
+    const universeFromCollection = product.collections?.edges
+      ?.map((edge) => edge.node.metafield?.value)
+      .find((v): v is string => !!v && v !== 'true' && v !== 'false')
+    const productUniverse = universeFromMetafield || universeFromCollection || null
+
     // Get collection handle for related products (first universe collection)
     const collectionHandle = product.collections?.edges?.find(
       (edge) => edge.node.metafield?.value === 'true'
@@ -109,6 +120,7 @@ async function getProduct(handle: string) {
       rarity,
       personalization,
       collectionHandle,
+      productUniverse,
     }
   } catch (error) {
     console.error('Failed to fetch product:', error)
@@ -309,7 +321,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         />
       )}
 
-      <ProductDetailClient universe={universe} product={{ ...product, rating: reviewStats }} />
+      <ProductDetailClient
+        universe={product.productUniverse || universe}
+        product={{ ...product, rating: reviewStats }}
+      />
 
       {/* Lifestyle Gallery */}
       <div className="px-4 py-8 max-w-7xl mx-auto">
@@ -332,7 +347,11 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       <div id="reviews" className="px-4 py-12 max-w-7xl mx-auto border-t border-border-subtle">
         <ReviewList
           productHandle={product.handle}
-          color={UNIVERSE_CONFIG[universe as keyof typeof UNIVERSE_CONFIG]?.color}
+          color={
+            UNIVERSE_CONFIG[
+              (product.productUniverse || universe) as keyof typeof UNIVERSE_CONFIG
+            ]?.color
+          }
         />
       </div>
 

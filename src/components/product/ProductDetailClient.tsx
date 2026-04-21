@@ -357,6 +357,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   onOptionChange={handleOptionChange}
                   optionImages={getVariantImages(product.handle)}
                   imageOptionName={getVariantImages(product.handle) ? 'Color' : undefined}
+                  themeColor={themeColor}
                 />
               </div>
             )}
@@ -452,6 +453,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                     ? [{ key: 'Personalization', value: personalizationName.trim() }]
                     : undefined
                 }
+                themeColor={themeColor}
               />
               <WishlistButton
                 product={{
@@ -622,6 +624,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
         }
         quantity={quantity}
         cartButtonRef={cartButtonRef}
+        themeColor={themeColor}
       />
     </div>
   )

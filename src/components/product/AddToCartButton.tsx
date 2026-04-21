@@ -24,6 +24,8 @@ interface AddToCartButtonProps {
   onPersonalizationError?: () => void
   onBeforeAdd?: () => boolean // Return true to proceed, false to cancel
   label?: string
+  /** Universe accent color — overrides the default neon-cyan surface. */
+  themeColor?: string
 }
 
 type ButtonState = 'idle' | 'loading' | 'success' | 'error' | 'personalization-error'
@@ -40,6 +42,7 @@ export function AddToCartButton({
   onPersonalizationError,
   onBeforeAdd,
   label,
+  themeColor,
 }: AddToCartButtonProps) {
   const t = useTranslations('product')
   const tCommon = useTranslations('common')
@@ -139,11 +142,17 @@ export function AddToCartButton({
         disabled={state === 'loading'}
         className={cn(
           'w-full',
+          themeColor && state === 'idle' && '!bg-[var(--ug)] hover:!bg-[var(--ug)]/90 !text-black',
           state === 'success' && 'bg-neon-green hover:bg-neon-green/90',
           state === 'error' && 'bg-red-500 hover:bg-red-500/90',
           state === 'personalization-error' && 'bg-orange-500 hover:bg-orange-500/90',
           className
         )}
+        style={
+          themeColor && state === 'idle'
+            ? ({ '--ug': themeColor, boxShadow: `0 0 20px ${themeColor}55` } as React.CSSProperties)
+            : undefined
+        }
       >
         <AnimatePresence mode="wait">
           <motion.span

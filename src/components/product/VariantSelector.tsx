@@ -27,6 +27,8 @@ interface VariantSelectorProps {
   /** Which option name should use image tiles (e.g. "Color") */
   imageOptionName?: string
   className?: string
+  /** Universe accent color — themes the selected chip / tile. */
+  themeColor?: string
 }
 
 export function VariantSelector({
@@ -37,6 +39,7 @@ export function VariantSelector({
   optionImages,
   imageOptionName,
   className,
+  themeColor,
 }: VariantSelectorProps) {
   // Check if a specific option value is available
   const isOptionAvailable = (optionName: string, optionValue: string) => {
@@ -83,11 +86,18 @@ export function VariantSelector({
                       'border-2 transition-all duration-200',
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan',
                       isSelected
-                        ? 'border-neon-cyan shadow-glow-sm-cyan bg-white/10'
+                        ? themeColor
+                          ? 'bg-white/10'
+                          : 'border-neon-cyan shadow-glow-sm-cyan bg-white/10'
                         : isAvailable
                         ? 'border-transparent bg-white/5 hover:border-white/30 hover:bg-white/10'
                         : 'border-transparent bg-white/5 opacity-30 cursor-not-allowed'
                     )}
+                    style={
+                      isSelected && themeColor
+                        ? { borderColor: themeColor, boxShadow: `0 0 10px ${themeColor}66` }
+                        : undefined
+                    }
                     aria-pressed={isSelected}
                     aria-label={`${option.name}: ${value}${!isAvailable ? ' (unavailable)' : ''}`}
                   >
@@ -109,7 +119,13 @@ export function VariantSelector({
 
                     {/* Selected indicator */}
                     {isSelected && (
-                      <div className="absolute bottom-0 inset-x-0 bg-neon-cyan/90 py-0.5">
+                      <div
+                        className={cn(
+                          'absolute bottom-0 inset-x-0 py-0.5',
+                          !themeColor && 'bg-neon-cyan/90'
+                        )}
+                        style={themeColor ? { backgroundColor: themeColor, opacity: 0.9 } : undefined}
+                      >
                         <span className="block text-[8px] font-bold text-black text-center truncate px-0.5">
                           {value}
                         </span>
@@ -137,11 +153,22 @@ export function VariantSelector({
                       'border transition-all duration-200',
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan',
                       isSelected
-                        ? 'bg-neon-cyan text-black border-neon-cyan shadow-glow-sm-cyan'
+                        ? themeColor
+                          ? 'text-black'
+                          : 'bg-neon-cyan text-black border-neon-cyan shadow-glow-sm-cyan'
                         : isAvailable
                         ? 'bg-bg-secondary border-border-subtle text-white hover:border-neon-cyan/50'
                         : 'bg-bg-secondary/50 border-border-subtle text-white/30 cursor-not-allowed line-through'
                     )}
+                    style={
+                      isSelected && themeColor
+                        ? {
+                            backgroundColor: themeColor,
+                            borderColor: themeColor,
+                            boxShadow: `0 0 10px ${themeColor}66`,
+                          }
+                        : undefined
+                    }
                     aria-pressed={isSelected}
                     aria-label={`${option.name}: ${value}${!isAvailable ? ' (unavailable)' : ''}`}
                   >
