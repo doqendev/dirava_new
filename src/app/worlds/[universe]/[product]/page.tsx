@@ -304,8 +304,13 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     ],
   }
 
+  const themeColor =
+    UNIVERSE_CONFIG[
+      (product.productUniverse || universe) as keyof typeof UNIVERSE_CONFIG
+    ]?.color
+
   return (
-    <>
+    <div style={themeColor ? ({ ['--accent' as string]: themeColor } as React.CSSProperties) : undefined}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
@@ -374,7 +379,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       <div className="px-4 py-12 max-w-7xl mx-auto border-t border-border-subtle">
         <ProductFAQ productHandle={product.handle} />
       </div>
-    </>
+    </div>
   )
 }
 

@@ -85,7 +85,7 @@ export function QuantitySelector({
           'text-white/50 hover:text-white hover:bg-white/10',
           'transition-colors duration-200',
           'disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-white/50',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-neon-cyan'
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[color:var(--accent,#00f5ff)]'
         )}
         aria-label={t('decrease')}
       >
@@ -121,7 +121,7 @@ export function QuantitySelector({
           'text-white/50 hover:text-white hover:bg-white/10',
           'transition-colors duration-200',
           'disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-white/50',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-neon-cyan'
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[color:var(--accent,#00f5ff)]'
         )}
         aria-label={t('increase')}
       >

@@ -166,7 +166,7 @@ export default function ReviewForm({ productHandle }: ReviewFormProps) {
       {/* Star Rating */}
       <div className="mb-6">
         <label className="block text-sm font-medium mb-2">
-          {t('yourRating')} <span className="text-neon-cyan">*</span>
+          {t('yourRating')} <span className="text-[color:var(--accent,#00f5ff)]">*</span>
         </label>
         <div className="flex gap-1">
           {[1, 2, 3, 4, 5].map((star) => (
@@ -201,8 +201,8 @@ export default function ReviewForm({ productHandle }: ReviewFormProps) {
               onChange={(e) => setAnonymous(e.target.checked)}
               className="sr-only peer"
             />
-            <div className="w-10 h-5 bg-white/10 border border-white/20 rounded-full peer-checked:bg-neon-cyan/30 peer-checked:border-neon-cyan/50 transition-colors" />
-            <div className="absolute left-0.5 top-0.5 w-4 h-4 bg-white/50 rounded-full peer-checked:translate-x-5 peer-checked:bg-neon-cyan transition-all" />
+            <div className="w-10 h-5 bg-white/10 border border-white/20 rounded-full peer-checked:bg-[color:var(--accent,#00f5ff)]/30 peer-checked:border-[color:var(--accent,#00f5ff)]/50 transition-colors" />
+            <div className="absolute left-0.5 top-0.5 w-4 h-4 bg-white/50 rounded-full peer-checked:translate-x-5 peer-checked:bg-[color:var(--accent,#00f5ff)] transition-all" />
           </div>
           <span className="text-sm text-white/70 group-hover:text-white/90 transition-colors">
             {t('anonymous')}
@@ -215,7 +215,7 @@ export default function ReviewForm({ productHandle }: ReviewFormProps) {
         <>
           <div className="mb-4">
             <label htmlFor="name" className="block text-sm font-medium mb-2">
-              {t('name')} <span className="text-neon-cyan">*</span>
+              {t('name')} <span className="text-[color:var(--accent,#00f5ff)]">*</span>
             </label>
             <input
               type="text"
@@ -223,7 +223,7 @@ export default function ReviewForm({ productHandle }: ReviewFormProps) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={t('namePlaceholder')}
-              className="w-full px-4 py-3 bg-black/40 border border-white/20 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan"
+              className="w-full px-4 py-3 bg-black/40 border border-white/20 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[color:var(--accent,#00f5ff)] focus:ring-1 focus:ring-[color:var(--accent,#00f5ff)]"
             />
           </div>
 
@@ -237,7 +237,7 @@ export default function ReviewForm({ productHandle }: ReviewFormProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t('emailPlaceholder')}
-              className="w-full px-4 py-3 bg-black/40 border border-white/20 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan"
+              className="w-full px-4 py-3 bg-black/40 border border-white/20 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[color:var(--accent,#00f5ff)] focus:ring-1 focus:ring-[color:var(--accent,#00f5ff)]"
             />
           </div>
         </>
@@ -254,7 +254,7 @@ export default function ReviewForm({ productHandle }: ReviewFormProps) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder={t('titlePlaceholder')}
-          className="w-full px-4 py-3 bg-black/40 border border-white/20 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan"
+          className="w-full px-4 py-3 bg-black/40 border border-white/20 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[color:var(--accent,#00f5ff)] focus:ring-1 focus:ring-[color:var(--accent,#00f5ff)]"
         />
       </div>
 
@@ -269,7 +269,7 @@ export default function ReviewForm({ productHandle }: ReviewFormProps) {
           onChange={(e) => setContent(e.target.value)}
           placeholder={t('contentPlaceholder')}
           rows={4}
-          className="w-full px-4 py-3 bg-black/40 border border-white/20 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan resize-none"
+          className="w-full px-4 py-3 bg-black/40 border border-white/20 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[color:var(--accent,#00f5ff)] focus:ring-1 focus:ring-[color:var(--accent,#00f5ff)] resize-none"
         />
       </div>
 
@@ -340,7 +340,7 @@ export default function ReviewForm({ productHandle }: ReviewFormProps) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="px-6 py-3 bg-neon-cyan text-bg-primary font-display font-semibold uppercase tracking-wider rounded-lg hover:bg-neon-cyan/90 shadow-glow-sm-cyan hover:shadow-glow-cyan transition-all disabled:opacity-50"
+        className="px-6 py-3 bg-[color:var(--accent,#00f5ff)] text-bg-primary font-display font-semibold uppercase tracking-wider rounded-lg hover:bg-[color:var(--accent,#00f5ff)]/90 transition-all disabled:opacity-50"
       >
         {isSubmitting
           ? (images.length > 0 ? t('uploading') : t('submitting'))

@@ -223,7 +223,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                       <button
                         type="button"
                         onClick={() => setIsPreviewInfoOpen((prev) => !prev)}
-                        className="pointer-events-auto inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/15 text-white/70 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan"
+                        className="pointer-events-auto inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/15 text-white/70 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent,#00f5ff)]"
                         aria-label={t('preview3DInfoLabel')}
                         aria-expanded={isPreviewInfoOpen}
                       >
@@ -256,7 +256,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                             className={cn(
                               'flex-1 min-w-0 px-3 py-2.5 rounded-lg text-sm text-white placeholder-white/40',
                               'bg-white/10 backdrop-blur-md border border-white/20',
-                              'focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan/50',
+                              'focus:outline-none focus:border-[color:var(--accent,#00f5ff)] focus:ring-1 focus:ring-[color:var(--accent,#00f5ff)]/50',
                               'transition-colors text-center'
                             )}
                           />
@@ -333,8 +333,8 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
               className={cn(
                 'absolute top-4 right-4 z-10 lg:hidden',
                 'flex items-center gap-1.5 px-3 py-2 rounded-lg',
-                'bg-neon-cyan/15 border border-neon-cyan/40 backdrop-blur-sm',
-                'text-neon-cyan',
+                'bg-[color:var(--accent,#00f5ff)]/15 border border-[color:var(--accent,#00f5ff)]/40 backdrop-blur-sm',
+                'text-[color:var(--accent,#00f5ff)]',
                 'active:scale-95 transition-transform'
               )}
               aria-label={t('view3DPreview')}
@@ -357,7 +357,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                   'text-white/70 hover:text-white',
                   'opacity-0 group-hover:opacity-100',
                   'transition-all duration-200',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan'
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent,#00f5ff)]'
                 )}
                 aria-label={t('previousImage')}
               >
@@ -373,7 +373,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                   'text-white/70 hover:text-white',
                   'opacity-0 group-hover:opacity-100',
                   'transition-all duration-200',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan'
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent,#00f5ff)]'
                 )}
                 aria-label={t('nextImage')}
               >
@@ -393,7 +393,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                 'flex items-center justify-center',
                 'text-white/70 hover:text-white',
                 'transition-all duration-200',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan'
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent,#00f5ff)]'
               )}
               aria-label={t('close3DPreview')}
             >
@@ -424,9 +424,9 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                 className={cn(
                   'relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden',
                   'border-2 transition-all duration-200',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent,#00f5ff)]',
                   index === currentIndex
-                    ? 'border-neon-cyan shadow-glow-sm-cyan'
+                    ? 'border-[color:var(--accent,#00f5ff)]'
                     : 'border-transparent opacity-60 hover:opacity-100'
                 )}
                 aria-label={t('viewImage', { number: index + 1 })}
@@ -449,10 +449,10 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                 className={cn(
                   'relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden',
                   'border-2 transition-all duration-200',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent,#00f5ff)]',
                   'flex items-center justify-center',
                   is3DActive
-                    ? 'border-neon-cyan shadow-glow-sm-cyan bg-neon-cyan/10'
+                    ? 'border-[color:var(--accent,#00f5ff)] bg-[color:var(--accent,#00f5ff)]/10'
                     : 'border-transparent opacity-60 hover:opacity-100 bg-white/5'
                 )}
                 aria-label={t('view3DPreview')}
@@ -461,11 +461,11 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                 <div className="flex flex-col items-center gap-0.5">
                   <Box className={cn(
                     'w-5 h-5 transition-colors',
-                    is3DActive ? 'text-neon-cyan' : 'text-white/60'
+                    is3DActive ? 'text-[color:var(--accent,#00f5ff)]' : 'text-white/60'
                   )} />
                   <span className={cn(
                     'text-[9px] font-bold tracking-wide transition-colors',
-                    is3DActive ? 'text-neon-cyan' : 'text-white/60'
+                    is3DActive ? 'text-[color:var(--accent,#00f5ff)]' : 'text-white/60'
                   )}>
                     3D
                   </span>

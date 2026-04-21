@@ -15,7 +15,7 @@ export function SizeGuideButton({ onClick, className }: SizeGuideButtonProps) {
       onClick={onClick}
       className={cn(
         'inline-flex items-center gap-1.5',
-        'text-sm text-white/60 hover:text-neon-cyan',
+        'text-sm text-white/60 hover:text-[color:var(--accent,#00f5ff)]',
         'transition-colors duration-200',
         'underline-offset-4 hover:underline',
         className
