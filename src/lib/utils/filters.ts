@@ -114,7 +114,7 @@ export function filtersToParams(filters: FilterState): string {
 /**
  * Check if a product matches the given product type filter
  */
-function matchesProductType(
+export function matchesProductType(
   productType: string | undefined,
   productTags: string[] | undefined,
   filterType: ProductTypeFilter

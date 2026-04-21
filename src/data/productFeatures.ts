@@ -3,72 +3,67 @@
  *
  * Source of truth precedence:
  *   1. Per-product Shopify metafield `custom.features` (string). Set this
- *      in Shopify admin to override for a specific product. Format is
- *      freeform, e.g. `UV Painted · Made to Order · USB with toggle/switch`.
- *   2. Fallback keyed by the Shopify product type (the `Product.productType`
- *      field — admin-editable, distinct from collections).
+ *      in Shopify admin to override for a specific product.
+ *   2. Fallback derived from the existing collection-filter product types
+ *      (Hoodies, T-Shirts, Name Signs, Keychains, Magnets). Uses
+ *      `matchesProductType` so the same rules that power the shop filters
+ *      also drive the tagline — no extra mapping to maintain.
  *   3. No tagline if nothing matches.
  *
- * Match is case-insensitive and tolerates singular/plural.
+ * LED signs don't have their own filter type (they share "Name Signs"),
+ * so we layer a small extra check on top to split LED out.
  */
 
-function norm(s: string | undefined | null): string {
-  return (s ?? '').toLowerCase().replace(/\s+/g, ' ').trim()
+import { PRODUCT_TYPE_OPTIONS, matchesProductType, type ProductTypeFilter } from '@/lib/utils/filters'
+
+type FeatureBucket = ProductTypeFilter | 'led-signs'
+
+function resolveBucket(
+  productType: string | undefined | null,
+  tags: string[] | undefined | null
+): FeatureBucket | null {
+  const match = PRODUCT_TYPE_OPTIONS.find((opt) =>
+    matchesProductType(productType ?? undefined, tags ?? undefined, opt.value)
+  )?.value
+  if (!match) return null
+
+  // Split LED from plain name-signs.
+  if (match === 'name-signs') {
+    const t = (productType ?? '').toLowerCase()
+    const tagHit = (tags ?? []).some((tag) => tag.toLowerCase().includes('led'))
+    if (t.includes('led') || tagHit) return 'led-signs'
+  }
+
+  return match
 }
 
-/**
- * Map the Shopify productType → tagline category.
- *
- * Matches substrings (case-insensitive) so admin values like
- * "LED Custom Sign" or "Custom Hoodie" still resolve. LED takes
- * precedence over plain signs so "LED Sign" doesn't fall into the
- * non-LED bucket.
- */
-function categoriseByProductType(
-  productType: string | undefined | null
-): 'led-sign' | 'sign' | 'hoodie' | 'tshirt' | 'keychain' | 'magnet' | null {
-  const t = norm(productType)
-  if (!t) return null
-
-  if (t.includes('hood')) return 'hoodie'
-  if (t.includes('t-shirt') || t.includes('tshirt') || t.includes('tee')) return 'tshirt'
-  if (t.includes('keychain')) return 'keychain'
-  if (t.includes('magnet')) return 'magnet'
-  if (t.includes('led')) return 'led-sign'
-  if (t.includes('sign') || t.includes('name')) return 'sign'
-
-  return null
-}
-
-const DEFAULTS: Record<NonNullable<ReturnType<typeof categoriseByProductType>>, string> = {
-  'led-sign': 'UV Painted · Made to Order · USB with toggle/switch',
-  sign: 'UV Painted · Made to Order · Sturdy Plastic',
-  hoodie: 'Heavyweight cotton blend · DTF print · Unisex',
-  tshirt: '100% cotton · DTF print · Unisex',
-  keychain: 'UV Printed · Made to Order · PLA Plastic',
-  magnet: 'UV Printed · Neodymium Magnet · Made to Order',
+const DEFAULTS: Record<FeatureBucket, string> = {
+  'led-signs': 'UV Painted · Made to Order · USB with toggle/switch',
+  'name-signs': 'UV Painted · Made to Order · Sturdy Plastic',
+  hoodies: 'Heavyweight cotton blend · DTF print · Unisex',
+  tshirts: '100% cotton · DTF print · Unisex',
+  keychains: 'UV Printed · Made to Order · PLA Plastic',
+  magnets: 'UV Printed · Neodymium Magnet · Made to Order',
 }
 
 export interface ProductFeatureArgs {
   /** Shopify metafield `custom.features` — takes precedence when present. */
   override?: string | null
-  /** Shopify `Product.productType` — drives the fallback copy. */
+  /** Shopify `Product.productType`. */
   productType?: string | null
-  /**
-   * @deprecated Tags are no longer consulted for the fallback — product
-   * type is the single source of truth. Accepted for back-compat.
-   */
+  /** Shopify `Product.tags` — used by the shared `matchesProductType` helper. */
   tags?: string[] | null
 }
 
 export function resolveProductFeatures({
   override,
   productType,
+  tags,
 }: ProductFeatureArgs): string | null {
   const o = override?.trim()
   if (o) return o
 
-  const bucket = categoriseByProductType(productType)
+  const bucket = resolveBucket(productType, tags)
   if (!bucket) return null
   return DEFAULTS[bucket]
 }
