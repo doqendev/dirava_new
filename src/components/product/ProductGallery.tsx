@@ -190,14 +190,10 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
 
     return (
       <div ref={containerRef} className={cn('space-y-4', className)}>
-        {/* Main Image / 3D Preview — solid accent border with a small
-            residual glow, matching the selected variant chip style. */}
+        {/* Main Image / 3D Preview — solid accent border, no glow. */}
         <div
           className="relative aspect-square bg-bg-secondary rounded-xl overflow-hidden group border-2"
-          style={{
-            borderColor: 'rgb(var(--accent-rgb, 0, 245, 255))',
-            boxShadow: '0 0 10px rgba(var(--accent-rgb, 0, 245, 255), 0.4)',
-          }}
+          style={{ borderColor: 'rgb(var(--accent-rgb, 0, 245, 255))' }}
           onTouchStart={!is3DActive ? handleTouchStart : undefined}
           onTouchEnd={!is3DActive ? handleTouchEnd : undefined}
         >
