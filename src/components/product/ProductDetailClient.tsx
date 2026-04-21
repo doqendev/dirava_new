@@ -321,8 +321,9 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
 
           {/* Product Info */}
           <div className="space-y-6 w-full min-w-0">
-            {/* Buy box card — matches the look of OrderSteps + TrustBadges. */}
-            <div className="rounded-lg border border-border-subtle bg-bg-card p-5 sm:p-6 space-y-6">
+            {/* Buy box — plain stacked column (no card chrome), mirroring
+                the design reference. Keeps the same vertical rhythm. */}
+            <div className="space-y-6">
             {/* Badges */}
             {(product.rarity && product.rarity !== 'common' || hasDiscount) && (
               <div className="flex flex-wrap gap-2">
