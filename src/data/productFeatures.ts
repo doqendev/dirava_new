@@ -16,13 +16,11 @@ function norm(s: string | undefined | null): string {
 function categorise(
   productType: string | undefined,
   tags: string[] | undefined
-): 'led-sign' | 'hoodie' | 'tshirt' | 'keychain' | 'magnet' | null {
+): 'led-sign' | 'sign' | 'hoodie' | 'tshirt' | 'keychain' | 'magnet' | null {
   const t = norm(productType)
   const tagSet = new Set((tags ?? []).map(norm))
 
-  if (t.includes('led') || t.includes('sign') || t.includes('lamp') || tagSet.has('led') || tagSet.has('name-sign')) {
-    return 'led-sign'
-  }
+  // Apparel first — avoids "shirt sign" edge cases.
   if (t.includes('hood') || tagSet.has('hoodie') || tagSet.has('hoodies')) return 'hoodie'
   if (t.includes('shirt') || t.includes('tee') || tagSet.has('tshirt') || tagSet.has('tshirts') || tagSet.has('t-shirt')) {
     return 'tshirt'
@@ -30,15 +28,22 @@ function categorise(
   if (t.includes('keychain') || tagSet.has('keychain') || tagSet.has('keychains')) return 'keychain'
   if (t.includes('magnet') || tagSet.has('magnet') || tagSet.has('magnets')) return 'magnet'
 
+  // LED takes precedence when the signal is explicit.
+  const looksLikeLed = t.includes('led') || tagSet.has('led') || tagSet.has('lamp') || t.includes('lamp')
+  const looksLikeSign = t.includes('sign') || tagSet.has('name-sign') || tagSet.has('sign')
+  if (looksLikeLed) return 'led-sign'
+  if (looksLikeSign) return 'sign'
+
   return null
 }
 
 const DEFAULTS: Record<NonNullable<ReturnType<typeof categorise>>, string> = {
-  'led-sign': 'Neon-cut acrylic · plate-mounted LED · made to order',
+  'led-sign': 'UV Painted · Made to Order · USB with toggle/switch',
+  sign: 'UV Painted · Made to Order · Sturdy Plastic',
   hoodie: 'Heavyweight cotton blend · DTF print · Unisex',
   tshirt: '100% cotton · DTF print · Unisex',
-  keychain: 'Metal alloy · laser-engraved · double-sided',
-  magnet: 'Die-cut vinyl · weather-resistant · made to order',
+  keychain: 'UV Printed · Made to Order · PLA Plastic',
+  magnet: 'UV Printed · Neodymium Magnet · Made to Order',
 }
 
 export interface ProductFeatureArgs {
