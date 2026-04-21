@@ -281,7 +281,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
           <span className="text-sm">{t('backTo', { name: universeName })}</span>
         </Link>
 
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 w-full overflow-hidden">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 w-full">
           {/* Gallery */}
           <div className="w-full min-w-0">
             <ProductGallery
