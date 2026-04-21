@@ -198,8 +198,8 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
           style={{
             boxShadow: [
               '0 0 0 1px rgba(var(--accent-rgb, 0, 245, 255), 0.35)',
-              '0 0 28px rgba(var(--accent-rgb, 0, 245, 255), 0.22)',
-              '0 0 72px rgba(var(--accent-rgb, 0, 245, 255), 0.1)',
+              '0 0 14px rgba(var(--accent-rgb, 0, 245, 255), 0.2)',
+              '0 0 32px rgba(var(--accent-rgb, 0, 245, 255), 0.09)',
             ].join(', '),
           }}
           onTouchStart={!is3DActive ? handleTouchStart : undefined}
