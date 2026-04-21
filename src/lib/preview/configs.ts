@@ -2751,24 +2751,24 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
       metalness: 0.1,
       roughness: 0.85,
     },
-    // White UV paint (skull, bones, nameplate text outline area) — flush on
-    // the front face, mildly emissive to simulate LED backlight bleed.
+    // White UV paint (skull, bones, nameplate text outline area).
     {
       svgColor: '#ffffff',
       color: '#ffffff',
-      depth: 0.6,
+      depth: 0.4,
       offsetZ: 20,
       metalness: 0.0,
       roughness: 0.45,
       emissive: '#ffffff',
       emissiveIntensity: 0.55,
     },
-    // Yellow (hat + nameplate border).
+    // Yellow (hat + nameplate border). Stagger offsetZ so coincident
+    // surfaces don't z-fight when the camera rotates.
     {
       svgColor: '#ffd400',
       color: '#ffd400',
-      depth: 0.6,
-      offsetZ: 20,
+      depth: 0.4,
+      offsetZ: 20.15,
       metalness: 0.0,
       roughness: 0.4,
       emissive: '#ffd400',
@@ -2779,8 +2779,8 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
     {
       svgColor: '#dc2526',
       color: '#dc2526',
-      depth: 0.6,
-      offsetZ: 20,
+      depth: 0.4,
+      offsetZ: 20.3,
       metalness: 0.0,
       roughness: 0.5,
       emissive: '#dc2526',
@@ -2790,8 +2790,8 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   textLayers: [
     {
       color: '#ffffff',
-      depth: 0.6,
-      offsetZ: 20.05,
+      depth: 0.4,
+      offsetZ: 20.45,
       metalness: 0.0,
       roughness: 0.4,
       emissive: '#ffffff',
