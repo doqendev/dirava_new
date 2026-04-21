@@ -47,6 +47,8 @@ interface ProductGalleryProps {
 export interface ProductGalleryHandle {
   goTo3D: () => void
   goToIndex: (index: number) => void
+  /** True when the 3D preview slide is currently displayed. */
+  isAt3D: () => boolean
 }
 
 export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryProps>(
@@ -104,7 +106,18 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
       }
     }, [preview3DIndex])
 
-    useImperativeHandle(ref, () => ({ goTo3D, goToIndex: (index: number) => { setCurrentIndex(index); setIsZoomed(false) } }), [goTo3D])
+    useImperativeHandle(
+      ref,
+      () => ({
+        goTo3D,
+        goToIndex: (index: number) => {
+          setCurrentIndex(index)
+          setIsZoomed(false)
+        },
+        isAt3D: () => is3DActive,
+      }),
+      [goTo3D, is3DActive]
+    )
 
     const goToNext = useCallback(() => {
       const nextIndex = currentIndex + 1

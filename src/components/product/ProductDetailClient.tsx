@@ -219,13 +219,16 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
     return idx >= 0 ? idx : 0
   }, [variantParam, product.variants, product.images])
 
-  // Jump gallery to the selected variant's image when options change
+  // Jump gallery to the selected variant's image when options change —
+  // unless the shopper is currently in the 3D preview, in which case we
+  // keep 3D open so they can see the new variant render live.
   const isInitialMount = useRef(true)
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false
       return
     }
+    if (galleryRef.current?.isAt3D()) return
     if (selectedVariant?.image?.url) {
       const idx = product.images.findIndex((img) =>
         img.url.split('?')[0] === selectedVariant.image!.url.split('?')[0]
