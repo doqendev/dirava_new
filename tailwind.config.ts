@@ -12,7 +12,8 @@ const config: Config = {
         bg: {
           primary: '#0a0a12',
           secondary: '#0d0d1a',
-          card: 'rgba(15, 15, 30, 0.8)',
+          card: '#10101c',
+          elev: '#14142a',
         },
         neon: {
           cyan: '#00f5ff',

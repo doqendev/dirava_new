@@ -244,6 +244,17 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
       className="relative min-h-screen overflow-x-hidden"
       style={{ ['--accent' as string]: themeColor } as React.CSSProperties}
     >
+      {/* Single soft centered accent atmosphere — mirrors the design's
+          subtle rgba(accent,0.08) + 40px blur wash. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 h-[900px] w-[900px] max-w-full"
+        style={{
+          background: `radial-gradient(ellipse at center, ${themeColor}14, transparent 65%)`,
+          filter: 'blur(40px)',
+        }}
+      />
+
       <div className="relative px-4 py-6 max-w-7xl mx-auto w-full">
         {/* Back link */}
         <Link
