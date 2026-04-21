@@ -321,12 +321,13 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
             )}
           </AnimatePresence>
 
-          {/* Zoom indicator (only for images, not 3D) */}
+          {/* Zoom indicator (only for images, not 3D) — sits below the 3D
+              button so both can coexist on desktop. */}
           {!is3DActive && (
             <button
               onClick={() => setIsZoomed(!isZoomed)}
               className={cn(
-                'absolute top-4 right-4 z-10',
+                'absolute top-4 right-4 z-10 lg:top-16',
                 'w-10 h-10 rounded-lg',
                 'bg-black/50 backdrop-blur-sm',
                 'flex items-center justify-center',
@@ -340,12 +341,13 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
             </button>
           )}
 
-          {/* Mobile 3D Preview button — always visible on mobile so users discover 3D immediately */}
+          {/* 3D Preview button — visible on all breakpoints so shoppers
+              discover 3D immediately without needing to scroll thumbnails. */}
           {show3DTab && !is3DActive && (
             <button
               onClick={() => goToIndex(preview3DIndex)}
               className={cn(
-                'absolute top-4 right-4 z-10 lg:hidden',
+                'absolute top-4 right-4 z-10',
                 'flex items-center gap-1.5 px-3 py-2 rounded-lg',
                 'bg-[color:var(--accent,#00f5ff)]/15 border border-[color:var(--accent,#00f5ff)]/40 backdrop-blur-sm',
                 'text-[color:var(--accent,#00f5ff)]',
