@@ -28,7 +28,7 @@ export function TrustBadges({ accent, className }: TrustBadgesProps) {
   ]
 
   return (
-    <div className={cn('grid grid-cols-2 gap-3 lg:grid-cols-4', className)}>
+    <div className={cn('grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4', className)}>
       {badges.map(({ icon: Icon, title, sub }) => (
         <div
           key={title}
