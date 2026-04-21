@@ -19,25 +19,23 @@ function norm(s: string | undefined | null): string {
 /**
  * Map the Shopify productType → tagline category.
  *
- * Expected productType values (admin sets these on the product):
- *   - "LED Signs"    → led-sign
- *   - "Name Signs"   → sign (non-LED)
- *   - "Hoodies"      → hoodie
- *   - "T-Shirts"     → tshirt
- *   - "Keychains"    → keychain
- *   - "Magnets"      → magnet
+ * Matches substrings (case-insensitive) so admin values like
+ * "LED Custom Sign" or "Custom Hoodie" still resolve. LED takes
+ * precedence over plain signs so "LED Sign" doesn't fall into the
+ * non-LED bucket.
  */
 function categoriseByProductType(
   productType: string | undefined | null
 ): 'led-sign' | 'sign' | 'hoodie' | 'tshirt' | 'keychain' | 'magnet' | null {
   const t = norm(productType)
+  if (!t) return null
 
-  if (t === 'led sign' || t === 'led signs') return 'led-sign'
-  if (t === 'name sign' || t === 'name signs') return 'sign'
-  if (t === 'hoodie' || t === 'hoodies') return 'hoodie'
-  if (t === 't-shirt' || t === 't-shirts' || t === 'tshirt' || t === 'tshirts') return 'tshirt'
-  if (t === 'keychain' || t === 'keychains') return 'keychain'
-  if (t === 'magnet' || t === 'magnets') return 'magnet'
+  if (t.includes('hood')) return 'hoodie'
+  if (t.includes('t-shirt') || t.includes('tshirt') || t.includes('tee')) return 'tshirt'
+  if (t.includes('keychain')) return 'keychain'
+  if (t.includes('magnet')) return 'magnet'
+  if (t.includes('led')) return 'led-sign'
+  if (t.includes('sign') || t.includes('name')) return 'sign'
 
   return null
 }
