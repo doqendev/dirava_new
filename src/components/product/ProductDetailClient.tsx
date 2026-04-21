@@ -255,11 +255,12 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
         ['--accent-rgb' as string]: accentRgb,
       } as React.CSSProperties}
     >
-      {/* Single soft centered accent atmosphere — mirrors the design's
-          subtle rgba(accent,0.08) + 40px blur wash. */}
+      {/* Global ambient glow — fixed at the top of the viewport, 900x400
+          blurred ellipse at ~8% accent, mirroring the design's subtle
+          atmospheric wash. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 h-[900px] w-[900px] max-w-full"
+        className="pointer-events-none fixed left-1/2 top-0 -translate-x-1/2 h-[400px] w-[900px] max-w-full rounded-full"
         style={{
           background: `radial-gradient(ellipse at center, ${themeColor}14, transparent 65%)`,
           filter: 'blur(40px)',
