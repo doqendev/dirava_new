@@ -217,17 +217,19 @@ export function Footer() {
 
   return (
     <footer className="bg-bg-primary border-t border-border-subtle" aria-label="Site footer">
-      {/* Newsletter Section */}
+      {/* Newsletter Section — accent-tinted via --accent CSS var published
+          by the active product/world page. Falls back to cyan. */}
       <div
         className="relative overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, rgba(0, 245, 255, 0.1) 0%, transparent 50%, rgba(0, 245, 255, 0.05) 100%)',
+          background:
+            'linear-gradient(135deg, rgba(var(--accent-rgb, 0, 245, 255), 0.1) 0%, transparent 50%, rgba(var(--accent-rgb, 0, 245, 255), 0.05) 100%)',
         }}
       >
         {/* Decorative glow */}
         <div
           className="absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20"
-          style={{ backgroundColor: '#00f5ff' }}
+          style={{ backgroundColor: 'var(--accent, #00f5ff)' }}
         />
 
         <div className="relative max-w-7xl mx-auto px-4 py-12 md:py-16">
@@ -238,7 +240,7 @@ export function Footer() {
               viewport={{ once: true }}
               className="font-display text-2xl md:text-3xl font-bold text-white mb-2"
               style={{
-                textShadow: '0 0 20px rgba(0, 245, 255, 0.5)',
+                textShadow: '0 0 20px rgba(var(--accent-rgb, 0, 245, 255), 0.5)',
               }}
             >
               {t('joinSpirit')}

@@ -30,6 +30,7 @@ import { getSizeGuide } from '@/data/sizeGuides'
 import { getPreviewConfig, getVariantImages } from '@/lib/preview'
 import { getPreviewDisplayText } from '@/lib/preview/textTransform'
 import { resolveProductFeatures } from '@/data/productFeatures'
+import { AccentTheme } from '@/components/theme/AccentTheme'
 import type { ShopifyMoney, ShopifySelectedOption } from '@/types/shopify'
 import type { ReviewRating } from '@/types/reviews'
 import { sanitizeHtml } from '@/lib/utils/sanitizeHtml'
@@ -260,6 +261,9 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
         ['--accent-rgb' as string]: accentRgb,
       } as React.CSSProperties}
     >
+      {/* Publish the accent at document root so Footer (outside the
+          product page tree) can tint itself to match. */}
+      <AccentTheme themeColor={themeColor} />
       {/* Global ambient glow — fixed at the top of the viewport, 900x400
           blurred ellipse at ~8% accent, mirroring the design's subtle
           atmospheric wash. */}

@@ -7,6 +7,7 @@ import { GET_UNIVERSE_PRODUCTS } from '@/lib/shopify/queries'
 import { getCountry } from '@/i18n/country'
 import { extractNodes, getFirstAvailableVariant } from '@/lib/shopify/utils'
 import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
+import { AccentTheme } from '@/components/theme/AccentTheme'
 import { SITE_URL } from '@/lib/utils/siteUrl'
 import {
   parseFiltersFromParams,
@@ -337,6 +338,7 @@ export default async function UniversePage({ params, searchParams }: Props) {
 
   return (
     <>
+      <AccentTheme themeColor={themeColor} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
