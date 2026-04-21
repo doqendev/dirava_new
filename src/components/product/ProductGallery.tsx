@@ -190,9 +190,18 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
 
     return (
       <div ref={containerRef} className={cn('space-y-4', className)}>
-        {/* Main Image / 3D Preview */}
+        {/* Main Image / 3D Preview — accent "glow ring" mirrors the design:
+            hairline border + outer bloom + soft inset. Falls back to cyan
+            if --accent-rgb isn't set by an ancestor. */}
         <div
           className="relative aspect-square bg-bg-secondary rounded-xl overflow-hidden group"
+          style={{
+            boxShadow: [
+              '0 0 0 1px rgba(var(--accent-rgb, 0 245 255), 0.35)',
+              '0 0 24px rgba(var(--accent-rgb, 0 245 255), 0.18)',
+              'inset 0 0 24px rgba(var(--accent-rgb, 0 245 255), 0.05)',
+            ].join(', '),
+          }}
           onTouchStart={!is3DActive ? handleTouchStart : undefined}
           onTouchEnd={!is3DActive ? handleTouchEnd : undefined}
         >

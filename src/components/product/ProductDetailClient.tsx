@@ -239,10 +239,21 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
     parseFloat(product.compareAtPriceRange.minVariantPrice.amount) >
       parseFloat(product.priceRange.minVariantPrice.amount)
 
+  // Publish the universe accent as CSS variables so descendants can build
+  // accent-tinted rgba() shadows / backgrounds via var(--accent-rgb).
+  const accentRgb = (() => {
+    const m = themeColor.replace('#', '').match(/.{2}/g)
+    if (!m || m.length < 3) return '0, 245, 255'
+    return `${parseInt(m[0]!, 16)}, ${parseInt(m[1]!, 16)}, ${parseInt(m[2]!, 16)}`
+  })()
+
   return (
     <div
       className="relative min-h-screen overflow-x-hidden"
-      style={{ ['--accent' as string]: themeColor } as React.CSSProperties}
+      style={{
+        ['--accent' as string]: themeColor,
+        ['--accent-rgb' as string]: accentRgb,
+      } as React.CSSProperties}
     >
       {/* Single soft centered accent atmosphere — mirrors the design's
           subtle rgba(accent,0.08) + 40px blur wash. */}
