@@ -2770,6 +2770,11 @@ const previewHandleAliases: Record<string, string> = {
   'attack-on-titan-custom-logo': 'attack-on-titan-custom-sign',
   'jujutsu-kaisen-custom-logo': 'jujutsu-kaisen-custom-sign',
   'anime-custom-logo-display-sign': 'demon-slayer-custom-sign',
+  // Reuse the One Piece sign's composite-sign preview (and its full
+  // character mapping) for the keychain. Current keychain Shopify
+  // variants cover fewer characters than the sign, but the preview
+  // mapping is kept complete so newly-added variants auto-resolve.
+  'one-piece-custom-keychain': 'one-piece-custom-sign',
 }
 
 function resolvePreviewHandle(handle: string): string {
