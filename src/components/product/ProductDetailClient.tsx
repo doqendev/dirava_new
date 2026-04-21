@@ -243,18 +243,24 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
     <div className="relative min-h-screen overflow-x-hidden">
       {/* Page-wide ambient accent — multi-point diffuse glow tinted by the
           active universe so the whole product page picks up the theme. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          backgroundImage: `
-            radial-gradient(ellipse 80% 40% at 50% 0%, ${themeColor}22, transparent 60%),
-            radial-gradient(ellipse 55% 35% at 10% 35%, ${themeColor}14, transparent 70%),
-            radial-gradient(ellipse 55% 35% at 90% 65%, ${themeColor}14, transparent 70%),
-            radial-gradient(ellipse 70% 40% at 50% 100%, ${themeColor}10, transparent 65%)
-          `,
-        }}
-      />
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div
+          className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full blur-[140px] opacity-25"
+          style={{ backgroundColor: themeColor }}
+        />
+        <div
+          className="absolute top-[30%] -left-40 w-[600px] h-[600px] rounded-full blur-[160px] opacity-[0.14]"
+          style={{ backgroundColor: themeColor }}
+        />
+        <div
+          className="absolute top-[55%] -right-40 w-[600px] h-[600px] rounded-full blur-[160px] opacity-[0.14]"
+          style={{ backgroundColor: themeColor }}
+        />
+        <div
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[900px] h-[400px] rounded-full blur-[150px] opacity-[0.12]"
+          style={{ backgroundColor: themeColor }}
+        />
+      </div>
 
       <div className="relative px-4 py-6 max-w-7xl mx-auto w-full">
         {/* Back link */}
