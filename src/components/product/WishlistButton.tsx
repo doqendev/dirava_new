@@ -70,21 +70,20 @@ export function WishlistButton({
         onClick={handleClick}
         className={cn(
           'inline-flex items-center justify-center gap-2',
-          'px-4 py-2 rounded-lg',
-          'font-display tracking-wider uppercase text-sm',
-          'transition-all duration-200',
-          isInList
-            ? 'bg-neon-pink/15 text-neon-pink border border-neon-pink/45 hover:bg-neon-pink/20'
-            : 'bg-white/[0.03] border border-white/15 text-white/90 hover:bg-white/[0.06] hover:border-white/28 hover:text-white',
+          'h-11 rounded-lg border border-border-subtle',
+          'font-mono text-[11px] uppercase tracking-widest',
+          'bg-transparent text-white/85 hover:bg-white/5 hover:text-white',
+          'transition-colors duration-200',
           className
         )}
       >
         <motion.div
           animate={isAnimating ? { scale: [1, 1.3, 1] } : {}}
           transition={{ duration: 0.3 }}
+          style={isInList ? { color: 'rgb(var(--accent-rgb, 0, 245, 255))' } : undefined}
         >
           <Heart
-            className={cn(iconSizes[size], isInList && 'fill-current')}
+            className={cn('w-4 h-4', isInList && 'fill-current')}
           />
         </motion.div>
         <span>{isInList ? t('inWishlist') : tCommon('save')}</span>

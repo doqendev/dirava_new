@@ -508,127 +508,155 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               <TrustBadges accent={themeColor} />
             </div>
 
-            {/* Description (collapsible) */}
-            <div className="rounded-lg border border-border-subtle bg-bg-card px-5 py-3 sm:px-6">
-              <button
-                type="button"
-                onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
-                aria-expanded={isDescriptionOpen}
-                className="w-full flex items-center justify-between py-1 group"
-              >
-                <h2 className="font-display text-lg text-white">{t('description')}</h2>
-                <ChevronDown
-                  className={cn(
-                    'w-5 h-5 transition-transform duration-300',
-                    'text-white/50 group-hover:text-[color:var(--accent)]',
-                  isDescriptionOpen && 'rotate-180'
-                )} />
-              </button>
-              <div
-                className={cn(
-                  'overflow-hidden transition-all duration-300',
-                  isDescriptionOpen ? 'max-h-[500px] opacity-100 mt-3' : 'max-h-0 opacity-0'
-                )}
-              >
+            {/* Collapsible panels — border-top separators, display title,
+                accent chevron when open. Matches the design. */}
+            <div>
+              <div className="border-t border-border-subtle">
+                <button
+                  type="button"
+                  onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
+                  aria-expanded={isDescriptionOpen}
+                  className="w-full flex items-center justify-between py-5"
+                >
+                  <span className="font-display text-[16px] font-bold uppercase tracking-wider text-white">
+                    {t('description')}
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      'w-5 h-5 transition-transform duration-200',
+                      isDescriptionOpen && 'rotate-180'
+                    )}
+                    style={{
+                      color: isDescriptionOpen
+                        ? 'rgb(var(--accent-rgb, 0, 245, 255))'
+                        : 'rgba(255,255,255,0.45)',
+                    }}
+                  />
+                </button>
                 <div
-                  className="prose prose-invert prose-sm max-w-none text-white [&_*]:!bg-transparent [&_*]:!text-inherit"
-                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.descriptionHtml) }}
-                />
-              </div>
-            </div>
-
-            {/* Shipping */}
-            <div className="rounded-lg border border-border-subtle bg-bg-card px-5 sm:px-6">
-              <button
-                type="button"
-                onClick={() => setIsShippingOpen(!isShippingOpen)}
-                aria-expanded={isShippingOpen}
-                className="w-full flex items-center justify-between py-4 group"
-              >
-                <h2 className="font-display text-lg text-white">{t('shippingTitle')}</h2>
-                <ChevronDown
                   className={cn(
-                    'w-5 h-5 transition-transform duration-300',
-                    'text-white/50 group-hover:text-[color:var(--accent)]',
-                  isShippingOpen && 'rotate-180'
-                )} />
-              </button>
-              <div
-                className={cn(
-                  'overflow-hidden transition-all duration-300',
-                  isShippingOpen ? 'max-h-[500px] opacity-100 pb-4' : 'max-h-0 opacity-0'
-                )}
-              >
-                <div className="space-y-2 text-sm text-white/60">
-                  <p>{t('shippingProcessing')}</p>
-                  <p>{t('shippingEurope')}</p>
-                  <p>{t('shippingUK')}</p>
-                  <p>{t('shippingCanada')}</p>
-                  <p>{t('shippingAustralia')}</p>
-                  <p className="text-white/40 text-xs pt-1">{t('shippingCustoms')}</p>
+                    'overflow-hidden transition-all duration-300',
+                    isDescriptionOpen ? 'max-h-[500px] opacity-100 pb-6' : 'max-h-0 opacity-0'
+                  )}
+                >
+                  <div
+                    className="prose prose-invert prose-sm max-w-[680px] text-[14px] text-white/75 leading-relaxed [&_*]:!bg-transparent [&_*]:!text-inherit"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.descriptionHtml) }}
+                  />
                 </div>
               </div>
-            </div>
 
-            {/* Returns & Exchanges */}
-            <div className="rounded-lg border border-border-subtle bg-bg-card px-5 sm:px-6">
-              <button
-                type="button"
-                onClick={() => setIsReturnsOpen(!isReturnsOpen)}
-                aria-expanded={isReturnsOpen}
-                className="w-full flex items-center justify-between py-4 group"
-              >
-                <h2 className="font-display text-lg text-white">{t('returnsTitle')}</h2>
-                <ChevronDown
+              <div className="border-t border-border-subtle">
+                <button
+                  type="button"
+                  onClick={() => setIsShippingOpen(!isShippingOpen)}
+                  aria-expanded={isShippingOpen}
+                  className="w-full flex items-center justify-between py-5"
+                >
+                  <span className="font-display text-[16px] font-bold uppercase tracking-wider text-white">
+                    {t('shippingTitle')}
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      'w-5 h-5 transition-transform duration-200',
+                      isShippingOpen && 'rotate-180'
+                    )}
+                    style={{
+                      color: isShippingOpen
+                        ? 'rgb(var(--accent-rgb, 0, 245, 255))'
+                        : 'rgba(255,255,255,0.45)',
+                    }}
+                  />
+                </button>
+                <div
                   className={cn(
-                    'w-5 h-5 transition-transform duration-300',
-                    'text-white/50 group-hover:text-[color:var(--accent)]',
-                  isReturnsOpen && 'rotate-180'
-                )} />
-              </button>
-              <div
-                className={cn(
-                  'overflow-hidden transition-all duration-300',
-                  isReturnsOpen ? 'max-h-[500px] opacity-100 pb-4' : 'max-h-0 opacity-0'
-                )}
-              >
-                <div className="space-y-2 text-sm text-white/60">
-                  <p>{t('returnsPolicy')}</p>
-                  <p>{t('returnsExchanges')}</p>
-                  <p>{t('returnsRefund')}</p>
-                  <p className="text-white/40 text-xs pt-1">{t('returnsFinalSale')}</p>
+                    'overflow-hidden transition-all duration-300',
+                    isShippingOpen ? 'max-h-[500px] opacity-100 pb-6' : 'max-h-0 opacity-0'
+                  )}
+                >
+                  <div className="space-y-2 text-[14px] text-white/75 leading-relaxed">
+                    <p>{t('shippingProcessing')}</p>
+                    <p>{t('shippingEurope')}</p>
+                    <p>{t('shippingUK')}</p>
+                    <p>{t('shippingCanada')}</p>
+                    <p>{t('shippingAustralia')}</p>
+                    <p className="text-white/45 text-xs pt-1">{t('shippingCustoms')}</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Share */}
-            <div className="rounded-lg border border-border-subtle bg-bg-card px-5 sm:px-6">
-              <button
-                type="button"
-                onClick={() => setIsShareOpen(!isShareOpen)}
-                aria-expanded={isShareOpen}
-                className="w-full flex items-center justify-between py-4 group"
-              >
-                <h2 className="font-display text-lg text-white">{t('share')}</h2>
-                <ChevronDown
+              <div className="border-t border-border-subtle">
+                <button
+                  type="button"
+                  onClick={() => setIsReturnsOpen(!isReturnsOpen)}
+                  aria-expanded={isReturnsOpen}
+                  className="w-full flex items-center justify-between py-5"
+                >
+                  <span className="font-display text-[16px] font-bold uppercase tracking-wider text-white">
+                    {t('returnsTitle')}
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      'w-5 h-5 transition-transform duration-200',
+                      isReturnsOpen && 'rotate-180'
+                    )}
+                    style={{
+                      color: isReturnsOpen
+                        ? 'rgb(var(--accent-rgb, 0, 245, 255))'
+                        : 'rgba(255,255,255,0.45)',
+                    }}
+                  />
+                </button>
+                <div
                   className={cn(
-                    'w-5 h-5 transition-transform duration-300',
-                    'text-white/50 group-hover:text-[color:var(--accent)]',
-                  isShareOpen && 'rotate-180'
-                )} />
-              </button>
-              <div
-                className={cn(
-                  'overflow-hidden transition-all duration-300',
-                  isShareOpen ? 'max-h-[200px] opacity-100 pb-4' : 'max-h-0 opacity-0'
-                )}
-              >
-                <ShareButtons
-                  title={product.title}
-                  handle={product.handle}
-                  universe={universe}
-                  image={product.images[0]?.url}
-                />
+                    'overflow-hidden transition-all duration-300',
+                    isReturnsOpen ? 'max-h-[500px] opacity-100 pb-6' : 'max-h-0 opacity-0'
+                  )}
+                >
+                  <div className="space-y-2 text-[14px] text-white/75 leading-relaxed">
+                    <p>{t('returnsPolicy')}</p>
+                    <p>{t('returnsExchanges')}</p>
+                    <p>{t('returnsRefund')}</p>
+                    <p className="text-white/45 text-xs pt-1">{t('returnsFinalSale')}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-b border-border-subtle">
+                <button
+                  type="button"
+                  onClick={() => setIsShareOpen(!isShareOpen)}
+                  aria-expanded={isShareOpen}
+                  className="w-full flex items-center justify-between py-5"
+                >
+                  <span className="font-display text-[16px] font-bold uppercase tracking-wider text-white">
+                    {t('share')}
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      'w-5 h-5 transition-transform duration-200',
+                      isShareOpen && 'rotate-180'
+                    )}
+                    style={{
+                      color: isShareOpen
+                        ? 'rgb(var(--accent-rgb, 0, 245, 255))'
+                        : 'rgba(255,255,255,0.45)',
+                    }}
+                  />
+                </button>
+                <div
+                  className={cn(
+                    'overflow-hidden transition-all duration-300',
+                    isShareOpen ? 'max-h-[200px] opacity-100 pb-6' : 'max-h-0 opacity-0'
+                  )}
+                >
+                  <ShareButtons
+                    title={product.title}
+                    handle={product.handle}
+                    universe={universe}
+                    image={product.images[0]?.url}
+                  />
+                </div>
               </div>
             </div>
           </div>
