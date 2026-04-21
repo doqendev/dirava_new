@@ -240,11 +240,20 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
       parseFloat(product.priceRange.minVariantPrice.amount)
 
   return (
-    <div className="min-h-screen overflow-x-hidden">
-      {/* Background glow */}
+    <div className="relative min-h-screen overflow-x-hidden">
+      {/* Page-wide ambient accent — multi-point diffuse glow tinted by the
+          active universe so the whole product page picks up the theme. */}
       <div
-        className="fixed top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full blur-[150px] opacity-10 pointer-events-none"
-        style={{ backgroundColor: themeColor }}
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{
+          backgroundImage: `
+            radial-gradient(ellipse 80% 40% at 50% 0%, ${themeColor}22, transparent 60%),
+            radial-gradient(ellipse 55% 35% at 10% 35%, ${themeColor}14, transparent 70%),
+            radial-gradient(ellipse 55% 35% at 90% 65%, ${themeColor}14, transparent 70%),
+            radial-gradient(ellipse 70% 40% at 50% 100%, ${themeColor}10, transparent 65%)
+          `,
+        }}
       />
 
       <div className="relative px-4 py-6 max-w-7xl mx-auto w-full">
