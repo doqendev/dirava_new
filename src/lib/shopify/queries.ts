@@ -208,6 +208,7 @@ export const GET_PRODUCT = gql`
         { namespace: "custom", key: "universe" }
         { namespace: "custom", key: "rarity" }
         { namespace: "custom", key: "personalization" }
+        { namespace: "custom", key: "features" }
       ]) {
         key
         value

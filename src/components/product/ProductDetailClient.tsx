@@ -29,6 +29,7 @@ import { trackViewContent } from '@/lib/tracking/trackClear'
 import { getSizeGuide } from '@/data/sizeGuides'
 import { getPreviewConfig, getVariantImages } from '@/lib/preview'
 import { getPreviewDisplayText } from '@/lib/preview/textTransform'
+import { resolveProductFeatures } from '@/data/productFeatures'
 import type { ShopifyMoney, ShopifySelectedOption } from '@/types/shopify'
 import type { ReviewRating } from '@/types/reviews'
 import { sanitizeHtml } from '@/lib/utils/sanitizeHtml'
@@ -69,6 +70,10 @@ interface ProductDetailClientProps {
     rarity: 'common' | 'rare' | 'legendary' | null
     personalization: boolean
     rating?: ReviewRating | null
+    /** Per-product features tagline override (Shopify metafield custom.features). */
+    featuresOverride?: string | null
+    /** Product tags (used for features fallback categorisation). */
+    tags?: string[]
   }
 }
 
@@ -336,6 +341,20 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             <h1 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-wide">
               {product.title}
             </h1>
+
+            {/* Features tagline (material / build / fit highlights) */}
+            {(() => {
+              const features = resolveProductFeatures({
+                override: product.featuresOverride,
+                productType: product.productType,
+                tags: product.tags,
+              })
+              return features ? (
+                <p className="font-mono text-[11px] uppercase tracking-widest text-white/55">
+                  {features}
+                </p>
+              ) : null
+            })()}
 
             {/* Reviews/Rating */}
             {product.rating && product.rating.reviewCount > 0 && (

@@ -36,7 +36,6 @@ export function WishlistButton({
   showOnHover = false,
 }: WishlistButtonProps) {
   const t = useTranslations('product')
-  const tCommon = useTranslations('common')
   const { toggleItem, isInWishlist } = useWishlistStore()
   const [isInList, setIsInList] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -86,7 +85,7 @@ export function WishlistButton({
             className={cn('w-4 h-4', isInList && 'fill-current')}
           />
         </motion.div>
-        <span>{isInList ? t('inWishlist') : tCommon('save')}</span>
+        <span>{isInList ? t('inWishlist') : t('saveToWishlist')}</span>
       </button>
     )
   }

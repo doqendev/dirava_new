@@ -90,6 +90,11 @@ async function getProduct(handle: string) {
     )
     const personalization = personalizationMetafield?.value === 'true'
 
+    // Get optional features tagline override from metafields
+    const featuresOverride = product.metafields?.find(
+      (mf) => mf?.key === 'features'
+    )?.value || null
+
     // Get the product's true universe from its own metafield/collections, so
     // theming always matches the product itself rather than the URL segment
     // (a shopper may land here from a cross-universe recommended card).
@@ -121,6 +126,8 @@ async function getProduct(handle: string) {
       personalization,
       collectionHandle,
       productUniverse,
+      featuresOverride,
+      tags: product.tags || [],
     }
   } catch (error) {
     console.error('Failed to fetch product:', error)
