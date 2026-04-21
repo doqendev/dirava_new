@@ -59,11 +59,13 @@ export function LocaleSwitcher() {
 
   const handleLocaleChange = (newLocale: Locale) => {
     setLocale(newLocale)
+    setIsOpen(false)
     router.refresh()
   }
 
   const handleCountryChange = (newCountry: string) => {
     setCountry(newCountry)
+    setIsOpen(false)
     // Refresh so server-rendered price fragments re-fetch in the new market.
     router.refresh()
   }

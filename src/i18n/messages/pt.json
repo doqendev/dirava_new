@@ -190,13 +190,13 @@
     },
     "trustBadges": {
       "freeShippingTitle": "Envio grátis",
-      "freeShippingSub": "em encomendas acima de {threshold}",
+      "freeShippingSub": "encomendas acima de {threshold}",
       "securePaymentsTitle": "Pagamento seguro",
-      "securePaymentsSub": "Stripe · compatível com SCA",
+      "securePaymentsSub": "encriptação SSL de 256 bits",
       "uniquePieceTitle": "Peça única",
-      "uniquePieceSub": "personalizada e feita por encomenda",
+      "uniquePieceSub": "feito por encomenda",
       "shipsWorldwideTitle": "Envio mundial",
-      "shipsWorldwideSub": "42 países"
+      "shipsWorldwideSub": "entrega rápida"
     }
   },
   "cart": {

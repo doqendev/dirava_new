@@ -190,13 +190,13 @@
     },
     "trustBadges": {
       "freeShippingTitle": "Free shipping",
-      "freeShippingSub": "on orders over {threshold}",
+      "freeShippingSub": "orders over {threshold}",
       "securePaymentsTitle": "Secure payments",
-      "securePaymentsSub": "Stripe · SCA compliant",
+      "securePaymentsSub": "256-bit SSL encryption",
       "uniquePieceTitle": "Unique piece",
-      "uniquePieceSub": "custom & made to order",
+      "uniquePieceSub": "made to order",
       "shipsWorldwideTitle": "Ships worldwide",
-      "shipsWorldwideSub": "42 countries"
+      "shipsWorldwideSub": "fast delivery"
     }
   },
   "cart": {
