@@ -16,6 +16,10 @@ export interface LayerConfig {
   metalness?: number
   roughness?: number
   offsetZ?: number
+  /** Emissive color for LED-lit look (hex string). Falls back to `color` if intensity > 0 and emissive is omitted. */
+  emissive?: string
+  /** Emissive strength (default 0). Set > 0 to make the layer appear self-lit. */
+  emissiveIntensity?: number
   /** Uniform stroke width to expand the layer outward (in scene units, e.g. 0.2) */
   strokeWidth?: number
   /** SVG fill color to match when using svg-extrusion (e.g. '#000000') */
@@ -100,4 +104,16 @@ export interface PreviewConfig {
   textSpacingMode?: 'shape-overlap' | 'advance'
   /** Extra letter spacing in font-size units when textSpacingMode is `advance` (e.g. 0.05). */
   textLetterSpacing?: number
+  /**
+   * For products where the personalised text sits *inside* the artwork (e.g.
+   * a lightbox with a nameplate plate), declare the nameplate rectangle in
+   * native SVG coordinates. When set, the text is centered in this box and
+   * `textMaxWidthRatio` scales against the box width instead of the SVG width.
+   */
+  nameplateBox?: {
+    x: number
+    y: number
+    width: number
+    height: number
+  }
 }

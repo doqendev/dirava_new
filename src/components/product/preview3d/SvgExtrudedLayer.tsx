@@ -109,12 +109,15 @@ export function SvgExtrudedLayer({ svgData, matchColor, layer, depthScale, cutSh
   }, [svgData, matchColor, layer.depth, layer.offsetZ, layer.strokeWidth, depthScale, cutShapes, subtractGeometry])
 
   const material = useMemo(() => {
+    const emissiveIntensity = layer.emissiveIntensity ?? 0
     return new THREE.MeshStandardMaterial({
       color: layer.color,
       metalness: layer.metalness ?? 0.1,
       roughness: layer.roughness ?? 0.7,
+      emissive: emissiveIntensity > 0 ? new THREE.Color(layer.emissive ?? layer.color) : new THREE.Color(0, 0, 0),
+      emissiveIntensity,
     })
-  }, [layer.color, layer.metalness, layer.roughness])
+  }, [layer.color, layer.metalness, layer.roughness, layer.emissive, layer.emissiveIntensity])
 
   if (!geometry) return null
 

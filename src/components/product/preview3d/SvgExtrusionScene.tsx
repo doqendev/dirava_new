@@ -142,13 +142,15 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
     return getPreviewDisplayText(text, config, 'Name')
   }, [text, config])
 
-  // Auto-scale font size so text width fills a target ratio of the SVG width
+  // Auto-scale font size so text width fills a target ratio of the available
+  // width — the nameplate box when defined, otherwise the full SVG width.
   const effectiveFontSize = useMemo(() => {
     const baseFontSize = config.textFontSize ?? 150
     if (!font || !config.textLayers) return baseFontSize
 
     const targetRatio = config.textMaxWidthRatio ?? 0.95
-    const targetWidth = svgBounds.width * targetRatio
+    const referenceWidth = config.nameplateBox?.width ?? svgBounds.width
+    const targetWidth = referenceWidth * targetRatio
 
     // Measure text advance width at the base font size
     const textWidth = font.getAdvanceWidth(displayText, baseFontSize) as number
@@ -157,9 +159,15 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
     // Scale font size proportionally
     const scaled = baseFontSize * (targetWidth / textWidth)
 
-    // Clamp to reasonable range (25% to 200% of base)
-    return Math.max(baseFontSize * 0.25, Math.min(baseFontSize * 2, scaled))
-  }, [font, displayText, config.textFontSize, config.textLayers, config.textMaxWidthRatio, svgBounds.width])
+    // Clamp to reasonable range — the nameplate scale factor is higher than
+    // a full-SVG scale, so we also clamp to the box height when present.
+    const maxHeight = config.nameplateBox?.height
+    const heightCap = maxHeight ? maxHeight * 0.8 : Infinity
+    return Math.min(
+      heightCap,
+      Math.max(baseFontSize * 0.25, Math.min(baseFontSize * 3, scaled)),
+    )
+  }, [font, displayText, config.textFontSize, config.textLayers, config.textMaxWidthRatio, config.nameplateBox, svgBounds.width])
 
   // Collect shapes from 'cut' layers to subtract as holes from extrude layers
   const cutShapes = useMemo(() => {
@@ -482,22 +490,33 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
               ))}
           </group>
 
-          {/* Text layers — centered on the SVG, tiny Z nudge to render in front */}
-          {textShapes && config.textLayers && config.textLayers.length > 0 && (
-            <group
-              position={[0, 0, 0.02]}
-              scale={[1, -1, 1]}
-            >
-              {config.textLayers.map((layer, index) => (
-                <ExtrudedTextLayer
-                  key={`text-${index}-${layer.color}`}
-                  shapes={textShapes}
-                  layer={layer}
-                  depthScale={DEPTH_SCALE}
-                />
-              ))}
-            </group>
-          )}
+          {/* Text layers — centered on the SVG, or in the nameplate box
+              (in SVG coords) when the product places text inside the art. */}
+          {textShapes && config.textLayers && config.textLayers.length > 0 && (() => {
+            const nb = config.nameplateBox
+            // ExtrudedTextLayer renders the shape centered at (0,0) in its own
+            // frame and flips Y with scale[1,-1,1]. The parent group below
+            // positions that origin in SVG-space-relative-to-svg-center; Y is
+            // SVG-down so we use (nbCenterY - svgCenter.y) directly (not
+            // negated) because the outer group's -Y scale already flips.
+            const localX = nb ? nb.x + nb.width / 2 - svgCenter.x : 0
+            const localY = nb ? nb.y + nb.height / 2 - svgCenter.y : 0
+            return (
+              <group
+                position={[localX, localY, 0.02]}
+                scale={[1, -1, 1]}
+              >
+                {config.textLayers.map((layer, index) => (
+                  <ExtrudedTextLayer
+                    key={`text-${index}-${layer.color}`}
+                    shapes={textShapes}
+                    layer={layer}
+                    depthScale={DEPTH_SCALE}
+                  />
+                ))}
+              </group>
+            )
+          })()}
         </group>
       </PresentationControls>
 

@@ -2722,16 +2722,109 @@ const previewConfigs: Record<string, PreviewConfig> = {
  * Standalone variant images for products that need icon tiles
  * in the variant selector but NO 3D preview.
  */
-const variantImagesOnly: Record<string, Record<string, string>> = {
-  'one-piece-custom-led-lightbox-sign': {
-    'Luffy': '/images/characters/style_1.png',
-    'Zoro': '/images/characters/style_2.png',
-    'Ace': '/images/characters/style_3.png',
-    'Chopper': '/images/characters/style_4.png',
-    'Law': '/images/characters/style_5.png',
-    'Shanks': '/images/characters/style_6.png',
-    'Nami': '/images/characters/style_7.png',
+/**
+ * One Piece Custom LED Lightbox Sign — a thick (~20mm) acrylic lightbox.
+ * Uses the svg-extrusion scene: the black silhouette is extruded at full
+ * depth, the UV-painted details sit flush on the front face, and the
+ * personalised name renders inside a nameplate rectangle at the bottom
+ * of the art. Painted layers are mildly emissive so the product reads as
+ * LED-lit.
+ *
+ * Character coverage currently starts with Luffy; additional characters
+ * are added by dropping matching SVGs under /public/svgs/preview/ and
+ * extending the `variantSvgs` map below.
+ */
+previewConfigs['one-piece-custom-led-lightbox-sign'] = {
+  type: 'svg-extrusion',
+  font: '/fonts/preview/ONEPIECE_IL_FINAL.ttf',
+  forceUppercase: true,
+  svg: '/svgs/preview/one-piece-lightbox-luffy.svg',
+  variantSvgs: {
+    Luffy: '/svgs/preview/one-piece-lightbox-luffy.svg',
   },
+  layers: [
+    // Black silhouette — the whole lightbox body at 20mm depth.
+    {
+      svgColor: '#171714',
+      color: '#141414',
+      depth: 20,
+      metalness: 0.1,
+      roughness: 0.85,
+    },
+    // White UV paint (skull, bones, nameplate text outline area) — flush on
+    // the front face, mildly emissive to simulate LED backlight bleed.
+    {
+      svgColor: '#ffffff',
+      color: '#ffffff',
+      depth: 0.6,
+      offsetZ: 20,
+      metalness: 0.0,
+      roughness: 0.45,
+      emissive: '#ffffff',
+      emissiveIntensity: 0.55,
+    },
+    // Yellow (hat + nameplate border).
+    {
+      svgColor: '#ffd400',
+      color: '#ffd400',
+      depth: 0.6,
+      offsetZ: 20,
+      metalness: 0.0,
+      roughness: 0.4,
+      emissive: '#ffd400',
+      emissiveIntensity: 0.55,
+    },
+    // Red (hat band). Less glow — it's a thin paint strip, not a light
+    // emitter.
+    {
+      svgColor: '#dc2526',
+      color: '#dc2526',
+      depth: 0.6,
+      offsetZ: 20,
+      metalness: 0.0,
+      roughness: 0.5,
+      emissive: '#dc2526',
+      emissiveIntensity: 0.3,
+    },
+  ],
+  textLayers: [
+    {
+      color: '#ffffff',
+      depth: 0.6,
+      offsetZ: 20.05,
+      metalness: 0.0,
+      roughness: 0.4,
+      emissive: '#ffffff',
+      emissiveIntensity: 0.8,
+    },
+  ],
+  textFontSize: 200,
+  textMaxWidthRatio: 0.85,
+  // Nameplate rectangle in SVG coords (viewBox 1638×1919). Eyeballed from
+  // the reference artwork; tune if the text sits high/low.
+  nameplateBox: {
+    x: 220,
+    y: 1470,
+    width: 1200,
+    height: 310,
+  },
+  camera: {
+    position: [0, 0, 22],
+    fov: 45,
+    autoRotate: false,
+  },
+  // Lightbox SVG is ~1638×1919 — three-ish times the character-sheet size,
+  // so the scale is correspondingly smaller to fit the viewport.
+  scale: 0.006,
+  background: '#0a0a12',
+  variantImages: {
+    Luffy: '/images/characters/style_1.png',
+  },
+}
+
+const variantImagesOnly: Record<string, Record<string, string>> = {
+  // 'one-piece-custom-led-lightbox-sign' — now a full preview config above
+  // (previewConfigs[]); the entry here is retained only for documentation.
   'one-piece-custom-keychain': {
     'Luffy': '/images/characters/style_1.png',
     'Zoro': '/images/characters/style_2.png',
