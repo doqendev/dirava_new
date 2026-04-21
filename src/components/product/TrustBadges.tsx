@@ -41,10 +41,10 @@ export function TrustBadges({ accent, className }: TrustBadgesProps) {
             <Icon className="h-3.5 w-3.5" />
           </div>
           <div className="min-w-0">
-            <div className="truncate text-[12px] leading-tight text-white">
+            <div className="text-[12px] leading-tight text-white">
               {title}
             </div>
-            <div className="mt-0.5 truncate font-mono text-[10px] uppercase tracking-widest text-white/45">
+            <div className="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-white/45 leading-snug">
               {sub}
             </div>
           </div>
