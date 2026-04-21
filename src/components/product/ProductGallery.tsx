@@ -190,17 +190,13 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
 
     return (
       <div ref={containerRef} className={cn('space-y-4', className)}>
-        {/* Main Image / 3D Preview — accent halo so the image clearly reads
-            as universe-themed. Layered: 2px accent border + 40px bloom +
-            96px wider halo + subtle inset sheen. */}
+        {/* Main Image / 3D Preview — solid accent border with a small
+            residual glow, matching the selected variant chip style. */}
         <div
-          className="relative aspect-square bg-bg-secondary rounded-xl overflow-hidden group"
+          className="relative aspect-square bg-bg-secondary rounded-xl overflow-hidden group border-2"
           style={{
-            boxShadow: [
-              '0 0 0 1px rgba(var(--accent-rgb, 0, 245, 255), 0.35)',
-              '0 0 14px rgba(var(--accent-rgb, 0, 245, 255), 0.2)',
-              '0 0 32px rgba(var(--accent-rgb, 0, 245, 255), 0.09)',
-            ].join(', '),
+            borderColor: 'rgb(var(--accent-rgb, 0, 245, 255))',
+            boxShadow: '0 0 10px rgba(var(--accent-rgb, 0, 245, 255), 0.4)',
           }}
           onTouchStart={!is3DActive ? handleTouchStart : undefined}
           onTouchEnd={!is3DActive ? handleTouchEnd : undefined}
