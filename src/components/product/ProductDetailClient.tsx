@@ -240,7 +240,10 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
       parseFloat(product.priceRange.minVariantPrice.amount)
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden">
+    <div
+      className="relative min-h-screen overflow-x-hidden"
+      style={{ ['--accent' as string]: themeColor } as React.CSSProperties}
+    >
       <div className="relative px-4 py-6 max-w-7xl mx-auto w-full">
         {/* Back link */}
         <Link
@@ -398,7 +401,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                           'w-full min-w-0 px-4 py-3 pr-16 bg-black/80 border rounded-lg text-white placeholder-white/40 focus:outline-none transition-colors',
                           personalizationName.trim()
                             ? 'border-neon-green/50 focus:border-neon-green'
-                            : 'border-border-subtle focus:border-neon-cyan'
+                            : 'border-border-subtle focus:border-[color:var(--accent)]'
                         )}
                       />
                       <span
@@ -415,11 +418,13 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                         aria-label={t('preview3D')}
                         className={cn(
                           'flex flex-shrink-0 items-center justify-center gap-1.5 rounded-lg px-3 py-3 sm:px-4',
-                          'bg-neon-cyan/[0.06] border border-neon-cyan/20',
-                          'text-neon-cyan/85 text-sm font-medium',
-                          'hover:bg-neon-cyan/[0.1] hover:border-neon-cyan/35 hover:text-neon-cyan',
-                          'transition-colors'
+                          'border text-sm font-medium transition-colors'
                         )}
+                        style={{
+                          backgroundColor: `${themeColor}10`,
+                          borderColor: `${themeColor}33`,
+                          color: themeColor,
+                        }}
                       >
                         <Box className="w-4 h-4" />
                         <span className="sm:hidden">3D</span>
@@ -489,8 +494,10 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 className="w-full flex items-center justify-between py-1 group"
               >
                 <h2 className="font-display text-lg text-white">{t('description')}</h2>
-                <ChevronDown className={cn(
-                  'w-5 h-5 text-white/50 transition-transform duration-300',
+                <ChevronDown
+                  className={cn(
+                    'w-5 h-5 transition-transform duration-300',
+                    'text-white/50 group-hover:text-[color:var(--accent)]',
                   isDescriptionOpen && 'rotate-180'
                 )} />
               </button>
@@ -516,8 +523,10 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 className="w-full flex items-center justify-between py-4 group"
               >
                 <h2 className="font-display text-lg text-white">{t('shippingTitle')}</h2>
-                <ChevronDown className={cn(
-                  'w-5 h-5 text-white/50 transition-transform duration-300',
+                <ChevronDown
+                  className={cn(
+                    'w-5 h-5 transition-transform duration-300',
+                    'text-white/50 group-hover:text-[color:var(--accent)]',
                   isShippingOpen && 'rotate-180'
                 )} />
               </button>
@@ -547,8 +556,10 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 className="w-full flex items-center justify-between py-4 group"
               >
                 <h2 className="font-display text-lg text-white">{t('returnsTitle')}</h2>
-                <ChevronDown className={cn(
-                  'w-5 h-5 text-white/50 transition-transform duration-300',
+                <ChevronDown
+                  className={cn(
+                    'w-5 h-5 transition-transform duration-300',
+                    'text-white/50 group-hover:text-[color:var(--accent)]',
                   isReturnsOpen && 'rotate-180'
                 )} />
               </button>
@@ -576,8 +587,10 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 className="w-full flex items-center justify-between py-4 group"
               >
                 <h2 className="font-display text-lg text-white">{t('share')}</h2>
-                <ChevronDown className={cn(
-                  'w-5 h-5 text-white/50 transition-transform duration-300',
+                <ChevronDown
+                  className={cn(
+                    'w-5 h-5 transition-transform duration-300',
+                    'text-white/50 group-hover:text-[color:var(--accent)]',
                   isShareOpen && 'rotate-180'
                 )} />
               </button>

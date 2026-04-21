@@ -334,13 +334,28 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       {/* You Might Also Like */}
       {recommendations.length > 0 && (
         <div className="px-4 py-12 max-w-7xl mx-auto">
-          <YouMightAlsoLike products={recommendations} />
+          <YouMightAlsoLike
+            products={recommendations}
+            themeColor={
+              UNIVERSE_CONFIG[
+                (product.productUniverse || universe) as keyof typeof UNIVERSE_CONFIG
+              ]?.color
+            }
+          />
         </div>
       )}
 
       {/* Recently Viewed */}
       <div className="px-4 py-12 max-w-7xl mx-auto border-t border-border-subtle">
-        <RecentlyViewed excludeProductId={product.id} maxItems={4} />
+        <RecentlyViewed
+          excludeProductId={product.id}
+          maxItems={4}
+          themeColor={
+            UNIVERSE_CONFIG[
+              (product.productUniverse || universe) as keyof typeof UNIVERSE_CONFIG
+            ]?.color
+          }
+        />
       </div>
 
       {/* Reviews */}

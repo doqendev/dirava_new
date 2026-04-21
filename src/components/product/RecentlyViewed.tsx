@@ -5,13 +5,17 @@ import { useTranslations } from 'next-intl'
 import { useRecentlyViewedStore } from '@/stores/recentlyViewedStore'
 import { ProductCard } from '@/components/product/ProductCard'
 import { cn } from '@/lib/utils/cn'
-import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
 
 interface RecentlyViewedProps {
   excludeProductId?: string
   maxItems?: number
   title?: string
   className?: string
+  /**
+   * Accent color forced on every card (e.g. the current page's product
+   * universe color), so the whole page reads in one tone.
+   */
+  themeColor?: string
 }
 
 export function RecentlyViewed({
@@ -19,6 +23,7 @@ export function RecentlyViewed({
   maxItems = 8,
   title,
   className,
+  themeColor,
 }: RecentlyViewedProps) {
   const t = useTranslations('product')
   const [mounted, setMounted] = useState(false)
@@ -47,31 +52,27 @@ export function RecentlyViewed({
       <div className="relative">
         {/* Horizontal scroll container on mobile, grid on larger screens */}
         <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide md:grid md:grid-cols-4 md:overflow-visible md:pb-0">
-          {displayItems.map((item) => {
-            const cardThemeColor =
-              UNIVERSE_CONFIG[item.universe as keyof typeof UNIVERSE_CONFIG]?.color
-            return (
-              <div
-                key={item.productId}
-                className="flex-shrink-0 w-[200px] snap-start md:w-auto"
-              >
-                <ProductCard
-                  product={{
-                    id: item.productId,
-                    handle: item.handle,
-                    title: item.title,
-                    price: item.price,
-                    compareAtPrice: item.compareAtPrice,
-                    image: item.image,
-                    variantId: item.variantId,
-                  }}
-                  universe={item.universe}
-                  themeColor={cardThemeColor}
-                  showQuickView={!!item.variantId}
-                />
-              </div>
-            )
-          })}
+          {displayItems.map((item) => (
+            <div
+              key={item.productId}
+              className="flex-shrink-0 w-[200px] snap-start md:w-auto"
+            >
+              <ProductCard
+                product={{
+                  id: item.productId,
+                  handle: item.handle,
+                  title: item.title,
+                  price: item.price,
+                  compareAtPrice: item.compareAtPrice,
+                  image: item.image,
+                  variantId: item.variantId,
+                }}
+                universe={item.universe}
+                themeColor={themeColor}
+                showQuickView={!!item.variantId}
+              />
+            </div>
+          ))}
         </div>
 
         {/* Fade edges on mobile for scroll indication */}

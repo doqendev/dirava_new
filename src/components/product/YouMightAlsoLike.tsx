@@ -3,7 +3,6 @@
 import { useTranslations } from 'next-intl'
 import { ProductCard } from '@/components/product/ProductCard'
 import { cn } from '@/lib/utils/cn'
-import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
 
 interface RecommendedProduct {
   id: string
@@ -19,11 +18,18 @@ interface RecommendedProduct {
 interface YouMightAlsoLikeProps {
   products: RecommendedProduct[]
   className?: string
+  /**
+   * Accent color for every card on this section.
+   * Set to the *current page's* product universe color so the whole page
+   * reads in one tone — recommended cards inherit the page's palette.
+   */
+  themeColor?: string
 }
 
 export function YouMightAlsoLike({
   products,
   className,
+  themeColor,
 }: YouMightAlsoLikeProps) {
   const t = useTranslations('product')
 
@@ -38,27 +44,23 @@ export function YouMightAlsoLike({
       </h2>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        {products.map((product) => {
-          const cardThemeColor =
-            UNIVERSE_CONFIG[product.universe as keyof typeof UNIVERSE_CONFIG]?.color
-          return (
-            <ProductCard
-              key={product.id}
-              product={{
-                id: product.id,
-                handle: product.handle,
-                title: product.title,
-                price: product.price,
-                compareAtPrice: product.compareAtPrice,
-                image: product.image,
-                variantId: product.variantId,
-              }}
-              universe={product.universe || undefined}
-              themeColor={cardThemeColor}
-              showQuickView={!!product.variantId}
-            />
-          )
-        })}
+        {products.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={{
+              id: product.id,
+              handle: product.handle,
+              title: product.title,
+              price: product.price,
+              compareAtPrice: product.compareAtPrice,
+              image: product.image,
+              variantId: product.variantId,
+            }}
+            universe={product.universe || undefined}
+            themeColor={themeColor}
+            showQuickView={!!product.variantId}
+          />
+        ))}
       </div>
     </section>
   )
