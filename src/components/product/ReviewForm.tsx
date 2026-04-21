@@ -182,7 +182,7 @@ export default function ReviewForm({ productHandle }: ReviewFormProps) {
                 className={cn(
                   'w-8 h-8 transition-colors',
                   star <= (hoveredRating || rating)
-                    ? 'fill-yellow-400 text-yellow-400'
+                    ? 'fill-[color:var(--accent,#00f5ff)] text-[color:var(--accent,#00f5ff)]'
                     : 'text-white/20'
                 )}
               />
