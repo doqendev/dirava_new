@@ -128,7 +128,7 @@ function NewsletterForm() {
               'bg-black/40 border border-white/20 rounded-lg',
               'text-white placeholder:text-white/30',
               'transition-all duration-200',
-              'focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan',
+              'focus:outline-none focus:border-[color:var(--accent,#00f5ff)] focus:ring-1 focus:ring-[color:var(--accent,#00f5ff)]',
               'disabled:opacity-50 disabled:cursor-not-allowed',
               status === 'error' && 'border-red-500 focus:border-red-500 focus:ring-red-500'
             )}
@@ -142,7 +142,10 @@ function NewsletterForm() {
           glow="cyan"
           isLoading={status === 'loading'}
           disabled={status === 'success'}
-          className="whitespace-nowrap"
+          className="whitespace-nowrap !bg-[var(--accent,#00f5ff)] !text-black hover:!bg-[var(--accent,#00f5ff)]/90"
+          style={{
+            boxShadow: '0 0 20px rgba(var(--accent-rgb, 0, 245, 255), 0.35)',
+          }}
         >
           {status === 'success' ? (
             <>
@@ -165,12 +168,12 @@ function NewsletterForm() {
             setConsent(e.target.checked)
             if (status === 'error') setStatus('idle')
           }}
-          className="mt-0.5 rounded border-white/20 bg-black/40 text-neon-cyan focus:ring-neon-cyan"
+          className="mt-0.5 rounded border-white/20 bg-black/40 text-[color:var(--accent,#00f5ff)] focus:ring-[color:var(--accent,#00f5ff)]"
           disabled={status === 'loading' || status === 'success'}
         />
         <span>
           {t('newsletterConsent')}{' '}
-          <Link href="/policies/privacy" className="text-neon-cyan hover:underline">
+          <Link href="/policies/privacy" className="text-[color:var(--accent,#00f5ff)] hover:underline">
             {t('privacyPolicy')}
           </Link>
         </span>
