@@ -88,7 +88,7 @@ export default async function FAQPage() {
           </p>
           <Link
             href="/contact"
-            className="inline-flex items-center justify-center px-6 py-3 bg-neon-cyan text-black font-display font-semibold uppercase tracking-wider rounded-lg hover:bg-neon-cyan/90 transition-colors"
+            className="inline-flex items-center justify-center px-6 py-3 bg-neon-cyan text-black font-display font-semibold uppercase tracking-wider rounded-lg hover:bg-[color:var(--accent,#00f5ff)]/90 transition-colors"
           >
             {t('contactSupport')}
           </Link>

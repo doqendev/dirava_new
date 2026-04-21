@@ -93,7 +93,7 @@ function TestimonialCard({ testimonial, t }: { testimonial: Testimonial; t: Retu
       className={cn(
         'relative p-6 rounded-2xl',
         'bg-white/[0.03] border border-white/10',
-        'hover:border-neon-cyan/30 hover:bg-white/[0.05]',
+        'hover:border-[color:var(--accent,#00f5ff)]/30 hover:bg-white/[0.05]',
         'transition-colors duration-300'
       )}
     >

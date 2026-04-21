@@ -345,7 +345,7 @@ export function SearchModal() {
                         </h3>
                         <button
                           onClick={handleClearAllRecent}
-                          className="text-xs text-white/40 hover:text-neon-cyan transition-colors flex items-center gap-1"
+                          className="text-xs text-white/40 hover:text-[color:var(--accent,#00f5ff)] transition-colors flex items-center gap-1"
                           aria-label={t('clearAll')}
                         >
                           <Trash2 className="w-3 h-3" />
@@ -435,7 +435,7 @@ export function SearchModal() {
                       <button
                         type="button"
                         onClick={handleViewAllResults}
-                        className="w-full mt-4 py-3 flex items-center justify-center gap-2 text-neon-cyan hover:bg-neon-cyan/10 rounded-lg transition-colors"
+                        className="w-full mt-4 py-3 flex items-center justify-center gap-2 text-neon-cyan hover:bg-[color:var(--accent,#00f5ff)]/10 rounded-lg transition-colors"
                       >
                         <span className="text-sm font-medium">
                           {t('viewAllResults', { query })}

@@ -43,7 +43,7 @@ function FooterLinkColumn({
           <li key={link.href}>
             <Link
               href={link.href}
-              className="text-sm text-white/50 hover:text-neon-cyan transition-colors duration-200"
+              className="text-sm text-white/50 hover:text-[color:var(--accent,#00f5ff)] transition-colors duration-200"
             >
               {link.label}
             </Link>
@@ -289,7 +289,7 @@ export function Footer() {
                     'w-10 h-10 rounded-lg',
                     'bg-white/5 border border-white/10',
                     'flex items-center justify-center',
-                    'text-white/50 hover:text-neon-cyan hover:border-neon-cyan/50',
+                    'text-white/50 hover:text-[color:var(--accent,#00f5ff)] hover:border-[color:var(--accent,#00f5ff)]/50',
                     'transition-colors duration-200'
                   )}
                   aria-label={`${social.label} (opens in new window)`}

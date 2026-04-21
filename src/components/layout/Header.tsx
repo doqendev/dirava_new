@@ -65,7 +65,7 @@ export function Header({ className }: HeaderProps) {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-display tracking-wider text-white/60 hover:text-neon-cyan transition-colors duration-200 uppercase"
+                className="text-sm font-display tracking-wider text-white/60 hover:text-[color:var(--accent,#00f5ff)] transition-colors duration-200 uppercase"
               >
                 {link.label}
               </Link>
@@ -83,10 +83,10 @@ export function Header({ className }: HeaderProps) {
             title={tCommon('search')}
             className={cn(
               'hidden lg:flex items-center justify-center',
-              'text-neon-cyan/70 hover:text-neon-cyan',
+              'text-neon-cyan/70 hover:text-[color:var(--accent,#00f5ff)]',
               'transition-all duration-200',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary rounded-lg',
-              'lg:w-auto lg:h-auto lg:px-4 lg:py-2 lg:border lg:border-white/20 lg:hover:border-neon-cyan/50 lg:hover:bg-neon-cyan/5 lg:rounded-full'
+              'lg:w-auto lg:h-auto lg:px-4 lg:py-2 lg:border lg:border-white/20 lg:hover:border-[color:var(--accent,#00f5ff)]/50 lg:hover:bg-[color:var(--accent,#00f5ff)]/5 lg:rounded-full'
             )}
             aria-label={tCommon('search')}
           >
@@ -108,7 +108,7 @@ export function Header({ className }: HeaderProps) {
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary rounded-lg',
                   wishlistCount > 0
                     ? 'text-neon-pink hover:text-neon-pink focus-visible:ring-neon-pink'
-                    : 'text-neon-cyan/70 hover:text-neon-cyan focus-visible:ring-neon-cyan'
+                    : 'text-neon-cyan/70 hover:text-[color:var(--accent,#00f5ff)] focus-visible:ring-neon-cyan'
                 )}
                 aria-label={wishlistCount > 0 ? `${tCommon('wishlist')}, ${wishlistCount}` : tCommon('wishlist')}
               >
@@ -148,7 +148,7 @@ export function Header({ className }: HeaderProps) {
               title={totalQuantity > 0 ? `${tCommon('cart')} (${totalQuantity})` : tCommon('cart')}
               className={cn(
                 'relative w-10 h-10 flex items-center justify-center',
-                'text-neon-cyan/70 hover:text-neon-cyan',
+                'text-neon-cyan/70 hover:text-[color:var(--accent,#00f5ff)]',
                 'transition-all duration-200',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary rounded-lg'
               )}

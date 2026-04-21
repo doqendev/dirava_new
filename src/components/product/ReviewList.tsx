@@ -208,7 +208,7 @@ export default function ReviewList({ productHandle, color }: ReviewListProps) {
                         key={imageUrl}
                         type="button"
                         onClick={() => openLightbox(review.images!, imgIndex)}
-                        className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border border-white/10 hover:border-neon-cyan/50 transition-colors flex-shrink-0"
+                        className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border border-white/10 hover:border-[color:var(--accent,#00f5ff)]/50 transition-colors flex-shrink-0"
                       >
                         <Image
                           src={imageUrl}

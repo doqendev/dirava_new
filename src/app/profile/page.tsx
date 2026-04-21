@@ -43,14 +43,14 @@ export default function ProfilePage() {
         <div className="space-y-3">
           <Link
             href="/account/login"
-            className="inline-flex items-center justify-center w-full px-4 py-2 font-display tracking-wider uppercase rounded-lg bg-neon-cyan text-black font-semibold hover:bg-neon-cyan/90 hover:shadow-glow-cyan transition-all duration-200"
+            className="inline-flex items-center justify-center w-full px-4 py-2 font-display tracking-wider uppercase rounded-lg bg-neon-cyan text-black font-semibold hover:bg-[color:var(--accent,#00f5ff)]/90 hover:shadow-glow-cyan transition-all duration-200"
           >
             <LogIn className="w-5 h-5 mr-2" />
             Sign In
           </Link>
           <Link
             href="/account/register"
-            className="inline-flex items-center justify-center w-full px-4 py-2 font-display tracking-wider uppercase rounded-lg bg-bg-card border border-border-subtle text-white hover:border-neon-cyan hover:text-neon-cyan transition-all duration-200"
+            className="inline-flex items-center justify-center w-full px-4 py-2 font-display tracking-wider uppercase rounded-lg bg-bg-card border border-border-subtle text-white hover:border-[color:var(--accent,#00f5ff)] hover:text-[color:var(--accent,#00f5ff)] transition-all duration-200"
           >
             Create Account
           </Link>

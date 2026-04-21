@@ -50,7 +50,7 @@ export default function DashboardPage() {
             className={cn(
               'group bg-bg-card/50 backdrop-blur-sm border border-border-subtle rounded-xl p-5',
               'transition-all duration-200',
-              'hover:border-neon-cyan/50 hover:shadow-glow-sm-cyan'
+              'hover:border-[color:var(--accent,#00f5ff)]/50 hover:shadow-glow-sm-cyan'
             )}
           >
             <div className="w-12 h-12 rounded-lg bg-bg-secondary flex items-center justify-center mb-4">

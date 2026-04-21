@@ -83,7 +83,7 @@ export default function OrdersPage() {
           </p>
           <Link
             href="/worlds"
-            className="inline-flex items-center justify-center px-6 py-3 bg-neon-cyan text-black font-display font-semibold uppercase tracking-wider rounded-lg hover:bg-neon-cyan/90 transition-colors"
+            className="inline-flex items-center justify-center px-6 py-3 bg-neon-cyan text-black font-display font-semibold uppercase tracking-wider rounded-lg hover:bg-[color:var(--accent,#00f5ff)]/90 transition-colors"
           >
             {t('browseProducts')}
           </Link>
@@ -94,7 +94,7 @@ export default function OrdersPage() {
             <Link
               key={order.id}
               href={`/account/orders/${encodeURIComponent(btoa(order.id))}`}
-              className="block bg-bg-card/50 backdrop-blur-sm border border-border-subtle rounded-xl overflow-hidden hover:border-neon-cyan/50 transition-colors"
+              className="block bg-bg-card/50 backdrop-blur-sm border border-border-subtle rounded-xl overflow-hidden hover:border-[color:var(--accent,#00f5ff)]/50 transition-colors"
             >
               {/* Order Header */}
               <div className="px-4 py-3 border-b border-border-subtle flex flex-wrap items-center justify-between gap-2">

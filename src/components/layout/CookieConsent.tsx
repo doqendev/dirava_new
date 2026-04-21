@@ -67,7 +67,7 @@ export function CookieConsent() {
               {t('banner')}{' '}
               <Link
                 href="/policies/privacy"
-                className="text-neon-cyan hover:text-neon-cyan/80 underline transition-colors"
+                className="text-neon-cyan hover:text-[color:var(--accent,#00f5ff)]/80 underline transition-colors"
               >
                 {t('privacyLink')}
               </Link>
@@ -80,7 +80,7 @@ export function CookieConsent() {
                 className={cn(
                   'px-5 py-2.5 rounded-lg font-medium transition-all',
                   'bg-neon-cyan text-bg-primary',
-                  'hover:bg-neon-cyan/90',
+                  'hover:bg-[color:var(--accent,#00f5ff)]/90',
                   'shadow-glow-sm-cyan hover:shadow-glow-cyan'
                 )}
               >

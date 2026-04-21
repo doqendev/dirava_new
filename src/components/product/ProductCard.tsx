@@ -81,7 +81,7 @@ export function ProductCard({
           'block rounded-xl overflow-hidden',
           'bg-bg-card border border-border-subtle',
           'transition-all duration-300',
-          !themeColor && 'hover:border-neon-cyan/50 hover:shadow-glow-sm-cyan',
+          !themeColor && 'hover:border-[color:var(--accent,#00f5ff)]/50 hover:shadow-glow-sm-cyan',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan'
         )}
         style={themeColor ? {
@@ -181,7 +181,7 @@ export function ProductCard({
         {!compactMode && (
           <div className="p-3">
             <h3
-              className={cn('text-sm font-medium text-white truncate transition-colors', !themeColor && 'group-hover:text-neon-cyan')}
+              className={cn('text-sm font-medium text-white truncate transition-colors', !themeColor && 'group-hover:text-[color:var(--accent,#00f5ff)]')}
               style={themeColor && isHovered ? { color: themeColor } : undefined}
             >
               {product.variantName

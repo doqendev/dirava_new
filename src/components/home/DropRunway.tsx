@@ -80,7 +80,7 @@ export function DropRunway({
               className={cn(
                 'w-8 h-8 flex items-center justify-center rounded-lg',
                 'border border-border-subtle',
-                'text-white/50 hover:text-white hover:border-neon-cyan',
+                'text-white/50 hover:text-white hover:border-[color:var(--accent,#00f5ff)]',
                 'disabled:opacity-30 disabled:cursor-not-allowed',
                 'transition-colors duration-200'
               )}
@@ -94,7 +94,7 @@ export function DropRunway({
               className={cn(
                 'w-8 h-8 flex items-center justify-center rounded-lg',
                 'border border-border-subtle',
-                'text-white/50 hover:text-white hover:border-neon-cyan',
+                'text-white/50 hover:text-white hover:border-[color:var(--accent,#00f5ff)]',
                 'disabled:opacity-30 disabled:cursor-not-allowed',
                 'transition-colors duration-200'
               )}
@@ -158,7 +158,7 @@ function ProductCard({ product }: { product: DropProduct }) {
         'bg-gradient-to-br from-white/5 via-transparent to-white/5',
         'border border-border-subtle',
         'transition-all duration-200',
-        'hover:border-neon-cyan/50 hover:shadow-glow-sm-cyan',
+        'hover:border-[color:var(--accent,#00f5ff)]/50 hover:shadow-glow-sm-cyan',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan'
       )}
     >

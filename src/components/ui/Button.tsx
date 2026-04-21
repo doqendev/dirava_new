@@ -19,12 +19,12 @@ interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'ref'> {
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
-  primary: 'bg-neon-cyan text-black font-semibold hover:bg-neon-cyan/90',
+  primary: 'bg-neon-cyan text-black font-semibold hover:bg-[color:var(--accent,#00f5ff)]/90',
   secondary:
-    'bg-transparent border-2 border-neon-cyan text-neon-cyan hover:bg-neon-cyan/10',
+    'bg-transparent border-2 border-neon-cyan text-neon-cyan hover:bg-[color:var(--accent,#00f5ff)]/10',
   ghost: 'bg-transparent text-white hover:bg-white/10',
   outline:
-    'bg-bg-card border border-border-subtle text-white hover:border-neon-cyan hover:text-neon-cyan',
+    'bg-bg-card border border-border-subtle text-white hover:border-[color:var(--accent,#00f5ff)] hover:text-[color:var(--accent,#00f5ff)]',
 }
 
 const sizeStyles: Record<ButtonSize, string> = {

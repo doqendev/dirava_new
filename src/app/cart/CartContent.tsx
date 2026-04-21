@@ -83,7 +83,7 @@ export default function CartContent() {
                 <div className="flex-1 min-w-0">
                   <Link
                     href={`/products/${line.merchandise.product.handle}`}
-                    className="font-medium text-white hover:text-neon-cyan transition-colors line-clamp-2"
+                    className="font-medium text-white hover:text-[color:var(--accent,#00f5ff)] transition-colors line-clamp-2"
                   >
                     {line.merchandise.product.title}
                   </Link>

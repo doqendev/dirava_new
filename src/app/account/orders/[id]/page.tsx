@@ -104,7 +104,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
           </h2>
           <Link
             href="/account/orders"
-            className="inline-flex items-center gap-2 text-neon-cyan hover:text-neon-cyan/80 transition-colors"
+            className="inline-flex items-center gap-2 text-neon-cyan hover:text-[color:var(--accent,#00f5ff)]/80 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             {t('backToOrders')}
@@ -115,7 +115,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
           {/* Back Link */}
           <Link
             href="/account/orders"
-            className="inline-flex items-center gap-2 text-neon-cyan hover:text-neon-cyan/80 transition-colors"
+            className="inline-flex items-center gap-2 text-neon-cyan hover:text-[color:var(--accent,#00f5ff)]/80 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             {t('backToOrders')}

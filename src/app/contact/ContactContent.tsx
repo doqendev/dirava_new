@@ -64,7 +64,7 @@ export default function ContactContent() {
                 href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white/50 hover:text-neon-cyan transition-colors"
+                className="text-white/50 hover:text-[color:var(--accent,#00f5ff)] transition-colors"
               >
                 Twitter
               </a>
@@ -72,7 +72,7 @@ export default function ContactContent() {
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white/50 hover:text-neon-cyan transition-colors"
+                className="text-white/50 hover:text-[color:var(--accent,#00f5ff)] transition-colors"
               >
                 Instagram
               </a>
@@ -80,7 +80,7 @@ export default function ContactContent() {
                 href="https://discord.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white/50 hover:text-neon-cyan transition-colors"
+                className="text-white/50 hover:text-[color:var(--accent,#00f5ff)] transition-colors"
               >
                 Discord
               </a>

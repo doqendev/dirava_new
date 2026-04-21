@@ -84,7 +84,7 @@ export default async function ShopHubPage() {
         <div className="mt-10 text-center">
           <Link
             href="/worlds"
-            className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-neon-cyan transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-[color:var(--accent,#00f5ff)] transition-colors"
           >
             {tHub('crosslink')}
             <ChevronRight className="w-4 h-4" />

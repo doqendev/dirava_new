@@ -160,7 +160,7 @@ export function BundleCard({ bundle }: BundleCardProps) {
             allAvailable
               ? status === 'success'
                 ? 'bg-neon-green/20 text-neon-green border border-neon-green/50'
-                : 'bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/50 hover:bg-neon-cyan/30'
+                : 'bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/50 hover:bg-[color:var(--accent,#00f5ff)]/30'
               : 'bg-white/5 text-white/30 border border-white/10 cursor-not-allowed'
           )}
           style={allAvailable && status !== 'success' ? { boxShadow: '0 0 20px rgba(0, 245, 255, 0.3)' } : {}}

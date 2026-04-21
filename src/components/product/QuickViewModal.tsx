@@ -641,7 +641,7 @@ export function QuickViewModal() {
                           className={cn(
                             'flex items-center justify-center gap-2',
                             'w-full py-2 text-sm',
-                            'text-white/50 hover:text-neon-cyan',
+                            'text-white/50 hover:text-[color:var(--accent,#00f5ff)]',
                             'transition-colors duration-200'
                           )}
                         >

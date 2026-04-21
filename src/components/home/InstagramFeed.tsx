@@ -139,7 +139,7 @@ export function InstagramFeed() {
             href={instagramUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm font-medium text-neon-cyan hover:text-neon-cyan/80 transition-colors"
+            className="text-sm font-medium text-neon-cyan hover:text-[color:var(--accent,#00f5ff)]/80 transition-colors"
           >
             {t('viewProfile')} →
           </Link>

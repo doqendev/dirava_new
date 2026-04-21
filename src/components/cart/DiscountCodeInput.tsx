@@ -111,7 +111,7 @@ export function DiscountCodeInput() {
               disabled={isApplyingDiscount || !code.trim() || showSuccess}
               className={cn(
                 'px-4 py-2 text-sm font-medium rounded-lg transition-all',
-                'bg-neon-cyan text-bg-primary hover:bg-neon-cyan/90',
+                'bg-neon-cyan text-bg-primary hover:bg-[color:var(--accent,#00f5ff)]/90',
                 'disabled:opacity-50 disabled:cursor-not-allowed',
                 'flex items-center gap-2 min-w-[80px] justify-center'
               )}

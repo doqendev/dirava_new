@@ -267,7 +267,7 @@ function DesktopFilters({
             {hasFilters && (
               <button
                 onClick={onClearFilters}
-                className="text-xs text-white/50 hover:text-neon-cyan transition-colors"
+                className="text-xs text-white/50 hover:text-[color:var(--accent,#00f5ff)] transition-colors"
               >
                 {t('clearAll')}
               </button>
@@ -438,7 +438,7 @@ function MobileFilterDrawer({
           {hasFilters && (
             <button
               onClick={onClearFilters}
-              className="text-sm text-neon-cyan hover:text-neon-cyan/80 mb-4 transition-colors"
+              className="text-sm text-neon-cyan hover:text-[color:var(--accent,#00f5ff)]/80 mb-4 transition-colors"
             >
               {t('clearAllFilters')}
             </button>

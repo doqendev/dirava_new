@@ -413,7 +413,7 @@ export default function AdminReviewsContent() {
                               className={cn(
                                 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
                                 'bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/30',
-                                'hover:bg-neon-cyan/20',
+                                'hover:bg-[color:var(--accent,#00f5ff)]/20',
                                 'disabled:opacity-50 disabled:cursor-not-allowed'
                               )}
                             >

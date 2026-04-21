@@ -189,7 +189,7 @@ export function UniverseCard({
       glow: 'shadow-glow-cyan',
       text: 'text-neon-cyan',
       bg: 'from-neon-cyan/20 to-transparent',
-      buttonBg: 'bg-neon-cyan/20 border-neon-cyan hover:bg-neon-cyan/30',
+      buttonBg: 'bg-neon-cyan/20 border-neon-cyan hover:bg-[color:var(--accent,#00f5ff)]/30',
     },
     pink: {
       border: 'border-neon-pink',

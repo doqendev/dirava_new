@@ -130,7 +130,7 @@ export function CartUpsells({ cartLines, onClose }: CartUpsellsProps) {
               <div className={cn(
                 'relative rounded-lg overflow-hidden',
                 'bg-bg-secondary border border-border-subtle',
-                'hover:border-neon-cyan/30 transition-colors'
+                'hover:border-[color:var(--accent,#00f5ff)]/30 transition-colors'
               )}>
                 {/* Thumbnail */}
                 <Link
@@ -154,7 +154,7 @@ export function CartUpsells({ cartLines, onClose }: CartUpsellsProps) {
                 {/* Quick View — overlaid on thumb */}
                 <button
                   onClick={() => handleQuickView(product)}
-                  className="absolute top-1 right-1 p-1 rounded bg-black/60 backdrop-blur-sm text-white/80 hover:text-neon-cyan hover:bg-black/80 transition-colors"
+                  className="absolute top-1 right-1 p-1 rounded bg-black/60 backdrop-blur-sm text-white/80 hover:text-[color:var(--accent,#00f5ff)] hover:bg-black/80 transition-colors"
                   title={t('quickView')}
                   aria-label={t('quickView')}
                 >
@@ -168,7 +168,7 @@ export function CartUpsells({ cartLines, onClose }: CartUpsellsProps) {
                 onClick={onClose}
                 className="block mt-1.5"
               >
-                <h4 className="text-[11px] text-white truncate hover:text-neon-cyan transition-colors leading-tight">
+                <h4 className="text-[11px] text-white truncate hover:text-[color:var(--accent,#00f5ff)] transition-colors leading-tight">
                   {product.title}
                 </h4>
                 <p className="text-[10px] font-mono text-neon-cyan mt-0.5">

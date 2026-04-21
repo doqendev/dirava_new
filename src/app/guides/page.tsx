@@ -89,10 +89,10 @@ export default function GuidesIndexPage() {
           {guides.map((guide) => (
             <li
               key={guide.slug}
-              className="border border-border-subtle rounded-lg p-6 hover:border-neon-cyan/50 transition-colors"
+              className="border border-border-subtle rounded-lg p-6 hover:border-[color:var(--accent,#00f5ff)]/50 transition-colors"
             >
               <Link href={`/guides/${guide.slug}`} className="block group">
-                <h2 className="font-display text-xl md:text-2xl text-white mb-2 group-hover:text-neon-cyan transition-colors">
+                <h2 className="font-display text-xl md:text-2xl text-white mb-2 group-hover:text-[color:var(--accent,#00f5ff)] transition-colors">
                   {guide.title}
                 </h2>
                 <p className="text-white/60 mb-2">{guide.description}</p>

@@ -58,7 +58,7 @@ export default function WishlistPage() {
           </p>
           <Link
             href="/worlds"
-            className="inline-flex items-center justify-center px-6 py-3 bg-neon-cyan text-black font-display font-semibold uppercase tracking-wider rounded-lg hover:bg-neon-cyan/90 transition-colors"
+            className="inline-flex items-center justify-center px-6 py-3 bg-neon-cyan text-black font-display font-semibold uppercase tracking-wider rounded-lg hover:bg-[color:var(--accent,#00f5ff)]/90 transition-colors"
           >
             Browse Products
           </Link>
@@ -117,7 +117,7 @@ export default function WishlistPage() {
                     <div className="flex-1 min-w-0">
                       <Link
                         href={productUrl}
-                        className="font-medium text-white hover:text-neon-cyan transition-colors line-clamp-2"
+                        className="font-medium text-white hover:text-[color:var(--accent,#00f5ff)] transition-colors line-clamp-2"
                       >
                         {item.title}
                       </Link>
@@ -170,7 +170,7 @@ export default function WishlistPage() {
           <div className="mt-8 text-center">
             <Link
               href="/worlds"
-              className="inline-flex items-center gap-2 text-white/60 hover:text-neon-cyan transition-colors"
+              className="inline-flex items-center gap-2 text-white/60 hover:text-[color:var(--accent,#00f5ff)] transition-colors"
             >
               Continue Shopping
               <ArrowRight className="w-4 h-4" />

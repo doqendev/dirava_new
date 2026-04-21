@@ -157,7 +157,7 @@ export function VariantSelector({
                           ? 'text-black'
                           : 'bg-neon-cyan text-black border-neon-cyan shadow-glow-sm-cyan'
                         : isAvailable
-                        ? 'bg-bg-secondary border-border-subtle text-white hover:border-neon-cyan/50'
+                        ? 'bg-bg-secondary border-border-subtle text-white hover:border-[color:var(--accent,#00f5ff)]/50'
                         : 'bg-bg-secondary/50 border-border-subtle text-white/30 cursor-not-allowed line-through'
                     )}
                     style={
