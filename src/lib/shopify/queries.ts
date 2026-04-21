@@ -159,6 +159,8 @@ export const GET_PRODUCT = gql`
       title
       description
       descriptionHtml
+      productType
+      tags
       priceRange {
         minVariantPrice {
           amount
