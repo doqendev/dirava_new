@@ -311,6 +311,8 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
 
           {/* Product Info */}
           <div className="space-y-6 w-full min-w-0">
+            {/* Buy box card — matches the look of OrderSteps + TrustBadges. */}
+            <div className="rounded-lg border border-border-subtle bg-bg-card p-5 sm:p-6 space-y-6">
             {/* Badges */}
             {(product.rarity && product.rarity !== 'common' || hasDiscount) && (
               <div className="flex flex-wrap gap-2">
@@ -488,6 +490,8 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 className="w-full justify-center py-3"
               />
             </div>
+            </div>
+            {/* end buy box card */}
 
             {/* Order steps + trust badges — mobile placement (above description). */}
             <div className="space-y-4 lg:hidden">
@@ -496,7 +500,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             </div>
 
             {/* Description (collapsible) */}
-            <div className="pt-6 border-t border-border-subtle">
+            <div className="rounded-lg border border-border-subtle bg-bg-card px-5 py-3 sm:px-6">
               <button
                 type="button"
                 onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
@@ -523,7 +527,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             </div>
 
             {/* Shipping */}
-            <div className="border-t border-border-subtle">
+            <div className="rounded-lg border border-border-subtle bg-bg-card px-5 sm:px-6">
               <button
                 type="button"
                 onClick={() => setIsShippingOpen(!isShippingOpen)}
@@ -554,7 +558,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             </div>
 
             {/* Returns & Exchanges */}
-            <div className="border-t border-border-subtle">
+            <div className="rounded-lg border border-border-subtle bg-bg-card px-5 sm:px-6">
               <button
                 type="button"
                 onClick={() => setIsReturnsOpen(!isReturnsOpen)}
@@ -583,7 +587,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             </div>
 
             {/* Share */}
-            <div className="border-t border-border-subtle">
+            <div className="rounded-lg border border-border-subtle bg-bg-card px-5 sm:px-6">
               <button
                 type="button"
                 onClick={() => setIsShareOpen(!isShareOpen)}
