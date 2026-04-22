@@ -2897,6 +2897,11 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
     height: 310,
   },
   nameplateBoxExpandAfter: 7,
+  // Names longer than 9 characters are allowed to shrink below the base
+  // font size (down to 80% of it) so the adaptive spacing doesn't have
+  // to squash letters into each other to fit.
+  textShrinkAfter: 9,
+  textShrinkFloorRatio: 0.8,
   camera: {
     position: [0, 0, 22],
     fov: 45,

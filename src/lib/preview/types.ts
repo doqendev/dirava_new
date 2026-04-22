@@ -134,4 +134,15 @@ export interface PreviewConfig {
   }
   /** Character count above which the expanded nameplate box kicks in (default 7). */
   nameplateBoxExpandAfter?: number
+  /**
+   * Once the name length exceeds this threshold, the font size floor is
+   * relaxed so long names can shrink below the base size and fit cleanly
+   * without overlapping. Undefined disables shrinking entirely.
+   */
+  textShrinkAfter?: number
+  /**
+   * Minimum font size ratio relative to `textFontSize` when shrinking
+   * kicks in (default 0.85 = text can shrink to 85% of base).
+   */
+  textShrinkFloorRatio?: number
 }
