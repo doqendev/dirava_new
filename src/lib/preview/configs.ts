@@ -2741,11 +2741,22 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   svg: '/svgs/preview/one-piece-lightbox-luffy.svg',
   variantSvgs: {
     Luffy: '/svgs/preview/one-piece-lightbox-luffy.svg',
+    Zoro: '/svgs/preview/one-piece-lightbox-zoro.svg',
   },
   layers: [
     // Black silhouette — the whole lightbox body at 20mm depth.
+    // Per-variant SVGs use slightly different black swatches, so we
+    // match both. Only one is present in any given SVG; the other is a
+    // no-op for that variant.
     {
       svgColor: '#171714',
+      color: '#141414',
+      depth: 20,
+      metalness: 0.1,
+      roughness: 0.85,
+    },
+    {
+      svgColor: '#171713',
       color: '#141414',
       depth: 20,
       metalness: 0.1,
@@ -2810,6 +2821,29 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
       offsetZ: 20.45,
       metalness: 0.1,
       roughness: 0.85,
+    },
+    // Purple `#56037c` — appears on Zoro's lightbox (e.g. the bandana /
+    // accent detail). Flat emissive paint on the front face.
+    {
+      svgColor: '#56037c',
+      color: '#56037c',
+      depth: 0.4,
+      offsetZ: 20.25,
+      metalness: 0.0,
+      roughness: 0.5,
+      emissive: '#56037c',
+      emissiveIntensity: 0.4,
+    },
+    // Grey `#b7b7b7` — Zoro lightbox detail (sword / scabbard highlight).
+    {
+      svgColor: '#b7b7b7',
+      color: '#b7b7b7',
+      depth: 0.4,
+      offsetZ: 20.35,
+      metalness: 0.1,
+      roughness: 0.4,
+      emissive: '#b7b7b7',
+      emissiveIntensity: 0.35,
     },
     // Solid black fill under the green-marker shapes (eye sockets, nose)
     // and the blue-marker shape (nameplate interior). The original
@@ -2916,6 +2950,7 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   background: '#0a0a12',
   variantImages: {
     Luffy: '/images/characters/style_1.png',
+    Zoro: '/images/characters/style_2.png',
   },
 }
 
