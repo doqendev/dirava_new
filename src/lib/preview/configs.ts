@@ -2869,11 +2869,14 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   // Wider letter spacing so the nameplate reads like an engraved
   // inscription. Auto-scale factors this in when sizing long names.
   textLetterSpacing: 0.15,
-  // Nameplate rectangle in SVG coords (viewBox 1638×1919). Eyeballed from
-  // the reference artwork; tune if the text sits high/low.
+  // Nameplate rectangle in SVG coords (viewBox 1638×1919). The y is
+  // offset slightly past the yellow border's top edge so the glyph
+  // optical centre sits visually centred between the top/bottom yellow
+  // rails (text geometry is centred on the box mid-line, but glyph
+  // ascenders sit higher than descenders, biasing text upward).
   nameplateBox: {
     x: 220,
-    y: 1470,
+    y: 1510,
     width: 1200,
     height: 310,
   },
