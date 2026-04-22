@@ -171,14 +171,16 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
     // Scale font size proportionally
     const scaled = baseFontSize * (targetWidth / textWidth)
 
-    // Clamp to reasonable range — the nameplate scale factor is higher than
-    // a full-SVG scale, so we also clamp to the box height when present.
+    // Floor the font at the base size so long names keep their weight
+    // (no shrink-to-fit), cap at the nameplate height for short names so
+    // they don't grow taller than the plate. Short names can exceed the
+    // base size up to 5×; long names stay at exactly the base size.
     const maxHeight = config.nameplateBox?.height
     const heightRatio = config.textMaxHeightRatio ?? 0.9
     const heightCap = maxHeight ? maxHeight * heightRatio : Infinity
     return Math.min(
       heightCap,
-      Math.max(baseFontSize * 0.25, Math.min(baseFontSize * 5, scaled)),
+      Math.max(baseFontSize, Math.min(baseFontSize * 5, scaled)),
     )
   }, [font, displayText, config.textFontSize, config.textLayers, config.textMaxWidthRatio, config.textMaxHeightRatio, config.nameplateBox, svgBounds.width, effectiveLetterSpacing])
 
