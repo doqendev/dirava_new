@@ -163,12 +163,13 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
     // Clamp to reasonable range — the nameplate scale factor is higher than
     // a full-SVG scale, so we also clamp to the box height when present.
     const maxHeight = config.nameplateBox?.height
-    const heightCap = maxHeight ? maxHeight * 0.8 : Infinity
+    const heightRatio = config.textMaxHeightRatio ?? 0.9
+    const heightCap = maxHeight ? maxHeight * heightRatio : Infinity
     return Math.min(
       heightCap,
-      Math.max(baseFontSize * 0.25, Math.min(baseFontSize * 3, scaled)),
+      Math.max(baseFontSize * 0.25, Math.min(baseFontSize * 5, scaled)),
     )
-  }, [font, displayText, config.textFontSize, config.textLayers, config.textMaxWidthRatio, config.nameplateBox, svgBounds.width])
+  }, [font, displayText, config.textFontSize, config.textLayers, config.textMaxWidthRatio, config.textMaxHeightRatio, config.nameplateBox, svgBounds.width])
 
   // Compute text shapes ONCE using per-character contour classification.
   // Shared between textSubtractGeometry and ExtrudedTextLayer to avoid

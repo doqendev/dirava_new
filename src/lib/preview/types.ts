@@ -98,6 +98,10 @@ export interface PreviewConfig {
   /** Ratio of SVG width the text should fill (0-1, default 0.8). Text font size
    *  auto-scales so text width matches svgWidth * this ratio. */
   textMaxWidthRatio?: number
+  /** When using nameplateBox, ratio of the box height the text is allowed to
+   *  consume (default 0.9). Prevents short names from scaling until they
+   *  exceed the box vertically. */
+  textMaxHeightRatio?: number
   /** Additional overlap between letters for text-extrusion (fraction of font size, default 0.1). */
   textCharOverlap?: number
   /** Text spacing strategy for text-extrusion. `advance` uses glyph advance widths (combo-independent). */

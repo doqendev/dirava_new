@@ -2858,8 +2858,13 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
       emissiveIntensity: 0.8,
     },
   ],
-  textFontSize: 200,
-  textMaxWidthRatio: 0.85,
+  textFontSize: 280,
+  // Short names scale up until they fill ~92% of the nameplate width or
+  // the full height (cap height of the ONEPIECE font sits comfortably
+  // inside the box at 1.0 ratio). Long names scale down but never fall
+  // below 25% of the base size so they stay legible.
+  textMaxWidthRatio: 0.92,
+  textMaxHeightRatio: 1.0,
   // Nameplate rectangle in SVG coords (viewBox 1638×1919). Eyeballed from
   // the reference artwork; tune if the text sits high/low.
   nameplateBox: {
