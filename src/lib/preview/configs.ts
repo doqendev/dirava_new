@@ -2891,9 +2891,9 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   // edge before the adaptive letter spacing has to squeeze characters
   // together. Letter spacing still auto-reduces if needed.
   nameplateBoxExpanded: {
-    x: 15,
+    x: 25,
     y: 1485,
-    width: 1608,
+    width: 1588,
     height: 310,
   },
   nameplateBoxExpandAfter: 7,
