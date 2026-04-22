@@ -2774,6 +2774,20 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
       emissive: '#ffd400',
       emissiveIntensity: 0.55,
     },
+    // Second yellow `#fde200` — the ornate frame drawn around the blue
+    // nameplate interior. Treated as another yellow paint layer so the
+    // border renders yellow rather than leaving the underlying white
+    // paint showing through.
+    {
+      svgColor: '#fde200',
+      color: '#fde200',
+      depth: 0.4,
+      offsetZ: 20.2,
+      metalness: 0.0,
+      roughness: 0.4,
+      emissive: '#fde200',
+      emissiveIntensity: 0.55,
+    },
     // Red (hat band). Less glow — it's a thin paint strip, not a light
     // emitter.
     {
