@@ -2797,11 +2797,12 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
       metalness: 0.1,
       roughness: 0.85,
     },
-    // Solid black fill under the green-marker shapes (eye sockets, nose,
-    // nameplate interior). The original silhouette was drawn *around*
-    // the painted regions, so it has holes where the white used to sit;
-    // this layer plugs those holes so a cut in the paint above reveals
-    // solid black instead of punching clean through the sign.
+    // Solid black fill under the green-marker shapes (eye sockets, nose)
+    // and the blue-marker shape (nameplate interior). The original
+    // silhouette was drawn *around* the painted regions so it has holes
+    // where the white used to sit; these layers plug those holes so a
+    // cut in the paint above reveals solid black instead of punching
+    // clean through the sign.
     {
       svgColor: '#1eed1e',
       color: '#141414',
@@ -2809,12 +2810,25 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
       metalness: 0.1,
       roughness: 0.85,
     },
-    // Green `#1eed1e` shapes also act as CSG cuts against paint layers
-    // (offsetZ > 0) — so the eyes / nose / nameplate interior stay
+    {
+      svgColor: '#0000ff',
+      color: '#141414',
+      depth: 20,
+      metalness: 0.1,
+      roughness: 0.85,
+    },
+    // Green and blue shapes also act as CSG cuts against paint layers
+    // (offsetZ > 0) so the eyes / nose / nameplate interior stay
     // unpainted and the black fill above shows through.
     {
       svgColor: '#1eed1e',
       color: '#1eed1e',
+      depth: 1,
+      mode: 'cut',
+    },
+    {
+      svgColor: '#0000ff',
+      color: '#0000ff',
       depth: 1,
       mode: 'cut',
     },
