@@ -2786,11 +2786,21 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
       emissive: '#dc2526',
       emissiveIntensity: 0.3,
     },
-    // Green `#1eed1e` shapes in the SVG mark "cut" regions: the skull's
-    // eye / nose dots and the nameplate interior. These carve holes out
-    // of the paint layers on top (offsetZ > 0) so the black silhouette
-    // shows through underneath — eyes become black dots and the
-    // nameplate interior stays black for the name text to sit on.
+    // Solid black fill under the green-marker shapes (eye sockets, nose,
+    // nameplate interior). The original silhouette was drawn *around*
+    // the painted regions, so it has holes where the white used to sit;
+    // this layer plugs those holes so a cut in the paint above reveals
+    // solid black instead of punching clean through the sign.
+    {
+      svgColor: '#1eed1e',
+      color: '#141414',
+      depth: 20,
+      metalness: 0.1,
+      roughness: 0.85,
+    },
+    // Green `#1eed1e` shapes also act as CSG cuts against paint layers
+    // (offsetZ > 0) — so the eyes / nose / nameplate interior stay
+    // unpainted and the black fill above shows through.
     {
       svgColor: '#1eed1e',
       color: '#1eed1e',
