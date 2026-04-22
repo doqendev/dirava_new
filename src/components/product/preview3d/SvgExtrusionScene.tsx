@@ -143,17 +143,55 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
     return getPreviewDisplayText(text, config, 'Name')
   }, [text, config])
 
+  // Auto-detect the nameplate's true centre from the blue `#0000ff`
+  // marker path in the current variant's SVG. Variants can ship
+  // different viewBox sizes / nameplate positions, so reading the
+  // marker's own bbox keeps the text centred on each jolly roger's
+  // plate without per-variant coordinate tweaks.
+  const detectedNameplate = useMemo(() => {
+    if (!svgData) return null
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+    let found = false
+    for (const path of svgData.paths) {
+      if ('#' + path.color.getHexString() !== '#0000ff') continue
+      for (const sub of path.subPaths) {
+        for (const p of sub.getPoints()) {
+          if (p.x < minX) minX = p.x
+          if (p.y < minY) minY = p.y
+          if (p.x > maxX) maxX = p.x
+          if (p.y > maxY) maxY = p.y
+          found = true
+        }
+      }
+    }
+    if (!found) return null
+    return { x: minX, y: minY, width: maxX - minX, height: maxY - minY }
+  }, [svgData])
+
   // Pick the "active" nameplate box for the current name length. Long
   // names (> nameplateBoxExpandAfter) automatically use the wider
   // expanded box so letters don't have to be crushed together. Short
-  // names stay inside the tighter primary box.
+  // names stay inside the tighter primary box. When a blue-marker
+  // nameplate is detected in the SVG, override the box position so the
+  // text centres on the variant's actual plate even across different
+  // viewBox sizes.
   const activeNameplateBox = useMemo(() => {
     if (!config.nameplateBox) return undefined
     const expanded = config.nameplateBoxExpanded
     const threshold = config.nameplateBoxExpandAfter ?? 7
-    if (expanded && displayText.length > threshold) return expanded
-    return config.nameplateBox
-  }, [config.nameplateBox, config.nameplateBoxExpanded, config.nameplateBoxExpandAfter, displayText.length])
+    const base = expanded && displayText.length > threshold ? expanded : config.nameplateBox
+    if (!detectedNameplate) return base
+    // Keep the user-tuned width/height from config, re-centre on the
+    // detected nameplate's own midpoint.
+    const detectedCenterX = detectedNameplate.x + detectedNameplate.width / 2
+    const detectedCenterY = detectedNameplate.y + detectedNameplate.height / 2
+    return {
+      x: detectedCenterX - base.width / 2,
+      y: detectedCenterY - base.height / 2,
+      width: base.width,
+      height: base.height,
+    }
+  }, [config.nameplateBox, config.nameplateBoxExpanded, config.nameplateBoxExpandAfter, displayText.length, detectedNameplate])
 
   // Effective per-character step (in fontSize units).
   //
