@@ -2786,6 +2786,17 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
       emissive: '#dc2526',
       emissiveIntensity: 0.3,
     },
+    // Pink `#ed1eec` paths mark the hat's pill-shaped shine details —
+    // these are UV-painted black on top of the yellow straw hat on the
+    // physical product. Render as a thin black paint layer above yellow.
+    {
+      svgColor: '#ed1eec',
+      color: '#141414',
+      depth: 0.4,
+      offsetZ: 20.45,
+      metalness: 0.1,
+      roughness: 0.85,
+    },
     // Solid black fill under the green-marker shapes (eye sockets, nose,
     // nameplate interior). The original silhouette was drawn *around*
     // the painted regions, so it has holes where the white used to sit;
