@@ -143,8 +143,15 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
     return getPreviewDisplayText(text, config, 'Name')
   }, [text, config])
 
+  // Effective per-character step (in fontSize units). Defaults to a small
+  // negative overlap so naturally-kerned shapes touch. Positive values add
+  // visible spacing between letters.
+  const effectiveLetterSpacing = config.textLetterSpacing ?? -0.1
+
   // Auto-scale font size so text width fills a target ratio of the available
   // width — the nameplate box when defined, otherwise the full SVG width.
+  // Letter spacing is factored in so names won't overrun the plate even
+  // when the config adds extra per-character gap.
   const effectiveFontSize = useMemo(() => {
     const baseFontSize = config.textFontSize ?? 150
     if (!font || !config.textLayers) return baseFontSize
@@ -153,9 +160,13 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
     const referenceWidth = config.nameplateBox?.width ?? svgBounds.width
     const targetWidth = referenceWidth * targetRatio
 
-    // Measure text advance width at the base font size
-    const textWidth = font.getAdvanceWidth(displayText, baseFontSize) as number
-    if (!textWidth || textWidth <= 0) return baseFontSize
+    // Measure text advance width at the base font size, then add the
+    // per-letter spacing that the renderer will apply so the scale
+    // reflects the actual drawn width.
+    const naturalWidth = font.getAdvanceWidth(displayText, baseFontSize) as number
+    if (!naturalWidth || naturalWidth <= 0) return baseFontSize
+    const gapCount = Math.max(0, displayText.length - 1)
+    const textWidth = naturalWidth + gapCount * baseFontSize * effectiveLetterSpacing
 
     // Scale font size proportionally
     const scaled = baseFontSize * (targetWidth / textWidth)
@@ -169,7 +180,7 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
       heightCap,
       Math.max(baseFontSize * 0.25, Math.min(baseFontSize * 5, scaled)),
     )
-  }, [font, displayText, config.textFontSize, config.textLayers, config.textMaxWidthRatio, config.textMaxHeightRatio, config.nameplateBox, svgBounds.width])
+  }, [font, displayText, config.textFontSize, config.textLayers, config.textMaxWidthRatio, config.textMaxHeightRatio, config.nameplateBox, svgBounds.width, effectiveLetterSpacing])
 
   // Compute text shapes ONCE using per-character contour classification.
   // Shared between textSubtractGeometry and ExtrudedTextLayer to avoid
@@ -288,9 +299,10 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
         }
       }
 
-      // Overlap characters so actual 3D shapes touch (not just bounding boxes).
-      // 5% of fontSize ensures contour shapes connect even for irregular glyphs.
-      cursorX = maxX + offsetX - fontSize * 0.1
+      // Advance cursor by this character's width, then apply the configured
+      // letter spacing (negative = overlap to keep shapes touching,
+      // positive = visible gap between letters).
+      cursorX = maxX + offsetX + fontSize * effectiveLetterSpacing
     }
 
     return allShapes.length > 0 ? allShapes : null
