@@ -19,6 +19,10 @@ interface SvgExtrusionSceneProps {
   config: PreviewConfig
   svgPath: string
   text?: string
+  /** Current variant option value (e.g. 'Luffy'). Used to pick per-variant
+   *  nameplate box overrides for products exported at slightly different
+   *  SVG scales across variants. */
+  selectedVariantName?: string
 }
 
 type FontCommand = {
@@ -58,7 +62,7 @@ function easeOutBack(t: number): number {
   return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2)
 }
 
-export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionSceneProps) {
+export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName }: SvgExtrusionSceneProps) {
   const [svgData, setSvgData] = useState<ReturnType<SVGLoader['parse']> | null>(null)
   const [font, setFont] = useState<OpentypeFont | null>(null)
   const [loading, setLoading] = useState(true)
@@ -143,17 +147,28 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
     return getPreviewDisplayText(text, config, 'Name')
   }, [text, config])
 
-  // Pick the "active" nameplate box for the current name length. Long
-  // names (> nameplateBoxExpandAfter) automatically use the wider
-  // expanded box so letters don't have to be crushed together. Short
-  // names stay inside the tighter primary box.
+  // Pick the "active" nameplate box for the current variant + name
+  // length. Per-variant overrides take precedence when configured; then
+  // for long names (> nameplateBoxExpandAfter) the expanded box kicks
+  // in; otherwise the primary box applies.
   const activeNameplateBox = useMemo(() => {
-    if (!config.nameplateBox) return undefined
-    const expanded = config.nameplateBoxExpanded
+    const primary = (selectedVariantName && config.variantNameplateBoxes?.[selectedVariantName])
+      || config.nameplateBox
+    if (!primary) return undefined
+    const expanded = (selectedVariantName && config.variantNameplateBoxesExpanded?.[selectedVariantName])
+      || config.nameplateBoxExpanded
     const threshold = config.nameplateBoxExpandAfter ?? 7
     if (expanded && displayText.length > threshold) return expanded
-    return config.nameplateBox
-  }, [config.nameplateBox, config.nameplateBoxExpanded, config.nameplateBoxExpandAfter, displayText.length])
+    return primary
+  }, [
+    config.nameplateBox,
+    config.nameplateBoxExpanded,
+    config.nameplateBoxExpandAfter,
+    config.variantNameplateBoxes,
+    config.variantNameplateBoxesExpanded,
+    selectedVariantName,
+    displayText.length,
+  ])
 
   // Effective per-character step (in fontSize units).
   //

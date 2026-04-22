@@ -135,6 +135,16 @@ export interface PreviewConfig {
   /** Character count above which the expanded nameplate box kicks in (default 7). */
   nameplateBoxExpandAfter?: number
   /**
+   * Per-variant overrides for the primary nameplate box, keyed by the
+   * variant option value (e.g. "Zoro"). When a variant is selected and
+   * has an entry here, it replaces `nameplateBox` for that variant only.
+   * Lets two variants exported at slightly different SVG scales each use
+   * coordinates that fit their own plate, without affecting the others.
+   */
+  variantNameplateBoxes?: Record<string, { x: number; y: number; width: number; height: number }>
+  /** Per-variant overrides for the expanded nameplate box. */
+  variantNameplateBoxesExpanded?: Record<string, { x: number; y: number; width: number; height: number }>
+  /**
    * Once the name length exceeds this threshold, the font size floor is
    * relaxed so long names can shrink below the base size and fit cleanly
    * without overlapping. Undefined disables shrinking entirely.

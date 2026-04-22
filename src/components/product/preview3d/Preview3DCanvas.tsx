@@ -90,7 +90,14 @@ function SceneRouter({ config, text, selectedVariantName, sceneRef }: SceneRoute
       // Resolve SVG path: variant-specific or single SVG
       const svgPath = (selectedVariantName && config.variantSvgs?.[selectedVariantName]) || config.svg
       if (!svgPath) return null
-      return <SvgExtrusionScene config={config} svgPath={svgPath} text={text} />
+      return (
+        <SvgExtrusionScene
+          config={config}
+          svgPath={svgPath}
+          text={text}
+          selectedVariantName={selectedVariantName}
+        />
+      )
     }
     case 'composite-sign': {
       const jollySvgPath = (selectedVariantName && config.variantSvgs?.[selectedVariantName]) || config.svg
