@@ -5,6 +5,7 @@ import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { OrbitControls, ContactShadows, PresentationControls, Html } from '@react-three/drei'
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js'
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { StudioLighting } from './StudioLighting'
 import { SvgExtrudedLayer } from './SvgExtrudedLayer'
 import { ExtrudedTextLayer } from './ExtrudedTextLayer'
@@ -168,23 +169,6 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
       Math.max(baseFontSize * 0.25, Math.min(baseFontSize * 3, scaled)),
     )
   }, [font, displayText, config.textFontSize, config.textLayers, config.textMaxWidthRatio, config.nameplateBox, svgBounds.width])
-
-  // Collect shapes from 'cut' layers to subtract as holes from extrude layers
-  const cutShapes = useMemo(() => {
-    if (!svgData) return [] as THREE.Shape[]
-
-    const shapes: THREE.Shape[] = []
-    for (const layer of config.layers) {
-      if (layer.mode !== 'cut') continue
-      const matchHex = (layer.svgColor || layer.color).toLowerCase()
-      for (const svgPath of svgData.paths) {
-        if ('#' + svgPath.color.getHexString() === matchHex) {
-          shapes.push(...SVGLoader.createShapes(svgPath))
-        }
-      }
-    }
-    return shapes
-  }, [svgData, config.layers])
 
   // Compute text shapes ONCE using per-character contour classification.
   // Shared between textSubtractGeometry and ExtrudedTextLayer to avoid
@@ -357,6 +341,53 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
     return geo
   }, [textShapes, config.textLayers, config.layers, svgCenter])
 
+  // CSG subtraction geometry built from every `mode: 'cut'` layer.
+  // Unlike the `shape.holes.push()` fallback (which is fragile when SVG
+  // path winding is inconsistent), this does a real boolean subtract via
+  // three-bvh-csg, so cut shapes reliably carve holes out of paint
+  // layers regardless of how the cut path was drawn.
+  const cutSubtractGeometry = useMemo(() => {
+    if (!svgData) return null
+
+    const shapes: THREE.Shape[] = []
+    for (const layer of config.layers) {
+      if (layer.mode !== 'cut') continue
+      const matchHex = (layer.svgColor || layer.color).toLowerCase()
+      for (const svgPath of svgData.paths) {
+        if ('#' + svgPath.color.getHexString() === matchHex) {
+          shapes.push(...SVGLoader.createShapes(svgPath))
+        }
+      }
+    }
+    if (shapes.length === 0) return null
+
+    // Extrude deep enough to fully punch through every paint layer
+    // stacked above the silhouette (offsetZ + depth). Bottom is nudged
+    // slightly below z=0 so the cut also clears the silhouette's top
+    // face if the shopper happens to see it.
+    const maxSvgZ = Math.max(...config.layers.map(l => (l.offsetZ ?? 0) + l.depth))
+    const cutDepth = (maxSvgZ + 4) * DEPTH_SCALE
+
+    const geo = new THREE.ExtrudeGeometry(shapes, {
+      depth: cutDepth,
+      bevelEnabled: false,
+      steps: 1,
+    })
+    geo.translate(0, 0, -DEPTH_SCALE)
+    return geo
+  }, [svgData, config.layers])
+
+  // Merge text-stroke subtract and cut-shape subtract when both exist so
+  // paint layers only need a single CSG subtract per extrusion.
+  const combinedSubtractGeometry = useMemo(() => {
+    const parts: THREE.BufferGeometry[] = []
+    if (textSubtractGeometry) parts.push(textSubtractGeometry)
+    if (cutSubtractGeometry) parts.push(cutSubtractGeometry)
+    if (parts.length === 0) return null
+    if (parts.length === 1) return parts[0]!
+    return mergeGeometries(parts)
+  }, [textSubtractGeometry, cutSubtractGeometry])
+
   const scale = config.scale ?? 0.02
   const shouldAnimateIntro = !shouldReduceMotion && !hasPlayedIntroRef.current
   const initialScaleMultiplier = shouldAnimateIntro ? INTRO_START_SCALE_MULTIPLIER : INTRO_END_SCALE_MULTIPLIER
@@ -484,8 +515,14 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
                   matchColor={layer.svgColor || layer.color}
                   layer={layer}
                   depthScale={DEPTH_SCALE}
-                  cutShapes={(layer.offsetZ ?? 0) > 0 ? cutShapes : undefined}
-                  subtractGeometry={textSubtractGeometry ?? undefined}
+                  // Only paint layers (offsetZ > 0) receive CSG cuts —
+                  // the base silhouette at offsetZ=0 stays intact so
+                  // carved regions reveal solid black underneath.
+                  subtractGeometry={
+                    (layer.offsetZ ?? 0) > 0
+                      ? combinedSubtractGeometry ?? undefined
+                      : undefined
+                  }
                 />
               ))}
           </group>
