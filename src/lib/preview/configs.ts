@@ -2876,7 +2876,7 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   // ascenders sit higher than descenders, biasing text upward).
   nameplateBox: {
     x: 220,
-    y: 1510,
+    y: 1490,
     width: 1200,
     height: 310,
   },
