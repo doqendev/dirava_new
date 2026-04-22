@@ -2875,9 +2875,9 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   // rails (text geometry is centred on the box mid-line, but glyph
   // ascenders sit higher than descenders, biasing text upward).
   nameplateBox: {
-    x: 220,
+    x: 170,
     y: 1485,
-    width: 1200,
+    width: 1300,
     height: 310,
   },
   camera: {
