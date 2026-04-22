@@ -2930,6 +2930,29 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
     height: 310,
   },
   nameplateBoxExpandAfter: 7,
+  // Per-variant nameplate box overrides. Each variant's SVG may be
+  // exported at a slightly different scale / viewBox, so tuned
+  // coordinates are kept per-variant here. Luffy uses the top-level
+  // `nameplateBox` / `nameplateBoxExpanded` fallbacks above.
+  variantNameplateBoxes: {
+    // Zoro's blue plate centre sits at ~(794, 1607) in its 1687×1864
+    // viewBox. Width mirrors the same stretch ratio used for Luffy
+    // (~1.29 × blue width) so text spans the yellow frame interior.
+    Zoro: {
+      x: 69,
+      y: 1452,
+      width: 1450,
+      height: 310,
+    },
+  },
+  variantNameplateBoxesExpanded: {
+    Zoro: {
+      x: 69,
+      y: 1452,
+      width: 1450,
+      height: 310,
+    },
+  },
   // Names longer than 9 characters are allowed to shrink below the base
   // font size (down to 80% of it) so the adaptive spacing doesn't have
   // to squash letters into each other to fit.
