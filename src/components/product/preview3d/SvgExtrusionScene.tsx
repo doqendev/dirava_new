@@ -143,10 +143,48 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
     return getPreviewDisplayText(text, config, 'Name')
   }, [text, config])
 
-  // Effective per-character step (in fontSize units). Defaults to a small
-  // negative overlap so naturally-kerned shapes touch. Positive values add
-  // visible spacing between letters.
-  const effectiveLetterSpacing = config.textLetterSpacing ?? -0.1
+  // Effective per-character step (in fontSize units).
+  //
+  // Defaults to a small negative overlap so naturally-kerned shapes touch;
+  // a positive configured value adds visible gap between letters.
+  //
+  // When a nameplateBox is defined, we *adaptively reduce* the spacing for
+  // long names so they still fit inside the plate at the base font size:
+  // for short names the configured spacing wins, but if even the
+  // base-size text would overrun the nameplate, spacing is reduced
+  // exactly enough to fit (clamped at -0.1 so letters can't overlap
+  // beyond the default contour-touching behaviour).
+  const effectiveLetterSpacing = useMemo(() => {
+    const configured = config.textLetterSpacing ?? -0.1
+    if (!font || !config.nameplateBox || !config.textLayers) return configured
+
+    const gapCount = Math.max(0, displayText.length - 1)
+    if (gapCount === 0) return configured
+
+    const baseFontSize = config.textFontSize ?? 150
+    const naturalWidth = font.getAdvanceWidth(displayText, baseFontSize) as number
+    if (!naturalWidth || naturalWidth <= 0) return configured
+
+    const targetRatio = config.textMaxWidthRatio ?? 0.95
+    const targetWidth = config.nameplateBox.width * targetRatio
+
+    // Spacing that would make text exactly fill targetWidth at baseFontSize.
+    // Positive → extra gap; negative → overlap.
+    const fittingSpacing = (targetWidth - naturalWidth) / (gapCount * baseFontSize)
+
+    // Never more than the configured spacing (short names keep the
+    // desired inscription feel). Never below the natural-touch overlap
+    // of -0.1 (letters shouldn't smear into each other).
+    return Math.max(-0.1, Math.min(configured, fittingSpacing))
+  }, [
+    font,
+    displayText,
+    config.textLetterSpacing,
+    config.textFontSize,
+    config.textLayers,
+    config.nameplateBox,
+    config.textMaxWidthRatio,
+  ])
 
   // Auto-scale font size so text width fills a target ratio of the available
   // width — the nameplate box when defined, otherwise the full SVG width.
