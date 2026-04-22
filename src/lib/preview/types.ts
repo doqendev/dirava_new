@@ -135,6 +135,14 @@ export interface PreviewConfig {
   /** Character count above which the expanded nameplate box kicks in (default 7). */
   nameplateBoxExpandAfter?: number
   /**
+   * When the SVG contains a `#0000ff` marker path, that path's own
+   * bounding box is used as the nameplate (per-variant auto-sizing).
+   * `nameplateStretch` multiplies the detected WIDTH so the rendered
+   * text can extend beyond the blue marker onto the yellow frame
+   * interior. Height is taken from the blue marker directly. Default 1.
+   */
+  nameplateStretch?: number
+  /**
    * Once the name length exceeds this threshold, the font size floor is
    * relaxed so long names can shrink below the base size and fit cleanly
    * without overlapping. Undefined disables shrinking entirely.
