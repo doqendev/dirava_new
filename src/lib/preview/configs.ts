@@ -2901,7 +2901,7 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   // font size (down to 80% of it) so the adaptive spacing doesn't have
   // to squash letters into each other to fit.
   textShrinkAfter: 9,
-  textShrinkFloorRatio: 0.8,
+  textShrinkFloorRatio: 0.6,
   camera: {
     position: [0, 0, 22],
     fov: 45,
