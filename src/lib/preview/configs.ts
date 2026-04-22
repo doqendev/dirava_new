@@ -2858,17 +2858,16 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
       emissiveIntensity: 0.8,
     },
   ],
-  textFontSize: 380,
-  // Short names scale up until they fill ~85% of the nameplate width or
-  // the full height. Long names keep the base font size (no shrink) —
-  // they may extend past the plate edge on extremely long values but
-  // stay readable and consistent with shorter names' weight.
-  textMaxWidthRatio: 0.85,
+  textFontSize: 480,
+  // Short names scale up until they fill ~96% of the nameplate width,
+  // so the first letter sits just inside the left yellow edge and the
+  // last letter just inside the right edge. Long names keep the base
+  // font size (no shrink).
+  textMaxWidthRatio: 0.96,
   textMaxHeightRatio: 1.0,
-  // A little gap between letters reads as a more finished nameplate;
-  // 0.08 adds 8% of the font size as extra spacing between characters.
-  // The auto-scale step factors this in so names still never overrun.
-  textLetterSpacing: 0.08,
+  // Wider letter spacing so the nameplate reads like an engraved
+  // inscription. Auto-scale factors this in when sizing long names.
+  textLetterSpacing: 0.15,
   // Nameplate rectangle in SVG coords (viewBox 1638×1919). Eyeballed from
   // the reference artwork; tune if the text sits high/low.
   nameplateBox: {
