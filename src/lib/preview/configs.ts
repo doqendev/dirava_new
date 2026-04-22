@@ -2858,14 +2858,14 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
       emissiveIntensity: 0.8,
     },
   ],
-  textFontSize: 560,
+  textFontSize: 460,
   // Short names scale up until they fill ~96% of the nameplate width.
   // The height ratio is intentionally >1 so the width-derived font size
   // isn't capped prematurely — the ONEPIECE font's cap height is ~0.7×
-  // fontSize, so a ratio of 1.3 still fits visually inside the plate
+  // fontSize, so a ratio of 1.1 still fits visually inside the plate
   // while letting 4-6 char names reach full width edge-to-edge.
   textMaxWidthRatio: 0.96,
-  textMaxHeightRatio: 1.3,
+  textMaxHeightRatio: 1.1,
   // Wider letter spacing so the nameplate reads like an engraved
   // inscription. Auto-scale factors this in when sizing long names.
   textLetterSpacing: 0.15,
