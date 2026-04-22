@@ -2877,23 +2877,22 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   // rails (text geometry is centred on the box mid-line, but glyph
   // ascenders sit higher than descenders, biasing text upward).
   nameplateBox: {
-    x: 30,
+    x: 45,
     y: 1485,
     // Width chosen so the text box is centred on the SVG's horizontal
-    // midline (819) given the fixed left anchor at x=30, giving the
-    // same margin on the right as on the left relative to the yellow
-    // frame.
-    width: 1578,
+    // midline (819) given the fixed left anchor at x=45, giving the
+    // same 45-unit margin on the right as on the left relative to the
+    // yellow frame.
+    width: 1548,
     height: 310,
   },
-  // For names longer than the threshold the text uses a wider box (full
-  // SVG width) so the first/last letters can sit closer to the yellow
-  // edge before the adaptive letter spacing has to squeeze characters
-  // together. Letter spacing still auto-reduces if needed.
+  // For names longer than the threshold the text still uses the same
+  // margin; the font-shrink path (see textShrinkAfter) handles
+  // long-name fitting instead of widening the box.
   nameplateBoxExpanded: {
-    x: 40,
+    x: 45,
     y: 1485,
-    width: 1558,
+    width: 1548,
     height: 310,
   },
   nameplateBoxExpandAfter: 7,
