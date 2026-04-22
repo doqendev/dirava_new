@@ -2905,31 +2905,21 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   // Long names auto-reduce this spacing down to a natural-touch floor
   // so they still fit between the yellow frame edges.
   textLetterSpacing: 0.25,
-  // Nameplate rectangle in SVG coords (viewBox 1638×1919). The y is
-  // offset slightly past the yellow border's top edge so the glyph
-  // optical centre sits visually centred between the top/bottom yellow
-  // rails (text geometry is centred on the box mid-line, but glyph
-  // ascenders sit higher than descenders, biasing text upward).
+  // Nameplate sizing: the scene auto-detects the `#0000ff` marker in
+  // the loaded variant's SVG and uses its bounding box as the
+  // reference. `nameplateStretch` multiplies the detected width so
+  // text can extend from the blue interior out onto the yellow frame
+  // interior (≈1.29 matches the tuned Luffy values regardless of which
+  // variant's SVG scale happens to ship).
+  // The `nameplateBox` below is a fallback only — applied to any
+  // future variant SVG that lacks the blue marker.
+  nameplateStretch: 1.29,
   nameplateBox: {
     x: 50,
     y: 1485,
-    // Width chosen so the text box is centred on the SVG's horizontal
-    // midline (819) given the fixed left anchor at x=45, giving the
-    // same 45-unit margin on the right as on the left relative to the
-    // yellow frame.
     width: 1538,
     height: 310,
   },
-  // For names longer than the threshold the text still uses the same
-  // margin; the font-shrink path (see textShrinkAfter) handles
-  // long-name fitting instead of widening the box.
-  nameplateBoxExpanded: {
-    x: 50,
-    y: 1485,
-    width: 1538,
-    height: 310,
-  },
-  nameplateBoxExpandAfter: 7,
   // Names longer than 9 characters are allowed to shrink below the base
   // font size (down to 80% of it) so the adaptive spacing doesn't have
   // to squash letters into each other to fit.
