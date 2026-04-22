@@ -120,4 +120,18 @@ export interface PreviewConfig {
     width: number
     height: number
   }
+  /**
+   * Optional wider text box used automatically when the name length
+   * exceeds `nameplateBoxExpandAfter`. Lets long names escape the tight
+   * primary box and stretch closer to the SVG edges before adaptive
+   * letter spacing has to squeeze characters together.
+   */
+  nameplateBoxExpanded?: {
+    x: number
+    y: number
+    width: number
+    height: number
+  }
+  /** Character count above which the expanded nameplate box kicks in (default 7). */
+  nameplateBoxExpandAfter?: number
 }

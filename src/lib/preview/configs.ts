@@ -2886,6 +2886,17 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
     width: 1578,
     height: 310,
   },
+  // For names longer than the threshold the text uses a wider box (full
+  // SVG width) so the first/last letters can sit closer to the yellow
+  // edge before the adaptive letter spacing has to squeeze characters
+  // together. Letter spacing still auto-reduces if needed.
+  nameplateBoxExpanded: {
+    x: 0,
+    y: 1485,
+    width: 1638,
+    height: 310,
+  },
+  nameplateBoxExpandAfter: 7,
   camera: {
     position: [0, 0, 22],
     fov: 45,

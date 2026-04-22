@@ -143,6 +143,18 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
     return getPreviewDisplayText(text, config, 'Name')
   }, [text, config])
 
+  // Pick the "active" nameplate box for the current name length. Long
+  // names (> nameplateBoxExpandAfter) automatically use the wider
+  // expanded box so letters don't have to be crushed together. Short
+  // names stay inside the tighter primary box.
+  const activeNameplateBox = useMemo(() => {
+    if (!config.nameplateBox) return undefined
+    const expanded = config.nameplateBoxExpanded
+    const threshold = config.nameplateBoxExpandAfter ?? 7
+    if (expanded && displayText.length > threshold) return expanded
+    return config.nameplateBox
+  }, [config.nameplateBox, config.nameplateBoxExpanded, config.nameplateBoxExpandAfter, displayText.length])
+
   // Effective per-character step (in fontSize units).
   //
   // Defaults to a small negative overlap so naturally-kerned shapes touch;
@@ -156,7 +168,7 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
   // beyond the default contour-touching behaviour).
   const effectiveLetterSpacing = useMemo(() => {
     const configured = config.textLetterSpacing ?? -0.1
-    if (!font || !config.nameplateBox || !config.textLayers) return configured
+    if (!font || !activeNameplateBox || !config.textLayers) return configured
 
     const gapCount = Math.max(0, displayText.length - 1)
     if (gapCount === 0) return configured
@@ -166,7 +178,7 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
     if (!naturalWidth || naturalWidth <= 0) return configured
 
     const targetRatio = config.textMaxWidthRatio ?? 0.95
-    const targetWidth = config.nameplateBox.width * targetRatio
+    const targetWidth = activeNameplateBox.width * targetRatio
 
     // Spacing that would make text exactly fill targetWidth at baseFontSize.
     // Positive → extra gap; negative → overlap.
@@ -182,7 +194,7 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
     config.textLetterSpacing,
     config.textFontSize,
     config.textLayers,
-    config.nameplateBox,
+    activeNameplateBox,
     config.textMaxWidthRatio,
   ])
 
@@ -195,7 +207,7 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
     if (!font || !config.textLayers) return baseFontSize
 
     const targetRatio = config.textMaxWidthRatio ?? 0.95
-    const referenceWidth = config.nameplateBox?.width ?? svgBounds.width
+    const referenceWidth = activeNameplateBox?.width ?? svgBounds.width
     const targetWidth = referenceWidth * targetRatio
 
     // Measure text advance width at the base font size, then add the
@@ -213,14 +225,14 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
     // (no shrink-to-fit), cap at the nameplate height for short names so
     // they don't grow taller than the plate. Short names can exceed the
     // base size up to 5×; long names stay at exactly the base size.
-    const maxHeight = config.nameplateBox?.height
+    const maxHeight = activeNameplateBox?.height
     const heightRatio = config.textMaxHeightRatio ?? 0.9
     const heightCap = maxHeight ? maxHeight * heightRatio : Infinity
     return Math.min(
       heightCap,
       Math.max(baseFontSize, Math.min(baseFontSize * 5, scaled)),
     )
-  }, [font, displayText, config.textFontSize, config.textLayers, config.textMaxWidthRatio, config.textMaxHeightRatio, config.nameplateBox, svgBounds.width, effectiveLetterSpacing])
+  }, [font, displayText, config.textFontSize, config.textLayers, config.textMaxWidthRatio, config.textMaxHeightRatio, activeNameplateBox, svgBounds.width, effectiveLetterSpacing])
 
   // Compute text shapes ONCE using per-character contour classification.
   // Shared between textSubtractGeometry and ExtrudedTextLayer to avoid
@@ -583,7 +595,7 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
           {/* Text layers — centered on the SVG, or in the nameplate box
               (in SVG coords) when the product places text inside the art. */}
           {textShapes && config.textLayers && config.textLayers.length > 0 && (() => {
-            const nb = config.nameplateBox
+            const nb = activeNameplateBox
             // ExtrudedTextLayer renders the shape centered at (0,0) in its own
             // frame and flips Y with scale[1,-1,1]. The parent group below
             // positions that origin in SVG-space-relative-to-svg-center; Y is
