@@ -2902,6 +2902,10 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   // to squash letters into each other to fit.
   textShrinkAfter: 9,
   textShrinkFloorRatio: 0.6,
+  // Don't let the adaptive spacing ever pull letters into each other —
+  // once the configured gap would need to go below 0.05 to fit, the
+  // scene instead falls back to shrinking the font (see textShrinkAfter).
+  textMinLetterSpacing: 0.05,
   camera: {
     position: [0, 0, 22],
     fov: 45,

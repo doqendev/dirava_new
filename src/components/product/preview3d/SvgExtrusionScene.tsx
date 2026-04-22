@@ -185,9 +185,11 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
     const fittingSpacing = (targetWidth - naturalWidth) / (gapCount * baseFontSize)
 
     // Never more than the configured spacing (short names keep the
-    // desired inscription feel). Never below the natural-touch overlap
-    // of -0.1 (letters shouldn't smear into each other).
-    return Math.max(-0.1, Math.min(configured, fittingSpacing))
+    // desired inscription feel). Never below `textMinLetterSpacing`
+    // (default -0.1). Raising the floor toward 0 stops long names from
+    // overlapping and forces the font-size path to shrink instead.
+    const minSpacing = config.textMinLetterSpacing ?? -0.1
+    return Math.max(minSpacing, Math.min(configured, fittingSpacing))
   }, [
     font,
     displayText,
@@ -196,6 +198,7 @@ export function SvgExtrusionScene({ config, svgPath, text }: SvgExtrusionScenePr
     config.textLayers,
     activeNameplateBox,
     config.textMaxWidthRatio,
+    config.textMinLetterSpacing,
   ])
 
   // Auto-scale font size so text width fills a target ratio of the available

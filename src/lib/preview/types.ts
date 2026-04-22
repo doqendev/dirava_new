@@ -145,4 +145,11 @@ export interface PreviewConfig {
    * kicks in (default 0.85 = text can shrink to 85% of base).
    */
   textShrinkFloorRatio?: number
+  /**
+   * Lower clamp for the adaptive letter spacing (default -0.1). Raise
+   * toward 0 to prevent letters from overlapping when the name is long
+   * — the scene will shrink the font instead. Lower (more negative) to
+   * allow tighter overlap before the font starts to shrink.
+   */
+  textMinLetterSpacing?: number
 }
