@@ -2778,7 +2778,7 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
     {
       svgColor: '#ffffff',
       color: '#ffffff',
-      depth: 0.02, strokeWidth: 3,
+      depth: 0.005,
       offsetZ: 12,
       metalness: 0.0,
       roughness: 0.45,
@@ -2790,7 +2790,7 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
     {
       svgColor: '#ffd400',
       color: '#ffd400',
-      depth: 0.02, strokeWidth: 3,
+      depth: 0.005,
       offsetZ: 12.15,
       metalness: 0.0,
       roughness: 0.4,
@@ -2804,7 +2804,7 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
     {
       svgColor: '#fde200',
       color: '#fde200',
-      depth: 0.02, strokeWidth: 3,
+      depth: 0.005,
       offsetZ: 12.2,
       metalness: 0.0,
       roughness: 0.4,
@@ -2816,7 +2816,7 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
     {
       svgColor: '#dc2526',
       color: '#dc2526',
-      depth: 0.02, strokeWidth: 3,
+      depth: 0.005,
       offsetZ: 12.3,
       metalness: 0.0,
       roughness: 0.5,
@@ -2829,7 +2829,7 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
     {
       svgColor: '#ed1eec',
       color: '#141414',
-      depth: 0.02, strokeWidth: 3,
+      depth: 0.005,
       offsetZ: 12.45,
       metalness: 0.1,
       roughness: 0.85,
@@ -2842,102 +2842,102 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
     {
       svgColor: '#56037c',
       color: '#56037c',
-      depth: 0.02, strokeWidth: 3, offsetZ: 12.25, metalness: 0.0, roughness: 0.5,
+      depth: 0.005, offsetZ: 12.25, metalness: 0.0, roughness: 0.5,
       emissive: '#56037c', emissiveIntensity: 0.9,
     },
     {
       svgColor: '#b7b7b7',
       color: '#b7b7b7',
-      depth: 0.02, strokeWidth: 3, offsetZ: 12.35, metalness: 0.1, roughness: 0.4,
+      depth: 0.005, offsetZ: 12.35, metalness: 0.1, roughness: 0.4,
       emissive: '#b7b7b7', emissiveIntensity: 1.6,
     },
     // Chopper — light blue + pink
     {
       svgColor: '#60d0ec',
       color: '#60d0ec',
-      depth: 0.02, strokeWidth: 3, offsetZ: 12.18, metalness: 0.0, roughness: 0.45,
+      depth: 0.005, offsetZ: 12.18, metalness: 0.0, roughness: 0.45,
       emissive: '#60d0ec', emissiveIntensity: 1.1,
     },
     {
       svgColor: '#fe98fd',
       color: '#fe98fd',
-      depth: 0.02, strokeWidth: 3, offsetZ: 12.28, metalness: 0.0, roughness: 0.45,
+      depth: 0.005, offsetZ: 12.28, metalness: 0.0, roughness: 0.45,
       emissive: '#fe98fd', emissiveIntensity: 1.0,
     },
     // Law — yellow swatch
     {
       svgColor: '#fddc00',
       color: '#fddc00',
-      depth: 0.02, strokeWidth: 3, offsetZ: 12.17, metalness: 0.0, roughness: 0.4,
+      depth: 0.005, offsetZ: 12.17, metalness: 0.0, roughness: 0.4,
       emissive: '#fddc00', emissiveIntensity: 1.3,
     },
     // Nami — blue / pink / orange
     {
       svgColor: '#026bbe',
       color: '#026bbe',
-      depth: 0.02, strokeWidth: 3, offsetZ: 12.22, metalness: 0.0, roughness: 0.5,
+      depth: 0.005, offsetZ: 12.22, metalness: 0.0, roughness: 0.5,
       emissive: '#026bbe', emissiveIntensity: 0.9,
     },
     {
       svgColor: '#f485b4',
       color: '#f485b4',
-      depth: 0.02, strokeWidth: 3, offsetZ: 12.28, metalness: 0.0, roughness: 0.45,
+      depth: 0.005, offsetZ: 12.28, metalness: 0.0, roughness: 0.45,
       emissive: '#f485b4', emissiveIntensity: 0.9,
     },
     {
       svgColor: '#ffa91f',
       color: '#ffa91f',
-      depth: 0.02, strokeWidth: 3, offsetZ: 12.24, metalness: 0.0, roughness: 0.4,
+      depth: 0.005, offsetZ: 12.24, metalness: 0.0, roughness: 0.4,
       emissive: '#ffa91f', emissiveIntensity: 1.1,
     },
     // Shanks — brown / grey / dark red
     {
       svgColor: '#7a463c',
       color: '#7a463c',
-      depth: 0.02, strokeWidth: 3, offsetZ: 12.23, metalness: 0.0, roughness: 0.6,
+      depth: 0.005, offsetZ: 12.23, metalness: 0.0, roughness: 0.6,
       emissive: '#7a463c', emissiveIntensity: 0.7,
     },
     {
       svgColor: '#868686',
       color: '#868686',
-      depth: 0.02, strokeWidth: 3, offsetZ: 12.37, metalness: 0.1, roughness: 0.4,
+      depth: 0.005, offsetZ: 12.37, metalness: 0.1, roughness: 0.4,
       emissive: '#868686', emissiveIntensity: 0.7,
     },
     {
       svgColor: '#cd1414',
       color: '#cd1414',
-      depth: 0.02, strokeWidth: 3, offsetZ: 12.32, metalness: 0.0, roughness: 0.5,
+      depth: 0.005, offsetZ: 12.32, metalness: 0.0, roughness: 0.5,
       emissive: '#cd1414', emissiveIntensity: 1.6,
     },
     // Ace — multiple accents
     {
       svgColor: '#0d83e3',
       color: '#0d83e3',
-      depth: 0.02, strokeWidth: 3, offsetZ: 12.22, metalness: 0.0, roughness: 0.5,
+      depth: 0.005, offsetZ: 12.22, metalness: 0.0, roughness: 0.5,
       emissive: '#0d83e3', emissiveIntensity: 1.0,
     },
     {
       svgColor: '#bababa',
       color: '#bababa',
-      depth: 0.02, strokeWidth: 3, offsetZ: 12.36, metalness: 0.1, roughness: 0.4,
+      depth: 0.005, offsetZ: 12.36, metalness: 0.1, roughness: 0.4,
       emissive: '#bababa', emissiveIntensity: 1.6,
     },
     {
       svgColor: '#e60000',
       color: '#e60000',
-      depth: 0.02, strokeWidth: 3, offsetZ: 12.31, metalness: 0.0, roughness: 0.5,
+      depth: 0.005, offsetZ: 12.31, metalness: 0.0, roughness: 0.5,
       emissive: '#e60000', emissiveIntensity: 0.9,
     },
     {
       svgColor: '#f38400',
       color: '#f38400',
-      depth: 0.02, strokeWidth: 3, offsetZ: 12.19, metalness: 0.0, roughness: 0.4,
+      depth: 0.005, offsetZ: 12.19, metalness: 0.0, roughness: 0.4,
       emissive: '#f38400', emissiveIntensity: 1.1,
     },
     {
       svgColor: '#f3ea00',
       color: '#f3ea00',
-      depth: 0.02, strokeWidth: 3, offsetZ: 12.16, metalness: 0.0, roughness: 0.4,
+      depth: 0.005, offsetZ: 12.16, metalness: 0.0, roughness: 0.4,
       emissive: '#f3ea00', emissiveIntensity: 1.3,
     },
     // Solid black fill under the green-marker shapes (eye sockets, nose)
@@ -2979,7 +2979,7 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   textLayers: [
     {
       color: '#ffffff',
-      depth: 0.02, strokeWidth: 3,
+      depth: 0.005,
       offsetZ: 12.45,
       metalness: 0.0,
       roughness: 0.4,
