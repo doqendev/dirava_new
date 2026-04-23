@@ -377,6 +377,7 @@ export function QuickViewModal() {
                             )}
                           >
                             <Box className="w-3.5 h-3.5" />
+                            <span>3D</span>
                           </button>
                         )}
 
