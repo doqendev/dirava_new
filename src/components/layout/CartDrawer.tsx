@@ -46,7 +46,7 @@ export function CartDrawer() {
       title: line.merchandise.product.title,
       price: line.merchandise.price,
       compareAtPrice: line.merchandise.compareAtPrice,
-      image: line.merchandise.product.featuredImage,
+      image: line.merchandise.image ?? line.merchandise.product.featuredImage,
     })
     // Remove from cart
     removeItem(line.id)
@@ -202,16 +202,21 @@ export function CartDrawer() {
                 </div>
               ) : (
                 <ul className="divide-y divide-border-subtle">
-                  {lines.filter((line) => line?.merchandise?.product).map((line) => (
+                  {lines.filter((line) => line?.merchandise?.product).map((line) => {
+                    // Prefer the variant-level image so e.g. an "Ace" lightbox
+                    // line shows the Ace artwork instead of the product's
+                    // default featured image.
+                    const lineImage = line.merchandise.image ?? line.merchandise.product.featuredImage
+                    return (
                     <li key={line.id} className="p-4">
                       <div className="flex gap-4">
                         {/* Product Image */}
                         <div className="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-bg-secondary">
-                          {line.merchandise.product.featuredImage && (
+                          {lineImage && (
                             <Image
-                              src={line.merchandise.product.featuredImage.url}
+                              src={lineImage.url}
                               alt={
-                                line.merchandise.product.featuredImage.altText ||
+                                lineImage.altText ||
                                 line.merchandise.product.title
                               }
                               fill
@@ -325,7 +330,8 @@ export function CartDrawer() {
                         </div>
                       </div>
                     </li>
-                  ))}
+                    )
+                  })}
                 </ul>
               )}
             </div>

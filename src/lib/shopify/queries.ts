@@ -306,6 +306,10 @@ export const GET_CART = gql`
                   amount
                   currencyCode
                 }
+                image {
+                  url
+                  altText
+                }
                 product {
                   id
                   title

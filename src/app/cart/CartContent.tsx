@@ -59,18 +59,23 @@ export default function CartContent() {
       <section className="py-6">
         <div className="px-4 max-w-4xl mx-auto">
           <div className="space-y-4">
-            {lines.map((line) => (
+            {lines.map((line) => {
+              // Prefer the variant-level image (e.g. "Ace" lightbox) over the
+              // product's default featured image so the cart reflects the
+              // actual variant the shopper picked.
+              const lineImage = line.merchandise.image ?? line.merchandise.product.featuredImage
+              return (
               <div
                 key={line.id}
                 className="flex gap-4 p-4 bg-bg-card rounded-xl border border-border-subtle"
               >
                 {/* Product Image */}
                 <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-bg-secondary">
-                  {line.merchandise.product.featuredImage && (
+                  {lineImage && (
                     <Image
-                      src={line.merchandise.product.featuredImage.url}
+                      src={lineImage.url}
                       alt={
-                        line.merchandise.product.featuredImage.altText ||
+                        lineImage.altText ||
                         line.merchandise.product.title
                       }
                       fill
@@ -161,7 +166,8 @@ export default function CartContent() {
                   </div>
                 </div>
               </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>

@@ -104,6 +104,9 @@ export interface ShopifyCartLine {
     title: string
     price: ShopifyMoney
     compareAtPrice?: ShopifyMoney | null
+    /** Variant-level image; populated when the Shopify variant has its own
+     *  image assigned. Fall back to `product.featuredImage` when null. */
+    image?: ShopifyImage | null
     product: {
       id: string
       title: string

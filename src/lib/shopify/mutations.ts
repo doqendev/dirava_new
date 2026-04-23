@@ -61,6 +61,10 @@ export const CREATE_CART_WITH_LINES = gql`
                     amount
                     currencyCode
                   }
+                  image {
+                    url
+                    altText
+                  }
                   product {
                     id
                     title
@@ -129,6 +133,10 @@ export const ADD_TO_CART = gql`
                     amount
                     currencyCode
                   }
+                  image {
+                    url
+                    altText
+                  }
                   product {
                     id
                     title
@@ -196,6 +204,10 @@ export const UPDATE_CART_LINE = gql`
                     amount
                     currencyCode
                   }
+                  image {
+                    url
+                    altText
+                  }
                   product {
                     id
                     title
@@ -262,6 +274,10 @@ export const REMOVE_FROM_CART = gql`
                   compareAtPrice {
                     amount
                     currencyCode
+                  }
+                  image {
+                    url
+                    altText
                   }
                   product {
                     id
@@ -377,6 +393,10 @@ export const CART_DISCOUNT_CODES_UPDATE = gql`
                   compareAtPrice {
                     amount
                     currencyCode
+                  }
+                  image {
+                    url
+                    altText
                   }
                   product {
                     id
