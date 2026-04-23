@@ -3024,12 +3024,18 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   // Names longer than 9 characters are allowed to shrink below the base
   // font size (down to 80% of it) so the adaptive spacing doesn't have
   // to squash letters into each other to fit.
-  textShrinkAfter: 8,
-  textShrinkFloorRatio: 0.35,
+  textShrinkAfter: 9,
+  textShrinkFloorRatio: 0.45,
+  // Per-length overrides — only 9 and 12 need special handling; all
+  // other lengths use the default floor (or no shrink for ≤9).
+  textShrinkFloorByLength: {
+    9: 0.65,
+    12: 0.35,
+  },
   // Don't let the adaptive spacing ever pull letters into each other —
   // once the configured gap would need to go below 0.05 to fit, the
   // scene instead falls back to shrinking the font (see textShrinkAfter).
-  textMinLetterSpacing: 0,
+  textMinLetterSpacing: 0.05,
   camera: {
     position: [0, 0, 22],
     fov: 45,

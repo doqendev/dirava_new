@@ -164,6 +164,14 @@ export interface PreviewConfig {
    */
   textShrinkFloorRatio?: number
   /**
+   * Per-length overrides of `textShrinkFloorRatio`. Lets you keep most
+   * lengths at the default behaviour while relaxing (or disabling) the
+   * shrink floor for specific lengths that otherwise overflow.
+   * Example: `{ 9: 0.65, 12: 0.35 }` lets 9-char names shrink to 65%
+   * of base and 12-char names to 35%, regardless of `textShrinkAfter`.
+   */
+  textShrinkFloorByLength?: Record<number, number>
+  /**
    * Lower clamp for the adaptive letter spacing (default -0.1). Raise
    * toward 0 to prevent letters from overlapping when the name is long
    * — the scene will shrink the font instead. Lower (more negative) to

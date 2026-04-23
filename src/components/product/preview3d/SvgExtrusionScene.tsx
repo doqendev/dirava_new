@@ -289,20 +289,29 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName }
     const heightRatio = config.textMaxHeightRatio ?? 0.9
     const heightCap = maxHeight ? maxHeight * heightRatio : Infinity
 
-    // For names beyond the shrink threshold, relax the floor below the
-    // base font size so long names can scale down to fit cleanly instead
-    // of forcing adaptive spacing to crush letters together.
-    const shrinkAfter = config.textShrinkAfter ?? Infinity
-    const shrinkFloorRatio = config.textShrinkFloorRatio ?? 0.85
-    const sizeFloor = displayText.length > shrinkAfter
-      ? baseFontSize * shrinkFloorRatio
-      : baseFontSize
+    // Size floor determines how small the font can get. Per-length
+    // overrides (textShrinkFloorByLength) always win — use them to
+    // relax the floor for specific name lengths that overflow without
+    // affecting every other length. Otherwise, if the length exceeds
+    // textShrinkAfter, use the default shrink ratio. Otherwise, the
+    // font stays at (or above) the base size.
+    const perLengthOverride = config.textShrinkFloorByLength?.[displayText.length]
+    let sizeFloor = baseFontSize
+    if (perLengthOverride !== undefined) {
+      sizeFloor = baseFontSize * perLengthOverride
+    } else {
+      const shrinkAfter = config.textShrinkAfter ?? Infinity
+      if (displayText.length > shrinkAfter) {
+        const shrinkFloorRatio = config.textShrinkFloorRatio ?? 0.85
+        sizeFloor = baseFontSize * shrinkFloorRatio
+      }
+    }
 
     return Math.min(
       heightCap,
       Math.max(sizeFloor, Math.min(baseFontSize * 5, scaled)),
     )
-  }, [font, displayText, config.textFontSize, config.textLayers, config.textMaxWidthRatio, config.textMaxHeightRatio, config.textShrinkAfter, config.textShrinkFloorRatio, activeNameplateBox, svgBounds.width, effectiveLetterSpacing])
+  }, [font, displayText, config.textFontSize, config.textLayers, config.textMaxWidthRatio, config.textMaxHeightRatio, config.textShrinkAfter, config.textShrinkFloorRatio, config.textShrinkFloorByLength, activeNameplateBox, svgBounds.width, effectiveLetterSpacing])
 
   // Compute text shapes ONCE using per-character contour classification.
   // Shared between textSubtractGeometry and ExtrudedTextLayer to avoid
