@@ -43,6 +43,14 @@ interface ProductGalleryProps {
   onPreviewTextChange?: (text: string) => void
   canvasCart?: CanvasCartProps
   initialImageIndex?: number
+  /** For each thumbnail index, the variant option value it represents (or
+   *  null when the image isn't tied to a specific variant). Used to let
+   *  shoppers switch characters inside the active 3D preview by tapping a
+   *  thumbnail — no need to exit 3D, tap the variant, then re-enter. */
+  imageVariantNames?: (string | null)[]
+  /** Called when a thumbnail is tapped while the 3D preview is active and
+   *  that thumbnail maps to a variant. Receives the variant option value. */
+  onVariantSelect?: (variantName: string) => void
 }
 
 export interface ProductGalleryHandle {
@@ -64,6 +72,8 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
       onPreviewTextChange,
       canvasCart,
       initialImageIndex,
+      imageVariantNames,
+      onVariantSelect,
     },
     ref
   ) {
@@ -406,20 +416,32 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
         {/* Thumbnails */}
         {(hasMultipleImages || show3DTab) && (
           <div className="flex gap-2 overflow-x-auto hide-scrollbar">
-            {images.map((image, index) => (
+            {images.map((image, index) => {
+              const thumbVariant = imageVariantNames?.[index] ?? null
+              // While the 3D preview is open, a thumbnail tied to a variant
+              // switches characters in-place instead of collapsing the 3D view
+              // — much faster than exiting 3D, picking the variant, re-entering.
+              const stayInPreview = is3DActive && thumbVariant && onVariantSelect
+              return (
               <button
                 key={index}
-                onClick={() => goToIndex(index)}
+                onClick={() => {
+                  if (stayInPreview) {
+                    onVariantSelect(thumbVariant)
+                  } else {
+                    goToIndex(index)
+                  }
+                }}
                 className={cn(
                   'relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden',
                   'border-2 transition-all duration-200',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent,#00f5ff)]',
-                  index === currentIndex
+                  (stayInPreview ? thumbVariant === selectedVariantName : index === currentIndex)
                     ? 'border-[color:var(--accent,#00f5ff)]'
                     : 'border-transparent opacity-60 hover:opacity-100'
                 )}
                 aria-label={t('viewImage', { number: index + 1 })}
-                aria-current={index === currentIndex ? 'true' : undefined}
+                aria-current={(stayInPreview ? thumbVariant === selectedVariantName : index === currentIndex) ? 'true' : undefined}
               >
                 <Image
                   src={image.url}
@@ -429,7 +451,8 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                   sizes="64px"
                 />
               </button>
-            ))}
+              )
+            })}
 
             {/* 3D Preview thumbnail — last in sequence */}
             {show3DTab && (

@@ -243,6 +243,28 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
     setSelectedOptions((prev) => ({ ...prev, [name]: value }))
   }
 
+  // Map each gallery thumbnail index → the variant option value it
+  // represents (or null when the image isn't pinned to a variant). Lets
+  // the gallery swap characters inside an open 3D preview when a
+  // thumbnail is tapped, so mobile shoppers don't have to exit the
+  // preview just to compare variants.
+  const imageVariantNames = useMemo<(string | null)[]>(() => {
+    return product.images.map((img) => {
+      const match = product.variants.find((v) =>
+        v.image?.url && v.image.url.split('?')[0] === img.url.split('?')[0]
+      )
+      if (!match) return null
+      const opt = match.selectedOptions.find((o) => o.name === 'Color' || o.name === 'color')
+      return opt?.value ?? null
+    })
+  }, [product.images, product.variants])
+
+  // Called by the gallery when a thumbnail is tapped while 3D is active.
+  const onVariantSelectFromGallery = (variantName: string) => {
+    const key = 'Color' in selectedOptions ? 'Color' : 'color' in selectedOptions ? 'color' : 'Color'
+    handleOptionChange(key, variantName)
+  }
+
   const hasDiscount =
     product.compareAtPriceRange &&
     parseFloat(product.compareAtPriceRange.minVariantPrice.amount) >
@@ -304,6 +326,8 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               previewConfig={previewConfig}
               previewText={personalizationName}
               selectedVariantName={selectedOptions['Color'] || selectedOptions['color'] || ''}
+              imageVariantNames={imageVariantNames}
+              onVariantSelect={onVariantSelectFromGallery}
               onPreviewTextChange={product.personalization ? setPersonalizationName : undefined}
               canvasCart={previewConfig ? {
                 variantId: selectedVariant?.id || '',
