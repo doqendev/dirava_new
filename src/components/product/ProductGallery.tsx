@@ -356,7 +356,6 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
               aria-label={t('view3DPreview')}
             >
               <Box className="w-4 h-4" />
-              <span className="text-xs font-bold tracking-wide">3D</span>
             </button>
           )}
 

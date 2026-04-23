@@ -217,7 +217,7 @@ export function Preview3DCanvas({ config, text, selectedVariantName }: Preview3D
           onClick={() => setLightOn((v) => !v)}
           aria-pressed={lightOn}
           aria-label={lightOn ? t('preview3dLightOff') : t('preview3dLightOn')}
-          className="absolute top-3 right-3 z-20 pointer-events-auto inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[11px] font-medium backdrop-blur-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent,#00f5ff)]"
+          className="absolute top-3 left-3 z-20 pointer-events-auto inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[11px] font-medium backdrop-blur-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent,#00f5ff)]"
           style={{
             background: lightOn ? 'rgba(0, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.45)',
             border: lightOn ? '1px solid rgba(0, 255, 255, 0.35)' : '1px solid rgba(255, 255, 255, 0.1)',
