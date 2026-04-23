@@ -6,6 +6,7 @@ import { useFrame } from '@react-three/fiber'
 import { OrbitControls, ContactShadows, PresentationControls, Html } from '@react-three/drei'
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
+import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { StudioLighting } from './StudioLighting'
 import { SvgExtrudedLayer } from './SvgExtrudedLayer'
 import { ExtrudedTextLayer } from './ExtrudedTextLayer'
@@ -720,6 +721,32 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName }
         minPolarAngle={Math.PI * 0.3}
         target={[0, 0, 0]}
       />
+
+      {/* Bloom post-processing — gives emissive layers true light-bleed
+          so the product reads as LED-lit instead of just surface-tinted.
+          Opt-in via config so flat-acrylic products don't pay the cost. */}
+      {config.postprocessingBloom && (
+        <EffectComposer>
+          <Bloom
+            intensity={
+              typeof config.postprocessingBloom === 'object'
+                ? config.postprocessingBloom.intensity ?? 1.2
+                : 1.2
+            }
+            luminanceThreshold={
+              typeof config.postprocessingBloom === 'object'
+                ? config.postprocessingBloom.luminanceThreshold ?? 0.3
+                : 0.3
+            }
+            luminanceSmoothing={
+              typeof config.postprocessingBloom === 'object'
+                ? config.postprocessingBloom.luminanceSmoothing ?? 0.9
+                : 0.9
+            }
+            mipmapBlur
+          />
+        </EffectComposer>
+      )}
     </>
   )
 }

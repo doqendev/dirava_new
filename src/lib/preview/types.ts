@@ -153,6 +153,18 @@ export interface PreviewConfig {
    */
   autoCenterNameplateOnBlueMarker?: boolean
   /**
+   * Enables a post-processing bloom pass so layers with
+   * `emissiveIntensity > ~1` visibly glow (light bleed) instead of
+   * just rendering a brighter colour. Meant for products that need
+   * an LED-lit look. Opt-in because the extra render pass has a
+   * small perf cost.
+   */
+  postprocessingBloom?: boolean | {
+    intensity?: number
+    luminanceThreshold?: number
+    luminanceSmoothing?: number
+  }
+  /**
    * Once the name length exceeds this threshold, the font size floor is
    * relaxed so long names can shrink below the base size and fit cleanly
    * without overlapping. Undefined disables shrinking entirely.
