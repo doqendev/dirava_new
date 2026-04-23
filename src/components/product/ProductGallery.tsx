@@ -10,6 +10,7 @@ import { AddToCartButton } from '@/components/product/AddToCartButton'
 import { Preview3DLoadingIndicator } from '@/components/product/preview3d/LoadingSpinner'
 import type { PreviewConfig } from '@/lib/preview/types'
 import { getPreviewDisplayText } from '@/lib/preview/textTransform'
+import { MAX_PERSONALIZATION_LENGTH } from '@/lib/utils/constants'
 
 const Preview3DCanvas = lazy(() =>
   import('@/components/product/preview3d/Preview3DCanvas').then((mod) => ({
@@ -265,7 +266,11 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                           <input
                             type="text"
                             value={normalizedPreviewText}
-                            onChange={(e) => onPreviewTextChange(previewConfig ? getPreviewDisplayText(e.target.value, previewConfig, '') : e.target.value)}
+                            maxLength={MAX_PERSONALIZATION_LENGTH}
+                            onChange={(e) => {
+                              const sliced = e.target.value.slice(0, MAX_PERSONALIZATION_LENGTH)
+                              onPreviewTextChange(previewConfig ? getPreviewDisplayText(sliced, previewConfig, '') : sliced)
+                            }}
                             placeholder="Name"
                             className={cn(
                               'flex-1 min-w-0 px-3 py-2.5 rounded-lg text-sm text-white placeholder-white/40',
