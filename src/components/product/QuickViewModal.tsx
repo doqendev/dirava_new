@@ -327,7 +327,11 @@ export function QuickViewModal() {
                                     <input
                                       type="text"
                                       value={personalizationName}
-                                      onChange={(e) => setPersonalizationName(previewConfig ? getPreviewDisplayText(e.target.value, previewConfig, '') : e.target.value)}
+                                      maxLength={MAX_PERSONALIZATION_LENGTH}
+                                      onChange={(e) => {
+                                        const sliced = e.target.value.slice(0, MAX_PERSONALIZATION_LENGTH)
+                                        setPersonalizationName(previewConfig ? getPreviewDisplayText(sliced, previewConfig, '') : sliced)
+                                      }}
                                       placeholder="Name"
                                       className={cn(
                                         'w-full px-3 py-2.5 rounded-lg text-sm text-white placeholder-white/40',
