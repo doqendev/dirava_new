@@ -3021,6 +3021,13 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   },
   nameplateBoxExpandAfter: 7,
   autoCenterNameplateOnBlueMarker: true,
+  // Bloom post-processing so the bright emissive layers actually glow
+  // like an LED sign instead of just reading as a painted colour.
+  postprocessingBloom: {
+    intensity: 1.4,
+    luminanceThreshold: 0.25,
+    luminanceSmoothing: 0.85,
+  },
   // Names longer than 9 characters are allowed to shrink below the base
   // font size (down to 80% of it) so the adaptive spacing doesn't have
   // to squash letters into each other to fit.
