@@ -147,10 +147,37 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName }
     return getPreviewDisplayText(text, config, 'Name')
   }, [text, config])
 
+  // Centre of the blue (`#0000ff`) marker in the current SVG, used
+  // when `autoCenterNameplateOnBlueMarker` is enabled to snap the
+  // nameplate onto each variant's actual plate regardless of slight
+  // horizontal shifts in the artwork between characters.
+  const detectedBlueCenter = useMemo(() => {
+    if (!svgData) return null
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+    let found = false
+    for (const path of svgData.paths) {
+      if ('#' + path.color.getHexString() !== '#0000ff') continue
+      for (const sub of path.subPaths) {
+        for (const p of sub.getPoints()) {
+          if (p.x < minX) minX = p.x
+          if (p.y < minY) minY = p.y
+          if (p.x > maxX) maxX = p.x
+          if (p.y > maxY) maxY = p.y
+          found = true
+        }
+      }
+    }
+    if (!found) return null
+    return { cx: (minX + maxX) / 2, cy: (minY + maxY) / 2 }
+  }, [svgData])
+
   // Pick the "active" nameplate box for the current variant + name
   // length. Per-variant overrides take precedence when configured; then
   // for long names (> nameplateBoxExpandAfter) the expanded box kicks
-  // in; otherwise the primary box applies.
+  // in; otherwise the primary box applies. When
+  // `autoCenterNameplateOnBlueMarker` is enabled, the box is
+  // re-centred on the detected blue marker — width/height stay from
+  // config so the shopper's tuned size is preserved.
   const activeNameplateBox = useMemo(() => {
     const primary = (selectedVariantName && config.variantNameplateBoxes?.[selectedVariantName])
       || config.nameplateBox
@@ -158,16 +185,26 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName }
     const expanded = (selectedVariantName && config.variantNameplateBoxesExpanded?.[selectedVariantName])
       || config.nameplateBoxExpanded
     const threshold = config.nameplateBoxExpandAfter ?? 7
-    if (expanded && displayText.length > threshold) return expanded
-    return primary
+    const chosen = expanded && displayText.length > threshold ? expanded : primary
+    if (config.autoCenterNameplateOnBlueMarker && detectedBlueCenter) {
+      return {
+        x: detectedBlueCenter.cx - chosen.width / 2,
+        y: detectedBlueCenter.cy - chosen.height / 2,
+        width: chosen.width,
+        height: chosen.height,
+      }
+    }
+    return chosen
   }, [
     config.nameplateBox,
     config.nameplateBoxExpanded,
     config.nameplateBoxExpandAfter,
     config.variantNameplateBoxes,
     config.variantNameplateBoxesExpanded,
+    config.autoCenterNameplateOnBlueMarker,
     selectedVariantName,
     displayText.length,
+    detectedBlueCenter,
   ])
 
   // Effective per-character step (in fontSize units).

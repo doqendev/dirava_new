@@ -2742,12 +2742,17 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   variantSvgs: {
     Luffy: '/svgs/preview/one-piece-lightbox-luffy.svg',
     Zoro: '/svgs/preview/one-piece-lightbox-zoro.svg',
+    Ace: '/svgs/preview/one-piece-lightbox-ace.svg',
+    Chopper: '/svgs/preview/one-piece-lightbox-chopper.svg',
+    Law: '/svgs/preview/one-piece-lightbox-law.svg',
+    Nami: '/svgs/preview/one-piece-lightbox-nami.svg',
+    Shanks: '/svgs/preview/one-piece-lightbox-shanks.svg',
   },
   layers: [
     // Black silhouette — the whole lightbox body at 20mm depth.
-    // Per-variant SVGs use slightly different black swatches, so we
-    // match both. Only one is present in any given SVG; the other is a
-    // no-op for that variant.
+    // Different variants are exported with slightly different black
+    // swatches; each layer below is a no-op for variants that don't
+    // use that particular hex.
     {
       svgColor: '#171714',
       color: '#141414',
@@ -2757,6 +2762,13 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
     },
     {
       svgColor: '#171713',
+      color: '#141414',
+      depth: 20,
+      metalness: 0.1,
+      roughness: 0.85,
+    },
+    {
+      svgColor: '#000000',
       color: '#141414',
       depth: 20,
       metalness: 0.1,
@@ -2811,9 +2823,9 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
       emissive: '#dc2526',
       emissiveIntensity: 0.3,
     },
-    // Pink `#ed1eec` paths mark the hat's pill-shaped shine details —
-    // these are UV-painted black on top of the yellow straw hat on the
-    // physical product. Render as a thin black paint layer above yellow.
+    // Pink `#ed1eec` paths mark the hat's pill-shaped shine details on
+    // Luffy — UV-painted black on top of the yellow hat. Rendered as a
+    // thin black paint layer above yellow.
     {
       svgColor: '#ed1eec',
       color: '#141414',
@@ -2822,28 +2834,111 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
       metalness: 0.1,
       roughness: 0.85,
     },
-    // Purple `#56037c` — appears on Zoro's lightbox (e.g. the bandana /
-    // accent detail). Flat emissive paint on the front face.
+    // ----- Character-specific paint layers -----
+    // Each variant only uses a subset; the rest are no-ops on that SVG.
+    // All share the same "UV-painted front face" treatment — thin
+    // emissive layer above the silhouette.
+    // Zoro purple / grey
     {
       svgColor: '#56037c',
       color: '#56037c',
-      depth: 0.4,
-      offsetZ: 20.25,
-      metalness: 0.0,
-      roughness: 0.5,
-      emissive: '#56037c',
-      emissiveIntensity: 0.4,
+      depth: 0.4, offsetZ: 20.25, metalness: 0.0, roughness: 0.5,
+      emissive: '#56037c', emissiveIntensity: 0.4,
     },
-    // Grey `#b7b7b7` — Zoro lightbox detail (sword / scabbard highlight).
     {
       svgColor: '#b7b7b7',
       color: '#b7b7b7',
-      depth: 0.4,
-      offsetZ: 20.35,
-      metalness: 0.1,
-      roughness: 0.4,
-      emissive: '#b7b7b7',
-      emissiveIntensity: 0.35,
+      depth: 0.4, offsetZ: 20.35, metalness: 0.1, roughness: 0.4,
+      emissive: '#b7b7b7', emissiveIntensity: 0.35,
+    },
+    // Chopper — light blue + pink
+    {
+      svgColor: '#60d0ec',
+      color: '#60d0ec',
+      depth: 0.4, offsetZ: 20.18, metalness: 0.0, roughness: 0.45,
+      emissive: '#60d0ec', emissiveIntensity: 0.5,
+    },
+    {
+      svgColor: '#fe98fd',
+      color: '#fe98fd',
+      depth: 0.4, offsetZ: 20.28, metalness: 0.0, roughness: 0.45,
+      emissive: '#fe98fd', emissiveIntensity: 0.45,
+    },
+    // Law — yellow swatch
+    {
+      svgColor: '#fddc00',
+      color: '#fddc00',
+      depth: 0.4, offsetZ: 20.17, metalness: 0.0, roughness: 0.4,
+      emissive: '#fddc00', emissiveIntensity: 0.55,
+    },
+    // Nami — blue / pink / orange
+    {
+      svgColor: '#026bbe',
+      color: '#026bbe',
+      depth: 0.4, offsetZ: 20.22, metalness: 0.0, roughness: 0.5,
+      emissive: '#026bbe', emissiveIntensity: 0.4,
+    },
+    {
+      svgColor: '#f485b4',
+      color: '#f485b4',
+      depth: 0.4, offsetZ: 20.28, metalness: 0.0, roughness: 0.45,
+      emissive: '#f485b4', emissiveIntensity: 0.4,
+    },
+    {
+      svgColor: '#ffa91f',
+      color: '#ffa91f',
+      depth: 0.4, offsetZ: 20.24, metalness: 0.0, roughness: 0.4,
+      emissive: '#ffa91f', emissiveIntensity: 0.5,
+    },
+    // Shanks — brown / grey / dark red
+    {
+      svgColor: '#7a463c',
+      color: '#7a463c',
+      depth: 0.4, offsetZ: 20.23, metalness: 0.0, roughness: 0.6,
+      emissive: '#7a463c', emissiveIntensity: 0.3,
+    },
+    {
+      svgColor: '#868686',
+      color: '#868686',
+      depth: 0.4, offsetZ: 20.37, metalness: 0.1, roughness: 0.4,
+      emissive: '#868686', emissiveIntensity: 0.3,
+    },
+    {
+      svgColor: '#cd1414',
+      color: '#cd1414',
+      depth: 0.4, offsetZ: 20.32, metalness: 0.0, roughness: 0.5,
+      emissive: '#cd1414', emissiveIntensity: 0.35,
+    },
+    // Ace — multiple accents
+    {
+      svgColor: '#0d83e3',
+      color: '#0d83e3',
+      depth: 0.4, offsetZ: 20.22, metalness: 0.0, roughness: 0.5,
+      emissive: '#0d83e3', emissiveIntensity: 0.45,
+    },
+    {
+      svgColor: '#bababa',
+      color: '#bababa',
+      depth: 0.4, offsetZ: 20.36, metalness: 0.1, roughness: 0.4,
+      emissive: '#bababa', emissiveIntensity: 0.35,
+    },
+    {
+      svgColor: '#e60000',
+      color: '#e60000',
+      depth: 0.4, offsetZ: 20.31, metalness: 0.0, roughness: 0.5,
+      emissive: '#e60000', emissiveIntensity: 0.4,
+    },
+    {
+      svgColor: '#f38400',
+      color: '#f38400',
+      depth: 0.4, offsetZ: 20.19, metalness: 0.0, roughness: 0.4,
+      emissive: '#f38400', emissiveIntensity: 0.5,
+    },
+    {
+      svgColor: '#f3ea00',
+      color: '#f3ea00',
+      depth: 0.4, offsetZ: 20.16, metalness: 0.0, roughness: 0.4,
+      emissive: '#f3ea00', emissiveIntensity: 0.55,
     },
     // Solid black fill under the green-marker shapes (eye sockets, nose)
     // and the blue-marker shape (nameplate interior). The original
@@ -2955,6 +3050,11 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   variantImages: {
     Luffy: '/images/characters/style_1.png',
     Zoro: '/images/characters/style_2.png',
+    Ace: '/images/characters/style_3.png',
+    Chopper: '/images/characters/style_4.png',
+    Law: '/images/characters/style_5.png',
+    Shanks: '/images/characters/style_6.png',
+    Nami: '/images/characters/style_7.png',
   },
 }
 

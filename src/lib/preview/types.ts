@@ -145,6 +145,14 @@ export interface PreviewConfig {
   /** Per-variant overrides for the expanded nameplate box. */
   variantNameplateBoxesExpanded?: Record<string, { x: number; y: number; width: number; height: number }>
   /**
+   * When true, the scene auto-centres the nameplate on the bounding box
+   * of the SVG's `#0000ff` marker path. Width/height are still taken
+   * from `nameplateBox`, only the X/Y centre is overridden — so a product
+   * with many variants whose plates sit at slightly different SVG
+   * positions can share one tuned width/height.
+   */
+  autoCenterNameplateOnBlueMarker?: boolean
+  /**
    * Once the name length exceeds this threshold, the font size floor is
    * relaxed so long names can shrink below the base size and fit cleanly
    * without overlapping. Undefined disables shrinking entirely.
