@@ -297,10 +297,38 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                   )}
                   onClick={() => setIsZoomed(!isZoomed)}
                   priority={currentIndex === 0}
-                  quality={90}
+                  quality={80}
                   sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 640px"
                 />
               </motion.div>
+            )}
+
+            {/* Preload the neighbouring images so a swipe lands on an already
+                cached + decoded image instead of a spinner. Rendered tiny +
+                invisible; `priority` emits a <link rel="preload"> so the
+                browser fetches them right after the current image. */}
+            {images.length > 1 && (
+              <div aria-hidden="true" className="pointer-events-none absolute h-px w-px overflow-hidden opacity-0">
+                {[
+                  (currentIndex + 1) % images.length,
+                  (currentIndex - 1 + images.length) % images.length,
+                ].filter((i) => i !== currentIndex).map((i) => {
+                  const img = images[i]
+                  if (!img) return null
+                  return (
+                    <Image
+                      key={`preload-${i}`}
+                      src={img.url}
+                      alt=""
+                      width={1}
+                      height={1}
+                      priority
+                      quality={80}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 640px"
+                    />
+                  )
+                })}
+              </div>
             )}
           </AnimatePresence>
 
