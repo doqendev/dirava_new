@@ -3008,15 +3008,15 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   // shifts between characters' artwork (~35 units span) are handled
   // automatically, so one tuning works for every character.
   nameplateBox: {
-    x: 290,
+    x: 370,
     y: 1288,
-    width: 1260,
+    width: 1100,
     height: 260,
   },
   nameplateBoxExpanded: {
-    x: 290,
+    x: 370,
     y: 1288,
-    width: 1260,
+    width: 1100,
     height: 260,
   },
   nameplateBoxExpandAfter: 7,

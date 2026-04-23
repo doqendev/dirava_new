@@ -72,9 +72,14 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName }
   const hasPlayedIntroRef = useRef(false)
   const shouldReduceMotion = useReducedMotion()
 
-  // Load and parse the SVG file
+  // Load and parse the SVG file. When the variant changes and svgPath
+  // changes, reset `loading` + clear the previous SVG so the scene
+  // falls into its loading branch — otherwise the old model renders
+  // until the new one finishes loading, which feels janky.
   useEffect(() => {
     let cancelled = false
+    setLoading(true)
+    setSvgData(null)
 
     async function loadSvg() {
       try {
