@@ -3029,7 +3029,7 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   // Per-length overrides — only 9 and 12 need special handling; all
   // other lengths use the default floor (or no shrink for ≤9).
   textShrinkFloorByLength: {
-    9: 0.65,
+    9: 0.55,
     12: 0.35,
   },
   // Don't let the adaptive spacing ever pull letters into each other —
