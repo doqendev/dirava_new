@@ -10,6 +10,8 @@ interface ExtrudedTextLayerProps {
   shapes: THREE.Shape[]
   layer: LayerConfig
   depthScale: number
+  /** When false, emissiveIntensity is forced to 0 (LED toggle off). */
+  lightOn?: boolean
 }
 
 /** Shrink a contour toward its centroid by a given amount */
@@ -29,7 +31,7 @@ function shrinkContour(points: THREE.Vector2[], amount: number): THREE.Vector2[]
   })
 }
 
-export function ExtrudedTextLayer({ shapes, layer, depthScale }: ExtrudedTextLayerProps) {
+export function ExtrudedTextLayer({ shapes, layer, depthScale, lightOn = true }: ExtrudedTextLayerProps) {
   const geometry = useMemo(() => {
     if (shapes.length === 0) return null
 
@@ -80,7 +82,8 @@ export function ExtrudedTextLayer({ shapes, layer, depthScale }: ExtrudedTextLay
   }, [shapes, layer.depth, layer.strokeWidth, depthScale])
 
   const material = useMemo(() => {
-    const emissiveIntensity = layer.emissiveIntensity ?? 0
+    const baseIntensity = layer.emissiveIntensity ?? 0
+    const emissiveIntensity = lightOn ? baseIntensity : 0
     return new THREE.MeshStandardMaterial({
       color: layer.color,
       metalness: layer.metalness ?? 0.1,
@@ -88,7 +91,7 @@ export function ExtrudedTextLayer({ shapes, layer, depthScale }: ExtrudedTextLay
       emissive: emissiveIntensity > 0 ? new THREE.Color(layer.emissive ?? layer.color) : new THREE.Color(0, 0, 0),
       emissiveIntensity,
     })
-  }, [layer.color, layer.metalness, layer.roughness, layer.emissive, layer.emissiveIntensity])
+  }, [layer.color, layer.metalness, layer.roughness, layer.emissive, layer.emissiveIntensity, lightOn])
 
   if (!geometry) return null
 

@@ -24,6 +24,11 @@ interface SvgExtrusionSceneProps {
    *  nameplate box overrides for products exported at slightly different
    *  SVG scales across variants. */
   selectedVariantName?: string
+  /** LED toggle — when false, emissive layers render unlit and bloom is disabled. */
+  lightOn?: boolean
+  /** Extra Y offset in scene units applied to the whole model. Used on
+   *  mobile to nudge the sign a bit higher in the viewport. */
+  yOffset?: number
 }
 
 type FontCommand = {
@@ -63,7 +68,7 @@ function easeOutBack(t: number): number {
   return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2)
 }
 
-export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName }: SvgExtrusionSceneProps) {
+export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, lightOn = true, yOffset = 0 }: SvgExtrusionSceneProps) {
   const [svgData, setSvgData] = useState<ReturnType<SVGLoader['parse']> | null>(null)
   const [font, setFont] = useState<OpentypeFont | null>(null)
   const [loading, setLoading] = useState(true)
@@ -634,7 +639,11 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName }
 
       <StudioLighting />
 
-      {/* Scale SVG coords to scene units, flip Y, and center */}
+      {/* Scale SVG coords to scene units, flip Y, and center.
+          Outer wrapper applies yOffset (mobile nudge) in world space, before
+          PresentationControls, so the tilt/rotation still pivots around the
+          model centre. */}
+      <group position={[0, yOffset, 0]}>
       <PresentationControls
         global
         cursor
@@ -668,6 +677,7 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName }
                       ? combinedSubtractGeometry ?? undefined
                       : undefined
                   }
+                  lightOn={lightOn}
                 />
               ))}
           </group>
@@ -694,6 +704,7 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName }
                     shapes={textShapes}
                     layer={layer}
                     depthScale={DEPTH_SCALE}
+                    lightOn={lightOn}
                   />
                 ))}
               </group>
@@ -701,6 +712,7 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName }
           })()}
         </group>
       </PresentationControls>
+      </group>
 
       <ContactShadows
         position={[0, -9.85, 0]}
@@ -724,8 +736,9 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName }
 
       {/* Bloom post-processing — gives emissive layers true light-bleed
           so the product reads as LED-lit instead of just surface-tinted.
-          Opt-in via config so flat-acrylic products don't pay the cost. */}
-      {config.postprocessingBloom && (
+          Opt-in via config so flat-acrylic products don't pay the cost.
+          Disabled when the LED toggle is off so the "unlit" look is clean. */}
+      {config.postprocessingBloom && lightOn && (
         <EffectComposer>
           <Bloom
             intensity={

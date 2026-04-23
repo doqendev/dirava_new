@@ -3,12 +3,13 @@
 import { Suspense, useState, useEffect, useRef, Component, type ReactNode } from 'react'
 import { Canvas } from '@react-three/fiber'
 import * as THREE from 'three'
-import { Box, Hand, Search } from 'lucide-react'
+import { Box, Hand, Search, Lightbulb, LightbulbOff } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { TextExtrusionScene } from './TextExtrusionScene'
 import { SvgExtrusionScene } from './SvgExtrusionScene'
 import { CompositeSignScene } from './CompositeSignScene'
 import { Preview3DLoadingIndicator } from './LoadingSpinner'
+import { useIsMobile } from '@/lib/hooks/useMediaQuery'
 import type { PreviewConfig } from '@/lib/preview/types'
 
 interface Preview3DCanvasProps {
@@ -80,9 +81,11 @@ function checkWebGLSupport(): boolean {
 
 interface SceneRouterProps extends Preview3DCanvasProps {
   sceneRef?: React.Ref<THREE.Group>
+  lightOn: boolean
+  yOffset: number
 }
 
-function SceneRouter({ config, text, selectedVariantName, sceneRef }: SceneRouterProps) {
+function SceneRouter({ config, text, selectedVariantName, sceneRef, lightOn, yOffset }: SceneRouterProps) {
   switch (config.type) {
     case 'text-extrusion':
       return <TextExtrusionScene text={text} config={config} />
@@ -96,6 +99,8 @@ function SceneRouter({ config, text, selectedVariantName, sceneRef }: SceneRoute
           svgPath={svgPath}
           text={text}
           selectedVariantName={selectedVariantName}
+          lightOn={lightOn}
+          yOffset={yOffset}
         />
       )
     }
@@ -113,7 +118,16 @@ export function Preview3DCanvas({ config, text, selectedVariantName }: Preview3D
   const [webGLSupported, setWebGLSupported] = useState<boolean | null>(null)
   const [debouncedText, setDebouncedText] = useState(text)
   const [showHint, setShowHint] = useState(true)
+  const [lightOn, setLightOn] = useState(true)
   const sceneRef = useRef<THREE.Group>(null)
+  const isMobile = useIsMobile()
+  // Only products that opt into bloom actually have a "light" to toggle;
+  // non-LED products hide the switch entirely so it doesn't confuse shoppers.
+  const hasLightToggle = Boolean(config.postprocessingBloom)
+  // Nudge the model up on mobile so it sits above the (typically tall) body
+  // content and stays visible in the square canvas without being cropped
+  // behind the interaction hint or info chip.
+  const sceneYOffset = isMobile ? 1.2 : 0
 
   // Check WebGL support on mount
   useEffect(() => {
@@ -174,7 +188,14 @@ export function Preview3DCanvas({ config, text, selectedVariantName }: Preview3D
           gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
         >
           <Suspense fallback={null}>
-            <SceneRouter config={config} text={debouncedText} selectedVariantName={selectedVariantName} sceneRef={sceneRef} />
+            <SceneRouter
+              config={config}
+              text={debouncedText}
+              selectedVariantName={selectedVariantName}
+              sceneRef={sceneRef}
+              lightOn={lightOn}
+              yOffset={sceneYOffset}
+            />
           </Suspense>
         </Canvas>
       </WebGLErrorBoundary>
@@ -185,6 +206,28 @@ export function Preview3DCanvas({ config, text, selectedVariantName }: Preview3D
           <div className="absolute inset-0 bg-[#0a0a12]/40" />
           <Preview3DLoadingIndicator label={t('preview3dUpdating')} className="relative z-10" />
         </div>
+      )}
+
+      {/* LED on/off toggle — only for products that actually light up.
+          Mimics a real sign's wall switch; defaults to ON because the lit
+          look is the selling point. */}
+      {hasLightToggle && (
+        <button
+          type="button"
+          onClick={() => setLightOn((v) => !v)}
+          aria-pressed={lightOn}
+          aria-label={lightOn ? t('preview3dLightOff') : t('preview3dLightOn')}
+          className="absolute top-3 right-3 z-20 pointer-events-auto inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[11px] font-medium backdrop-blur-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent,#00f5ff)]"
+          style={{
+            background: lightOn ? 'rgba(0, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.45)',
+            border: lightOn ? '1px solid rgba(0, 255, 255, 0.35)' : '1px solid rgba(255, 255, 255, 0.1)',
+            color: lightOn ? 'rgb(180, 245, 255)' : 'rgba(255, 255, 255, 0.65)',
+            boxShadow: lightOn ? '0 0 14px rgba(0, 255, 255, 0.25)' : 'none',
+          }}
+        >
+          {lightOn ? <Lightbulb className="w-3.5 h-3.5" /> : <LightbulbOff className="w-3.5 h-3.5" />}
+          <span>{lightOn ? t('preview3dLightOnLabel') : t('preview3dLightOffLabel')}</span>
+        </button>
       )}
 
       {/* Interaction hints — animated, fades out after 4s */}

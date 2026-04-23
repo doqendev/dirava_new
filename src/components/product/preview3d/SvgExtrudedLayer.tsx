@@ -15,6 +15,9 @@ interface SvgExtrudedLayerProps {
   cutShapes?: THREE.Shape[]
   /** 3D geometry to subtract via CSG boolean operation */
   subtractGeometry?: THREE.BufferGeometry
+  /** When false, any configured emissiveIntensity is forced to 0 so the
+   *  layer stops self-lighting. Used by the LED on/off toggle. */
+  lightOn?: boolean
 }
 
 function colorMatch(svgColor: THREE.Color, targetHex: string): boolean {
@@ -41,7 +44,7 @@ function bboxOverlap(
   return a.minX <= b.maxX && a.maxX >= b.minX && a.minY <= b.maxY && a.maxY >= b.minY
 }
 
-export function SvgExtrudedLayer({ svgData, matchColor, layer, depthScale, cutShapes, subtractGeometry }: SvgExtrudedLayerProps) {
+export function SvgExtrudedLayer({ svgData, matchColor, layer, depthScale, cutShapes, subtractGeometry, lightOn = true }: SvgExtrudedLayerProps) {
   const geometry = useMemo(() => {
     // Filter SVG paths by fill color
     const allShapes: THREE.Shape[] = []
@@ -109,7 +112,8 @@ export function SvgExtrudedLayer({ svgData, matchColor, layer, depthScale, cutSh
   }, [svgData, matchColor, layer.depth, layer.offsetZ, layer.strokeWidth, depthScale, cutShapes, subtractGeometry])
 
   const material = useMemo(() => {
-    const emissiveIntensity = layer.emissiveIntensity ?? 0
+    const baseIntensity = layer.emissiveIntensity ?? 0
+    const emissiveIntensity = lightOn ? baseIntensity : 0
     return new THREE.MeshStandardMaterial({
       color: layer.color,
       metalness: layer.metalness ?? 0.1,
@@ -117,7 +121,7 @@ export function SvgExtrudedLayer({ svgData, matchColor, layer, depthScale, cutSh
       emissive: emissiveIntensity > 0 ? new THREE.Color(layer.emissive ?? layer.color) : new THREE.Color(0, 0, 0),
       emissiveIntensity,
     })
-  }, [layer.color, layer.metalness, layer.roughness, layer.emissive, layer.emissiveIntensity])
+  }, [layer.color, layer.metalness, layer.roughness, layer.emissive, layer.emissiveIntensity, lightOn])
 
   if (!geometry) return null
 
