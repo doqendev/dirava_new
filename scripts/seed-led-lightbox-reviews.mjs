@@ -319,6 +319,40 @@ const CREATE_REVIEW = /* GraphQL */ `
   }
 `
 
+const UPDATE_REVIEW = /* GraphQL */ `
+  mutation UpdateReview($id: ID!, $fields: [MetaobjectFieldInput!]!) {
+    metaobjectUpdate(id: $id, metaobject: { fields: $fields }) {
+      metaobject { id }
+      userErrors { field message }
+    }
+  }
+`
+
+const GET_REVIEW_DEFINITION = /* GraphQL */ `
+  query GetReviewDefinition {
+    metaobjectDefinitionByType(type: "shop_review") {
+      id
+      fieldDefinitions { key }
+    }
+  }
+`
+
+const ADD_CREATED_AT_FIELD = /* GraphQL */ `
+  mutation AddCreatedAtField($id: ID!) {
+    metaobjectDefinitionUpdate(
+      id: $id
+      definition: {
+        fieldDefinitions: [
+          { create: { key: "created_at", name: "Created At", type: "single_line_text_field" } }
+        ]
+      }
+    ) {
+      metaobjectDefinition { id }
+      userErrors { field message }
+    }
+  }
+`
+
 function slugify(s) {
   return s
     .toLowerCase()
@@ -329,18 +363,45 @@ function slugify(s) {
     .slice(0, 40)
 }
 
-async function existingReviews() {
+async function existingReviewsFull() {
   const data = await client.request(GET_ALL_REVIEWS, { type: 'shop_review', first: 250 })
   const getField = (node, key) => node.fields.find((f) => f.key === key)?.value || ''
   return data.metaobjects.nodes
     .filter((n) => getField(n, 'product_handle') === PRODUCT_HANDLE)
     .map((n) => ({
+      id: n.id,
       title: getField(n, 'title'),
       author: getField(n, 'author_name'),
+      createdAt: getField(n, 'created_at'),
     }))
 }
 
-async function createReview(review, existing) {
+async function ensureCreatedAtFieldExists() {
+  const def = await client.request(GET_REVIEW_DEFINITION)
+  const node = def.metaobjectDefinitionByType
+  if (!node) throw new Error('shop_review metaobject definition not found')
+  if (node.fieldDefinitions.some((f) => f.key === 'created_at')) return
+  const res = await client.request(ADD_CREATED_AT_FIELD, { id: node.id })
+  const errs = res.metaobjectDefinitionUpdate.userErrors
+  if (errs.length > 0) {
+    throw new Error('Failed to add created_at field: ' + errs.map((e) => e.message).join('; '))
+  }
+  console.log('Added `created_at` field to shop_review definition.')
+}
+
+/**
+ * Pick a random ISO timestamp between startMs and endMs, weighted slightly
+ * toward the recent end so new reviews feel denser (like a real product).
+ */
+function randomDateISO(startMs, endMs) {
+  // u^1.4 pulls the distribution toward 1 (recent). Quick-and-dirty; no need for math.
+  const u = Math.random()
+  const weighted = 1 - Math.pow(1 - u, 1.4)
+  const ts = startMs + (endMs - startMs) * weighted
+  return new Date(ts).toISOString()
+}
+
+async function createReview(review, existing, dateRange) {
   const duplicate = existing.some(
     (r) =>
       r.author.toLowerCase() === review.authorName.toLowerCase() &&
@@ -357,6 +418,7 @@ async function createReview(review, existing) {
   // Shopify handles are unique per type — add suffix to ensure uniqueness.
   const handle = `${handleSeed}-${Date.now().toString(36)}`
 
+  const createdAt = randomDateISO(dateRange.start, dateRange.end)
   const fields = [
     { key: 'product_handle', value: PRODUCT_HANDLE },
     { key: 'author_name', value: review.authorName },
@@ -364,6 +426,7 @@ async function createReview(review, existing) {
     { key: 'rating', value: String(review.rating) },
     { key: 'content', value: review.content },
     { key: 'status', value: 'approved' },
+    { key: 'created_at', value: createdAt },
   ]
   if (review.title) fields.push({ key: 'title', value: review.title })
   if (review.countryCode) fields.push({ key: 'country_code', value: review.countryCode })
@@ -374,28 +437,66 @@ async function createReview(review, existing) {
     console.log(`  ✗ failed: ${review.authorName} — ${errs.map((e) => e.message).join('; ')}`)
     return { failed: true }
   }
-  console.log(`  ✓ created: ${review.authorName} (${review.rating}★) — ${review.title || '(no title)'}`)
+  console.log(`  ✓ created: ${review.authorName} (${review.rating}★, ${createdAt.slice(0, 10)}) — ${review.title || '(no title)'}`)
   return { created: true }
+}
+
+async function backfillCreatedAt(existing, dateRange) {
+  const needs = existing.filter((r) => !r.createdAt)
+  if (needs.length === 0) return { updated: 0 }
+  console.log(`\nBackfilling created_at on ${needs.length} existing review(s)...`)
+  let updated = 0
+  for (const r of needs) {
+    const iso = randomDateISO(dateRange.start, dateRange.end)
+    const res = await client.request(UPDATE_REVIEW, {
+      id: r.id,
+      fields: [{ key: 'created_at', value: iso }],
+    })
+    const errs = res.metaobjectUpdate.userErrors
+    if (errs.length > 0) {
+      console.log(`  ✗ update failed for ${r.author}: ${errs.map((e) => e.message).join('; ')}`)
+      continue
+    }
+    console.log(`  ✓ ${r.author} — ${iso.slice(0, 10)}`)
+    updated++
+    await new Promise((r) => setTimeout(r, 200))
+  }
+  return { updated }
 }
 
 async function main() {
   console.log(`Seeding reviews for "${PRODUCT_HANDLE}"...`)
-  const existing = await existingReviews()
+
+  // Ensure the metaobject definition carries our `created_at` field.
+  await ensureCreatedAtFieldExists()
+
+  // Date window: roughly 6 months back to ~2 days ago, weighted toward recent.
+  const now = Date.now()
+  const dateRange = {
+    start: now - 180 * 24 * 60 * 60 * 1000,
+    end: now - 2 * 24 * 60 * 60 * 1000,
+  }
+
+  const existing = await existingReviewsFull()
   console.log(`Found ${existing.length} existing review(s) for this product.\n`)
 
+  // Backfill any pre-existing review (no created_at yet) with a varied date.
+  const backfill = await backfillCreatedAt(existing, dateRange)
+
+  // Create any new seed reviews (idempotent — duplicates are skipped).
   let created = 0
   let skipped = 0
   let failed = 0
+  console.log('\nCreating new seed reviews...')
   for (const review of REVIEWS) {
-    const result = await createReview(review, existing)
+    const result = await createReview(review, existing, dateRange)
     if (result.created) created++
     else if (result.skipped) skipped++
     else failed++
-    // Tiny gap so Shopify doesn't rate-limit and so updatedAt timestamps stagger slightly.
-    await new Promise((r) => setTimeout(r, 350))
+    await new Promise((r) => setTimeout(r, 300))
   }
 
-  console.log(`\nDone. created=${created} skipped=${skipped} failed=${failed}`)
+  console.log(`\nDone. created=${created} skipped=${skipped} failed=${failed} backfilled=${backfill.updated}`)
 }
 
 main().catch((err) => {

@@ -172,6 +172,14 @@ function parseReviewFromMetaobject(node: MetaobjectNode): Review {
     }
   }
 
+  // Prefer the custom `created_at` field (ISO string) when present — it
+  // lets seeded reviews carry backdated timestamps, and for organic
+  // reviews falls back to the metaobject's updatedAt.
+  const customCreatedAt = getField('created_at')
+  const createdAt = customCreatedAt && !Number.isNaN(Date.parse(customCreatedAt))
+    ? customCreatedAt
+    : node.updatedAt || new Date().toISOString()
+
   return {
     id: node.id,
     author: getField('author_name'),
@@ -179,7 +187,7 @@ function parseReviewFromMetaobject(node: MetaobjectNode): Review {
     title: getField('title') || undefined,
     content: getField('content'),
     images: images && images.length > 0 ? images : undefined,
-    createdAt: node.updatedAt || new Date().toISOString(),
+    createdAt,
     verified: getField('verified_purchase') === 'true',
     countryCode: getField('country_code') || undefined,
   }
