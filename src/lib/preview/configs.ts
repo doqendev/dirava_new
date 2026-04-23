@@ -2922,15 +2922,10 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
       depth: 0.4, offsetZ: 20.36, metalness: 0.1, roughness: 0.4,
       emissive: '#bababa', emissiveIntensity: 0.35,
     },
-    // Ace's red shield sits BEHIND the white skull on the physical
-    // product, so render it at an offsetZ below white. The silhouette
-    // at z=0..20 hides the bottom of the mesh; the visible portion
-    // (z=20..20.35) is occluded by the white skull where they overlap
-    // in XY — red only shows in the area around the skull.
     {
       svgColor: '#e60000',
       color: '#e60000',
-      depth: 0.4, offsetZ: 19.95, metalness: 0.0, roughness: 0.5,
+      depth: 0.4, offsetZ: 20.31, metalness: 0.0, roughness: 0.5,
       emissive: '#e60000', emissiveIntensity: 0.4,
     },
     {
