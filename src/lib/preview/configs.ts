@@ -3024,8 +3024,8 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   // Bloom post-processing so the bright emissive layers actually glow
   // like an LED sign instead of just reading as a painted colour.
   postprocessingBloom: {
-    intensity: 0.6,
-    luminanceThreshold: 0.25,
+    intensity: 0.35,
+    luminanceThreshold: 0.6,
     luminanceSmoothing: 0.85,
   },
   // Names longer than 9 characters are allowed to shrink below the base
