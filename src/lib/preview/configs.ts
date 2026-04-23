@@ -3000,35 +3000,27 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   // Long names auto-reduce this spacing down to a natural-touch floor
   // so they still fit between the yellow frame edges.
   textLetterSpacing: 0.25,
-  // Nameplate rectangle in SVG coords (viewBox 1638×1919). The y is
-  // offset slightly past the yellow border's top edge so the glyph
-  // optical centre sits visually centred between the top/bottom yellow
-  // rails (text geometry is centred on the box mid-line, but glyph
-  // ascenders sit higher than descenders, biasing text upward).
+  // Nameplate tuning for the shared 1860×1691 canvas all variants now
+  // use. Blue plate is ~970×270 SVG units; the box below is sized a
+  // bit larger so text can spill onto the yellow frame interior on
+  // each side. The `autoCenterNameplateOnBlueMarker` flag below
+  // re-centres the box on each variant's own blue marker — small X
+  // shifts between characters' artwork (~35 units span) are handled
+  // automatically, so one tuning works for every character.
   nameplateBox: {
-    x: 50,
-    y: 1485,
-    // Width chosen so the text box is centred on the SVG's horizontal
-    // midline (819) given the fixed left anchor at x=45, giving the
-    // same 45-unit margin on the right as on the left relative to the
-    // yellow frame.
-    width: 1538,
-    height: 310,
+    x: 290,
+    y: 1288,
+    width: 1260,
+    height: 260,
   },
-  // For names longer than the threshold the text still uses the same
-  // margin; the font-shrink path (see textShrinkAfter) handles
-  // long-name fitting instead of widening the box.
   nameplateBoxExpanded: {
-    x: 80,
-    y: 1485,
-    width: 1538,
-    height: 310,
+    x: 290,
+    y: 1288,
+    width: 1260,
+    height: 260,
   },
   nameplateBoxExpandAfter: 7,
-  // Per-variant overrides kept empty: both Luffy and Zoro SVGs now
-  // share the same 1653×1903 viewBox with identically-placed plates
-  // (blue centre ~(849, 1579)) so the top-level `nameplateBox` +
-  // `nameplateBoxExpanded` above work for both.
+  autoCenterNameplateOnBlueMarker: true,
   // Names longer than 9 characters are allowed to shrink below the base
   // font size (down to 80% of it) so the adaptive spacing doesn't have
   // to squash letters into each other to fit.
