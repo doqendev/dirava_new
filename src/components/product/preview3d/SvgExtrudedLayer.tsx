@@ -113,7 +113,11 @@ export function SvgExtrudedLayer({ svgData, matchColor, layer, depthScale, cutSh
 
   const material = useMemo(() => {
     const baseIntensity = layer.emissiveIntensity ?? 0
-    const emissiveIntensity = lightOn ? baseIntensity : 0
+    // When the LED is "off" we still give emissive layers ~18% of their lit
+    // intensity so the colours remain legible against the dark scene
+    // background. Bloom stays disabled in off mode, so the look is a clean
+    // unlit acrylic rather than a glowing sign.
+    const emissiveIntensity = lightOn ? baseIntensity : baseIntensity * 0.18
     return new THREE.MeshStandardMaterial({
       color: layer.color,
       metalness: layer.metalness ?? 0.1,

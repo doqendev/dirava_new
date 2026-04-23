@@ -83,7 +83,9 @@ export function ExtrudedTextLayer({ shapes, layer, depthScale, lightOn = true }:
 
   const material = useMemo(() => {
     const baseIntensity = layer.emissiveIntensity ?? 0
-    const emissiveIntensity = lightOn ? baseIntensity : 0
+    // Mirror the paint layers: keep ~18% emissive in the off state so the
+    // text stays legible without the full "lit" glow.
+    const emissiveIntensity = lightOn ? baseIntensity : baseIntensity * 0.18
     return new THREE.MeshStandardMaterial({
       color: layer.color,
       metalness: layer.metalness ?? 0.1,
