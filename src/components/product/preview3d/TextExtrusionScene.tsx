@@ -212,7 +212,12 @@ export function TextExtrusionScene({ text, config }: TextExtrusionSceneProps) {
     return allShapes.length > 0 ? allShapes : null
   }, [font, displayText, config.textCharOverlap, spacingMode, letterSpacing])
 
-  const scale = config.scale ?? 1
+  const baseScale = config.scale ?? 1
+  // Shrink as the name gets longer so the model stays inside the canvas
+  // instead of running off the edges. Up to 4 characters the scale is
+  // unchanged; each additional character shaves ~6% until a floor of 55%.
+  const lengthScale = Math.max(0.55, 1 - Math.max(0, displayText.length - 4) * 0.06)
+  const scale = baseScale * lengthScale
   const shouldAnimateIntro = !shouldReduceMotion && !hasPlayedIntroRef.current
   const initialScale = scale * (shouldAnimateIntro ? INTRO_START_SCALE_MULTIPLIER : INTRO_END_SCALE_MULTIPLIER)
   const initialRotation = shouldAnimateIntro ? INTRO_START_ROTATION : INTRO_END_ROTATION

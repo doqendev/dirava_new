@@ -963,7 +963,13 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
     return [textX, textY, 0]
   }, [textX])
 
-  const scale = config.scale ?? 0.02
+  const baseScale = config.scale ?? 0.02
+  // As the name grows the composition widens (more middle bar tiles + a
+  // longer text run), so gently shrink the whole scene to keep it inside
+  // the canvas. No shrink for up to 4 characters; each extra character
+  // trims ~6% off, floored at 55%.
+  const lengthScale = Math.max(0.55, 1 - Math.max(0, displayText.length - 4) * 0.06)
+  const scale = baseScale * lengthScale
   const barScaleFactor = config.barScale ?? 1
   const compositionCenter = useMemo<[number, number]>(() => {
     const bounds = new THREE.Box3()
