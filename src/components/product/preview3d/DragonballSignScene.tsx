@@ -701,23 +701,27 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
       }
     }
 
-    // Yellow paint layer (first half of text) — with ball cut
+    // In overlay mode the X is a physical piece sitting IN FRONT of
+    // the text (higher Z via the ball layers' offsetZ), like the
+    // raised X on the physical HxH sign. So the letters keep their
+    // full surface and we skip the CSG cut — nothing carves into the
+    // paint. In between-halves mode the X is flush with the text, so
+    // we still cut the ball shape out to avoid Z-fighting.
+    const cutText = config.midSpriteMode === 'overlay' ? null : ballCutGeo
+
+    // Yellow paint layer (first half of text)
     if (config.firstHalfLayer) {
-      const m = extrudedMesh(yellowShapes, config.firstHalfLayer, DEPTH_SCALE, bounds, ballCutGeo)
+      const m = extrudedMesh(yellowShapes, config.firstHalfLayer, DEPTH_SCALE, bounds, cutText)
       if (m) out.push(m)
     }
-    // Red paint layer (second half of text) — with ball cut
+    // Red paint layer (second half of text)
     if (config.secondHalfLayer) {
-      const m = extrudedMesh(redShapes, config.secondHalfLayer, DEPTH_SCALE, bounds, ballCutGeo)
+      const m = extrudedMesh(redShapes, config.secondHalfLayer, DEPTH_SCALE, bounds, cutText)
       if (m) out.push(m)
     }
-    // Mirrored reflection paint layer. In overlay mode the X sits
-    // between the two rows and overlaps the reflection too — apply
-    // the same CSG cut so the letters get carved by the X footprint
-    // consistently with the main row.
+    // Mirrored reflection paint layer.
     if (config.reflectionLayer && reflectionShapes.length > 0) {
-      const cut = config.midSpriteMode === 'overlay' ? ballCutGeo : null
-      const m = extrudedMesh(reflectionShapes, config.reflectionLayer, DEPTH_SCALE, bounds, cut)
+      const m = extrudedMesh(reflectionShapes, config.reflectionLayer, DEPTH_SCALE, bounds, cutText)
       if (m) out.push(m)
     }
 

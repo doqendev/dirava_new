@@ -3295,14 +3295,16 @@ previewConfigs['hunter-x-hunter-custom-sign'] = {
   // and you lose the red stripe; too large and the rows drift apart.
   reflectionOffsetY: 0.05,
   ballLayers: [
-    // First entry is the silhouette reference — red X matches the base
-    // colour so its thin wafer vanishes into the relief while still
-    // driving base stroke-expansion + the CSG cut that frames the X.
+    // X sits as a physical raised piece in front of the text (the way
+    // it does on the real sign), so all ball layers ride at offsetZ 7
+    // — 1 mm in front of the text paint (which sits at offsetZ 6 +
+    // depth 1 = top surface 7). First entry is the silhouette
+    // reference; red matches the base so its thin wafer blends in.
     {
       svgColor: '#ff0000',
       color: '#c60000',
       depth: 0.1,
-      offsetZ: 6,
+      offsetZ: 7,
       metalness: 0.15,
       roughness: 0.55,
     },
@@ -3310,7 +3312,7 @@ previewConfigs['hunter-x-hunter-custom-sign'] = {
       svgColor: '#000000',
       color: '#111111',
       depth: 1,
-      offsetZ: 6,
+      offsetZ: 7,
       metalness: 0.1,
       roughness: 0.8,
     },
@@ -3318,7 +3320,7 @@ previewConfigs['hunter-x-hunter-custom-sign'] = {
       svgColor: '#00b200',
       color: '#00a53c',
       depth: 1,
-      offsetZ: 6,
+      offsetZ: 7,
       metalness: 0.2,
       roughness: 0.5,
       emissive: '#00a53c',
@@ -3328,7 +3330,7 @@ previewConfigs['hunter-x-hunter-custom-sign'] = {
       svgColor: '#d7d900',
       color: '#d7d900',
       depth: 1,
-      offsetZ: 6,
+      offsetZ: 7,
       metalness: 0.2,
       roughness: 0.5,
       emissive: '#d7d900',
