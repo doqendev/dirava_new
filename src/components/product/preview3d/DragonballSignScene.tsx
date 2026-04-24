@@ -488,14 +488,16 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     }
 
     // Optional mirrored reflection below the main text (HxH-style
-    // "two-row" composition). Flip each main text shape around the axis
-    // that sits halfway between the two baselines so the letters'
-    // bases "meet" at the centre.
+    // "two-row" composition). Pivot around the ACTUAL bottom of the
+    // rendered text (yMaxY) rather than the font baseline — display
+    // fonts often don't reach y=0 exactly, which would leave a gap
+    // between the rows. The optional reflectionOffsetY still works as
+    // an extra gap on top of that (0 = rows touch exactly).
     const reflectionGap = (config.reflectionOffsetY ?? 0.3) * fontSize
     const reflectionActive = !!config.reflectionLayer
     const reflectionShapes: THREE.Shape[] = []
     if (reflectionActive) {
-      const pivotY = reflectionGap / 2
+      const pivotY = yMaxY + reflectionGap / 2
       const mirror = (shapes: THREE.Shape[]) => {
         for (const shape of shapes) {
           // Mirroring flips winding direction — reverse points to keep
@@ -556,13 +558,14 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
       const ballTargetCx = centerOffset + ballX + midSpriteSize / 2
       // Ball's vertical centre lands on the text's vertical centre (same
       // baseline system), with an optional manual nudge. When a
-      // reflection is active, the ball instead sits between the main
-      // and reflection baselines (the classic HxH layout) so the X
-      // emblem bridges the two rows.
+      // reflection is active, the ball instead sits on the mirror
+      // axis between main and reflection rows (the same pivotY we
+      // used for the mirror flip), so the X emblem bridges the two.
       const yOffsetRel = (config.midSpriteOffsetY ?? 0) * fontSize
       const textCy = (yMinY + yMaxY) / 2
+      const mirrorAxisY = yMaxY + reflectionGap / 2
       const ballTargetCy = reflectionActive
-        ? reflectionGap / 2 + yOffsetRel
+        ? mirrorAxisY + yOffsetRel
         : textCy + yOffsetRel
 
       // Helper: scale each shape's points + holes from SVG space into the
