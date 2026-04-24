@@ -6,6 +6,88 @@ import { useFrame } from '@react-three/fiber'
 import { OrbitControls, ContactShadows, PresentationControls, Html } from '@react-three/drei'
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js'
 import { Brush, Evaluator, SUBTRACTION } from 'three-bvh-csg'
+import ClipperLib from 'clipper-lib'
+
+const CLIPPER_SCALE = 1000
+
+/**
+ * Carve a cut polygon out of each text Shape at the 2D level using
+ * Clipper polygon difference. Preserves each Shape's existing holes
+ * and adds the cut region as additional holes (or splits the shape
+ * entirely if the cut bisects it). Much more stable than mesh-level
+ * CSG on complex glyph outlines.
+ */
+function carveShapesWithPolygon(shapes: THREE.Shape[], cutPoints: THREE.Vector2[]): THREE.Shape[] {
+  if (cutPoints.length < 3) return shapes
+  const clipPath: ClipperLib.Path = cutPoints.map((p) => ({
+    X: Math.round(p.x * CLIPPER_SCALE),
+    Y: Math.round(p.y * CLIPPER_SCALE),
+  }))
+
+  const result: THREE.Shape[] = []
+  for (const shape of shapes) {
+    const outer = shape.getPoints(24)
+    const subjectPaths: ClipperLib.Paths = [
+      outer.map((p) => ({ X: Math.round(p.x * CLIPPER_SCALE), Y: Math.round(p.y * CLIPPER_SCALE) })),
+    ]
+    for (const hole of shape.holes) {
+      subjectPaths.push(
+        hole.getPoints(24).map((p) => ({ X: Math.round(p.x * CLIPPER_SCALE), Y: Math.round(p.y * CLIPPER_SCALE) })),
+      )
+    }
+
+    const c = new ClipperLib.Clipper()
+    c.AddPaths(subjectPaths, 0 /* ptSubject */, true)
+    c.AddPath(clipPath, 1 /* ptClip */, true)
+    // clipper-lib's runtime exposes PolyTree / PolyNode but its type
+    // declarations don't — cast via `any`.
+    const ClipperAny = ClipperLib as unknown as { PolyTree: new () => unknown }
+    const solutionTree = new ClipperAny.PolyTree() as {
+      Childs: () => unknown[]
+    }
+    type NodeLike = {
+      IsHole: () => boolean
+      Contour: () => { X: number; Y: number }[]
+      Childs: () => NodeLike[]
+    }
+    const ok = c.Execute(
+      2 /* ctDifference */,
+      solutionTree as unknown as Parameters<InstanceType<typeof ClipperLib.Clipper>['Execute']>[1],
+      0 /* pftEvenOdd */,
+      0 /* pftEvenOdd */,
+    )
+    if (!ok) {
+      result.push(shape)
+      continue
+    }
+
+    const walk = (node: NodeLike): void => {
+      if (!node.IsHole()) {
+        const pts = node.Contour().map(
+          (p) => new THREE.Vector2(p.X / CLIPPER_SCALE, p.Y / CLIPPER_SCALE),
+        )
+        if (pts.length >= 3) {
+          const s = new THREE.Shape(pts)
+          for (const child of node.Childs()) {
+            if (child.IsHole()) {
+              const hp = child.Contour().map(
+                (p) => new THREE.Vector2(p.X / CLIPPER_SCALE, p.Y / CLIPPER_SCALE),
+              )
+              if (hp.length >= 3) s.holes.push(new THREE.Path(hp))
+            }
+            for (const grand of child.Childs()) walk(grand)
+          }
+          result.push(s)
+        }
+      }
+      for (const child of node.Childs()) walk(child)
+    }
+
+    for (const top of (solutionTree.Childs() as NodeLike[])) walk(top)
+  }
+
+  return result
+}
 import { StudioLighting } from './StudioLighting'
 import { Preview3DLoadingIndicator } from './LoadingSpinner'
 import { expandShapes } from '@/lib/preview/expandShapes'
@@ -686,11 +768,14 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     // stays simple — unioning overlapping inner detail paths can
     // produce artifacts in the text-paint subtraction for some
     // letters (e.g. the M of the NAME placeholder).
-    let ballCutGeo: THREE.BufferGeometry | null = null
+    // Build the 2D cut polygon — the outermost ball shape optionally
+    // inflated by midSpriteCutMargin. This is used to polygon-carve
+    // the text paint (via Clipper) rather than mesh-CSG, which
+    // produced unstable results on complex letter outlines (e.g. M).
+    let cutPoly2D: THREE.Vector2[] | null = null
     const allBallShapes: THREE.Shape[] = []
     for (const arr of Array.from(ballShapesByColor.values())) allBallShapes.push(...arr)
     if (allBallShapes.length > 0) {
-      // Pick the outermost shape by polygon area.
       let outermost = allBallShapes[0]!
       let bestArea = Math.abs(THREE.ShapeUtils.area(outermost.getPoints()))
       for (const s of allBallShapes) {
@@ -698,52 +783,32 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
         if (a > bestArea) { bestArea = a; outermost = s }
       }
       const outerPts = outermost.getPoints()
-      let solid: THREE.Shape[] = outerPts.length > 0 ? [new THREE.Shape(outerPts)] : []
-      // Optional margin so the text paint is carved out slightly wider
-      // than the sprite, leaving a visible ring of base colour between
-      // them. Zero by default (tight cut, sprite fits the carve exactly).
-      const cutMargin = config.midSpriteCutMargin ?? 0
-      if (cutMargin > 0 && solid.length > 0) {
-        solid = expandShapes(solid, cutMargin).map((s) => new THREE.Shape(s.getPoints()))
-      }
-      if (solid.length > 0) {
-        // Span a little below and above the paint Z range so the cut
-        // cleanly slices through. Derived from the actual layer config
-        // rather than hardcoded so thickness tweaks propagate.
-        const paintOffsetZ = config.firstHalfLayer?.offsetZ ?? config.baseLayer?.depth ?? 11
-        const paintDepth = config.firstHalfLayer?.depth ?? 1
-        const padMm = 2
-        const baseZ = (paintOffsetZ - padMm) * DEPTH_SCALE
-        const depth = (paintDepth + padMm * 2) * DEPTH_SCALE
-        const geo = new THREE.ExtrudeGeometry(solid, {
-          depth,
-          bevelEnabled: false,
-          steps: 1,
-        })
-        const cx = (bounds.minX + bounds.maxX) / 2
-        const cy = (bounds.minY + bounds.maxY) / 2
-        geo.translate(-cx, -cy, baseZ)
-        ballCutGeo = geo
+      if (outerPts.length > 0) {
+        let inflated: THREE.Shape = new THREE.Shape(outerPts)
+        const cutMargin = config.midSpriteCutMargin ?? 0
+        if (cutMargin > 0) {
+          const expanded = expandShapes([inflated], cutMargin)
+          if (expanded.length > 0) inflated = new THREE.Shape(expanded[0]!.getPoints())
+        }
+        cutPoly2D = inflated.getPoints()
       }
     }
 
-    // CSG-cut the ball silhouette out of the text paint so the base
-    // shows through as a visible ring between the sprite and the
-    // surrounding letters (same pattern as the Dragon Ball sign's
-    // black ring around the ball). midSpriteCutMargin widens the cut
-    // past the sprite for a richer border. Apply in both overlay and
-    // between-halves modes — the former relies on this for the red
-    // HxH separator; the latter always used it to avoid Z-fighting.
-    const cutText = ballCutGeo
+    // 2D polygon-carve the text paint shapes against the cut polygon.
+    // Preserves existing letter counters (holes stay intact) and
+    // leaves the base showing through the carved region as a visible
+    // ring between the sprite and the surrounding letters.
+    const yellowCarved = cutPoly2D ? carveShapesWithPolygon(yellowShapes, cutPoly2D) : yellowShapes
+    const redCarved = cutPoly2D ? carveShapesWithPolygon(redShapes, cutPoly2D) : redShapes
 
     // Yellow paint layer (first half of text)
     if (config.firstHalfLayer) {
-      const m = extrudedMesh(yellowShapes, config.firstHalfLayer, DEPTH_SCALE, bounds, cutText)
+      const m = extrudedMesh(yellowCarved, config.firstHalfLayer, DEPTH_SCALE, bounds)
       if (m) out.push(m)
     }
     // Red paint layer (second half of text)
     if (config.secondHalfLayer) {
-      const m = extrudedMesh(redShapes, config.secondHalfLayer, DEPTH_SCALE, bounds, cutText)
+      const m = extrudedMesh(redCarved, config.secondHalfLayer, DEPTH_SCALE, bounds)
       if (m) out.push(m)
     }
     // Mirrored reflection paint layer. We skip the CSG cut here — the
@@ -770,7 +835,7 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
 
     // Clean up the cut geometry — once extrudedMesh has consumed it (via
     // brush clones) it's safe to dispose the original.
-    ballCutGeo?.dispose()
+    // (cut geometry no longer needed — 2D polygon carve replaces mesh CSG)
 
     return out
   }, [layout, config.baseLayer, config.firstHalfLayer, config.secondHalfLayer, config.reflectionLayer, config.ballLayers, config.midSpriteCutMargin, config.midSpriteMode])
