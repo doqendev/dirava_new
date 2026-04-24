@@ -283,4 +283,13 @@ export interface PreviewConfig {
    *                                 Yellow/red halves no longer apply.
    */
   midSpriteMode?: 'between-halves' | 'overlay'
+  /**
+   * Extra margin (in scene units) added around the ball silhouette
+   * when it is CSG-subtracted from the text paint. A positive value
+   * carves a slightly larger hole than the sprite, leaving a visible
+   * ring of base colour between the sprite and the surrounding paint.
+   * Default 0 (tight cut). Only consulted when the scene actually
+   * applies the CSG cut.
+   */
+  midSpriteCutMargin?: number
 }

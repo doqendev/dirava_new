@@ -3352,6 +3352,9 @@ previewConfigs['hunter-x-hunter-custom-sign'] = {
   midSpriteSize: 1.0,
   midSpriteSpacing: 0,
   midSpriteOffsetY: 0,
+  // Carve the text paint slightly wider than the X silhouette so the
+  // red base shows through as a thin ring between the X and letters.
+  midSpriteCutMargin: 0.08,
   layers: [],
   camera: {
     position: [0, 0, 28],

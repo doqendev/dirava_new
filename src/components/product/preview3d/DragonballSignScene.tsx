@@ -652,6 +652,7 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     config.reflectionOffsetY,
     config.midSpriteMode,
     config.textLetterSpacing,
+    config.midSpriteCutMargin,
     config.centerOutwardTaper,
     config.centerOutwardTaperFloor,
     config.letterWidthAdjustments,
@@ -688,12 +689,19 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     const allBallShapes: THREE.Shape[] = []
     for (const arr of Array.from(ballShapesByColor.values())) allBallShapes.push(...arr)
     if (allBallShapes.length > 0) {
-      const solid = allBallShapes
+      let solid: THREE.Shape[] = allBallShapes
         .map((s) => {
           const pts = s.getPoints()
           return pts.length > 0 ? new THREE.Shape(pts) : null
         })
         .filter((s): s is THREE.Shape => s !== null)
+      // Optional margin so the text paint is carved out slightly wider
+      // than the sprite, leaving a visible ring of base colour between
+      // them. Zero by default (tight cut, sprite fits the carve exactly).
+      const cutMargin = config.midSpriteCutMargin ?? 0
+      if (cutMargin > 0 && solid.length > 0) {
+        solid = expandShapes(solid, cutMargin).map((s) => new THREE.Shape(s.getPoints()))
+      }
       if (solid.length > 0) {
         // Span a little below and above the paint Z range so the cut
         // cleanly slices through. Derived from the actual layer config
@@ -715,13 +723,14 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
       }
     }
 
-    // In overlay mode the X is a physical piece sitting IN FRONT of
-    // the text (higher Z via the ball layers' offsetZ), like the
-    // raised X on the physical HxH sign. So the letters keep their
-    // full surface and we skip the CSG cut — nothing carves into the
-    // paint. In between-halves mode the X is flush with the text, so
-    // we still cut the ball shape out to avoid Z-fighting.
-    const cutText = config.midSpriteMode === 'overlay' ? null : ballCutGeo
+    // CSG-cut the ball silhouette out of the text paint so the base
+    // shows through as a visible ring between the sprite and the
+    // surrounding letters (same pattern as the Dragon Ball sign's
+    // black ring around the ball). midSpriteCutMargin widens the cut
+    // past the sprite for a richer border. Apply in both overlay and
+    // between-halves modes — the former relies on this for the red
+    // HxH separator; the latter always used it to avoid Z-fighting.
+    const cutText = ballCutGeo
 
     // Yellow paint layer (first half of text)
     if (config.firstHalfLayer) {
@@ -757,7 +766,7 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     ballCutGeo?.dispose()
 
     return out
-  }, [layout, config.baseLayer, config.firstHalfLayer, config.secondHalfLayer, config.reflectionLayer, config.ballLayers])
+  }, [layout, config.baseLayer, config.firstHalfLayer, config.secondHalfLayer, config.reflectionLayer, config.ballLayers, config.midSpriteCutMargin, config.midSpriteMode])
 
   // Dispose meshes when they change (stale ones would leak GPU memory)
   useEffect(() => {
