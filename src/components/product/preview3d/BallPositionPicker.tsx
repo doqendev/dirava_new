@@ -67,7 +67,7 @@ export function BallPositionPicker({
                 aria-checked={selected}
                 aria-label={`Place ball between ${chars[charIdx - 1]} and ${ch}`}
                 onClick={() => onChange(dotSlot)}
-                className="relative inline-flex h-6 w-6 items-center justify-center focus-visible:outline-none"
+                className="group relative inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff6c00]/70"
               >
                 {selected ? (
                   // Mini dragon ball for the active slot — the same SVG
@@ -76,19 +76,18 @@ export function BallPositionPicker({
                     src={ballIconSrc}
                     alt=""
                     aria-hidden="true"
-                    width={14}
-                    height={14}
-                    className="block drop-shadow-[0_0_6px_rgba(255,108,0,0.6)]"
+                    width={16}
+                    height={16}
+                    className="block drop-shadow-[0_0_6px_rgba(255,108,0,0.7)]"
                   />
                 ) : (
+                  // Pill dot for unselected slots. Solid fill + white
+                  // border so the hit target reads as a button, and a
+                  // light hover/active bump so interaction is obvious.
                   <span
                     aria-hidden="true"
-                    className="block rounded-full transition-all"
-                    style={{
-                      width: 6,
-                      height: 6,
-                      background: 'rgba(255,255,255,0.35)',
-                    }}
+                    className="block rounded-full border border-white/70 bg-white/20 transition-all hover:scale-110 hover:bg-white/45 active:scale-95"
+                    style={{ width: 10, height: 10 }}
                   />
                 )}
               </button>

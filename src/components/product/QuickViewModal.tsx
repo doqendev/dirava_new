@@ -354,7 +354,7 @@ export function QuickViewModal() {
                                   config={previewConfig}
                                   text={previewCanvasText}
                                   selectedVariantName={selectedVariantName}
-                                  ballPosition={isDragonballSign ? effectiveBallPosition : undefined}
+                                  ballPosition={isDragonballSign && personalizationName.length > 0 ? effectiveBallPosition : undefined}
                                 />
                               </Suspense>
 

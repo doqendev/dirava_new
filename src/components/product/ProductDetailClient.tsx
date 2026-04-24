@@ -372,7 +372,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               imageVariantNames={imageVariantNames}
               onVariantSelect={onVariantSelectFromGallery}
               onPreviewTextChange={product.personalization ? setPersonalizationName : undefined}
-              ballPosition={isDragonballSign ? effectiveBallPosition : undefined}
+              ballPosition={isDragonballSign && personalizationName.length > 0 ? effectiveBallPosition : undefined}
               onBallPositionChange={isDragonballSign ? setBallPosition : undefined}
               canvasCart={previewConfig ? {
                 variantId: selectedVariant?.id || '',
