@@ -190,7 +190,11 @@ function extrudedMesh(
     cx = (bb.min.x + bb.max.x) / 2
     cy = (bb.min.y + bb.max.y) / 2
   }
-  geo.translate(-cx, -cy, 0)
+  // offsetZ lets paint layers sit on top of the base (same convention as
+  // the other scenes). Without this, every layer stacked at z=0 and the
+  // paint was buried inside the base.
+  const offsetZ = (layer.offsetZ ?? 0) * depthScale
+  geo.translate(-cx, -cy, offsetZ)
   geo.computeVertexNormals()
   const mat = new THREE.MeshStandardMaterial({
     color: layer.color,
