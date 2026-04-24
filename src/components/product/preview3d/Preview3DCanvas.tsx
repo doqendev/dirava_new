@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl'
 import { TextExtrusionScene } from './TextExtrusionScene'
 import { SvgExtrusionScene } from './SvgExtrusionScene'
 import { CompositeSignScene } from './CompositeSignScene'
+import { DragonballSignScene } from './DragonballSignScene'
 import { Preview3DLoadingIndicator } from './LoadingSpinner'
 import { useIsMobile } from '@/lib/hooks/useMediaQuery'
 import type { PreviewConfig } from '@/lib/preview/types'
@@ -108,6 +109,8 @@ function SceneRouter({ config, text, selectedVariantName, sceneRef, lightOn, yOf
       const jollySvgPath = (selectedVariantName && config.variantSvgs?.[selectedVariantName]) || config.svg
       return <CompositeSignScene config={config} svgPath={jollySvgPath} text={text} selectedVariantName={selectedVariantName} sceneRef={sceneRef} />
     }
+    case 'dragonball-sign':
+      return <DragonballSignScene text={text} config={config} />
     default:
       return null
   }

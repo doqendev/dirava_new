@@ -3088,6 +3088,92 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   },
 }
 
+previewConfigs['dragon-ball-custom-sign'] = {
+  type: 'dragonball-sign',
+  font: '/fonts/preview/Saiyan-Sans.ttf',
+  svg: '/svgs/preview/dball.svg',
+  forceUppercase: true,
+  maxChars: 12,
+  // Black base with yellow/red paint layers riding on top, plus the ball
+  // SVG's natural fills painted in place. Matches the legacy 2D canvas
+  // preview but extruded for a proper relief look.
+  baseLayer: {
+    color: '#111111',
+    depth: 11,
+    metalness: 0.1,
+    roughness: 0.8,
+    strokeWidth: 0.15,
+  },
+  firstHalfLayer: {
+    color: '#ffcc00',
+    depth: 1,
+    offsetZ: 11,
+    metalness: 0.2,
+    roughness: 0.5,
+  },
+  secondHalfLayer: {
+    color: '#e20a0a',
+    depth: 1,
+    offsetZ: 11,
+    metalness: 0.2,
+    roughness: 0.5,
+  },
+  ballLayers: [
+    // Ball silhouette (outer ring + star outlines) — paints the black
+    // back before the colored paint sits in the negative spaces.
+    {
+      svgColor: '#161616',
+      color: '#111111',
+      depth: 0.6,
+      offsetZ: 11,
+      metalness: 0.1,
+      roughness: 0.8,
+    },
+    {
+      svgColor: '#ff6c00',
+      color: '#ff6c00',
+      depth: 1,
+      offsetZ: 11,
+      metalness: 0.2,
+      roughness: 0.5,
+    },
+    {
+      svgColor: '#ff0000',
+      color: '#ff0000',
+      depth: 1,
+      offsetZ: 11,
+      metalness: 0.2,
+      roughness: 0.5,
+    },
+  ],
+  // Carried over from the legacy 2D preview
+  letterWidthAdjustments: {
+    D: 1.6,
+    Z: 0.8,
+  },
+  kerningTable: {
+    CO: -0.05,
+    AS: -0.04,
+    ZA: -0.09,
+  },
+  letterFlipFirstHalf: ['I'],
+  letterFlipSecondHalf: ['A'],
+  centerOutwardTaper: 0.05,
+  centerOutwardTaperFloor: 0.5,
+  midSpriteSize: 0.425,
+  midSpriteSpacing: -0.3,
+  // Required by PreviewConfig even though dragonball-sign uses named
+  // layers. Leaving empty keeps the shared type happy.
+  layers: [],
+  camera: {
+    position: [0, 0, 40],
+    fov: 45,
+    autoRotate: false,
+  },
+  scale: 1,
+  background: '#0a0a12',
+}
+
 const variantImagesOnly: Record<string, Record<string, string>> = {
   // 'one-piece-custom-led-lightbox-sign' — now a full preview config above
   // (previewConfigs[]); the entry here is retained only for documentation.

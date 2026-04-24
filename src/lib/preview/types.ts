@@ -5,7 +5,7 @@
  * that controls how the 3D preview is rendered.
  */
 
-export type PreviewType = 'text-extrusion' | 'svg-extrusion' | 'composite-sign' | 'model-with-text' | 'engraving'
+export type PreviewType = 'text-extrusion' | 'svg-extrusion' | 'composite-sign' | 'dragonball-sign' | 'model-with-text' | 'engraving'
 
 export interface LayerConfig {
   color: string
@@ -229,4 +229,32 @@ export interface PreviewConfig {
    * position stays put while height changes. Width is untouched.
    */
   textCharScaleY?: Record<string, number>
+
+  // --- dragonball-sign only ----------------------------------------
+  /** Base relief layer (black silhouette that gets stroke-expanded). */
+  baseLayer?: LayerConfig
+  /** Paint layer for the first (yellow) half of the text. */
+  firstHalfLayer?: LayerConfig
+  /** Paint layer for the second (red) half of the text. */
+  secondHalfLayer?: LayerConfig
+  /** Paint layers matched against the mid-sprite SVG by `svgColor`. */
+  ballLayers?: LayerConfig[]
+  /** Per-character horizontal width factor applied on top of the taper. */
+  letterWidthAdjustments?: Record<string, number>
+  /** Pair-kerning table (key = two chars, value = gap in font-size units). */
+  kerningTable?: Record<string, number>
+  /** Characters that get horizontally mirrored when they land in the first (yellow) half. */
+  letterFlipFirstHalf?: string[]
+  /** Characters that get horizontally mirrored when they land in the second (red) half. */
+  letterFlipSecondHalf?: string[]
+  /** Per-letter scale decrement as distance from the midpoint grows (default 0.05). */
+  centerOutwardTaper?: number
+  /** Lower clamp on the center-outward taper scale (default 0.5). */
+  centerOutwardTaperFloor?: number
+  /** Mid-sprite width expressed as a fraction of font size (default 0.425). */
+  midSpriteSize?: number
+  /** Horizontal spacing around the mid-sprite as a fraction of font size (default -0.3 = overlap). */
+  midSpriteSpacing?: number
+  /** Vertical offset of the mid-sprite as a fraction of font size (default 0). */
+  midSpriteOffsetY?: number
 }
