@@ -3166,6 +3166,7 @@ previewConfigs['dragon-ball-custom-sign'] = {
   // the text paint, so the ball's own black outline ends up framing it
   // where they touch.
   midSpriteSpacing: -0.3,
+  midSpriteOffsetY: 0.08,
   // Required by PreviewConfig even though dragonball-sign uses named
   // layers. Leaving empty keeps the shared type happy.
   layers: [],
