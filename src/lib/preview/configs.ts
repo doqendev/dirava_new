@@ -3289,54 +3289,13 @@ previewConfigs['hunter-x-hunter-custom-sign'] = {
     emissive: '#fe7428',
     emissiveIntensity: 0.3,
   },
-  // Tiny gap between the two rows so the red base is visible as a
-  // line where they "meet" — letters don't paint over the baseline
-  // region, letting the stroke-expanded red show through. Too small
-  // and you lose the red stripe; too large and the rows drift apart.
-  reflectionOffsetY: 0.05,
-  ballLayers: [
-    // X sits as a physical raised piece in front of the text (the way
-    // it does on the real sign), so all ball layers ride at offsetZ 7
-    // — 1 mm in front of the text paint (which sits at offsetZ 6 +
-    // depth 1 = top surface 7). First entry is the silhouette
-    // reference; red matches the base so its thin wafer blends in.
-    {
-      svgColor: '#ff0000',
-      color: '#c60000',
-      depth: 0.1,
-      offsetZ: 7,
-      metalness: 0.15,
-      roughness: 0.55,
-    },
-    {
-      svgColor: '#000000',
-      color: '#111111',
-      depth: 1,
-      offsetZ: 7,
-      metalness: 0.1,
-      roughness: 0.8,
-    },
-    {
-      svgColor: '#00b200',
-      color: '#00a53c',
-      depth: 1,
-      offsetZ: 7,
-      metalness: 0.2,
-      roughness: 0.5,
-      emissive: '#00a53c',
-      emissiveIntensity: 0.3,
-    },
-    {
-      svgColor: '#d7d900',
-      color: '#d7d900',
-      depth: 1,
-      offsetZ: 7,
-      metalness: 0.2,
-      roughness: 0.5,
-      emissive: '#d7d900',
-      emissiveIntensity: 0.3,
-    },
-  ],
+  // Rows touch directly at the shared baseline — no gap. The
+  // stroke-expanded red base wraps the outside of the union.
+  reflectionOffsetY: 0,
+  // X emblem temporarily hidden so we can lock in the two-row text
+  // layout without the X occupying the middle. Restore the layer list
+  // below once the text positioning is signed off.
+  ballLayers: [],
   kerningTable: hxhKerningTable,
   // Legacy preview drew every letter at the same size — disable the
   // center-outward taper used by the Dragon Ball sign.

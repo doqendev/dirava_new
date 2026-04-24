@@ -387,7 +387,11 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
       data: (typeof letterData)[number]
     }[] = []
     let ballX = 0
-    let ballPresent = n > 0
+    // Ball is only rendered when there's text AND paint layers to draw
+    // it with. Setting ballLayers to [] in a config hides the sprite
+    // completely (useful for debugging the text layout).
+    const hasBallPaint = (config.ballLayers?.length ?? 0) > 0
+    let ballPresent = n > 0 && hasBallPaint
     const overlayMode = config.midSpriteMode === 'overlay'
 
     // If the customer placed the ball before the first letter, insert
