@@ -17,6 +17,7 @@ import { WishlistButton } from '@/components/product/WishlistButton'
 import { getPreviewConfig, getVariantImages } from '@/lib/preview'
 import { getPreviewDisplayText } from '@/lib/preview/textTransform'
 import { Preview3DLoadingIndicator } from '@/components/product/preview3d/LoadingSpinner'
+import { BallPositionPicker } from '@/components/product/preview3d/BallPositionPicker'
 
 const Preview3DCanvas = lazy(() =>
   import('@/components/product/preview3d/Preview3DCanvas').then((mod) => ({
@@ -64,6 +65,8 @@ export function QuickViewModal() {
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({})
   const [quantity, setQuantity] = useState(1)
   const [personalizationName, setPersonalizationName] = useState('')
+  // Dragon Ball picker: null = auto-midpoint, number = explicit slot.
+  const [ballPosition, setBallPosition] = useState<number | null>(null)
   const personalizationInputRef = useRef<HTMLInputElement>(null)
 
   const handlePersonalizationError = () => {
@@ -83,6 +86,7 @@ export function QuickViewModal() {
       setCurrentImageIndex(0)
       setQuantity(1)
       setPersonalizationName('')
+      setBallPosition(null)
 
       try {
         const response = await fetch(`/api/products/${quickViewProduct.handle}`)
@@ -176,6 +180,35 @@ export function QuickViewModal() {
     () => (previewConfig ? getPreviewDisplayText(personalizationName, previewConfig, 'Name') : 'Name'),
     [personalizationName, previewConfig]
   )
+
+  // Dragon Ball slot: auto-midpoint until the customer picks, clamped
+  // into range after a length change.
+  const effectiveBallPosition = useMemo(() => {
+    const n = personalizationName.length
+    if (n === 0) return 0
+    if (ballPosition === null) return Math.ceil(n / 2)
+    return Math.max(0, Math.min(n, ballPosition))
+  }, [ballPosition, personalizationName])
+
+  const describeBallPosition = (name: string, slot: number): string => {
+    if (name.length === 0) return 'Default (center)'
+    if (slot <= 0) return `Before letter 1 (${name[0]})`
+    if (slot >= name.length) return `After letter ${name.length} (${name[name.length - 1]})`
+    return `Between letter ${slot} (${name[slot - 1]}) and letter ${slot + 1} (${name[slot]})`
+  }
+
+  const cartAttributes = useMemo(() => {
+    if (!product?.personalization) return undefined
+    const trimmed = personalizationName.trim()
+    if (!trimmed) return undefined
+    const attrs: Array<{ key: string; value: string }> = [
+      { key: 'Personalization', value: trimmed },
+    ]
+    if (isDragonballSign) {
+      attrs.push({ key: 'Ball Position', value: describeBallPosition(trimmed, effectiveBallPosition) })
+    }
+    return attrs
+  }, [product?.personalization, personalizationName, isDragonballSign, effectiveBallPosition])
 
   // Find selected variant
   const selectedVariant = useMemo(() => {
@@ -317,7 +350,12 @@ export function QuickViewModal() {
                                   </div>
                                 }
                               >
-                                <Preview3DCanvas config={previewConfig} text={previewCanvasText} selectedVariantName={selectedVariantName} />
+                                <Preview3DCanvas
+                                  config={previewConfig}
+                                  text={previewCanvasText}
+                                  selectedVariantName={selectedVariantName}
+                                  ballPosition={isDragonballSign ? effectiveBallPosition : undefined}
+                                />
                               </Suspense>
 
 
@@ -325,6 +363,14 @@ export function QuickViewModal() {
                               {product.personalization && (
                                 <div className="absolute bottom-0 inset-x-0 z-20">
                                   <div className="bg-gradient-to-t from-black/90 via-black/70 to-transparent pt-8 pb-3 px-3">
+                                    {isDragonballSign && personalizationName && (
+                                      <BallPositionPicker
+                                        text={personalizationName}
+                                        value={effectiveBallPosition}
+                                        onChange={setBallPosition}
+                                        className="mb-1"
+                                      />
+                                    )}
                                     <input
                                       type="text"
                                       value={personalizationName}
@@ -584,11 +630,7 @@ export function QuickViewModal() {
                               requiresPersonalization={product.personalization}
                               personalizationValue={personalizationName}
                               onPersonalizationError={handlePersonalizationError}
-                              attributes={
-                                product.personalization && personalizationName.trim()
-                                  ? [{ key: 'Personalization', value: personalizationName.trim() }]
-                                  : undefined
-                              }
+                              attributes={cartAttributes}
                             />
                           </div>
                           <WishlistButton

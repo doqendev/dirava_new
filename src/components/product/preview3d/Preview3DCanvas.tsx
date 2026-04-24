@@ -17,6 +17,8 @@ interface Preview3DCanvasProps {
   config: PreviewConfig
   text: string
   selectedVariantName?: string
+  /** Runtime-only prop for the Dragon Ball sign scene: which slot the ball sits in. */
+  ballPosition?: number
 }
 
 function LoadingFallback({ label }: { label: string }) {
@@ -86,7 +88,7 @@ interface SceneRouterProps extends Preview3DCanvasProps {
   yOffset: number
 }
 
-function SceneRouter({ config, text, selectedVariantName, sceneRef, lightOn, yOffset }: SceneRouterProps) {
+function SceneRouter({ config, text, selectedVariantName, sceneRef, lightOn, yOffset, ballPosition }: SceneRouterProps) {
   switch (config.type) {
     case 'text-extrusion':
       return <TextExtrusionScene text={text} config={config} />
@@ -110,13 +112,13 @@ function SceneRouter({ config, text, selectedVariantName, sceneRef, lightOn, yOf
       return <CompositeSignScene config={config} svgPath={jollySvgPath} text={text} selectedVariantName={selectedVariantName} sceneRef={sceneRef} />
     }
     case 'dragonball-sign':
-      return <DragonballSignScene text={text} config={config} />
+      return <DragonballSignScene text={text} config={config} ballPosition={ballPosition} />
     default:
       return null
   }
 }
 
-export function Preview3DCanvas({ config, text, selectedVariantName }: Preview3DCanvasProps) {
+export function Preview3DCanvas({ config, text, selectedVariantName, ballPosition }: Preview3DCanvasProps) {
   const t = useTranslations('product')
   const [webGLSupported, setWebGLSupported] = useState<boolean | null>(null)
   const [debouncedText, setDebouncedText] = useState(text)
@@ -198,6 +200,7 @@ export function Preview3DCanvas({ config, text, selectedVariantName }: Preview3D
               sceneRef={sceneRef}
               lightOn={lightOn}
               yOffset={sceneYOffset}
+              ballPosition={ballPosition}
             />
           </Suspense>
         </Canvas>

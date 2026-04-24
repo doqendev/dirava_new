@@ -167,10 +167,52 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
   const [personalizationName, setPersonalizationName] = useState('')
   const personalizationInputRef = useRef<HTMLInputElement>(null)
 
+  // Dragon Ball position picker state. `null` means "auto-follow midpoint";
+  // once the customer clicks a dot it becomes a concrete slot index.
+  const [ballPosition, setBallPosition] = useState<number | null>(null)
+
   const handlePersonalizationError = () => {
     personalizationInputRef.current?.focus()
     personalizationInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
+
+  const isDragonballSign = previewConfig?.type === 'dragonball-sign'
+
+  // Effective ball slot in [0, personalizationName.length]. When the user
+  // hasn't manually picked, falls back to the midpoint so the preview
+  // keeps its default behaviour. Clamp after a length change so a stored
+  // slot past the new end snaps back into range.
+  const effectiveBallPosition = useMemo(() => {
+    const n = personalizationName.length
+    if (n === 0) return 0
+    if (ballPosition === null) return Math.ceil(n / 2)
+    return Math.max(0, Math.min(n, ballPosition))
+  }, [ballPosition, personalizationName])
+
+  // Human-readable description for the order line item. Manufacturing
+  // reads this directly so we don't have to map slot indices on the
+  // warehouse side. Slot 0 = before first char; slot n = after last.
+  const describeBallPosition = (name: string, slot: number): string => {
+    if (name.length === 0) return 'Default (center)'
+    if (slot <= 0) return `Before letter 1 (${name[0]})`
+    if (slot >= name.length) return `After letter ${name.length} (${name[name.length - 1]})`
+    return `Between letter ${slot} (${name[slot - 1]}) and letter ${slot + 1} (${name[slot]})`
+  }
+
+  // Unified cart attributes used by every add-to-cart surface on this
+  // page (canvas cart, main desktop button, sticky mobile button).
+  const cartAttributes = useMemo(() => {
+    if (!product.personalization) return undefined
+    const trimmed = personalizationName.trim()
+    if (!trimmed) return undefined
+    const attrs: Array<{ key: string; value: string }> = [
+      { key: 'Personalization', value: trimmed },
+    ]
+    if (isDragonballSign) {
+      attrs.push({ key: 'Ball Position', value: describeBallPosition(trimmed, effectiveBallPosition) })
+    }
+    return attrs
+  }, [product.personalization, personalizationName, isDragonballSign, effectiveBallPosition])
 
   // Track product view for recently viewed feature
   useTrackProductView({
@@ -329,6 +371,8 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               imageVariantNames={imageVariantNames}
               onVariantSelect={onVariantSelectFromGallery}
               onPreviewTextChange={product.personalization ? setPersonalizationName : undefined}
+              ballPosition={isDragonballSign ? effectiveBallPosition : undefined}
+              onBallPositionChange={isDragonballSign ? setBallPosition : undefined}
               canvasCart={previewConfig ? {
                 variantId: selectedVariant?.id || '',
                 quantity,
@@ -336,9 +380,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 requiresPersonalization: product.personalization,
                 personalizationValue: personalizationName,
                 onPersonalizationError: handlePersonalizationError,
-                attributes: product.personalization && personalizationName.trim()
-                  ? [{ key: 'Personalization', value: personalizationName.trim() }]
-                  : undefined,
+                attributes: cartAttributes,
               } : undefined}
             />
 
@@ -527,11 +569,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 requiresPersonalization={product.personalization}
                 personalizationValue={personalizationName}
                 onPersonalizationError={handlePersonalizationError}
-                attributes={
-                  product.personalization && personalizationName.trim()
-                    ? [{ key: 'Personalization', value: personalizationName.trim() }]
-                    : undefined
-                }
+                attributes={cartAttributes}
                 themeColor={themeColor}
               />
               <WishlistButton

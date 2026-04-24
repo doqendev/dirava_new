@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight, ZoomIn, Box, X } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { AddToCartButton } from '@/components/product/AddToCartButton'
 import { Preview3DLoadingIndicator } from '@/components/product/preview3d/LoadingSpinner'
+import { BallPositionPicker } from '@/components/product/preview3d/BallPositionPicker'
 import type { PreviewConfig } from '@/lib/preview/types'
 import { getPreviewDisplayText } from '@/lib/preview/textTransform'
 import { MAX_PERSONALIZATION_LENGTH } from '@/lib/utils/constants'
@@ -51,6 +52,11 @@ interface ProductGalleryProps {
   /** Called when a thumbnail is tapped while the 3D preview is active and
    *  that thumbnail maps to a variant. Receives the variant option value. */
   onVariantSelect?: (variantName: string) => void
+  /** Only consulted for dragonball-sign previews — slot index [0, text.length]
+   *  where the Dragon Ball sits. */
+  ballPosition?: number
+  /** Ball-position picker change handler. Only consumed on dragonball-sign. */
+  onBallPositionChange?: (value: number) => void
 }
 
 export interface ProductGalleryHandle {
@@ -74,6 +80,8 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
       initialImageIndex,
       imageVariantNames,
       onVariantSelect,
+      ballPosition,
+      onBallPositionChange,
     },
     ref
   ) {
@@ -232,7 +240,12 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                     </div>
                   }
                 >
-                  <Preview3DCanvas config={previewConfig} text={previewCanvasText} selectedVariantName={selectedVariantName} />
+                  <Preview3DCanvas
+                    config={previewConfig}
+                    text={previewCanvasText}
+                    selectedVariantName={selectedVariantName}
+                    ballPosition={isDragonballSign ? ballPosition : undefined}
+                  />
                 </Suspense>
 
 
@@ -240,6 +253,17 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                 {(onPreviewTextChange || canvasCart) && (
                   <div className="absolute bottom-0 inset-x-0 z-20">
                     <div className="bg-gradient-to-t from-black/90 via-black/70 to-transparent pt-8 pb-3 px-3">
+                      {/* Dragon Ball position picker — a row of clickable dots
+                          interleaved with the typed letters. Only shows up on
+                          the Dragon Ball sign preview. */}
+                      {isDragonballSign && onBallPositionChange && typeof ballPosition === 'number' && normalizedPreviewText && (
+                        <BallPositionPicker
+                          text={normalizedPreviewText}
+                          value={ballPosition}
+                          onChange={onBallPositionChange}
+                          className="mb-1"
+                        />
+                      )}
                       <div className="flex gap-2 items-center">
                         {onPreviewTextChange && (
                           <input

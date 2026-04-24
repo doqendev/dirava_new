@@ -15,6 +15,13 @@ import { getPreviewDisplayText } from '@/lib/preview/textTransform'
 interface DragonballSignSceneProps {
   text: string
   config: PreviewConfig
+  /**
+   * Slot index in [0, text.length] where the dragon ball sits.
+   * 0 = before the first letter, text.length = after the last. When
+   * undefined, the scene falls back to the midpoint so legacy behaviour
+   * is preserved.
+   */
+  ballPosition?: number
 }
 
 // Scene-unit per mm (matches the other scenes, keeps the relief feeling tuned the same).
@@ -230,7 +237,7 @@ function extrudedMesh(
   return new THREE.Mesh(geo, mat)
 }
 
-export function DragonballSignScene({ text, config }: DragonballSignSceneProps) {
+export function DragonballSignScene({ text, config, ballPosition }: DragonballSignSceneProps) {
   const [font, setFont] = useState<OpentypeFont | null>(null)
   const [svgData, setSvgData] = useState<ReturnType<SVGLoader['parse']> | null>(null)
   const [loading, setLoading] = useState(true)
@@ -314,7 +321,13 @@ export function DragonballSignScene({ text, config }: DragonballSignSceneProps) 
     const flipFirst = new Set(config.letterFlipFirstHalf ?? [])
     const flipSecond = new Set(config.letterFlipSecondHalf ?? [])
 
-    const numYellow = n % 2 === 0 ? n / 2 : Math.ceil(n / 2)
+    // numYellow = how many letters sit to the LEFT of the ball. Driven
+    // by the explicit ballPosition prop when given (clamped into range),
+    // otherwise falls back to the legacy "halfway through the name" rule.
+    const defaultMid = n % 2 === 0 ? n / 2 : Math.ceil(n / 2)
+    const numYellow = typeof ballPosition === 'number'
+      ? Math.max(0, Math.min(n, ballPosition))
+      : defaultMid
 
     // Per-character measurement data (raw glyph metrics at fontSize)
     const letterData: { cmds: Cmd[]; minX: number; maxX: number; minY: number; maxY: number }[] = []
@@ -374,7 +387,14 @@ export function DragonballSignScene({ text, config }: DragonballSignSceneProps) 
       data: (typeof letterData)[number]
     }[] = []
     let ballX = 0
-    let ballPresent = n > 1
+    let ballPresent = n > 0
+
+    // If the customer placed the ball before the first letter, insert
+    // it here — the in-loop insertion hook only fires after a letter.
+    if (ballPresent && numYellow === 0) {
+      ballX = cursorX + midSpriteSpacing / 2
+      cursorX += midSpriteSize + midSpriteSpacing
+    }
 
     for (let i = 0; i < n; i++) {
       if (i > 0) {
@@ -409,8 +429,8 @@ export function DragonballSignScene({ text, config }: DragonballSignSceneProps) 
         cursorX += midSpriteSize + midSpriteSpacing
       }
     }
-    // Single-letter text has no ball (there's no "between halves")
-    if (n === 1) ballPresent = false
+    // Ball is always present whenever there's any text — position is
+    // explicit now, so there's no "no between halves" edge case.
 
     const totalWidth = cursorX
     const centerOffset = -totalWidth / 2
@@ -574,6 +594,7 @@ export function DragonballSignScene({ text, config }: DragonballSignSceneProps) 
     config.letterFlipFirstHalf,
     config.letterFlipSecondHalf,
     config.ballLayers,
+    ballPosition,
   ])
 
   // Build meshes. The base is a stroke-expanded union of all text + ball
