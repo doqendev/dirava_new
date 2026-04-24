@@ -667,6 +667,13 @@ export function DragonballSignScene({ text, config }: DragonballSignSceneProps) 
   }, [meshes])
 
   const baseScale = config.scale ?? 1
+  // Shrink the whole sign as the name gets longer so it stays inside the
+  // canvas, mirroring the One Piece sign behaviour. Up to 4 characters
+  // the scale is untouched; each extra character shaves ~6% until a
+  // floor of 55%. The mid ball adds ~1 character worth of width, so the
+  // base of 4 already accounts for "NAME + ball".
+  const lengthScale = Math.max(0.55, 1 - Math.max(0, displayText.length - 4) * 0.06)
+  const scale = baseScale * lengthScale
 
   useEffect(() => {
     hasPlayedIntroRef.current = true
@@ -677,7 +684,7 @@ export function DragonballSignScene({ text, config }: DragonballSignSceneProps) 
   useFrame(() => {
     const group = groupRef.current
     if (!group) return
-    group.scale.set(baseScale, -baseScale, baseScale)
+    group.scale.set(scale, -scale, scale)
   })
 
   if (loading) {
@@ -709,7 +716,7 @@ export function DragonballSignScene({ text, config }: DragonballSignSceneProps) 
         <group
           ref={groupRef}
           // Y flipped so opentype's Y-down coords read right-side up.
-          scale={[baseScale, -baseScale, baseScale]}
+          scale={[scale, -scale, scale]}
         >
           {meshes?.map((m, i) => (
             <primitive key={i} object={m} />
