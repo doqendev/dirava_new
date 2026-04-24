@@ -3256,6 +3256,10 @@ previewConfigs['hunter-x-hunter-custom-sign'] = {
     metalness: 0.15,
     roughness: 0.55,
     strokeWidth: 0.18,
+    // Temp: bright emissive to make the base stand out through the
+    // letter counters so we can confirm if the holes are rendering.
+    emissive: '#ff2200',
+    emissiveIntensity: 0.8,
   },
   // No 2-tone split for HxH — both halves render the same silver so the
   // text reads uniformly. The ball picker still positions the X, it
