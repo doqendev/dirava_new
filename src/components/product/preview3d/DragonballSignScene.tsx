@@ -5,6 +5,7 @@ import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { OrbitControls, ContactShadows, PresentationControls, Html } from '@react-three/drei'
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js'
+import { Brush, Evaluator, SUBTRACTION } from 'three-bvh-csg'
 import { StudioLighting } from './StudioLighting'
 import { Preview3DLoadingIndicator } from './LoadingSpinner'
 import { expandShapes } from '@/lib/preview/expandShapes'
@@ -170,11 +171,13 @@ function extrudedMesh(
   depthScale: number,
   /** If provided, centers against this bbox instead of the geometry's own bbox. */
   centerBounds: { minX: number; maxX: number; minY: number; maxY: number } | null,
+  /** Optional geometry to CSG-subtract from this layer (e.g. ball silhouette). */
+  subtractGeometry?: THREE.BufferGeometry | null,
 ): THREE.Mesh | null {
   if (!shapes || shapes.length === 0) return null
   const working = layer.strokeWidth ? expandShapes(shapes, layer.strokeWidth) : shapes
   if (working.length === 0) return null
-  const geo = new THREE.ExtrudeGeometry(working, {
+  let geo: THREE.BufferGeometry = new THREE.ExtrudeGeometry(working, {
     depth: layer.depth * depthScale,
     bevelEnabled: false,
     steps: 1,
@@ -195,6 +198,24 @@ function extrudedMesh(
   // paint was buried inside the base.
   const offsetZ = (layer.offsetZ ?? 0) * depthScale
   geo.translate(-cx, -cy, offsetZ)
+
+  // Optional CSG subtraction. Both meshes must sit in the SAME world
+  // coordinates for three-bvh-csg to do the right thing — the caller is
+  // responsible for pre-translating the subtract geometry to match
+  // (same center offsets, same offsetZ).
+  if (subtractGeometry) {
+    try {
+      const baseBrush = new Brush(geo)
+      baseBrush.updateMatrixWorld()
+      const cutBrush = new Brush(subtractGeometry.clone())
+      cutBrush.updateMatrixWorld()
+      const evaluator = new Evaluator()
+      const result = evaluator.evaluate(baseBrush, cutBrush, SUBTRACTION)
+      geo = result.geometry
+    } catch (e) {
+      console.warn('CSG subtract failed in dragonball scene, using original:', e)
+    }
+  }
   geo.computeVertexNormals()
   const mat = new THREE.MeshStandardMaterial({
     color: layer.color,
@@ -570,14 +591,46 @@ export function DragonballSignScene({ text, config }: DragonballSignSceneProps) 
       if (base) out.push(base)
     }
 
-    // Yellow paint layer (first half of text)
+    // Ball silhouette cut geometry: a solid disc (all ball shapes with
+    // holes stripped) extruded to fully span the paint Z range. Used to
+    // CSG-subtract the ball footprint from the text paint, so the ball
+    // visibly "cuts into" the yellow/red letters where they overlap — the
+    // black base shows through the cut, framing the ball with its ring.
+    let ballCutGeo: THREE.BufferGeometry | null = null
+    const allBallShapes: THREE.Shape[] = []
+    for (const arr of Array.from(ballShapesByColor.values())) allBallShapes.push(...arr)
+    if (allBallShapes.length > 0) {
+      const solid = allBallShapes
+        .map((s) => {
+          const pts = s.getPoints()
+          return pts.length > 0 ? new THREE.Shape(pts) : null
+        })
+        .filter((s): s is THREE.Shape => s !== null)
+      if (solid.length > 0) {
+        // Span a bit wider than paint Z range (offsetZ 11, depth 1 => 0.88..0.96)
+        // so the cut cleanly slices through no matter which paint layer.
+        const depth = 4 * DEPTH_SCALE
+        const baseZ = 10 * DEPTH_SCALE
+        const geo = new THREE.ExtrudeGeometry(solid, {
+          depth,
+          bevelEnabled: false,
+          steps: 1,
+        })
+        const cx = (bounds.minX + bounds.maxX) / 2
+        const cy = (bounds.minY + bounds.maxY) / 2
+        geo.translate(-cx, -cy, baseZ)
+        ballCutGeo = geo
+      }
+    }
+
+    // Yellow paint layer (first half of text) — with ball cut
     if (config.firstHalfLayer) {
-      const m = extrudedMesh(yellowShapes, config.firstHalfLayer, DEPTH_SCALE, bounds)
+      const m = extrudedMesh(yellowShapes, config.firstHalfLayer, DEPTH_SCALE, bounds, ballCutGeo)
       if (m) out.push(m)
     }
-    // Red paint layer (second half of text)
+    // Red paint layer (second half of text) — with ball cut
     if (config.secondHalfLayer) {
-      const m = extrudedMesh(redShapes, config.secondHalfLayer, DEPTH_SCALE, bounds)
+      const m = extrudedMesh(redShapes, config.secondHalfLayer, DEPTH_SCALE, bounds, ballCutGeo)
       if (m) out.push(m)
     }
 
@@ -593,6 +646,10 @@ export function DragonballSignScene({ text, config }: DragonballSignSceneProps) 
         if (m) out.push(m)
       }
     }
+
+    // Clean up the cut geometry — once extrudedMesh has consumed it (via
+    // brush clones) it's safe to dispose the original.
+    ballCutGeo?.dispose()
 
     return out
   }, [layout, config.baseLayer, config.firstHalfLayer, config.secondHalfLayer, config.ballLayers])
