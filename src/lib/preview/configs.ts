@@ -3108,15 +3108,20 @@ previewConfigs['dragon-ball-custom-sign'] = {
     color: '#ffcc00',
     depth: 1,
     offsetZ: 11,
-    metalness: 0.2,
-    roughness: 0.5,
+    metalness: 0.15,
+    roughness: 0.4,
+    // Subtle self-lit boost so the paint reads bright without looking LED
+    emissive: '#ffcc00',
+    emissiveIntensity: 0.35,
   },
   secondHalfLayer: {
     color: '#e20a0a',
     depth: 1,
     offsetZ: 11,
-    metalness: 0.2,
-    roughness: 0.5,
+    metalness: 0.15,
+    roughness: 0.4,
+    emissive: '#e20a0a',
+    emissiveIntensity: 0.35,
   },
   ballLayers: [
     // Ball silhouette (outer ring + star outlines) — paints the black
@@ -3134,16 +3139,20 @@ previewConfigs['dragon-ball-custom-sign'] = {
       color: '#ff6c00',
       depth: 1,
       offsetZ: 11,
-      metalness: 0.2,
-      roughness: 0.5,
+      metalness: 0.15,
+      roughness: 0.4,
+      emissive: '#ff6c00',
+      emissiveIntensity: 0.35,
     },
     {
       svgColor: '#ff0000',
       color: '#ff0000',
       depth: 1,
       offsetZ: 11,
-      metalness: 0.2,
-      roughness: 0.5,
+      metalness: 0.15,
+      roughness: 0.4,
+      emissive: '#ff0000',
+      emissiveIntensity: 0.35,
     },
   ],
   // Carried over from the legacy 2D preview
@@ -3171,7 +3180,7 @@ previewConfigs['dragon-ball-custom-sign'] = {
   // layers. Leaving empty keeps the shared type happy.
   layers: [],
   camera: {
-    position: [0, 0, 28],
+    position: [0, 0, 20],
     fov: 45,
     autoRotate: false,
   },
