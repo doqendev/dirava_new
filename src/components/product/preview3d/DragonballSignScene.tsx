@@ -742,9 +742,12 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
       const m = extrudedMesh(redShapes, config.secondHalfLayer, DEPTH_SCALE, bounds, cutText)
       if (m) out.push(m)
     }
-    // Mirrored reflection paint layer.
+    // Mirrored reflection paint layer. We skip the CSG cut here — the
+    // X sits physically in front of the reflection anyway, and
+    // carving the reflection produces flaky geometry at the cut
+    // boundary on shorter placeholder text.
     if (config.reflectionLayer && reflectionShapes.length > 0) {
-      const m = extrudedMesh(reflectionShapes, config.reflectionLayer, DEPTH_SCALE, bounds, cutText)
+      const m = extrudedMesh(reflectionShapes, config.reflectionLayer, DEPTH_SCALE, bounds)
       if (m) out.push(m)
     }
 
