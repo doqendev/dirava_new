@@ -471,6 +471,38 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
       if (halfHeightMax > yMaxY) yMaxY = halfHeightMax
     }
 
+    // Optional mirrored reflection below the main text (HxH-style
+    // "two-row" composition). Flip each main text shape around the axis
+    // that sits halfway between the two baselines so the letters'
+    // bases "meet" at the centre.
+    const reflectionGap = (config.reflectionOffsetY ?? 0.3) * fontSize
+    const reflectionActive = !!config.reflectionLayer
+    const reflectionShapes: THREE.Shape[] = []
+    if (reflectionActive) {
+      const pivotY = reflectionGap / 2
+      const mirror = (shapes: THREE.Shape[]) => {
+        for (const shape of shapes) {
+          // Mirroring flips winding direction — reverse points to keep
+          // the shape's "inside" on the intended side.
+          const outer = shape.getPoints(24)
+          const flippedOuter = outer
+            .map((p) => new THREE.Vector2(p.x, 2 * pivotY - p.y))
+            .reverse()
+          const newShape = new THREE.Shape(flippedOuter)
+          for (const hole of shape.holes) {
+            const flippedHole = hole
+              .getPoints(24)
+              .map((p) => new THREE.Vector2(p.x, 2 * pivotY - p.y))
+              .reverse()
+            newShape.holes.push(new THREE.Path(flippedHole))
+          }
+          reflectionShapes.push(newShape)
+        }
+      }
+      mirror(yellowShapes)
+      mirror(redShapes)
+    }
+
     // Build ball shapes grouped by SVG fill color so each color can be its
     // own paint layer. Match against `layer.svgColor ?? layer.color` like
     // the other SVG scenes. Also compute a single "silhouette" union for
@@ -507,13 +539,15 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
       const ballCy = (ballBounds.minY + ballBounds.maxY) / 2
       const ballTargetCx = centerOffset + ballX + midSpriteSize / 2
       // Ball's vertical centre lands on the text's vertical centre (same
-      // baseline system), with an optional manual nudge.
+      // baseline system), with an optional manual nudge. When a
+      // reflection is active, the ball instead sits between the main
+      // and reflection baselines (the classic HxH layout) so the X
+      // emblem bridges the two rows.
       const yOffsetRel = (config.midSpriteOffsetY ?? 0) * fontSize
-      // Text baseline is y=0; caps run negative (above baseline) because
-      // opentype Y grows downward. Visual vertical centre of text ≈
-      // (yMinY + yMaxY) / 2.
       const textCy = (yMinY + yMaxY) / 2
-      const ballTargetCy = textCy + yOffsetRel
+      const ballTargetCy = reflectionActive
+        ? reflectionGap / 2 + yOffsetRel
+        : textCy + yOffsetRel
 
       // Helper: scale each shape's points + holes from SVG space into the
       // text's local coord space.
@@ -571,11 +605,13 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     }
     accBB(yellowShapes)
     accBB(redShapes)
+    accBB(reflectionShapes)
     for (const arr of Array.from(ballShapesByColor.values())) accBB(arr)
 
     return {
       yellowShapes,
       redShapes,
+      reflectionShapes,
       ballShapesByColor,
       ballSilhouette,
       bounds: fullBB,
@@ -587,6 +623,8 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     config.midSpriteSize,
     config.midSpriteSpacing,
     config.midSpriteOffsetY,
+    config.reflectionLayer,
+    config.reflectionOffsetY,
     config.centerOutwardTaper,
     config.centerOutwardTaperFloor,
     config.letterWidthAdjustments,
@@ -603,11 +641,13 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
   const meshes = useMemo(() => {
     if (!layout) return null
     const out: THREE.Mesh[] = []
-    const { yellowShapes, redShapes, ballSilhouette, ballShapesByColor, bounds } = layout
+    const { yellowShapes, redShapes, reflectionShapes, ballSilhouette, ballShapesByColor, bounds } = layout
 
-    // Base: stroke-expanded union of every filled shape in the sign.
+    // Base: stroke-expanded union of every filled shape in the sign,
+    // including the mirrored reflection so the red backing extends
+    // under both rows.
     if (config.baseLayer) {
-      const baseInput = [...yellowShapes, ...redShapes, ...ballSilhouette]
+      const baseInput = [...yellowShapes, ...redShapes, ...reflectionShapes, ...ballSilhouette]
       const base = extrudedMesh(baseInput, config.baseLayer, DEPTH_SCALE, bounds)
       if (base) out.push(base)
     }
@@ -658,6 +698,12 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
       const m = extrudedMesh(redShapes, config.secondHalfLayer, DEPTH_SCALE, bounds, ballCutGeo)
       if (m) out.push(m)
     }
+    // Mirrored reflection paint layer. Sits below the main text; the X
+    // doesn't overlap it, so it's extruded without the ball CSG cut.
+    if (config.reflectionLayer && reflectionShapes.length > 0) {
+      const m = extrudedMesh(reflectionShapes, config.reflectionLayer, DEPTH_SCALE, bounds)
+      if (m) out.push(m)
+    }
 
     // Ball paints — match layer.svgColor (lowercased hex) to the parsed
     // SVG fill groups. Layers that don't match anything are silently
@@ -677,7 +723,7 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     ballCutGeo?.dispose()
 
     return out
-  }, [layout, config.baseLayer, config.firstHalfLayer, config.secondHalfLayer, config.ballLayers])
+  }, [layout, config.baseLayer, config.firstHalfLayer, config.secondHalfLayer, config.reflectionLayer, config.ballLayers])
 
   // Dispose meshes when they change (stale ones would leak GPU memory)
   useEffect(() => {

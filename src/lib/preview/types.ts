@@ -257,4 +257,17 @@ export interface PreviewConfig {
   midSpriteSpacing?: number
   /** Vertical offset of the mid-sprite as a fraction of font size (default 0). */
   midSpriteOffsetY?: number
+  /**
+   * When set, the scene renders a second copy of the text mirrored
+   * underneath — the classic Hunter x Hunter two-row composition. The
+   * reflection sits below the main text by `reflectionOffsetY * fontSize`
+   * and is painted with this layer's material.
+   */
+  reflectionLayer?: LayerConfig
+  /**
+   * Gap between the main text baseline and the reflection baseline, as
+   * a fraction of font size (default 0.3 ≈ the legacy 58 / 200 px).
+   * Only consulted when `reflectionLayer` is also set.
+   */
+  reflectionOffsetY?: number
 }

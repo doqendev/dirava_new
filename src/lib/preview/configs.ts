@@ -3278,6 +3278,20 @@ previewConfigs['hunter-x-hunter-custom-sign'] = {
     emissive: '#dadada',
     emissiveIntensity: 0.25,
   },
+  // Mirrored copy beneath the main text, painted orange — mirrors the
+  // legacy 2D canvas preview's "reflection" row.
+  reflectionLayer: {
+    color: '#fe7428',
+    depth: 1,
+    offsetZ: 6,
+    metalness: 0.2,
+    roughness: 0.45,
+    emissive: '#fe7428',
+    emissiveIntensity: 0.3,
+  },
+  // Gap between main baseline and reflection baseline ≈ 58/200 in the
+  // legacy canvas; 0.3 feels right on the 3D relief.
+  reflectionOffsetY: 0.3,
   ballLayers: [
     // First entry is the silhouette reference — red X matches the base
     // colour so its thin wafer vanishes into the relief while still
