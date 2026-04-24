@@ -3250,15 +3250,13 @@ previewConfigs['hunter-x-hunter-custom-sign'] = {
   // paint sitting flush on top. The legacy 2D render used a red stroke
   // around silver-gradient letters, so in 3D relief we push that into
   // physical layers: the base is red, the paint above is a warm grey.
-  // baseLayer TEMPORARILY REMOVED so we can confirm whether the
-  // paint layer itself has visible holes. Restore once confirmed.
-  // baseLayer: {
-  //   color: '#c60000',
-  //   depth: 6,
-  //   metalness: 0.15,
-  //   roughness: 0.55,
-  //   strokeWidth: 0.18,
-  // },
+  baseLayer: {
+    color: '#c60000',
+    depth: 6,
+    metalness: 0.15,
+    roughness: 0.55,
+    strokeWidth: 0.18,
+  },
   // No 2-tone split for HxH — both halves render the same silver so the
   // text reads uniformly. The ball picker still positions the X, it
   // just doesn't change the colour break.

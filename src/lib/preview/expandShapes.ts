@@ -34,26 +34,44 @@ export function expandShapes(shapes: THREE.Shape[], strokeWidth: number): THREE.
     )
     const expandedShape = new THREE.Shape(expandedOuter)
 
-    // Offset each hole inward (negative delta = shrink hole opening)
+    // Shrink each hole inward by strokeWidth. The Clipper offset
+    // operation on opentype-sourced hole paths returns empty in this
+    // build regardless of winding, so fall back to a simple
+    // centroid-ward shrink: pull every vertex toward the contour's
+    // centroid by strokeWidth. This is a good approximation for
+    // convex-ish letter counters (D, O, A, P, B, etc.) and never
+    // over-collapses a surviving hole the way Clipper was doing.
     for (const hole of shape.holes) {
       const holePoints = hole.getPoints(12)
-      const clipperHole: ClipperLib.Path = holePoints.map((p) => ({
-        X: Math.round(p.x * CLIPPER_SCALE),
-        Y: Math.round(p.y * CLIPPER_SCALE),
-      }))
+      if (holePoints.length < 3) continue
 
-      const holeOffset = new ClipperLib.ClipperOffset()
-      holeOffset.ArcTolerance = 5
-      holeOffset.AddPath(clipperHole, 1 /* jtRound */, 0 /* etClosedPolygon */)
-      const holeSolution: ClipperLib.Paths = []
-      holeOffset.Execute(holeSolution, -strokeWidth * CLIPPER_SCALE)
+      let cx = 0
+      let cy = 0
+      for (const p of holePoints) {
+        cx += p.x
+        cy += p.y
+      }
+      cx /= holePoints.length
+      cy /= holePoints.length
 
-      // If the hole survives shrinking, add it
-      for (const shrunkHole of holeSolution) {
-        const holeVecs = shrunkHole.map(
-          (p) => new THREE.Vector2(p.X / CLIPPER_SCALE, p.Y / CLIPPER_SCALE)
-        )
-        expandedShape.holes.push(new THREE.Path(holeVecs))
+      const shrunk: THREE.Vector2[] = []
+      for (const p of holePoints) {
+        const dx = p.x - cx
+        const dy = p.y - cy
+        const d = Math.sqrt(dx * dx + dy * dy)
+        if (d <= strokeWidth) {
+          // This vertex is within strokeWidth of the centroid —
+          // collapsing further would invert the polygon, so skip the
+          // whole hole (it's closed entirely).
+          shrunk.length = 0
+          break
+        }
+        const k = (d - strokeWidth) / d
+        shrunk.push(new THREE.Vector2(cx + dx * k, cy + dy * k))
+      }
+
+      if (shrunk.length >= 3) {
+        expandedShape.holes.push(new THREE.Path(shrunk))
       }
     }
 
