@@ -497,7 +497,18 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
 
     if (allShapes.length === 0) return null
 
-    const centerBounds = centerBB.minX !== Infinity ? centerBB : fullBB
+    // Hybrid centering bbox: X comes from the full bbox (so the text
+    // stays horizontally balanced when an excluded glyph like Q sits at
+    // an edge), Y from the non-excluded bbox (so Q's descender can't
+    // drag the text block upward). If nothing is excluded, both come
+    // from the full bbox and behaviour matches the pre-exclusion code.
+    const yRef = centerBB.minX !== Infinity ? centerBB : fullBB
+    const centerBounds = {
+      minX: fullBB.minX,
+      maxX: fullBB.maxX,
+      minY: yRef.minY,
+      maxY: yRef.maxY,
+    }
     return { shapes: allShapes, centerBounds }
   }, [font, displayText, effectiveFontSize, effectiveLetterSpacing, config.textCharScale, config.textCharCenterExclude, config.textCharOffsetY, config.textCharAdvanceScale])
 
