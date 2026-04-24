@@ -3049,11 +3049,11 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   // rest of the name lands exactly where a Q-less name would) and
   // scale it down so its descender stays inside the plate.
   textCharScale: {
-    Q: 0.95,
+    Q: 0.88,
   },
   textCharCenterExclude: ['Q'],
   textCharOffsetY: {
-    Q: -0.1,
+    Q: -0.05,
   },
   camera: {
     position: [0, 0, 22],
