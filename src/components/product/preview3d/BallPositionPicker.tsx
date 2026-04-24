@@ -10,6 +10,12 @@ interface BallPositionPickerProps {
   /** Called with the newly-picked slot when a dot is tapped. */
   onChange: (value: number) => void
   className?: string
+  /** Hex colour for letters left of the ball (default: yellow). */
+  firstHalfColor?: string
+  /** Hex colour for letters right of the ball (default: red). */
+  secondHalfColor?: string
+  /** Ball icon URL — rendered as a small sprite for the selected dot. */
+  ballIconSrc?: string
 }
 
 /**
@@ -19,7 +25,15 @@ interface BallPositionPickerProps {
  * The ends are deliberately omitted: the ball always sits inside the
  * word. Names shorter than 2 characters hide the picker entirely.
  */
-export function BallPositionPicker({ text, value, onChange, className }: BallPositionPickerProps) {
+export function BallPositionPicker({
+  text,
+  value,
+  onChange,
+  className,
+  firstHalfColor = '#ffcc00',
+  secondHalfColor = '#e20a0a',
+  ballIconSrc = '/svgs/preview/dball.svg',
+}: BallPositionPickerProps) {
   const chars = useMemo(() => Array.from(text), [text])
   const n = chars.length
 
@@ -40,6 +54,10 @@ export function BallPositionPicker({ text, value, onChange, className }: BallPos
         const dotSlot = charIdx // dot before `ch` represents slot = charIdx
         const showDot = charIdx >= 1
         const selected = showDot && dotSlot === clamped
+        // Letter colour mirrors the 3D preview: yellow before the ball,
+        // red after. Uses the same hex the scene paints with so the
+        // picker reads as a condensed preview of the split.
+        const letterColor = charIdx < clamped ? firstHalfColor : secondHalfColor
         return (
           <span key={`cell-${charIdx}`} className="flex items-center">
             {showDot && (
@@ -51,29 +69,34 @@ export function BallPositionPicker({ text, value, onChange, className }: BallPos
                 onClick={() => onChange(dotSlot)}
                 className="relative inline-flex h-6 w-6 items-center justify-center focus-visible:outline-none"
               >
-                <span
-                  aria-hidden="true"
-                  className="block rounded-full transition-all"
-                  style={
-                    selected
-                      ? {
-                          width: 10,
-                          height: 10,
-                          background: '#ff6c00',
-                          boxShadow: '0 0 0 2px rgba(255,108,0,0.35), 0 0 10px rgba(255,108,0,0.55)',
-                        }
-                      : {
-                          width: 6,
-                          height: 6,
-                          background: 'rgba(255,255,255,0.35)',
-                        }
-                  }
-                />
+                {selected ? (
+                  // Mini dragon ball for the active slot — the same SVG
+                  // the 3D scene uses, shrunk to a 14 px sprite.
+                  <img
+                    src={ballIconSrc}
+                    alt=""
+                    aria-hidden="true"
+                    width={14}
+                    height={14}
+                    className="block drop-shadow-[0_0_6px_rgba(255,108,0,0.6)]"
+                  />
+                ) : (
+                  <span
+                    aria-hidden="true"
+                    className="block rounded-full transition-all"
+                    style={{
+                      width: 6,
+                      height: 6,
+                      background: 'rgba(255,255,255,0.35)',
+                    }}
+                  />
+                )}
               </button>
             )}
             <span
               aria-hidden="true"
-              className="px-0.5 text-[13px] font-semibold uppercase tracking-wide text-white/80"
+              className="px-0.5 text-[13px] font-semibold uppercase tracking-wide"
+              style={{ color: letterColor }}
             >
               {ch}
             </span>
