@@ -223,4 +223,10 @@ export interface PreviewConfig {
    * slides closer without the glyph itself shrinking.
    */
   textCharAdvanceScale?: Record<string, number>
+  /**
+   * Per-character Y-only scale (default 1). Shrinks/stretches the
+   * glyph vertically around its own vertical centre, so the visual
+   * position stays put while height changes. Width is untouched.
+   */
+  textCharScaleY?: Record<string, number>
 }

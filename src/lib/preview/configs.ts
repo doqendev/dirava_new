@@ -3061,6 +3061,11 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   textCharAdvanceScale: {
     Q: 0.7,
   },
+  // Font's O renders shorter than the other caps; stretch it vertically
+  // around its own centre so the height lines up without affecting width.
+  textCharScaleY: {
+    O: 1.15,
+  },
   camera: {
     position: [0, 0, 22],
     fov: 45,

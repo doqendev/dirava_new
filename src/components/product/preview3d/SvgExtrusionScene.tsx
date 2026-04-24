@@ -350,15 +350,20 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
       const charScale = config.textCharScale?.[char] ?? config.textCharScale?.[charUpper] ?? 1
       const charOffsetY = (config.textCharOffsetY?.[char] ?? config.textCharOffsetY?.[charUpper] ?? 0) * fontSize
       const charAdvanceScale = config.textCharAdvanceScale?.[char] ?? config.textCharAdvanceScale?.[charUpper] ?? 1
+      const charScaleY = config.textCharScaleY?.[char] ?? config.textCharScaleY?.[charUpper] ?? 1
       const isExcluded = excludeSet.has(charUpper)
       const charPath = font.getPath(char, 0, 0, fontSize * charScale)
       const charCmds = charPath.commands
 
       let minX = Infinity, maxX = -Infinity
+      let minY = Infinity, maxY = -Infinity
       for (const cmd of charCmds) {
         if (cmd.x !== undefined) { minX = Math.min(minX, cmd.x); maxX = Math.max(maxX, cmd.x) }
         if (cmd.x1 !== undefined) { minX = Math.min(minX, cmd.x1); maxX = Math.max(maxX, cmd.x1) }
         if (cmd.x2 !== undefined) { minX = Math.min(minX, cmd.x2); maxX = Math.max(maxX, cmd.x2) }
+        if (cmd.y !== undefined) { minY = Math.min(minY, cmd.y); maxY = Math.max(maxY, cmd.y) }
+        if (cmd.y1 !== undefined) { minY = Math.min(minY, cmd.y1); maxY = Math.max(maxY, cmd.y1) }
+        if (cmd.y2 !== undefined) { minY = Math.min(minY, cmd.y2); maxY = Math.max(maxY, cmd.y2) }
       }
       if (minX === Infinity) continue
 
@@ -369,11 +374,21 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
       if (advanceShrink !== 0) cursorX -= advanceShrink / 2
 
       const offsetX = cursorX - minX
+      // Y-only scale pivots around the glyph's vertical centre so the
+      // visual position stays put while the height changes. Width is
+      // untouched. Identity when charScaleY === 1.
+      const yCentre = minY === Infinity ? 0 : (minY + maxY) / 2
+      const scaleAroundY = (y: number) => yCentre + (y - yCentre) * charScaleY
       const transformed: FontCommand[] = charCmds.map((cmd) => {
         const shifted: FontCommand = { ...cmd }
         if (shifted.x !== undefined) shifted.x += offsetX
         if (shifted.x1 !== undefined) shifted.x1 += offsetX
         if (shifted.x2 !== undefined) shifted.x2 += offsetX
+        if (charScaleY !== 1) {
+          if (shifted.y !== undefined) shifted.y = scaleAroundY(shifted.y)
+          if (shifted.y1 !== undefined) shifted.y1 = scaleAroundY(shifted.y1)
+          if (shifted.y2 !== undefined) shifted.y2 = scaleAroundY(shifted.y2)
+        }
         if (charOffsetY !== 0) {
           if (shifted.y !== undefined) shifted.y += charOffsetY
           if (shifted.y1 !== undefined) shifted.y1 += charOffsetY
@@ -510,7 +525,7 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
       maxY: yRef.maxY,
     }
     return { shapes: allShapes, centerBounds }
-  }, [font, displayText, effectiveFontSize, effectiveLetterSpacing, config.textCharScale, config.textCharCenterExclude, config.textCharOffsetY, config.textCharAdvanceScale])
+  }, [font, displayText, effectiveFontSize, effectiveLetterSpacing, config.textCharScale, config.textCharCenterExclude, config.textCharOffsetY, config.textCharAdvanceScale, config.textCharScaleY])
 
   const textShapes = textData?.shapes ?? null
   const textCenterBounds = textData?.centerBounds ?? null
