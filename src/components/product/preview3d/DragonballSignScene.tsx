@@ -622,10 +622,12 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
         }
       }
     }
+    // Centering bbox — text only. Keeping the ball out of this bbox
+    // means the text position never shifts when the X is added or
+    // resized. The X renders relative to this frame.
     accBB(yellowShapes)
     accBB(redShapes)
     accBB(reflectionShapes)
-    for (const arr of Array.from(ballShapesByColor.values())) accBB(arr)
 
     return {
       yellowShapes,

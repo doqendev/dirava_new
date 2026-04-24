@@ -3292,10 +3292,49 @@ previewConfigs['hunter-x-hunter-custom-sign'] = {
   // Rows touch directly at the shared baseline — no gap. The
   // stroke-expanded red base wraps the outside of the union.
   reflectionOffsetY: 0,
-  // X emblem temporarily hidden so we can lock in the two-row text
-  // layout without the X occupying the middle. Restore the layer list
-  // below once the text positioning is signed off.
-  ballLayers: [],
+  // X emblem sits as a physically raised piece in front of the text
+  // paint (text paint tops out at offsetZ 7). The four colour layers
+  // of the emblem are stacked in slightly increasing offsetZ steps so
+  // they don't z-fight where their XY footprints overlap — red is the
+  // outermost outline, then black, green, yellow on top.
+  ballLayers: [
+    {
+      svgColor: '#ff0000',
+      color: '#c60000',
+      depth: 0.2,
+      offsetZ: 7,
+      metalness: 0.15,
+      roughness: 0.55,
+    },
+    {
+      svgColor: '#000000',
+      color: '#111111',
+      depth: 0.2,
+      offsetZ: 7.2,
+      metalness: 0.1,
+      roughness: 0.8,
+    },
+    {
+      svgColor: '#00b200',
+      color: '#00a53c',
+      depth: 0.2,
+      offsetZ: 7.4,
+      metalness: 0.2,
+      roughness: 0.5,
+      emissive: '#00a53c',
+      emissiveIntensity: 0.3,
+    },
+    {
+      svgColor: '#d7d900',
+      color: '#d7d900',
+      depth: 0.2,
+      offsetZ: 7.6,
+      metalness: 0.2,
+      roughness: 0.5,
+      emissive: '#d7d900',
+      emissiveIntensity: 0.3,
+    },
+  ],
   kerningTable: hxhKerningTable,
   // Legacy preview drew every letter at the same size — disable the
   // center-outward taper used by the Dragon Ball sign.
