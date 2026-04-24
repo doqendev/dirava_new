@@ -3043,13 +3043,15 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   // once the configured gap would need to go below 0.05 to fit, the
   // scene instead falls back to shrinking the font (see textShrinkAfter).
   textMinLetterSpacing: 0.05,
-  // The One Piece font's Q has an oversized descender tail that pulls
-  // the combined text bbox down, which then shifts the bbox-centred
-  // text block upward. Shrinking Q at render time keeps its descender
-  // in line with the rest of the glyphs' cap-height.
+  // The One Piece font's Q has an oversized descender tail that
+  // dragged the bbox-centred text block upward whenever a name
+  // contained it. Fix: exclude Q from the centering reference (the
+  // rest of the name lands exactly where a Q-less name would) and
+  // scale it down so its descender stays inside the plate.
   textCharScale: {
-    Q: 0.82,
+    Q: 0.78,
   },
+  textCharCenterExclude: ['Q'],
   camera: {
     position: [0, 0, 22],
     fov: 45,

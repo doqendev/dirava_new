@@ -322,19 +322,34 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
   // Compute text shapes ONCE using per-character contour classification.
   // Shared between textSubtractGeometry and ExtrudedTextLayer to avoid
   // redundant expensive computation on every text change.
-  const textShapes = useMemo(() => {
+  //
+  // Returns both the full shape list AND a "centering bounds" bbox that
+  // excludes characters listed in `textCharCenterExclude`. This lets us
+  // centre the text block using only the "normal" glyphs, so an outlier
+  // like Q — with an oversized descender — no longer drags the whole
+  // text upward when someone adds it to their name.
+  const textData = useMemo(() => {
     if (!font) return null
 
     const fontSize = effectiveFontSize
     const allShapes: THREE.Shape[] = []
+    const excludeSet = new Set((config.textCharCenterExclude ?? []).map((c) => c.toUpperCase()))
+    // Bbox of the shapes that should drive centering (excluded chars
+    // don't influence it). Falls back to the full bbox later if every
+    // character in the name happens to be excluded.
+    const centerBB = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity }
+    const fullBB = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity }
     let cursorX = 0
 
     for (let ci = 0; ci < displayText.length; ci++) {
       const char = displayText[ci]!
+      const charUpper = char.toUpperCase()
       // Per-character size override: lets us shrink glyphs whose bbox
       // overshoots the rest (e.g. a Q with an oversized descender that
       // pushes the vertically-centred text block upward).
-      const charScale = config.textCharScale?.[char] ?? 1
+      const charScale = config.textCharScale?.[char] ?? config.textCharScale?.[charUpper] ?? 1
+      const charOffsetY = (config.textCharOffsetY?.[char] ?? config.textCharOffsetY?.[charUpper] ?? 0) * fontSize
+      const isExcluded = excludeSet.has(charUpper)
       const charPath = font.getPath(char, 0, 0, fontSize * charScale)
       const charCmds = charPath.commands
 
@@ -352,6 +367,11 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
         if (shifted.x !== undefined) shifted.x += offsetX
         if (shifted.x1 !== undefined) shifted.x1 += offsetX
         if (shifted.x2 !== undefined) shifted.x2 += offsetX
+        if (charOffsetY !== 0) {
+          if (shifted.y !== undefined) shifted.y += charOffsetY
+          if (shifted.y1 !== undefined) shifted.y1 += charOffsetY
+          if (shifted.y2 !== undefined) shifted.y2 += charOffsetY
+        }
         return shifted
       })
 
@@ -440,14 +460,40 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
         }
       }
 
+      // Track this character's aggregate bbox (from its outer contours
+      // only — holes live inside those). Every char contributes to the
+      // full bbox; only non-excluded chars contribute to the centering
+      // bbox, so an outlier glyph (e.g. Q's descender) can't drag the
+      // rest of the text off-centre.
+      for (let i = 0; i < contourData.length; i++) {
+        if ((nestingDepth[i] ?? 0) % 2 !== 0) continue
+        const b = contourData[i]!.bounds
+        if (b.minX < fullBB.minX) fullBB.minX = b.minX
+        if (b.minY < fullBB.minY) fullBB.minY = b.minY
+        if (b.maxX > fullBB.maxX) fullBB.maxX = b.maxX
+        if (b.maxY > fullBB.maxY) fullBB.maxY = b.maxY
+        if (!isExcluded) {
+          if (b.minX < centerBB.minX) centerBB.minX = b.minX
+          if (b.minY < centerBB.minY) centerBB.minY = b.minY
+          if (b.maxX > centerBB.maxX) centerBB.maxX = b.maxX
+          if (b.maxY > centerBB.maxY) centerBB.maxY = b.maxY
+        }
+      }
+
       // Advance cursor by this character's width, then apply the configured
       // letter spacing (negative = overlap to keep shapes touching,
       // positive = visible gap between letters).
       cursorX = maxX + offsetX + fontSize * effectiveLetterSpacing
     }
 
-    return allShapes.length > 0 ? allShapes : null
-  }, [font, displayText, effectiveFontSize, effectiveLetterSpacing, config.textCharScale])
+    if (allShapes.length === 0) return null
+
+    const centerBounds = centerBB.minX !== Infinity ? centerBB : fullBB
+    return { shapes: allShapes, centerBounds }
+  }, [font, displayText, effectiveFontSize, effectiveLetterSpacing, config.textCharScale, config.textCharCenterExclude, config.textCharOffsetY])
+
+  const textShapes = textData?.shapes ?? null
+  const textCenterBounds = textData?.centerBounds ?? null
 
   // Generate 3D text stroke geometry for CSG subtraction from SVG layers.
   // Uses the shared textShapes (computed once above).
@@ -466,18 +512,28 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
     const expanded = expandShapes(solidShapes, strokeLayer.strokeWidth!)
     if (expanded.length === 0) return null
 
-    // Compute text bbox center
-    let bMinX = Infinity, bMinY = Infinity, bMaxX = -Infinity, bMaxY = -Infinity
-    for (const shape of expanded) {
-      for (const pt of shape.getPoints()) {
-        if (pt.x < bMinX) bMinX = pt.x
-        if (pt.y < bMinY) bMinY = pt.y
-        if (pt.x > bMaxX) bMaxX = pt.x
-        if (pt.y > bMaxY) bMaxY = pt.y
+    // Keep the cut aligned with the rendered text: prefer the
+    // non-excluded-char bbox (same reference ExtrudedTextLayer uses for
+    // centering) so Q's descender doesn't shift the cut relative to
+    // the glyphs it's meant to carve out of.
+    let textCenterX: number
+    let textCenterY: number
+    if (textCenterBounds) {
+      textCenterX = (textCenterBounds.minX + textCenterBounds.maxX) / 2
+      textCenterY = (textCenterBounds.minY + textCenterBounds.maxY) / 2
+    } else {
+      let bMinX = Infinity, bMinY = Infinity, bMaxX = -Infinity, bMaxY = -Infinity
+      for (const shape of expanded) {
+        for (const pt of shape.getPoints()) {
+          if (pt.x < bMinX) bMinX = pt.x
+          if (pt.y < bMinY) bMinY = pt.y
+          if (pt.x > bMaxX) bMaxX = pt.x
+          if (pt.y > bMaxY) bMaxY = pt.y
+        }
       }
+      textCenterX = (bMinX + bMaxX) / 2
+      textCenterY = (bMinY + bMaxY) / 2
     }
-    const textCenterX = (bMinX + bMaxX) / 2
-    const textCenterY = (bMinY + bMaxY) / 2
 
     // Strip any remaining holes — solid fill for subtraction
     const finalShapes = expanded.map(shape => new THREE.Shape(shape.getPoints()))
@@ -493,7 +549,7 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
 
     geo.translate(-textCenterX + svgCenter.x, -textCenterY + svgCenter.y, -DEPTH_SCALE)
     return geo
-  }, [textShapes, config.textLayers, config.layers, svgCenter])
+  }, [textShapes, textCenterBounds, config.textLayers, config.layers, svgCenter])
 
   // CSG subtraction geometry built from every `mode: 'cut'` layer.
   // Unlike the `shape.holes.push()` fallback (which is fragile when SVG
@@ -709,6 +765,7 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
                     layer={layer}
                     depthScale={DEPTH_SCALE}
                     lightOn={lightOn}
+                    centerBounds={textCenterBounds}
                   />
                 ))}
               </group>

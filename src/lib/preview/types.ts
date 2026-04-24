@@ -199,4 +199,20 @@ export interface PreviewConfig {
    * Baseline stays at y=0 so the scaled glyph still sits on the baseline.
    */
   textCharScale?: Record<string, number>
+  /**
+   * Characters excluded from the text-centering reference bbox. Their
+   * shapes still render, but they don't influence where the other
+   * characters land. Use this when a specific glyph has an outlier
+   * bbox (e.g. a Q with an oversized descender) that would otherwise
+   * drag the whole text block off-position when the name contains it.
+   */
+  textCharCenterExclude?: string[]
+  /**
+   * Per-character Y offset (in font-size units). Applied AFTER
+   * per-character scaling and BEFORE centering. Positive = down in
+   * opentype coords (toward descender). Use together with
+   * `textCharCenterExclude` when you need to manually nudge the
+   * excluded glyph into its final visual position.
+   */
+  textCharOffsetY?: Record<string, number>
 }

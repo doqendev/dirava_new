@@ -12,6 +12,13 @@ interface ExtrudedTextLayerProps {
   depthScale: number
   /** When false, emissiveIntensity is forced to 0 (LED toggle off). */
   lightOn?: boolean
+  /**
+   * Optional bbox (in shape-space coords) used for X/Y centering instead
+   * of the extruded geometry's own bbox. Lets the scene supply a bbox
+   * computed from a subset of characters (e.g. "everything except Q")
+   * so an outlier glyph doesn't pull the rest of the text off-centre.
+   */
+  centerBounds?: { minX: number; minY: number; maxX: number; maxY: number } | null
 }
 
 /** Shrink a contour toward its centroid by a given amount */
@@ -31,7 +38,7 @@ function shrinkContour(points: THREE.Vector2[], amount: number): THREE.Vector2[]
   })
 }
 
-export function ExtrudedTextLayer({ shapes, layer, depthScale, lightOn = true }: ExtrudedTextLayerProps) {
+export function ExtrudedTextLayer({ shapes, layer, depthScale, lightOn = true, centerBounds = null }: ExtrudedTextLayerProps) {
   const geometry = useMemo(() => {
     if (shapes.length === 0) return null
 
@@ -68,18 +75,26 @@ export function ExtrudedTextLayer({ shapes, layer, depthScale, lightOn = true }:
 
     const geo = new THREE.ExtrudeGeometry(finalShapes, extrudeSettings)
 
-    // Center only X/Y — leave Z untouched so layers stack correctly
-    geo.computeBoundingBox()
-    const bb = geo.boundingBox!
-    geo.translate(
-      -(bb.min.x + bb.max.x) / 2,
-      -(bb.min.y + bb.max.y) / 2,
-      0,
-    )
+    // Center only X/Y — leave Z untouched so layers stack correctly.
+    // When `centerBounds` is supplied, use it (e.g. "non-Q bbox") so an
+    // outlier glyph doesn't shift the rest of the text; otherwise fall
+    // back to the geometry's own bbox.
+    let cx: number
+    let cy: number
+    if (centerBounds) {
+      cx = (centerBounds.minX + centerBounds.maxX) / 2
+      cy = (centerBounds.minY + centerBounds.maxY) / 2
+    } else {
+      geo.computeBoundingBox()
+      const bb = geo.boundingBox!
+      cx = (bb.min.x + bb.max.x) / 2
+      cy = (bb.min.y + bb.max.y) / 2
+    }
+    geo.translate(-cx, -cy, 0)
 
     geo.computeVertexNormals()
     return geo
-  }, [shapes, layer.depth, layer.strokeWidth, depthScale])
+  }, [shapes, layer.depth, layer.strokeWidth, depthScale, centerBounds])
 
   const material = useMemo(() => {
     const baseIntensity = layer.emissiveIntensity ?? 0
