@@ -3336,6 +3336,9 @@ previewConfigs['hunter-x-hunter-custom-sign'] = {
     },
   ],
   kerningTable: hxhKerningTable,
+  // Slight global letter spacing — adds a small gap between every
+  // pair on top of the kerning table's per-pair overrides.
+  textLetterSpacing: 0.025,
   // Legacy preview drew every letter at the same size — disable the
   // center-outward taper used by the Dragon Ball sign.
   centerOutwardTaper: 0,

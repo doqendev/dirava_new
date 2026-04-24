@@ -403,8 +403,12 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
       cursorX += midSpriteSize + midSpriteSpacing
     }
 
+    const baseLetterSpacing = (config.textLetterSpacing ?? 0) * fontSize
     for (let i = 0; i < n; i++) {
       if (i > 0) {
+        // Global inter-letter gap applied before every letter, then
+        // adjusted by the pair-specific kerning override.
+        cursorX += baseLetterSpacing
         const pair = displayText[i - 1]! + displayText[i]!
         if (kerningTable[pair] !== undefined) cursorX += kerningTable[pair]! * fontSize
       }
@@ -647,6 +651,7 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     config.reflectionLayer,
     config.reflectionOffsetY,
     config.midSpriteMode,
+    config.textLetterSpacing,
     config.centerOutwardTaper,
     config.centerOutwardTaperFloor,
     config.letterWidthAdjustments,
