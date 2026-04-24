@@ -3052,6 +3052,9 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
     Q: 0.95,
   },
   textCharCenterExclude: ['Q'],
+  textCharOffsetY: {
+    Q: -0.1,
+  },
   camera: {
     position: [0, 0, 22],
     fov: 45,
