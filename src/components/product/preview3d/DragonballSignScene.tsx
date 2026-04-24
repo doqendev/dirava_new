@@ -388,10 +388,13 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     }[] = []
     let ballX = 0
     let ballPresent = n > 0
+    const overlayMode = config.midSpriteMode === 'overlay'
 
     // If the customer placed the ball before the first letter, insert
     // it here — the in-loop insertion hook only fires after a letter.
-    if (ballPresent && numYellow === 0) {
+    // In overlay mode the text flow doesn't reserve room for the
+    // sprite, so skip this branch entirely.
+    if (!overlayMode && ballPresent && numYellow === 0) {
       ballX = cursorX + midSpriteSpacing / 2
       cursorX += midSpriteSize + midSpriteSpacing
     }
@@ -421,7 +424,7 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
         data,
       })
       cursorX += measured
-      if (i === numYellow - 1 && ballPresent) {
+      if (!overlayMode && i === numYellow - 1 && ballPresent) {
         // Ball sits between halves: its left edge starts at cursorX + spacing/2,
         // and the next letter picks up at cursorX + midSpriteSize + spacing
         // (the spacing is negative so the ball overlaps the adjacent letters).
@@ -434,6 +437,15 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
 
     const totalWidth = cursorX
     const centerOffset = -totalWidth / 2
+
+    // Overlay mode: X doesn't break the text, it sits on top at a
+    // fixed fraction of the total text width. Short names (≤ 4 letters)
+    // centre it; longer names push it to the 60% mark, matching the
+    // legacy 2D preview's layout.
+    if (overlayMode && ballPresent) {
+      const fraction = n <= 4 ? 0.5 : 0.6
+      ballX = fraction * totalWidth - midSpriteSize / 2
+    }
 
     // Pass 2: build per-letter shapes at their final transform
     const yellowShapes: THREE.Shape[] = []
@@ -625,6 +637,7 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     config.midSpriteOffsetY,
     config.reflectionLayer,
     config.reflectionOffsetY,
+    config.midSpriteMode,
     config.centerOutwardTaper,
     config.centerOutwardTaperFloor,
     config.letterWidthAdjustments,
@@ -698,10 +711,13 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
       const m = extrudedMesh(redShapes, config.secondHalfLayer, DEPTH_SCALE, bounds, ballCutGeo)
       if (m) out.push(m)
     }
-    // Mirrored reflection paint layer. Sits below the main text; the X
-    // doesn't overlap it, so it's extruded without the ball CSG cut.
+    // Mirrored reflection paint layer. In overlay mode the X sits
+    // between the two rows and overlaps the reflection too — apply
+    // the same CSG cut so the letters get carved by the X footprint
+    // consistently with the main row.
     if (config.reflectionLayer && reflectionShapes.length > 0) {
-      const m = extrudedMesh(reflectionShapes, config.reflectionLayer, DEPTH_SCALE, bounds)
+      const cut = config.midSpriteMode === 'overlay' ? ballCutGeo : null
+      const m = extrudedMesh(reflectionShapes, config.reflectionLayer, DEPTH_SCALE, bounds, cut)
       if (m) out.push(m)
     }
 

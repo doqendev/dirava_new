@@ -177,6 +177,10 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
   }
 
   const isDragonballSign = previewConfig?.type === 'dragonball-sign'
+  // Overlay-mode signs (e.g. HxH) auto-place the mid sprite at a fixed
+  // fraction of the text width, so the ball-position picker doesn't
+  // apply and no cart attribute is attached for it.
+  const ballPickerEnabled = isDragonballSign && previewConfig?.midSpriteMode !== 'overlay'
 
   // Effective ball slot — only *internal* positions are allowed, so the
   // clamp is [1, n - 1]. When the user hasn't manually picked, falls
@@ -209,11 +213,11 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
     const attrs: Array<{ key: string; value: string }> = [
       { key: 'Personalization', value: trimmed },
     ]
-    if (isDragonballSign) {
+    if (ballPickerEnabled) {
       attrs.push({ key: 'Ball Position', value: describeBallPosition(trimmed, effectiveBallPosition) })
     }
     return attrs
-  }, [product.personalization, personalizationName, isDragonballSign, effectiveBallPosition])
+  }, [product.personalization, personalizationName, ballPickerEnabled, effectiveBallPosition])
 
   // Track product view for recently viewed feature
   useTrackProductView({
@@ -372,8 +376,8 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               imageVariantNames={imageVariantNames}
               onVariantSelect={onVariantSelectFromGallery}
               onPreviewTextChange={product.personalization ? setPersonalizationName : undefined}
-              ballPosition={isDragonballSign && personalizationName.length > 0 ? effectiveBallPosition : undefined}
-              onBallPositionChange={isDragonballSign ? setBallPosition : undefined}
+              ballPosition={ballPickerEnabled && personalizationName.length > 0 ? effectiveBallPosition : undefined}
+              onBallPositionChange={ballPickerEnabled ? setBallPosition : undefined}
               canvasCart={previewConfig ? {
                 variantId: selectedVariant?.id || '',
                 quantity,

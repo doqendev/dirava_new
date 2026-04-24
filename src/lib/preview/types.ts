@@ -270,4 +270,17 @@ export interface PreviewConfig {
    * Only consulted when `reflectionLayer` is also set.
    */
   reflectionOffsetY?: number
+  /**
+   * How the mid sprite (ball / X) is laid out horizontally.
+   *   'between-halves' (default) — sprite sits between two halves of the
+   *                                 text, which split at the ball slot.
+   *                                 The colour split follows the sprite.
+   *   'overlay'                 — text renders as one continuous run;
+   *                                 the sprite overlays on top at a
+   *                                 fixed fraction of the text width
+   *                                 (centred for short names, pushed
+   *                                 rightward for longer ones).
+   *                                 Yellow/red halves no longer apply.
+   */
+  midSpriteMode?: 'between-halves' | 'overlay'
 }

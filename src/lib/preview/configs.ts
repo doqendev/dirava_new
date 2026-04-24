@@ -3289,9 +3289,10 @@ previewConfigs['hunter-x-hunter-custom-sign'] = {
     emissive: '#fe7428',
     emissiveIntensity: 0.3,
   },
-  // Gap between main baseline and reflection baseline ≈ 58/200 in the
-  // legacy canvas; 0.3 feels right on the 3D relief.
-  reflectionOffsetY: 0.3,
+  // Rows touch at the shared baseline — main letters grow upward,
+  // reflection grows downward from that same line. The X then overlays
+  // both of them.
+  reflectionOffsetY: 0,
   ballLayers: [
     // First entry is the silhouette reference — red X matches the base
     // colour so its thin wafer vanishes into the relief while still
@@ -3338,10 +3339,15 @@ previewConfigs['hunter-x-hunter-custom-sign'] = {
   // center-outward taper used by the Dragon Ball sign.
   centerOutwardTaper: 0,
   centerOutwardTaperFloor: 1,
-  // The X artwork is much wider than the dragon ball (SVG 538 × 242).
-  midSpriteSize: 1.0,
-  midSpriteSpacing: -0.1,
-  midSpriteOffsetY: 0.0,
+  // Overlay mode: X doesn't break the text flow, it sits on top at a
+  // fraction of the text width (centred for short names, 60% for
+  // longer ones) — matching the legacy HxH logo layout.
+  midSpriteMode: 'overlay',
+  // Wider X so it spans both the main row and the reflection row
+  // comfortably (SVG aspect is ~2.22, so height ≈ midSpriteSize/2.22).
+  midSpriteSize: 1.8,
+  midSpriteSpacing: 0,
+  midSpriteOffsetY: 0,
   layers: [],
   camera: {
     position: [0, 0, 28],

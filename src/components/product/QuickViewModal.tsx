@@ -172,6 +172,9 @@ export function QuickViewModal() {
   const hasSingleSvg = isSvgPreview && !!previewConfig?.svg
   const isComposite = previewConfig?.type === 'composite-sign' && !!previewConfig?.barParts
   const isDragonballSign = previewConfig?.type === 'dragonball-sign' && !!previewConfig.font && !!previewConfig.svg
+  // Overlay-mode signs auto-place the X, so the picker + cart attribute
+  // both get suppressed.
+  const ballPickerEnabled = isDragonballSign && previewConfig?.midSpriteMode !== 'overlay'
   const show3DTab = !!previewConfig && (isTextExtrusion || hasVariantSvg || hasSingleSvg || isComposite || isDragonballSign)
   const preview3DIndex = product ? product.images.length : 0
   const is3DActive = currentImageIndex === preview3DIndex && show3DTab
@@ -204,11 +207,11 @@ export function QuickViewModal() {
     const attrs: Array<{ key: string; value: string }> = [
       { key: 'Personalization', value: trimmed },
     ]
-    if (isDragonballSign) {
+    if (ballPickerEnabled) {
       attrs.push({ key: 'Ball Position', value: describeBallPosition(trimmed, effectiveBallPosition) })
     }
     return attrs
-  }, [product?.personalization, personalizationName, isDragonballSign, effectiveBallPosition])
+  }, [product?.personalization, personalizationName, ballPickerEnabled, effectiveBallPosition])
 
   // Find selected variant
   const selectedVariant = useMemo(() => {
@@ -354,7 +357,7 @@ export function QuickViewModal() {
                                   config={previewConfig}
                                   text={previewCanvasText}
                                   selectedVariantName={selectedVariantName}
-                                  ballPosition={isDragonballSign && personalizationName.length > 0 ? effectiveBallPosition : undefined}
+                                  ballPosition={ballPickerEnabled && personalizationName.length > 0 ? effectiveBallPosition : undefined}
                                 />
                               </Suspense>
 
@@ -363,7 +366,7 @@ export function QuickViewModal() {
                               {product.personalization && (
                                 <div className="absolute bottom-0 inset-x-0 z-20">
                                   <div className="bg-gradient-to-t from-black/90 via-black/70 to-transparent pt-8 pb-3 px-3">
-                                    {isDragonballSign && personalizationName && (
+                                    {ballPickerEnabled && personalizationName && (
                                       <BallPositionPicker
                                         text={personalizationName}
                                         value={effectiveBallPosition}
