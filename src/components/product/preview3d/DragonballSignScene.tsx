@@ -723,18 +723,23 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     // we still cut the ball shape out to avoid Z-fighting.
     const cutText = config.midSpriteMode === 'overlay' ? null : ballCutGeo
 
-    // TEMP DEBUG — log hole counts per letter shape so we can verify
-    // the hole pipeline in the browser.
+    // TEMP DEBUG
     if (typeof window !== 'undefined') {
       const counts = yellowShapes.map((s) => s.holes.length)
       // eslint-disable-next-line no-console
-      console.log('[dragonball-sign] yellowShapes hole counts:', counts, 'total shapes:', yellowShapes.length)
+      console.log('[dragonball-sign] yellowShapes hole counts:', counts, 'total:', yellowShapes.length)
     }
 
     // Yellow paint layer (first half of text)
     if (config.firstHalfLayer) {
       const m = extrudedMesh(yellowShapes, config.firstHalfLayer, DEPTH_SCALE, bounds, cutText)
-      if (m) out.push(m)
+      if (m) {
+        if (typeof window !== 'undefined') {
+          // eslint-disable-next-line no-console
+          console.log('[dragonball-sign] paint mesh vertex count:', m.geometry.attributes.position.count)
+        }
+        out.push(m)
+      }
     }
     // Red paint layer (second half of text)
     if (config.secondHalfLayer) {
