@@ -167,7 +167,8 @@ export function QuickViewModal() {
   const hasVariantSvg = isSvgPreview && !!selectedVariantName && !!previewConfig?.variantSvgs?.[selectedVariantName]
   const hasSingleSvg = isSvgPreview && !!previewConfig?.svg
   const isComposite = previewConfig?.type === 'composite-sign' && !!previewConfig?.barParts
-  const show3DTab = !!previewConfig && (isTextExtrusion || hasVariantSvg || hasSingleSvg || isComposite)
+  const isDragonballSign = previewConfig?.type === 'dragonball-sign' && !!previewConfig.font && !!previewConfig.svg
+  const show3DTab = !!previewConfig && (isTextExtrusion || hasVariantSvg || hasSingleSvg || isComposite || isDragonballSign)
   const preview3DIndex = product ? product.images.length : 0
   const is3DActive = currentImageIndex === preview3DIndex && show3DTab
 
