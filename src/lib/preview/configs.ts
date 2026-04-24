@@ -3161,7 +3161,10 @@ previewConfigs['dragon-ball-custom-sign'] = {
   centerOutwardTaper: 0.05,
   centerOutwardTaperFloor: 0.5,
   midSpriteSize: 0.425,
-  midSpriteSpacing: -0.3,
+  // Positive spacing (unlike the legacy 2D which overlapped) so the
+  // black base shows as a visible border around the ball, separating
+  // it from the adjacent letter paint.
+  midSpriteSpacing: 0.08,
   // Required by PreviewConfig even though dragonball-sign uses named
   // layers. Leaving empty keeps the shared type happy.
   layers: [],
