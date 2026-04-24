@@ -349,6 +349,7 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
       // pushes the vertically-centred text block upward).
       const charScale = config.textCharScale?.[char] ?? config.textCharScale?.[charUpper] ?? 1
       const charOffsetY = (config.textCharOffsetY?.[char] ?? config.textCharOffsetY?.[charUpper] ?? 0) * fontSize
+      const charAdvanceScale = config.textCharAdvanceScale?.[char] ?? config.textCharAdvanceScale?.[charUpper] ?? 1
       const isExcluded = excludeSet.has(charUpper)
       const charPath = font.getPath(char, 0, 0, fontSize * charScale)
       const charCmds = charPath.commands
@@ -360,6 +361,12 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
         if (cmd.x2 !== undefined) { minX = Math.min(minX, cmd.x2); maxX = Math.max(maxX, cmd.x2) }
       }
       if (minX === Infinity) continue
+
+      // Symmetric tightening: when advanceScale < 1, pull this glyph
+      // back by half the "saved" width so neighbours on both sides
+      // close in (pure after-shrink would only tighten the right side).
+      const advanceShrink = (1 - charAdvanceScale) * (maxX - minX)
+      if (advanceShrink !== 0) cursorX -= advanceShrink / 2
 
       const offsetX = cursorX - minX
       const transformed: FontCommand[] = charCmds.map((cmd) => {
@@ -482,15 +489,17 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
 
       // Advance cursor by this character's width, then apply the configured
       // letter spacing (negative = overlap to keep shapes touching,
-      // positive = visible gap between letters).
-      cursorX = maxX + offsetX + fontSize * effectiveLetterSpacing
+      // positive = visible gap between letters). Subtract the remaining
+      // half of the advance shrinkage so the full symmetric tighten
+      // takes effect.
+      cursorX = maxX + offsetX + fontSize * effectiveLetterSpacing - advanceShrink / 2
     }
 
     if (allShapes.length === 0) return null
 
     const centerBounds = centerBB.minX !== Infinity ? centerBB : fullBB
     return { shapes: allShapes, centerBounds }
-  }, [font, displayText, effectiveFontSize, effectiveLetterSpacing, config.textCharScale, config.textCharCenterExclude, config.textCharOffsetY])
+  }, [font, displayText, effectiveFontSize, effectiveLetterSpacing, config.textCharScale, config.textCharCenterExclude, config.textCharOffsetY, config.textCharAdvanceScale])
 
   const textShapes = textData?.shapes ?? null
   const textCenterBounds = textData?.centerBounds ?? null

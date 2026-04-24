@@ -3055,6 +3055,12 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   textCharOffsetY: {
     Q: -0.05,
   },
+  // Q's tail swirl pushes its bbox right edge well past the visible
+  // body, so the default advance leaves a dead zone after it. Shrink
+  // the advance symmetrically so Q sits tight against its neighbours.
+  textCharAdvanceScale: {
+    Q: 0.7,
+  },
   camera: {
     position: [0, 0, 22],
     fov: 45,

@@ -215,4 +215,12 @@ export interface PreviewConfig {
    * excluded glyph into its final visual position.
    */
   textCharOffsetY?: Record<string, number>
+  /**
+   * Multiplier applied to this character's advance width when the
+   * cursor moves to the next glyph (default 1). Use < 1 to tighten
+   * spacing after a glyph whose path bbox extends past its visual
+   * right edge (e.g. a Q with a long tail swirl) — the next character
+   * slides closer without the glyph itself shrinking.
+   */
+  textCharAdvanceScale?: Record<string, number>
 }
