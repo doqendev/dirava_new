@@ -680,21 +680,25 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
       if (base) out.push(base)
     }
 
-    // Ball silhouette cut geometry: a solid disc (all ball shapes with
-    // holes stripped) extruded to fully span the paint Z range. Used to
-    // CSG-subtract the ball footprint from the text paint, so the ball
-    // visibly "cuts into" the yellow/red letters where they overlap — the
-    // black base shows through the cut, framing the ball with its ring.
+    // Ball silhouette cut geometry: a solid disc extruded to fully
+    // span the paint Z range. We use the SINGLE largest-area ball
+    // shape (not a union of every colour path) so the CSG boundary
+    // stays simple — unioning overlapping inner detail paths can
+    // produce artifacts in the text-paint subtraction for some
+    // letters (e.g. the M of the NAME placeholder).
     let ballCutGeo: THREE.BufferGeometry | null = null
     const allBallShapes: THREE.Shape[] = []
     for (const arr of Array.from(ballShapesByColor.values())) allBallShapes.push(...arr)
     if (allBallShapes.length > 0) {
-      let solid: THREE.Shape[] = allBallShapes
-        .map((s) => {
-          const pts = s.getPoints()
-          return pts.length > 0 ? new THREE.Shape(pts) : null
-        })
-        .filter((s): s is THREE.Shape => s !== null)
+      // Pick the outermost shape by polygon area.
+      let outermost = allBallShapes[0]!
+      let bestArea = Math.abs(THREE.ShapeUtils.area(outermost.getPoints()))
+      for (const s of allBallShapes) {
+        const a = Math.abs(THREE.ShapeUtils.area(s.getPoints()))
+        if (a > bestArea) { bestArea = a; outermost = s }
+      }
+      const outerPts = outermost.getPoints()
+      let solid: THREE.Shape[] = outerPts.length > 0 ? [new THREE.Shape(outerPts)] : []
       // Optional margin so the text paint is carved out slightly wider
       // than the sprite, leaving a visible ring of base colour between
       // them. Zero by default (tight cut, sprite fits the carve exactly).
