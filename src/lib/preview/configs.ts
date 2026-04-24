@@ -3188,6 +3188,156 @@ previewConfigs['dragon-ball-custom-sign'] = {
   background: '#0a0a12',
 }
 
+// Hunter x Hunter kerning table — lifted from the legacy 2D canvas
+// preview (snippets/hxh.liquid), expressed in pixels for a 200px font.
+// Divide by 200 so each value ends up as a fraction of font size, which
+// is the unit the scene multiplies against.
+const hxhKerningRaw: Record<string, number> = {
+  'MA': -20, 'AR': -10, 'RC': -5,  'CO': -5,  'OS': -10,  'CH': -5,  'AE': -10, 'EL': -5,  'JA': -7,  'AM': -10,
+  'ME': -30, 'ES': -10, 'JU': -2,  'US': -3,  'ST': -10,  'TI': -50,
+  'IN': -1,  'AN': -10, 'NN': -2,  'AH': -2,  'GA': -5,   'AB': -8,
+  'BR': -3,  'RI': -3,  'RE': 30,  'AD': -10, 'DA': -15,
+  'MI': -5,  'IC': 0,   'HA': -5,  'BA': -10, 'AC': -15,
+  'CA': -10, 'EA': -6,  'AF': -2,  'FA': -20, 'KA': -5,
+  'AG': -10, 'AI': -5,  'AJ': -8,  'AK': -5,  'AL': -5,
+  'LA': -5,  'NA': -4,  'AO': -10, 'OA': -20,
+  'AP': -3,  'PA': -17, 'AQ': -17, 'QA': -10, 'RA': -5,
+  'AS': -15, 'SA': -7,  'AT': -22, 'TA': -24, 'AU': -8,   'UA': -8,
+  'AV': -30, 'VA': -30, 'AW': -30, 'WA': -30, 'AX': -5,   'XA': -5,
+  'AY': -42, 'YA': -42, 'AZ': -7,  'ZA': -7,
+  'EB': -5,  'BE': -5,  'EC': -10, 'CE': -5,  'ED': -7,   'DE': -4,
+  'EE': -10, 'EF': -10, 'FE': -10, 'EG': -10, 'EH': -8,   'HE': -6,
+  'EI': -10, 'EJ': -10, 'EK': -5,  'LE': -5,  'EM': -7,
+  'EN': -5,  'KE': -5,  'NE': -2,
+  'EO': -10, 'OE': -3,  'EP': -7,  'PE': -2,  'EQ': -10,  'QE': -2,
+  'ER': -5,  'SE': -2,  'ET': -7,  'TE': -5,
+  'EU': -8,  'UE': -1,  'EV': -8,  'VE': -5,  'EW': -7,   'WE': -6,
+  'EX': -7,  'XE': -5,  'EY': -7,  'YE': -5,  'EZ': -7,   'ZE': -5,
+  'DY': -20, 'YL': -5,  'BO': -3,  'OC': -3,  'FO': -10,
+  'OG': -3,  'GO': -3,  'HO': -2,  'OH': -2,  'OI': -2,   'OJ': -2,
+  'JO': -1,  'KO': -15, 'LO': -10, 'OM': -3,  'MO': -3,   'OL': -2,
+  'OO': -4,  'OP': -3,  'PO': -4,  'OQ': -3,  'QO': -2,
+  'OR': -2,  'RO': -7,  'SO': -3,  'OT': -8,   'TO': -9,
+  'OU': -3,  'OV': -11, 'VO': -11, 'OW': -10, 'WO': -10,  'OX': -15,
+  'XO': -15, 'OY': -13, 'YO': -13, 'OZ': -8,  'ZO': -10,  'BU': -4,
+  'UC': -4,  'CU': -7,  'DU': -4,  'UD': -1,  'HU': -1,   'UI': -1,
+  'IU': 4,   'FU': -10, 'UG': -3,  'GU': -2,  'UF': -2,
+  'UJ': -2,                       'KU': -10, 'LU': -12, 'UK': -3,
+  'UM': -2,  'MU': -3,  'PU': -3,  'UQ': -2,  'QU': -3,   'RU': -5,
+  'SU': -3,  'UT': -3,  'TU': -5,  'UV': -4,   'VU': -5,
+  'UW': -4,  'WU': -6,  'UX': -4,  'XU': -4,  'UY': -3,   'YU': -5,
+  'UZ': -2,  'ZU': -4,  'BI': -3,  'DI': -5,  'FI': -6,   'GI': -10,
+  'HI': -3,  'JI': -5,  'KI': -5,  'LI': -10, 'NI': -3,
+  'PI': -5,  'QI': -5,  'SI': -3,  'IR': 1,   'IV': -1,
+  'VI': -5,  'IW': -3,  'WI': -5,  'XI': -5,  'YI': -5,   'IZ': 1,
+  'ZI': -5,  'TH': -5,  'HS': -3,  'SH': -5,  'PH': -3,   'HW': -5,
+  'WH': -5,  'CR': -5,  'RD': -3,
+  'DR': -2,  'RG': -8,  'GR': -3,  'PR': -5,  'RT': -5,
+  'TR': -5,  'RL': -5,  'LL': -5,  'LN': -5,  'NT': -2,
+  'TT': -5,  'BB': -5,  'RS': -8,  'HN': -3,
+}
+const hxhKerningTable: Record<string, number> = Object.fromEntries(
+  Object.entries(hxhKerningRaw).map(([k, v]) => [k, v / 200]),
+)
+
+previewConfigs['hunter-x-hunter-custom-sign'] = {
+  type: 'dragonball-sign',
+  font: '/fonts/preview/PLZ.ttf',
+  svg: '/svgs/preview/x_hxh.svg',
+  forceUppercase: true,
+  maxChars: 12,
+  // Red base (acts as the outer silhouette + the X's red fill), silver
+  // paint sitting flush on top. The legacy 2D render used a red stroke
+  // around silver-gradient letters, so in 3D relief we push that into
+  // physical layers: the base is red, the paint above is a warm grey.
+  baseLayer: {
+    color: '#c60000',
+    depth: 6,
+    metalness: 0.15,
+    roughness: 0.55,
+    strokeWidth: 0.18,
+  },
+  // No 2-tone split for HxH — both halves render the same silver so the
+  // text reads uniformly. The ball picker still positions the X, it
+  // just doesn't change the colour break.
+  firstHalfLayer: {
+    color: '#dadada',
+    depth: 1,
+    offsetZ: 6,
+    metalness: 0.35,
+    roughness: 0.35,
+    emissive: '#dadada',
+    emissiveIntensity: 0.25,
+  },
+  secondHalfLayer: {
+    color: '#dadada',
+    depth: 1,
+    offsetZ: 6,
+    metalness: 0.35,
+    roughness: 0.35,
+    emissive: '#dadada',
+    emissiveIntensity: 0.25,
+  },
+  ballLayers: [
+    // First entry is the silhouette reference — red X matches the base
+    // colour so its thin wafer vanishes into the relief while still
+    // driving base stroke-expansion + the CSG cut that frames the X.
+    {
+      svgColor: '#ff0000',
+      color: '#c60000',
+      depth: 0.1,
+      offsetZ: 6,
+      metalness: 0.15,
+      roughness: 0.55,
+    },
+    {
+      svgColor: '#000000',
+      color: '#111111',
+      depth: 1,
+      offsetZ: 6,
+      metalness: 0.1,
+      roughness: 0.8,
+    },
+    {
+      svgColor: '#00b200',
+      color: '#00a53c',
+      depth: 1,
+      offsetZ: 6,
+      metalness: 0.2,
+      roughness: 0.5,
+      emissive: '#00a53c',
+      emissiveIntensity: 0.3,
+    },
+    {
+      svgColor: '#d7d900',
+      color: '#d7d900',
+      depth: 1,
+      offsetZ: 6,
+      metalness: 0.2,
+      roughness: 0.5,
+      emissive: '#d7d900',
+      emissiveIntensity: 0.3,
+    },
+  ],
+  kerningTable: hxhKerningTable,
+  // Legacy preview drew every letter at the same size — disable the
+  // center-outward taper used by the Dragon Ball sign.
+  centerOutwardTaper: 0,
+  centerOutwardTaperFloor: 1,
+  // The X artwork is much wider than the dragon ball (SVG 538 × 242).
+  midSpriteSize: 1.0,
+  midSpriteSpacing: -0.1,
+  midSpriteOffsetY: 0.0,
+  layers: [],
+  camera: {
+    position: [0, 0, 28],
+    fov: 45,
+    autoRotate: false,
+  },
+  scale: 1,
+  background: '#0a0a12',
+}
+
 const variantImagesOnly: Record<string, Record<string, string>> = {
   // 'one-piece-custom-led-lightbox-sign' — now a full preview config above
   // (previewConfigs[]); the entry here is retained only for documentation.
