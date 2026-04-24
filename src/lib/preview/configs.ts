@@ -3171,7 +3171,7 @@ previewConfigs['dragon-ball-custom-sign'] = {
   // layers. Leaving empty keeps the shared type happy.
   layers: [],
   camera: {
-    position: [0, 0, 40],
+    position: [0, 0, 28],
     fov: 45,
     autoRotate: false,
   },
