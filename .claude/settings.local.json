@@ -130,7 +130,20 @@
       "WebFetch(domain:medium.com)",
       "Bash(pnpm exec *)",
       "Read(//e/downloads_new/mizoke/assets//**)",
-      "Read(//e/downloads_new/mizoke//**)"
+      "Read(//e/downloads_new/mizoke//**)",
+      "Read(//e/downloads_new/**)",
+      "Bash(awk '/fill=\"#1eed1e\"/,/<\\\\/g>/' /e/doqendev/dirava_new/public/svgs/preview/one-piece-lightbox-luffy.svg)",
+      "Bash(awk '/<g fill=\"#1eed1e\">/,/<\\\\/g>/' /e/doqendev/dirava_new/public/svgs/preview/one-piece-lightbox-luffy.svg)",
+      "Bash(\"/c/Program Files/Inkscape/bin/inkscape\" --export-type=svg --export-filename=\"/e/downloads_new/luffy_lightboxx_green_converted.svg\" \"E:\\\\\\\\downloads_new\\\\\\\\luffy_lightboxx_green \\(1\\).dxf\")",
+      "Bash(awk '/<g fill=\"#1eed1e\"/,/<\\\\/g>/' \"/e/downloads_new/luffy_lightboxx_green \\(1\\).svg\")",
+      "Bash(awk '/<g fill=\"#1eed1e\">/,/<\\\\/g>/' \"/e/downloads_new/luffy_lightboxx_green \\(1\\).svg\")",
+      "Bash(awk '/<g fill=\"#fde200\">/,/<\\\\/g>/' \"/e/downloads_new/luffy_lightboxx_green \\(1\\).svg\")",
+      "Bash(awk '/<g fill=\"#0000ff\">/,/<\\\\/g>/' \"/e/downloads_new/luffy_lightboxx_green \\(1\\).svg\")",
+      "Bash(awk '/<g fill=\"#ed1eec\">/,/<\\\\/g>/' \"/e/downloads_new/luffy_lightboxx_green \\(1\\).svg\")",
+      "Bash(awk '/fill=\"#0000ff\"/,/\\\\/>/' /e/doqendev/dirava_new/public/svgs/preview/one-piece-lightbox-zoro.svg)",
+      "Bash(awk '{print $2, $3}')",
+      "Bash(sort -g -k2)",
+      "Bash(awk 'NR==1{minX=$1; minY=$2} {maxX=\\($1>maxX||NR==1\\)?$1:maxX; maxY=\\($2>maxY||NR==1\\)?$2:maxY; minX=\\($1<minX||NR==1\\)?$1:minX; minY=\\($2<minY||NR==1\\)?$2:minY} END{print \"x:\", minX, \"-\", maxX, \" y:\", minY, \"-\", maxY}')"
     ]
   }
 }

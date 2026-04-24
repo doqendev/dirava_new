@@ -190,4 +190,13 @@ export interface PreviewConfig {
    * allow tighter overlap before the font starts to shrink.
    */
   textMinLetterSpacing?: number
+  /**
+   * Per-character size overrides (keyed by character — uppercased when
+   * `forceUppercase`). Value is a scale multiplier applied to the glyph
+   * at render time (e.g. `{ Q: 0.82 }` renders Q at 82% of the font size).
+   * Useful for fonts where a specific glyph has a runaway descender or
+   * cap-height that throws the bbox-centered text off vertically.
+   * Baseline stays at y=0 so the scaled glyph still sits on the baseline.
+   */
+  textCharScale?: Record<string, number>
 }

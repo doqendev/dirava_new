@@ -331,7 +331,11 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
 
     for (let ci = 0; ci < displayText.length; ci++) {
       const char = displayText[ci]!
-      const charPath = font.getPath(char, 0, 0, fontSize)
+      // Per-character size override: lets us shrink glyphs whose bbox
+      // overshoots the rest (e.g. a Q with an oversized descender that
+      // pushes the vertically-centred text block upward).
+      const charScale = config.textCharScale?.[char] ?? 1
+      const charPath = font.getPath(char, 0, 0, fontSize * charScale)
       const charCmds = charPath.commands
 
       let minX = Infinity, maxX = -Infinity
@@ -443,7 +447,7 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
     }
 
     return allShapes.length > 0 ? allShapes : null
-  }, [font, displayText, effectiveFontSize])
+  }, [font, displayText, effectiveFontSize, effectiveLetterSpacing, config.textCharScale])
 
   // Generate 3D text stroke geometry for CSG subtraction from SVG layers.
   // Uses the shared textShapes (computed once above).
