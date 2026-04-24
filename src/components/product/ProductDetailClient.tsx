@@ -178,24 +178,25 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
 
   const isDragonballSign = previewConfig?.type === 'dragonball-sign'
 
-  // Effective ball slot in [0, personalizationName.length]. When the user
-  // hasn't manually picked, falls back to the midpoint so the preview
-  // keeps its default behaviour. Clamp after a length change so a stored
-  // slot past the new end snaps back into range.
+  // Effective ball slot — only *internal* positions are allowed, so the
+  // clamp is [1, n - 1]. When the user hasn't manually picked, falls
+  // back to the legacy midpoint (Math.ceil(n / 2), already inside the
+  // internal range for every n ≥ 2) so the default looks identical to
+  // what the preview used to produce before the picker existed.
   const effectiveBallPosition = useMemo(() => {
     const n = personalizationName.length
-    if (n === 0) return 0
-    if (ballPosition === null) return Math.ceil(n / 2)
-    return Math.max(0, Math.min(n, ballPosition))
+    if (n < 2) return Math.ceil(n / 2) // no internal slots; mostly a no-op path
+    const fallback = Math.ceil(n / 2)
+    const requested = ballPosition ?? fallback
+    return Math.max(1, Math.min(n - 1, requested))
   }, [ballPosition, personalizationName])
 
   // Human-readable description for the order line item. Manufacturing
   // reads this directly so we don't have to map slot indices on the
-  // warehouse side. Slot 0 = before first char; slot n = after last.
+  // warehouse side. Only internal slots are valid now — the ball always
+  // lives between two letters.
   const describeBallPosition = (name: string, slot: number): string => {
-    if (name.length === 0) return 'Default (center)'
-    if (slot <= 0) return `Before letter 1 (${name[0]})`
-    if (slot >= name.length) return `After letter ${name.length} (${name[name.length - 1]})`
+    if (name.length < 2) return 'Default (center)'
     return `Between letter ${slot} (${name[slot - 1]}) and letter ${slot + 1} (${name[slot]})`
   }
 

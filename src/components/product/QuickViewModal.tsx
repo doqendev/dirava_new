@@ -181,19 +181,19 @@ export function QuickViewModal() {
     [personalizationName, previewConfig]
   )
 
-  // Dragon Ball slot: auto-midpoint until the customer picks, clamped
-  // into range after a length change.
+  // Internal-only ball slot clamped to [1, n - 1]. Default is the
+  // legacy midpoint so the preview renders identically to the
+  // pre-picker behaviour until the customer explicitly picks a slot.
   const effectiveBallPosition = useMemo(() => {
     const n = personalizationName.length
-    if (n === 0) return 0
-    if (ballPosition === null) return Math.ceil(n / 2)
-    return Math.max(0, Math.min(n, ballPosition))
+    if (n < 2) return Math.ceil(n / 2)
+    const fallback = Math.ceil(n / 2)
+    const requested = ballPosition ?? fallback
+    return Math.max(1, Math.min(n - 1, requested))
   }, [ballPosition, personalizationName])
 
   const describeBallPosition = (name: string, slot: number): string => {
-    if (name.length === 0) return 'Default (center)'
-    if (slot <= 0) return `Before letter 1 (${name[0]})`
-    if (slot >= name.length) return `After letter ${name.length} (${name[name.length - 1]})`
+    if (name.length < 2) return 'Default (center)'
     return `Between letter ${slot} (${name[slot - 1]}) and letter ${slot + 1} (${name[slot]})`
   }
 
