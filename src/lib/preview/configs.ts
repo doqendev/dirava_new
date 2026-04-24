@@ -3255,10 +3255,7 @@ previewConfigs['hunter-x-hunter-custom-sign'] = {
     depth: 6,
     metalness: 0.15,
     roughness: 0.55,
-    // Smaller stroke so letter counters (D's hole, O's hole, etc.)
-    // don't close up. The base still extends past the paint by this
-    // margin, giving the red ring that's visible inside each counter.
-    strokeWidth: 0.08,
+    strokeWidth: 0.18,
   },
   // No 2-tone split for HxH — both halves render the same silver so the
   // text reads uniformly. The ball picker still positions the X, it
