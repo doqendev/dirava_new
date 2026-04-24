@@ -3289,10 +3289,11 @@ previewConfigs['hunter-x-hunter-custom-sign'] = {
     emissive: '#fe7428',
     emissiveIntensity: 0.3,
   },
-  // Rows touch at the shared baseline — main letters grow upward,
-  // reflection grows downward from that same line. The X then overlays
-  // both of them.
-  reflectionOffsetY: 0,
+  // Tiny gap between the two rows so the red base is visible as a
+  // line where they "meet" — letters don't paint over the baseline
+  // region, letting the stroke-expanded red show through. Too small
+  // and you lose the red stripe; too large and the rows drift apart.
+  reflectionOffsetY: 0.05,
   ballLayers: [
     // First entry is the silhouette reference — red X matches the base
     // colour so its thin wafer vanishes into the relief while still
@@ -3343,9 +3344,9 @@ previewConfigs['hunter-x-hunter-custom-sign'] = {
   // fraction of the text width (centred for short names, 60% for
   // longer ones) — matching the legacy HxH logo layout.
   midSpriteMode: 'overlay',
-  // Wider X so it spans both the main row and the reflection row
-  // comfortably (SVG aspect is ~2.22, so height ≈ midSpriteSize/2.22).
-  midSpriteSize: 1.8,
+  // Smaller X (was 1.8) so the NAME letters remain legible under it.
+  // SVG aspect ≈ 2.22, so height ≈ midSpriteSize / 2.22 in font units.
+  midSpriteSize: 1.0,
   midSpriteSpacing: 0,
   midSpriteOffsetY: 0,
   layers: [],
