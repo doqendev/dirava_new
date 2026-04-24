@@ -3064,7 +3064,7 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   // Font's O renders shorter than the other caps; stretch it vertically
   // around its own centre so the height lines up without affecting width.
   textCharScaleY: {
-    O: 1.15,
+    O: 1.1,
   },
   camera: {
     position: [0, 0, 22],
