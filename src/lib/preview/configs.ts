@@ -3051,6 +3051,7 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   textCharScale: {
     Q: 0.95,
     C: 0.97,
+    S: 0.99,
   },
   textCharCenterExclude: ['Q'],
   textCharOffsetY: {
