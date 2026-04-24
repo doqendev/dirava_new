@@ -735,8 +735,9 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
       const m = extrudedMesh(yellowShapes, config.firstHalfLayer, DEPTH_SCALE, bounds, cutText)
       if (m) {
         if (typeof window !== 'undefined') {
+          const pos = m.geometry.attributes.position
           // eslint-disable-next-line no-console
-          console.log('[dragonball-sign] paint mesh vertex count:', m.geometry.attributes.position.count)
+          console.log('[dragonball-sign] paint mesh vertex count:', pos?.count)
         }
         out.push(m)
       }
