@@ -628,10 +628,14 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
         })
         .filter((s): s is THREE.Shape => s !== null)
       if (solid.length > 0) {
-        // Span a bit wider than paint Z range (offsetZ 11, depth 1 => 0.88..0.96)
-        // so the cut cleanly slices through no matter which paint layer.
-        const depth = 4 * DEPTH_SCALE
-        const baseZ = 10 * DEPTH_SCALE
+        // Span a little below and above the paint Z range so the cut
+        // cleanly slices through. Derived from the actual layer config
+        // rather than hardcoded so thickness tweaks propagate.
+        const paintOffsetZ = config.firstHalfLayer?.offsetZ ?? config.baseLayer?.depth ?? 11
+        const paintDepth = config.firstHalfLayer?.depth ?? 1
+        const padMm = 2
+        const baseZ = (paintOffsetZ - padMm) * DEPTH_SCALE
+        const depth = (paintDepth + padMm * 2) * DEPTH_SCALE
         const geo = new THREE.ExtrudeGeometry(solid, {
           depth,
           bevelEnabled: false,

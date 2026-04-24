@@ -3099,7 +3099,7 @@ previewConfigs['dragon-ball-custom-sign'] = {
   // preview but extruded for a proper relief look.
   baseLayer: {
     color: '#111111',
-    depth: 11,
+    depth: 6,
     metalness: 0.1,
     roughness: 0.8,
     strokeWidth: 0.15,
@@ -3107,7 +3107,7 @@ previewConfigs['dragon-ball-custom-sign'] = {
   firstHalfLayer: {
     color: '#ffcc00',
     depth: 1,
-    offsetZ: 11,
+    offsetZ: 6,
     metalness: 0.15,
     roughness: 0.4,
     // Subtle self-lit boost so the paint reads bright without looking LED
@@ -3117,7 +3117,7 @@ previewConfigs['dragon-ball-custom-sign'] = {
   secondHalfLayer: {
     color: '#e20a0a',
     depth: 1,
-    offsetZ: 11,
+    offsetZ: 6,
     metalness: 0.15,
     roughness: 0.4,
     emissive: '#e20a0a',
@@ -3130,7 +3130,7 @@ previewConfigs['dragon-ball-custom-sign'] = {
       svgColor: '#161616',
       color: '#111111',
       depth: 0.6,
-      offsetZ: 11,
+      offsetZ: 6,
       metalness: 0.1,
       roughness: 0.8,
     },
@@ -3138,7 +3138,7 @@ previewConfigs['dragon-ball-custom-sign'] = {
       svgColor: '#ff6c00',
       color: '#ff6c00',
       depth: 1,
-      offsetZ: 11,
+      offsetZ: 6,
       metalness: 0.15,
       roughness: 0.4,
       emissive: '#ff6c00',
@@ -3148,7 +3148,7 @@ previewConfigs['dragon-ball-custom-sign'] = {
       svgColor: '#ff0000',
       color: '#ff0000',
       depth: 1,
-      offsetZ: 11,
+      offsetZ: 6,
       metalness: 0.15,
       roughness: 0.4,
       emissive: '#ff0000',
@@ -3234,6 +3234,8 @@ const previewHandleAliases: Record<string, string> = {
   // variants cover fewer characters than the sign, but the preview
   // mapping is kept complete so newly-added variants auto-resolve.
   'one-piece-custom-keychain': 'one-piece-custom-sign',
+  // Dragon Ball keychain reuses the sign's preview wholesale.
+  'dragon-ball-custom-keychain': 'dragon-ball-custom-sign',
 }
 
 function resolvePreviewHandle(handle: string): string {
