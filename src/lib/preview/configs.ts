@@ -3050,6 +3050,7 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   // scale it down so its descender stays inside the plate.
   textCharScale: {
     Q: 0.95,
+    C: 0.97,
   },
   textCharCenterExclude: ['Q'],
   textCharOffsetY: {
