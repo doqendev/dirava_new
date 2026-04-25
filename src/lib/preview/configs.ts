@@ -3457,7 +3457,7 @@ previewConfigs['bleach-custom-sign'] = {
   bleachFrameScale: 0.025,
   bleachTextPad: 0.1,
   textFontSize: 2.4,
-  textOffsetY: -0.4,
+  textOffsetY: -0.15,
   // Frame layers — match SVG fills (red/white/blue).
   layers: [
     {
