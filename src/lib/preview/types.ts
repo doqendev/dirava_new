@@ -309,4 +309,10 @@ export interface PreviewConfig {
   bleachFrameScale?: number
   /** Horizontal padding (in font-size units) between the text and each expander. */
   bleachTextPad?: number
+  /**
+   * Vertical offset for the bleach text, in font-size units. Negative
+   * pushes the text upward in world space (above the frame's central
+   * horizontal stripes), matching the legacy layout. Default -0.6.
+   */
+  textOffsetY?: number
 }

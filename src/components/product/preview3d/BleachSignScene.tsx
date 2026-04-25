@@ -17,7 +17,7 @@ interface BleachSignSceneProps {
 }
 
 const DEPTH_SCALE = 0.08
-const FONT_SIZE = 5
+const DEFAULT_FONT_SIZE = 3
 
 type Cmd = { type: string; x?: number; y?: number; x1?: number; y1?: number; x2?: number; y2?: number }
 type OpentypeFont = {
@@ -286,7 +286,7 @@ export function BleachSignScene({ text, config }: BleachSignSceneProps) {
   const composition = useMemo(() => {
     if (!font || !svgs.left || !svgs.expander || !svgs.middle || !svgs.right) return null
 
-    const fontSize = FONT_SIZE
+    const fontSize = config.textFontSize ?? DEFAULT_FONT_SIZE
     // Build text shapes — one per letter, advancing by glyph width.
     const textShapes: THREE.Shape[] = []
     let cursorX = 0
@@ -438,8 +438,20 @@ export function BleachSignScene({ text, config }: BleachSignSceneProps) {
     // Simpler: centre between expander L start and expander R end.
     const textCenterX = (expanderLX + expanderRX + rightExpW) / 2
     const textTranslateX = textCenterX - textWidth / 2
-    // Vertically centre on the frame's centreline.
-    const textTranslateY = 0
+    // Centre text vertically on its own bbox first, then nudge with a
+    // config-driven offset (textOffsetY in font-size units, negative
+    // pushes the text upward — matches the legacy layout where the
+    // name sits in the upper half above the horizontal stripes).
+    let textMinY = Infinity, textMaxY = -Infinity
+    for (const shape of textShapes) {
+      for (const p of shape.getPoints()) {
+        if (p.y < textMinY) textMinY = p.y
+        if (p.y > textMaxY) textMaxY = p.y
+      }
+    }
+    const textCY = textMinY === Infinity ? 0 : (textMinY + textMaxY) / 2
+    const textOffsetY = (config.textOffsetY ?? -0.6) * fontSize
+    const textTranslateY = -textCY + textOffsetY
     const positionedText = textShapes.map((shape) => {
       const outer = shape.getPoints(24).map((p) => new THREE.Vector2(p.x + textTranslateX, p.y + textTranslateY))
       const s = new THREE.Shape(outer)
@@ -478,6 +490,8 @@ export function BleachSignScene({ text, config }: BleachSignSceneProps) {
     config.textLetterSpacing,
     config.bleachFrameScale,
     config.bleachTextPad,
+    config.textFontSize,
+    config.textOffsetY,
   ])
 
   // Build meshes from the composition.
