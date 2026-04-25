@@ -3208,6 +3208,11 @@ const hxhKerningRaw: Record<string, number> = {
   'EB': -5,  'BE': -5,  'EC': -10, 'CE': -5,  'ED': -7,   'DE': -4,
   'EE': -10, 'EF': -10, 'FE': -10, 'EG': -10, 'EH': -8,   'HE': -6,
   'EI': -10, 'EJ': -10, 'EK': -5,  'LE': -5,  'EM': -7,
+  // ME / MI / MU intentionally have a positive bump so the M reads
+  // with a touch more breathing room before the following vowel.
+  'ME': 16,
+  'MI': 16,
+  'MU': 16,
   'EN': -5,  'KE': -5,  'NE': -2,
   'EO': -10, 'OE': -3,  'EP': -7,  'PE': -2,  'EQ': -10,  'QE': -2,
   'ER': -5,  'SE': -2,  'ET': -7,  'TE': -5,
@@ -3223,7 +3228,7 @@ const hxhKerningRaw: Record<string, number> = {
   'UC': -4,  'CU': -7,  'DU': -4,  'UD': -1,  'HU': -1,   'UI': -1,
   'IU': 4,   'FU': -10, 'UG': -3,  'GU': -2,  'UF': -2,
   'UJ': -2,                       'KU': -10, 'LU': -12, 'UK': -3,
-  'UM': -2,  'MU': -3,  'PU': -3,  'UQ': -2,  'QU': -3,   'RU': -5,
+  'UM': -2,  'PU': -3,  'UQ': -2,  'QU': -3,   'RU': -5,
   'SU': -3,  'UT': -3,  'TU': -5,  'UV': -4,   'VU': -5,
   'UW': -4,  'WU': -6,  'UX': -4,  'XU': -4,  'UY': -3,   'YU': -5,
   'UZ': -2,  'ZU': -4,  'BI': -3,  'DI': -5,  'FI': -6,   'GI': -10,
