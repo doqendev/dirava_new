@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0.00 0.00 8.00 251.00">
+<g stroke-width="2.00" fill="none" stroke-linecap="butt">
+<path stroke="#893c79" vector-effect="non-scaling-stroke" d="
+  M 8.00 161.76
+  L 0.00 161.79"
+/>
+<path stroke="#893c79" vector-effect="non-scaling-stroke" d="
+  M 8.00 177.17
+  L 0.00 177.16"
+/>
+<path stroke="#893c79" vector-effect="non-scaling-stroke" d="
+  M 8.00 185.05
+  L 0.00 185.04"
+/>
+<path stroke="#893c79" vector-effect="non-scaling-stroke" d="
+  M 8.00 201.23
+  L 0.00 201.21"
+/>
+</g>
+<g fill="#1277f2">
+<path d="
+  M 8.00 123.32
+  L 8.00 161.76
+  L 0.00 161.79
+  L 0.00 123.34
+  L 8.00 123.32
+  Z"
+/>
+<path d="
+  M 8.00 177.17
+  L 8.00 185.05
+  L 0.00 185.04
+  L 0.00 177.16
+  L 8.00 177.17
+  Z"
+/>
+<path d="
+  M 8.00 201.23
+  L 8.00 206.85
+  L 0.00 206.85
+  L 0.00 201.21
+  L 8.00 201.23
+  Z"
+/>
+</g>
+<g fill="#ff0000">
+<path d="
+  M 8.00 161.76
+  L 8.00 177.17
+  L 0.00 177.16
+  L 0.00 161.79
+  L 8.00 161.76
+  Z"
+/>
+<path d="
+  M 8.00 185.05
+  L 8.00 201.23
+  L 0.00 201.21
+  L 0.00 185.04
+  L 8.00 185.05
+  Z"
+/>
+</g>
+</svg>

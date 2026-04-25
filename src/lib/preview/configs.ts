@@ -3438,6 +3438,91 @@ previewConfigs['hunter-x-hunter-custom-keychain'] = {
   background: '#0a0a12',
 }
 
+// Bleach custom sign — frame assembled horizontally as
+// left + expander + middle + expander + right (the two expanders
+// stretch with text length, matching the legacy 2D canvas layout).
+// Text rendered as 3-layer stroke stack: blue widest, white narrower,
+// red fill on top.
+previewConfigs['bleach-custom-sign'] = {
+  type: 'bleach-sign',
+  font: '/fonts/preview/Bleach.ttf',
+  forceUppercase: true,
+  maxChars: 14,
+  bleachFrameSvgs: {
+    left: '/svgs/preview/bleach_left.svg',
+    expander: '/svgs/preview/bleach_expander.svg',
+    middle: '/svgs/preview/bleach_middle.svg',
+    right: '/svgs/preview/bleach_right.svg',
+  },
+  bleachFrameScale: 0.025,
+  bleachTextPad: 0.4,
+  // Frame layers — match SVG fills (red/white/blue).
+  layers: [
+    {
+      svgColor: '#1277f2',
+      color: '#1277f2',
+      depth: 8,
+      offsetZ: 0,
+      metalness: 0.1,
+      roughness: 0.5,
+    },
+    {
+      svgColor: '#ffffff',
+      color: '#f2f2f2',
+      depth: 1,
+      offsetZ: 8,
+      metalness: 0.05,
+      roughness: 0.45,
+    },
+    {
+      svgColor: '#ff0000',
+      color: '#e00a0a',
+      depth: 1,
+      offsetZ: 9,
+      metalness: 0.15,
+      roughness: 0.4,
+      emissive: '#ff0000',
+      emissiveIntensity: 0.25,
+    },
+  ],
+  // Text 3-layer stroke stack — blue widest stroke (back), white
+  // narrower (middle), red fill on top.
+  textLayers: [
+    {
+      color: '#1277f2',
+      depth: 8,
+      offsetZ: 0,
+      metalness: 0.1,
+      roughness: 0.5,
+      strokeWidth: 0.6,
+    },
+    {
+      color: '#f2f2f2',
+      depth: 1,
+      offsetZ: 8,
+      metalness: 0.05,
+      roughness: 0.45,
+      strokeWidth: 0.2,
+    },
+    {
+      color: '#e00a0a',
+      depth: 1,
+      offsetZ: 9,
+      metalness: 0.15,
+      roughness: 0.4,
+      emissive: '#ff0000',
+      emissiveIntensity: 0.3,
+    },
+  ],
+  camera: {
+    position: [0, 0, 30],
+    fov: 45,
+    autoRotate: false,
+  },
+  scale: 1,
+  background: '#0a0a12',
+}
+
 const variantImagesOnly: Record<string, Record<string, string>> = {
   // 'one-piece-custom-led-lightbox-sign' — now a full preview config above
   // (previewConfigs[]); the entry here is retained only for documentation.

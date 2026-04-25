@@ -100,6 +100,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
     const hasSingleSvg = isSvgPreview && !!previewConfig?.svg
     const isComposite = previewConfig?.type === 'composite-sign' && !!previewConfig?.barParts
     const isDragonballSign = previewConfig?.type === 'dragonball-sign' && !!previewConfig.font && !!previewConfig.svg
+    const isBleachSign = previewConfig?.type === 'bleach-sign' && !!previewConfig.font && !!previewConfig.bleachFrameSvgs
     const normalizedPreviewText = useMemo(
       () => (previewConfig ? getPreviewDisplayText(previewText, previewConfig, '') : (previewText ?? '')),
       [previewText, previewConfig]
@@ -110,7 +111,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
     )
 
     // 3D tab is available for text-extrusion (always) or SVG/composite types with content
-    const show3DTab = !!previewConfig && (isTextExtrusion || hasVariantSvg || hasSingleSvg || isComposite || isDragonballSign)
+    const show3DTab = !!previewConfig && (isTextExtrusion || hasVariantSvg || hasSingleSvg || isComposite || isDragonballSign || isBleachSign)
 
     // 3D is the last slide (index = images.length)
     const preview3DIndex = images.length

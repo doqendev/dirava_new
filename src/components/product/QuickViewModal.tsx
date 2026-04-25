@@ -172,10 +172,11 @@ export function QuickViewModal() {
   const hasSingleSvg = isSvgPreview && !!previewConfig?.svg
   const isComposite = previewConfig?.type === 'composite-sign' && !!previewConfig?.barParts
   const isDragonballSign = previewConfig?.type === 'dragonball-sign' && !!previewConfig.font && !!previewConfig.svg
+  const isBleachSign = previewConfig?.type === 'bleach-sign' && !!previewConfig.font && !!previewConfig.bleachFrameSvgs
   // Overlay-mode signs auto-place the X, so the picker + cart attribute
   // both get suppressed.
   const ballPickerEnabled = isDragonballSign && previewConfig?.midSpriteMode !== 'overlay'
-  const show3DTab = !!previewConfig && (isTextExtrusion || hasVariantSvg || hasSingleSvg || isComposite || isDragonballSign)
+  const show3DTab = !!previewConfig && (isTextExtrusion || hasVariantSvg || hasSingleSvg || isComposite || isDragonballSign || isBleachSign)
   const preview3DIndex = product ? product.images.length : 0
   const is3DActive = currentImageIndex === preview3DIndex && show3DTab
 

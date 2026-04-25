@@ -9,6 +9,7 @@ import { TextExtrusionScene } from './TextExtrusionScene'
 import { SvgExtrusionScene } from './SvgExtrusionScene'
 import { CompositeSignScene } from './CompositeSignScene'
 import { DragonballSignScene } from './DragonballSignScene'
+import { BleachSignScene } from './BleachSignScene'
 import { Preview3DLoadingIndicator } from './LoadingSpinner'
 import { useIsMobile } from '@/lib/hooks/useMediaQuery'
 import type { PreviewConfig } from '@/lib/preview/types'
@@ -113,6 +114,8 @@ function SceneRouter({ config, text, selectedVariantName, sceneRef, lightOn, yOf
     }
     case 'dragonball-sign':
       return <DragonballSignScene text={text} config={config} ballPosition={ballPosition} />
+    case 'bleach-sign':
+      return <BleachSignScene text={text} config={config} />
     default:
       return null
   }

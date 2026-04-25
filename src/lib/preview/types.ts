@@ -5,7 +5,7 @@
  * that controls how the 3D preview is rendered.
  */
 
-export type PreviewType = 'text-extrusion' | 'svg-extrusion' | 'composite-sign' | 'dragonball-sign' | 'model-with-text' | 'engraving'
+export type PreviewType = 'text-extrusion' | 'svg-extrusion' | 'composite-sign' | 'dragonball-sign' | 'bleach-sign' | 'model-with-text' | 'engraving'
 
 export interface LayerConfig {
   color: string
@@ -292,4 +292,21 @@ export interface PreviewConfig {
    * applies the CSG cut.
    */
   midSpriteCutMargin?: number
+
+  // --- bleach-sign only ----------------------------------------------
+  /**
+   * Frame parts for the bleach-sign scene: 5 SVGs assembled
+   * horizontally as left + expander + middle + expander + right.
+   * The two expanders stretch along X to fit the personalised text.
+   */
+  bleachFrameSvgs?: {
+    left: string
+    expander: string
+    middle: string
+    right: string
+  }
+  /** Scene units per SVG pixel for the frame artwork (default 0.025). */
+  bleachFrameScale?: number
+  /** Horizontal padding (in font-size units) between the text and each expander. */
+  bleachTextPad?: number
 }
