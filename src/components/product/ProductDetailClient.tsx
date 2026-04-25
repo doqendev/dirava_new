@@ -386,6 +386,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 personalizationValue: personalizationName,
                 onPersonalizationError: handlePersonalizationError,
                 attributes: cartAttributes,
+                themeColor,
               } : undefined}
             />
 

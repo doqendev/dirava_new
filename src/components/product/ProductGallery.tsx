@@ -32,6 +32,7 @@ interface CanvasCartProps {
   personalizationValue: string
   onPersonalizationError: () => void
   attributes?: Array<{ key: string; value: string }>
+  themeColor?: string
 }
 
 interface ProductGalleryProps {
@@ -293,6 +294,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                               personalizationValue={canvasCart.personalizationValue}
                               onPersonalizationError={canvasCart.onPersonalizationError}
                               attributes={canvasCart.attributes}
+                              themeColor={canvasCart.themeColor}
                               label="Add"
                               className="!py-2.5 !px-3 !text-xs !w-auto"
                             />
