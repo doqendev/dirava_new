@@ -3210,9 +3210,9 @@ const hxhKerningRaw: Record<string, number> = {
   'EI': -10, 'EJ': -10, 'EK': -5,  'LE': -5,  'EM': -7,
   // ME / MI / MU intentionally have a small positive bump so the M
   // reads with a touch more breathing room before the following vowel.
-  'ME': 6,
-  'MI': 6,
-  'MU': 6,
+  'ME': 3,
+  'MI': 3,
+  'MU': 3,
   'EN': -5,  'KE': -5,  'NE': -2,
   'EO': -10, 'OE': -3,  'EP': -7,  'PE': -2,  'EQ': -10,  'QE': -2,
   'ER': -5,  'SE': -2,  'ET': -7,  'TE': -5,
