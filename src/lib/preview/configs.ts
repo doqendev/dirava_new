@@ -3455,9 +3455,9 @@ previewConfigs['bleach-custom-sign'] = {
     right: '/svgs/preview/bleach_right.svg',
   },
   bleachFrameScale: 0.025,
-  bleachTextPad: 0.4,
+  bleachTextPad: 0.1,
   textFontSize: 2.4,
-  textOffsetY: -0.6,
+  textOffsetY: -0.4,
   // Frame layers — match SVG fills (red/white/blue).
   layers: [
     {
@@ -3496,7 +3496,7 @@ previewConfigs['bleach-custom-sign'] = {
       offsetZ: 0,
       metalness: 0.1,
       roughness: 0.5,
-      strokeWidth: 0.6,
+      strokeWidth: 0.35,
     },
     {
       color: '#f2f2f2',
@@ -3504,7 +3504,7 @@ previewConfigs['bleach-custom-sign'] = {
       offsetZ: 8,
       metalness: 0.05,
       roughness: 0.45,
-      strokeWidth: 0.2,
+      strokeWidth: 0.12,
     },
     {
       color: '#e00a0a',
