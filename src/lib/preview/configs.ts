@@ -3208,11 +3208,11 @@ const hxhKerningRaw: Record<string, number> = {
   'EB': -5,  'BE': -5,  'EC': -10, 'CE': -5,  'ED': -7,   'DE': -4,
   'EE': -10, 'EF': -10, 'FE': -10, 'EG': -10, 'EH': -8,   'HE': -6,
   'EI': -10, 'EJ': -10, 'EK': -5,  'LE': -5,  'EM': -7,
-  // ME / MI / MU intentionally have a positive bump so the M reads
-  // with a touch more breathing room before the following vowel.
-  'ME': 16,
-  'MI': 16,
-  'MU': 16,
+  // ME / MI / MU intentionally have a small positive bump so the M
+  // reads with a touch more breathing room before the following vowel.
+  'ME': 6,
+  'MI': 6,
+  'MU': 6,
   'EN': -5,  'KE': -5,  'NE': -2,
   'EO': -10, 'OE': -3,  'EP': -7,  'PE': -2,  'EQ': -10,  'QE': -2,
   'ER': -5,  'SE': -2,  'ET': -7,  'TE': -5,
