@@ -3370,6 +3370,74 @@ previewConfigs['hunter-x-hunter-custom-sign'] = {
   background: '#0a0a12',
 }
 
+// Hunter x Hunter custom keychain — same composition as the sign,
+// just thinner (acrylic keychain rather than full sign).
+previewConfigs['hunter-x-hunter-custom-keychain'] = {
+  type: 'dragonball-sign',
+  font: '/fonts/preview/PLZ.ttf',
+  svg: '/svgs/preview/x_hxh.svg',
+  forceUppercase: true,
+  maxChars: 12,
+  baseLayer: {
+    color: '#c60000',
+    depth: 5,
+    metalness: 0.15,
+    roughness: 0.55,
+    strokeWidth: 0.18,
+  },
+  firstHalfLayer: {
+    color: '#dadada',
+    depth: 1,
+    offsetZ: 5,
+    metalness: 0.35,
+    roughness: 0.35,
+    emissive: '#dadada',
+    emissiveIntensity: 0.25,
+  },
+  secondHalfLayer: {
+    color: '#dadada',
+    depth: 1,
+    offsetZ: 5,
+    metalness: 0.35,
+    roughness: 0.35,
+    emissive: '#dadada',
+    emissiveIntensity: 0.25,
+  },
+  reflectionLayer: {
+    color: '#fe7428',
+    depth: 1,
+    offsetZ: 5,
+    metalness: 0.2,
+    roughness: 0.45,
+    emissive: '#fe7428',
+    emissiveIntensity: 0.3,
+  },
+  reflectionOffsetY: 0,
+  ballLayers: [
+    { svgColor: '#ff0000', color: '#c60000', depth: 0.2, offsetZ: 6, metalness: 0.15, roughness: 0.55 },
+    { svgColor: '#000000', color: '#111111', depth: 0.2, offsetZ: 6.2, metalness: 0.1, roughness: 0.8 },
+    { svgColor: '#00b200', color: '#00a53c', depth: 0.2, offsetZ: 6.4, metalness: 0.2, roughness: 0.5, emissive: '#00a53c', emissiveIntensity: 0.3 },
+    { svgColor: '#d7d900', color: '#d7d900', depth: 0.2, offsetZ: 6.6, metalness: 0.2, roughness: 0.5, emissive: '#d7d900', emissiveIntensity: 0.3 },
+  ],
+  kerningTable: hxhKerningTable,
+  textLetterSpacing: 0.025,
+  centerOutwardTaper: 0,
+  centerOutwardTaperFloor: 1,
+  midSpriteMode: 'overlay',
+  midSpriteSize: 1.0,
+  midSpriteSpacing: 0,
+  midSpriteOffsetY: 0,
+  midSpriteCutMargin: 0.08,
+  layers: [],
+  camera: {
+    position: [0, 0, 28],
+    fov: 45,
+    autoRotate: false,
+  },
+  scale: 1,
+  background: '#0a0a12',
+}
+
 const variantImagesOnly: Record<string, Record<string, string>> = {
   // 'one-piece-custom-led-lightbox-sign' — now a full preview config above
   // (previewConfigs[]); the entry here is retained only for documentation.
