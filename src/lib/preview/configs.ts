@@ -3194,10 +3194,10 @@ previewConfigs['dragon-ball-custom-sign'] = {
 // is the unit the scene multiplies against.
 const hxhKerningRaw: Record<string, number> = {
   'MA': -20, 'AR': -10, 'RC': -5,  'CO': -5,  'OS': -10,  'CH': -5,  'AE': -10, 'EL': -5,  'JA': -7,  'AM': -10,
-  'ME': -30, 'ES': -10, 'JU': -2,  'US': -3,  'ST': -10,  'TI': -50,
+  'ES': -10, 'JU': -2,  'US': -3,  'ST': -10,  'TI': -50,
   'IN': -1,  'AN': -10, 'NN': -2,  'AH': -2,  'GA': -5,   'AB': -8,
   'BR': -3,  'RI': -3,  'RE': 30,  'AD': -10, 'DA': -15,
-  'MI': -5,  'IC': 0,   'HA': -5,  'BA': -10, 'AC': -15,
+  'IC': 0,   'HA': -5,  'BA': -10, 'AC': -15,
   'CA': -10, 'EA': -6,  'AF': -2,  'FA': -20, 'KA': -5,
   'AG': -10, 'AI': -5,  'AJ': -8,  'AK': -5,  'AL': -5,
   'LA': -5,  'NA': -4,  'AO': -10, 'OA': -20,
