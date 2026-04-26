@@ -333,10 +333,17 @@ export function QuickViewModal() {
                   </div>
                 ) : product ? (
                   <div className="grid md:grid-cols-2 gap-3 sm:gap-6 p-3 sm:p-4">
-                    {/* Image Gallery */}
-                    <div className="space-y-3">
+                    {/* Image Gallery — wrapped in a single outer card so
+                        the animated accent ring encompasses both the
+                        image area and the thumbnail strip below. */}
+                    <div
+                      className="gallery-animated-ring relative bg-bg-secondary rounded-lg overflow-hidden"
+                      style={{
+                        ['--gallery-accent' as string]: '#00f5ff',
+                      }}
+                    >
                       {/* Main Image / 3D Preview */}
-                      <div className="relative aspect-[4/3] sm:aspect-square bg-bg-secondary rounded-lg overflow-hidden group">
+                      <div className="relative aspect-[4/3] sm:aspect-square overflow-hidden group">
                         <AnimatePresence mode="wait">
                           {is3DActive && previewConfig ? (
                             <motion.div
@@ -482,9 +489,11 @@ export function QuickViewModal() {
                         )}
                       </div>
 
-                      {/* Thumbnails — hidden on mobile to save space */}
+                      {/* Thumbnails — sit inside the same outer card
+                          so the animated ring wraps everything. */}
                       {(product.images.length > 1 || show3DTab) && (
-                        <div className="hidden sm:flex gap-2 overflow-x-auto hide-scrollbar">
+                        <div className="hidden sm:block border-t border-white/5 bg-black/30 px-3 py-3">
+                          <div className="flex gap-2 overflow-x-auto hide-scrollbar">
                           {product.images.map((image, index) => (
                             <button
                               key={index}
@@ -523,6 +532,7 @@ export function QuickViewModal() {
                               <Box className="w-5 h-5 text-neon-cyan" />
                             </button>
                           )}
+                          </div>
                         </div>
                       )}
                     </div>
