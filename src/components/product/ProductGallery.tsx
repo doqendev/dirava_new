@@ -204,7 +204,6 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
     }, [show3DTab, is3DActive])
 
     const totalSlides = images.length + (show3DTab ? 1 : 0)
-    const displayIndex = is3DActive ? totalSlides : currentIndex + 1
 
     if (images.length === 0 && !show3DTab) {
       return (
