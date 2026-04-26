@@ -314,7 +314,10 @@ export function BleachSignScene({ text, config }: BleachSignSceneProps) {
       if (mnx === Infinity) continue
       const offsetX = cursorX - mnx
       const transformed = transformCmds(cmds, (x, y) => [x + offsetX, y])
-      textShapes.push(...cmdsToShapes(transformed))
+      // Bleach reads better as solid letterforms — strip the inner
+      // counters so D/A/P/O/B etc. render filled instead of cut.
+      const builtShapes = cmdsToShapes(transformed).map((s) => new THREE.Shape(s.getPoints()))
+      textShapes.push(...builtShapes)
       cursorX = mxx + offsetX + fontSize * (config.textLetterSpacing ?? 0)
     }
     const textWidth = cursorX
