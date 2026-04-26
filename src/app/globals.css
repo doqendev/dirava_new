@@ -196,9 +196,11 @@
 .gallery-animated-ring::before {
   content: '';
   position: absolute;
-  inset: -1.5px;
+  /* Sit fully INSIDE the parent so the parent's overflow:hidden
+     can't crop right/bottom on certain browsers. */
+  inset: 0;
   border-radius: inherit;
-  padding: 1.5px;
+  padding: 2px;
   /* Two-comet sweep: every side stays lit at a low base intensity,
      with two bright peaks travelling around so the motion reads
      continuously on all four edges. */
@@ -210,7 +212,13 @@
     var(--gallery-accent, #00f5ff) 270deg,
     color-mix(in srgb, var(--gallery-accent, #00f5ff) 25%, transparent) 360deg
   );
+  /* Set both prefixed and unprefixed mask + composite so every
+     current browser carves out the centre and leaves only the
+     padding ring visible. */
   -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+          mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
