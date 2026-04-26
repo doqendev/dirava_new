@@ -494,7 +494,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
             const visible = overflow ? images.slice(0, THUMB_CAP) : images
             const hiddenCount = overflow ? images.length - THUMB_CAP : 0
             return (
-              <div className="border-t border-white/5 bg-black/30 px-3 py-3">
+              <div className="px-3 py-3">
                 <div>
                   <div className="flex gap-2 overflow-x-auto hide-scrollbar">
                     {visible.map((image, index) => {

@@ -492,7 +492,7 @@ export function QuickViewModal() {
                       {/* Thumbnails — sit inside the same outer card
                           so the animated ring wraps everything. */}
                       {(product.images.length > 1 || show3DTab) && (
-                        <div className="hidden sm:block border-t border-white/5 bg-black/30 px-3 py-3">
+                        <div className="hidden sm:block px-3 py-3">
                           <div className="flex gap-2 overflow-x-auto hide-scrollbar">
                           {product.images.map((image, index) => (
                             <button
