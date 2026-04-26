@@ -199,14 +199,16 @@
   inset: -1.5px;
   border-radius: inherit;
   padding: 1.5px;
+  /* Two-comet sweep: every side stays lit at a low base intensity,
+     with two bright peaks travelling around so the motion reads
+     continuously on all four edges. */
   background: conic-gradient(
     from var(--gallery-ring-angle),
-    transparent 0deg,
-    var(--gallery-accent, #00f5ff) 60deg,
-    transparent 140deg,
-    transparent 220deg,
-    var(--gallery-accent, #00f5ff) 300deg,
-    transparent 360deg
+    color-mix(in srgb, var(--gallery-accent, #00f5ff) 25%, transparent) 0deg,
+    var(--gallery-accent, #00f5ff) 90deg,
+    color-mix(in srgb, var(--gallery-accent, #00f5ff) 25%, transparent) 180deg,
+    var(--gallery-accent, #00f5ff) 270deg,
+    color-mix(in srgb, var(--gallery-accent, #00f5ff) 25%, transparent) 360deg
   );
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
