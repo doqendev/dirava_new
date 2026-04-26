@@ -227,11 +227,13 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
           className="pointer-events-none absolute inset-x-0 -inset-y-2 rounded-2xl blur-3xl"
           style={{ background: `radial-gradient(60% 60% at 50% 50%, ${themeColor}1f, transparent 70%)` }}
         />
-        {/* Main Image / 3D Preview — accent border + ambient inner glow. */}
+        {/* Main Image / 3D Preview — animated accent ring around an
+            ambient inner glow. The conic-gradient sweep is provided by
+            the .gallery-animated-ring class in globals.css. */}
         <div
-          className="relative aspect-square bg-bg-secondary rounded-xl overflow-hidden group border"
+          className="gallery-animated-ring relative aspect-square bg-bg-secondary rounded-xl overflow-hidden group"
           style={{
-            borderColor: `${themeColor}66`,
+            ['--gallery-accent' as string]: themeColor,
             boxShadow: `0 0 24px ${themeColor}22, inset 0 0 30px ${themeColor}1a`,
           }}
           onTouchStart={!is3DActive ? handleTouchStart : undefined}

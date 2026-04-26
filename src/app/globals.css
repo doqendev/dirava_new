@@ -176,3 +176,50 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Animated accent ring around a card. The host element provides a
+   --gallery-accent custom property; the ::before pseudo-element runs
+   a slow conic-gradient sweep that creates a "moving outline" feel.
+   Browsers without @property support fall back to a static accent
+   ring. */
+@property --gallery-ring-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.gallery-animated-ring {
+  position: relative;
+  isolation: isolate;
+}
+
+.gallery-animated-ring::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--gallery-ring-angle),
+    transparent 0deg,
+    var(--gallery-accent, #00f5ff) 60deg,
+    transparent 140deg,
+    transparent 220deg,
+    var(--gallery-accent, #00f5ff) 300deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+  animation: gallery-ring-spin 5.5s linear infinite;
+}
+
+@keyframes gallery-ring-spin {
+  to {
+    --gallery-ring-angle: 360deg;
+  }
+}
