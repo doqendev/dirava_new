@@ -58,6 +58,8 @@ interface ProductGalleryProps {
   ballPosition?: number
   /** Ball-position picker change handler. Only consumed on dragonball-sign. */
   onBallPositionChange?: (value: number) => void
+  /** Universe accent color for the gallery card glow / 3D pill / active thumb ring. */
+  themeColor?: string
 }
 
 export interface ProductGalleryHandle {
@@ -83,6 +85,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
       onVariantSelect,
       ballPosition,
       onBallPositionChange,
+      themeColor = '#00f5ff',
     },
     ref
   ) {
@@ -91,6 +94,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
     const containerRef = useRef<HTMLDivElement>(null)
     const [currentIndex, setCurrentIndex] = useState(initialImageIndex ?? 0)
     const [isZoomed, setIsZoomed] = useState(false)
+    const [showAllThumbs, setShowAllThumbs] = useState(false)
     const touchStartRef = useRef<{ x: number; y: number } | null>(null)
 
     const hasMultipleImages = images.length > 1
@@ -217,11 +221,20 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
     }
 
     return (
-      <div ref={containerRef} className={cn('space-y-4', className)}>
-        {/* Main Image / 3D Preview — solid accent border, no glow. */}
+      <div ref={containerRef} className={cn('relative space-y-4', className)}>
+        {/* Soft accent halo behind the card. */}
         <div
-          className="relative aspect-square bg-bg-secondary rounded-xl overflow-hidden group border-2"
-          style={{ borderColor: 'rgb(var(--accent-rgb, 0, 245, 255))' }}
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 -inset-y-2 rounded-2xl blur-3xl"
+          style={{ background: `radial-gradient(60% 60% at 50% 50%, ${themeColor}1f, transparent 70%)` }}
+        />
+        {/* Main Image / 3D Preview — accent border + ambient inner glow. */}
+        <div
+          className="relative aspect-square bg-bg-secondary rounded-xl overflow-hidden group border"
+          style={{
+            borderColor: `${themeColor}66`,
+            boxShadow: `0 0 24px ${themeColor}22, inset 0 0 30px ${themeColor}1a`,
+          }}
           onTouchStart={!is3DActive ? handleTouchStart : undefined}
           onTouchEnd={!is3DActive ? handleTouchEnd : undefined}
         >
@@ -380,22 +393,27 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
             </button>
           )}
 
-          {/* 3D Preview button — visible on all breakpoints so shoppers
-              discover 3D immediately without needing to scroll thumbnails. */}
+          {/* 3D Preview pill — full label, prominent accent fill. */}
           {show3DTab && !is3DActive && (
             <button
               onClick={() => goToIndex(preview3DIndex)}
               className={cn(
-                'absolute top-4 right-4 z-10',
-                'flex items-center gap-1.5 px-3 py-2 rounded-lg',
-                'bg-[color:var(--accent,#00f5ff)]/15 border border-[color:var(--accent,#00f5ff)]/40 backdrop-blur-sm',
-                'text-[color:var(--accent,#00f5ff)]',
-                'active:scale-95 transition-transform'
+                'absolute top-3 right-3 z-10',
+                'inline-flex items-center gap-1.5 rounded-full px-3.5 py-2',
+                'border backdrop-blur-md',
+                'text-xs font-bold uppercase tracking-[0.12em]',
+                'active:scale-95 transition-all',
               )}
+              style={{
+                background: `${themeColor}1f`,
+                borderColor: `${themeColor}77`,
+                color: themeColor,
+                boxShadow: `0 0 14px ${themeColor}66`,
+              }}
               aria-label={t('view3DPreview')}
             >
               <Box className="w-4 h-4" />
-              <span className="text-xs font-bold tracking-wide">3D</span>
+              <span>3D Preview</span>
             </button>
           )}
 
@@ -456,28 +474,24 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
             </button>
           )}
 
-          {/* Slide counter — moves to top-left in 3D mode to avoid bottom bar */}
-          {totalSlides > 1 && (
-            <div className={cn(
-              'absolute z-10',
-              is3DActive ? 'top-3 left-3' : 'bottom-4 left-1/2 -translate-x-1/2'
-            )}>
-              <div className="px-3 py-1 rounded-full bg-black/50 backdrop-blur-sm text-white/70 text-sm">
-                {is3DActive ? '3D' : `${displayIndex} / ${totalSlides}`}
-              </div>
-            </div>
-          )}
+          {/* Slide counter intentionally removed — the thumbnail strip
+              already conveys position and the close button covers 3D. */}
         </div>
 
-        {/* Thumbnails */}
-        {(hasMultipleImages || show3DTab) && (
+        {/* Thumbnails — capped at 3 with a +N overflow tile until the
+            customer expands the strip. The 3D tile always sits last
+            outside the cap so it stays discoverable. */}
+        {(hasMultipleImages || show3DTab) && (() => {
+          const THUMB_CAP = 3
+          const overflow = !showAllThumbs && images.length > THUMB_CAP
+          const visible = overflow ? images.slice(0, THUMB_CAP) : images
+          const hiddenCount = overflow ? images.length - THUMB_CAP : 0
+          return (
           <div className="flex gap-2 overflow-x-auto hide-scrollbar">
-            {images.map((image, index) => {
+            {visible.map((image, index) => {
               const thumbVariant = imageVariantNames?.[index] ?? null
-              // While the 3D preview is open, a thumbnail tied to a variant
-              // switches characters in-place instead of collapsing the 3D view
-              // — much faster than exiting 3D, picking the variant, re-entering.
               const stayInPreview = is3DActive && thumbVariant && onVariantSelect
+              const isActive = stayInPreview ? thumbVariant === selectedVariantName : index === currentIndex
               return (
               <button
                 key={index}
@@ -491,13 +505,19 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                 className={cn(
                   'relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden',
                   'border-2 transition-all duration-200',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent,#00f5ff)]',
-                  (stayInPreview ? thumbVariant === selectedVariantName : index === currentIndex)
-                    ? 'border-[color:var(--accent,#00f5ff)]'
-                    : 'border-transparent opacity-60 hover:opacity-100'
+                  'focus-visible:outline-none focus-visible:ring-2',
+                  isActive ? '' : 'border-white/15 opacity-60 hover:opacity-100',
                 )}
+                style={
+                  isActive
+                    ? {
+                        borderColor: themeColor,
+                        boxShadow: `0 0 12px ${themeColor}88`,
+                      }
+                    : undefined
+                }
                 aria-label={t('viewImage', { number: index + 1 })}
-                aria-current={(stayInPreview ? thumbVariant === selectedVariantName : index === currentIndex) ? 'true' : undefined}
+                aria-current={isActive ? 'true' : undefined}
               >
                 <Image
                   src={image.url}
@@ -509,6 +529,24 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
               </button>
               )
             })}
+
+            {/* +N overflow tile — clicking expands the rest of the strip. */}
+            {overflow && (
+              <button
+                onClick={() => setShowAllThumbs(true)}
+                className={cn(
+                  'relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden',
+                  'border-2 transition-all duration-200',
+                  'flex items-center justify-center',
+                  'bg-black/60 hover:bg-black/40',
+                  'focus-visible:outline-none focus-visible:ring-2',
+                )}
+                style={{ borderColor: `${themeColor}55`, color: themeColor }}
+                aria-label={`Show ${hiddenCount} more images`}
+              >
+                <span className="text-sm font-bold">+{hiddenCount}</span>
+              </button>
+            )}
 
             {/* 3D Preview thumbnail — last in sequence */}
             {show3DTab && (
@@ -541,7 +579,8 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
               </button>
             )}
           </div>
-        )}
+          )
+        })()}
       </div>
     )
   }

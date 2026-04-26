@@ -385,6 +385,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               onPreviewTextChange={product.personalization ? setPersonalizationName : undefined}
               ballPosition={ballPickerEnabled && personalizationName.length > 0 ? effectiveBallPosition : undefined}
               onBallPositionChange={ballPickerEnabled ? setBallPosition : undefined}
+              themeColor={themeColor}
               canvasCart={previewConfig ? {
                 variantId: selectedVariant?.id || '',
                 quantity,
