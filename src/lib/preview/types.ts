@@ -26,6 +26,11 @@ export interface LayerConfig {
    *  Use 'miter' for text strokes that should preserve the glyph's
    *  pointy outline (e.g. spiky display fonts). */
   strokeJoinType?: 'round' | 'miter' | 'square'
+  /** When true, inner contours (letter counters / SVG hole paths) are
+   *  stripped from this layer before extruding so it renders as a
+   *  solid silhouette. Useful for back-stroke layers where the inner
+   *  counter shouldn't be cut through. */
+  stripHoles?: boolean
   /** SVG fill color to match when using svg-extrusion (e.g. '#000000') */
   svgColor?: string
   /** 'extrude' (default) renders solid geometry; 'cut' subtracts holes from other layers */

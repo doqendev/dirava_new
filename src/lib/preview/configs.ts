@@ -3498,6 +3498,10 @@ previewConfigs['bleach-custom-sign'] = {
       roughness: 0.5,
       strokeWidth: 0.35,
       strokeJoinType: 'miter',
+      // Blue back-stroke renders solid (no inner counters); the white
+      // and red layers keep their holes so D/A/P/O etc. read with
+      // proper letter counters.
+      stripHoles: true,
     },
     {
       color: '#f2f2f2',

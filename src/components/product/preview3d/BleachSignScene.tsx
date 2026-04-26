@@ -154,9 +154,15 @@ function extrudedMesh(
   depthScale: number,
 ): THREE.Mesh | null {
   if (!shapes || shapes.length === 0) return null
-  const working = layer.strokeWidth
-    ? expandShapes(shapes, layer.strokeWidth, layer.strokeJoinType ?? 'round')
+  // Optionally drop inner contours (letter counters) so this layer
+  // renders as a solid silhouette — keeps back-strokes uncut while the
+  // top fill still shows the natural holes.
+  const sourceShapes = layer.stripHoles
+    ? shapes.map((s) => new THREE.Shape(s.getPoints()))
     : shapes
+  const working = layer.strokeWidth
+    ? expandShapes(sourceShapes, layer.strokeWidth, layer.strokeJoinType ?? 'round')
+    : sourceShapes
   if (working.length === 0) return null
   const geo = new THREE.ExtrudeGeometry(working, {
     depth: layer.depth * depthScale,
@@ -314,10 +320,7 @@ export function BleachSignScene({ text, config }: BleachSignSceneProps) {
       if (mnx === Infinity) continue
       const offsetX = cursorX - mnx
       const transformed = transformCmds(cmds, (x, y) => [x + offsetX, y])
-      // Bleach reads better as solid letterforms — strip the inner
-      // counters so D/A/P/O/B etc. render filled instead of cut.
-      const builtShapes = cmdsToShapes(transformed).map((s) => new THREE.Shape(s.getPoints()))
-      textShapes.push(...builtShapes)
+      textShapes.push(...cmdsToShapes(transformed))
       cursorX = mxx + offsetX + fontSize * (config.textLetterSpacing ?? 0)
     }
     const textWidth = cursorX
