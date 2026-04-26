@@ -606,12 +606,6 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             </div>
             {/* end buy box card */}
 
-            {/* Order steps + trust badges — mobile placement (above description). */}
-            <div className="space-y-4 lg:hidden">
-              <OrderSteps accent={themeColor} />
-              <TrustBadges accent={themeColor} />
-            </div>
-
             {/* Collapsible panels — border-top separators, display title,
                 accent chevron when open. Matches the design. */}
             <div>
