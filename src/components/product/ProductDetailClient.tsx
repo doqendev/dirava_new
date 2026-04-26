@@ -4,7 +4,7 @@ import { useState, useMemo, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { ArrowLeft, Box, ChevronDown } from 'lucide-react'
+import { ArrowLeft, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { formatPrice } from '@/lib/utils/formatPrice'
 import { UNIVERSE_CONFIG, MAX_PERSONALIZATION_LENGTH } from '@/lib/utils/constants'
@@ -20,6 +20,7 @@ import { ShareButtons } from '@/components/product/ShareButtons'
 import { SizeGuideButton } from '@/components/product/SizeGuideButton'
 import { SizeGuideModal } from '@/components/product/SizeGuideModal'
 import { StickyAddToCart } from '@/components/product/StickyAddToCart'
+import { PersonalizeCard } from '@/components/product/PersonalizeCard'
 import { TitleChips } from '@/components/product/TitleChips'
 import { RatingOrdersChip } from '@/components/product/RatingOrdersChip'
 import { GuaranteeTiles } from '@/components/product/GuaranteeTiles'
@@ -507,64 +508,6 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               />
             </div>
 
-            {/* Personalization */}
-            {product.personalization && (
-              <div>
-                <label className="block text-sm font-medium text-white/70 mb-2">
-                  {t('personalizationName')} <span className="text-neon-pink">*</span>
-                </label>
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-stretch gap-2">
-                    <div className="relative flex-1 min-w-0">
-                      <input
-                        ref={personalizationInputRef}
-                        type="text"
-                        value={personalizationName}
-                        maxLength={MAX_PERSONALIZATION_LENGTH}
-                        onChange={(e) => {
-                          const sliced = e.target.value.slice(0, MAX_PERSONALIZATION_LENGTH)
-                          setPersonalizationName(previewConfig ? getPreviewDisplayText(sliced, previewConfig, '') : sliced)
-                        }}
-                        placeholder={t('personalizationPlaceholder')}
-                        className={cn(
-                          'w-full min-w-0 px-4 py-3 pr-16 bg-black/80 border rounded-lg text-white placeholder-white/40 focus:outline-none transition-colors',
-                          personalizationName.trim()
-                            ? 'border-neon-green/50 focus:border-neon-green'
-                            : 'border-border-subtle focus:border-[color:var(--accent)]'
-                        )}
-                      />
-                      <span
-                        aria-hidden="true"
-                        className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-[11px] font-mono tabular-nums text-white/25"
-                      >
-                        {personalizationName.length}/{MAX_PERSONALIZATION_LENGTH}
-                      </span>
-                    </div>
-                    {previewConfig && (
-                      <button
-                        type="button"
-                        onClick={() => galleryRef.current?.goTo3D()}
-                        aria-label={t('preview3D')}
-                        className={cn(
-                          'flex flex-shrink-0 items-center justify-center gap-1.5 rounded-lg px-3 py-3 sm:px-4',
-                          'border text-sm font-medium transition-colors'
-                        )}
-                        style={{
-                          backgroundColor: `${themeColor}10`,
-                          borderColor: `${themeColor}33`,
-                          color: themeColor,
-                        }}
-                      >
-                        <Box className="w-4 h-4" />
-                        <span className="sm:hidden">3D</span>
-                        <span className="hidden sm:inline">{t('preview3D')}</span>
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Stock Indicator (hidden for personalized products) */}
             {selectedVariant && !product.personalization && (
               <StockIndicator
@@ -573,34 +516,78 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               />
             )}
 
-            {/* Add to Cart & Wishlist */}
-            <div ref={cartButtonRef} className="pt-2 flex flex-col gap-2.5">
-              <AddToCartButton
-                variantId={selectedVariant?.id || ''}
-                quantity={quantity}
-                available={selectedVariant?.availableForSale ?? false}
-                requiresPersonalization={product.personalization}
-                personalizationValue={personalizationName}
-                onPersonalizationError={handlePersonalizationError}
-                attributes={cartAttributes}
-                themeColor={themeColor}
-              />
-              <WishlistButton
-                product={{
-                  productId: product.id,
-                  variantId: selectedVariant?.id || '',
-                  handle: product.handle,
-                  title: product.title,
-                  price: selectedVariant?.price || product.priceRange.minVariantPrice,
-                  compareAtPrice: selectedVariant?.compareAtPrice || product.compareAtPriceRange?.minVariantPrice,
-                  image: product.images[0] || null,
-                  universe,
-                }}
-                variant="button"
-                size="lg"
-                className="w-full justify-center py-3"
-              />
+            {product.personalization ? (
+              <div ref={cartButtonRef}>
+                <PersonalizeCard
+                  value={personalizationName}
+                  onChange={(v) => setPersonalizationName(previewConfig ? getPreviewDisplayText(v, previewConfig, '') : v)}
+                  maxLength={MAX_PERSONALIZATION_LENGTH}
+                  inputRef={personalizationInputRef}
+                  themeColor={themeColor}
+                  cta={
+                    <AddToCartButton
+                      variantId={selectedVariant?.id || ''}
+                      quantity={quantity}
+                      available={selectedVariant?.availableForSale ?? false}
+                      requiresPersonalization={product.personalization}
+                      personalizationValue={personalizationName}
+                      onPersonalizationError={handlePersonalizationError}
+                      attributes={cartAttributes}
+                      themeColor={themeColor}
+                    />
+                  }
+                  wishlist={
+                    <WishlistButton
+                      product={{
+                        productId: product.id,
+                        variantId: selectedVariant?.id || '',
+                        handle: product.handle,
+                        title: product.title,
+                        price: selectedVariant?.price || product.priceRange.minVariantPrice,
+                        compareAtPrice: selectedVariant?.compareAtPrice || product.compareAtPriceRange?.minVariantPrice,
+                        image: product.images[0] || null,
+                        universe,
+                      }}
+                      variant="button"
+                      size="lg"
+                      className="w-full justify-center py-3"
+                    />
+                  }
+                />
+              </div>
+            ) : (
+              <div ref={cartButtonRef} className="pt-2 flex flex-col gap-2.5">
+                <AddToCartButton
+                  variantId={selectedVariant?.id || ''}
+                  quantity={quantity}
+                  available={selectedVariant?.availableForSale ?? false}
+                  attributes={cartAttributes}
+                  themeColor={themeColor}
+                />
+                <WishlistButton
+                  product={{
+                    productId: product.id,
+                    variantId: selectedVariant?.id || '',
+                    handle: product.handle,
+                    title: product.title,
+                    price: selectedVariant?.price || product.priceRange.minVariantPrice,
+                    compareAtPrice: selectedVariant?.compareAtPrice || product.compareAtPriceRange?.minVariantPrice,
+                    image: product.images[0] || null,
+                    universe,
+                  }}
+                  variant="button"
+                  size="lg"
+                  className="w-full justify-center py-3"
+                />
+              </div>
+            )}
+
+            {/* Inline social proof + trust strip — sit right after the
+                buy box on every product. */}
+            <div className="pt-1">
+              <SocialProofBar productHandle={product.handle} accent={themeColor} />
             </div>
+            <TrustStrip />
             </div>
             {/* end buy box card */}
 
@@ -764,10 +751,8 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
           section (which lives outside this component, in the page
           shell). */}
       <div className="relative px-4 pb-10 max-w-7xl mx-auto w-full space-y-6">
-        <SocialProofBar productHandle={product.handle} accent={themeColor} />
         <WhyHitsDifferent tiles={getProductFeatureTiles(product.handle)} accent={themeColor} />
         <HowItsMade accent={themeColor} />
-        <TrustStrip />
       </div>
 
       {/* Size Guide Modal */}
