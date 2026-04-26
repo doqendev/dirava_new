@@ -24,10 +24,10 @@ export function expandShapes(
 ): THREE.Shape[] {
   const result: THREE.Shape[] = []
   const jt = joinType === 'miter' ? 2 : joinType === 'square' ? 0 : 1
-  // High miter limit so very acute outer corners (the pointy spikes
-  // in display fonts like Bleach's BLAKE) keep their sharp tips
-  // instead of getting bevelled off.
-  const miterLimit = 20
+  // Very high miter limit so even the most acute outer corners (the
+  // pointy spikes in display fonts like Bleach's BLAKE) keep their
+  // tips intact.
+  const miterLimit = 100
 
   for (const shape of shapes) {
     // Convert outer contour to Clipper path
@@ -99,7 +99,7 @@ export function expandShapes(
         const sumX = n1.nx + n2.nx
         const sumY = n1.ny + n2.ny
         const denom = 1 + n1.nx * n2.nx + n1.ny * n2.ny
-        const MITER_CAP = 20
+        const MITER_CAP = 100
         let mx: number
         let my: number
         if (Math.abs(denom) < 1 / MITER_CAP) {
