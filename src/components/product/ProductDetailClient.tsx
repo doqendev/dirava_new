@@ -21,8 +21,16 @@ import { SizeGuideButton } from '@/components/product/SizeGuideButton'
 import { SizeGuideModal } from '@/components/product/SizeGuideModal'
 import { ReviewSummary } from '@/components/product/ReviewSummary'
 import { StickyAddToCart } from '@/components/product/StickyAddToCart'
-import { OrderSteps } from '@/components/product/OrderSteps'
-import { TrustBadges } from '@/components/product/TrustBadges'
+import { TitleChips } from '@/components/product/TitleChips'
+import { RatingOrdersChip } from '@/components/product/RatingOrdersChip'
+import { GuaranteeTiles } from '@/components/product/GuaranteeTiles'
+import { SocialProofBar } from '@/components/product/SocialProofBar'
+import { LimitedSlotsBanner } from '@/components/product/LimitedSlotsBanner'
+import { TrustStrip } from '@/components/product/TrustStrip'
+import { WhyHitsDifferent } from '@/components/product/WhyHitsDifferent'
+import { HowItsMade } from '@/components/product/HowItsMade'
+import { getProductChips } from '@/data/productChips'
+import { getProductFeatureTiles } from '@/data/productFeatureTiles'
 import { useTrackProductView } from '@/hooks/useTrackProductView'
 import { useCookieConsentStore } from '@/stores/cookieConsentStore'
 import { trackViewContent } from '@/lib/tracking/trackClear'
@@ -392,9 +400,10 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
 
             {/* Order steps + trust badges — desktop only (below thumbnails).
                 On mobile they render inside the info column, after Add-to-Cart. */}
-            <div className="mt-6 hidden space-y-4 lg:block">
-              <OrderSteps accent={themeColor} />
-              <TrustBadges accent={themeColor} />
+            {/* Limited slots banner sits under the gallery on desktop;
+                a thin strip of urgency that doesn't shout. */}
+            <div className="mt-4 hidden lg:block">
+              <LimitedSlotsBanner accent={themeColor} />
             </div>
           </div>
 
@@ -422,26 +431,17 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               {product.title}
             </h1>
 
-            {/* Features tagline (material / build / fit highlights) */}
-            {(() => {
-              const features = resolveProductFeatures({
-                override: product.featuresOverride,
-                productType: product.productType,
-                tags: product.tags,
-              })
-              return features ? (
-                <p className="font-mono text-[11px] uppercase tracking-widest text-white/55">
-                  {features}
-                </p>
-              ) : null
-            })()}
+            {/* Three-attribute chips (UV painted · Made to order · …) */}
+            <TitleChips chips={getProductChips(product.handle)} accent={themeColor} />
 
-            {/* Reviews/Rating */}
-            {product.rating && product.rating.reviewCount > 0 && (
-              <a href="#reviews" className="block w-fit hover:opacity-80 transition-opacity">
-                <ReviewSummary rating={product.rating} size="md" color={themeColor} />
-              </a>
-            )}
+            {/* Real rating + display orders count */}
+            <a href="#reviews" className="block w-fit hover:opacity-80 transition-opacity">
+              <RatingOrdersChip
+                rating={product.rating}
+                productHandle={product.handle}
+                accent={themeColor}
+              />
+            </a>
 
             {/* Price */}
             <div className="flex items-baseline gap-3">
@@ -462,6 +462,15 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   )}
                 </span>
               )}
+            </div>
+
+            {/* Guarantee tiles — Handmade / Premium / Ships from EU */}
+            <GuaranteeTiles accent={themeColor} />
+
+            {/* Limited slots banner on mobile (desktop renders it under
+                the gallery instead). */}
+            <div className="lg:hidden">
+              <LimitedSlotsBanner accent={themeColor} />
             </div>
 
             {/* Size Guide Button - only for apparel with a matching size guide */}
@@ -756,6 +765,17 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             </div>
           </div>
         </div>
+      </div>
+
+      {/* New PDP sections: Why-hits-different + How-it's-made + trust
+          strip. Sit between the buy-box grid and the existing reviews
+          section (which lives outside this component, in the page
+          shell). */}
+      <div className="relative px-4 pb-10 max-w-7xl mx-auto w-full space-y-6">
+        <SocialProofBar productHandle={product.handle} accent={themeColor} />
+        <WhyHitsDifferent tiles={getProductFeatureTiles(product.handle)} accent={themeColor} />
+        <HowItsMade accent={themeColor} />
+        <TrustStrip />
       </div>
 
       {/* Size Guide Modal */}
