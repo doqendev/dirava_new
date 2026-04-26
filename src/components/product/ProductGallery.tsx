@@ -477,111 +477,121 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
 
           {/* Slide counter intentionally removed — the thumbnail strip
               already conveys position and the close button covers 3D. */}
-        </div>
 
-        {/* Thumbnails — capped at 3 with a +N overflow tile until the
-            customer expands the strip. The 3D tile always sits last
-            outside the cap so it stays discoverable. */}
-        {(hasMultipleImages || show3DTab) && (() => {
-          const THUMB_CAP = 3
-          const overflow = !showAllThumbs && images.length > THUMB_CAP
-          const visible = overflow ? images.slice(0, THUMB_CAP) : images
-          const hiddenCount = overflow ? images.length - THUMB_CAP : 0
-          return (
-          <div className="flex gap-2 overflow-x-auto hide-scrollbar">
-            {visible.map((image, index) => {
-              const thumbVariant = imageVariantNames?.[index] ?? null
-              const stayInPreview = is3DActive && thumbVariant && onVariantSelect
-              const isActive = stayInPreview ? thumbVariant === selectedVariantName : index === currentIndex
-              return (
-              <button
-                key={index}
-                onClick={() => {
-                  if (stayInPreview) {
-                    onVariantSelect(thumbVariant)
-                  } else {
-                    goToIndex(index)
-                  }
-                }}
-                className={cn(
-                  'relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden',
-                  'border-2 transition-all duration-200',
-                  'focus-visible:outline-none focus-visible:ring-2',
-                  isActive ? '' : 'border-white/15 opacity-60 hover:opacity-100',
-                )}
-                style={
-                  isActive
-                    ? {
-                        borderColor: themeColor,
-                        boxShadow: `0 0 12px ${themeColor}88`,
-                      }
-                    : undefined
-                }
-                aria-label={t('viewImage', { number: index + 1 })}
-                aria-current={isActive ? 'true' : undefined}
-              >
-                <Image
-                  src={image.url}
-                  alt={image.altText || `Thumbnail ${index + 1}`}
-                  fill
-                  className="object-cover"
-                  sizes="64px"
-                />
-              </button>
-              )
-            })}
+          {/* Thumbnails strip overlays the bottom of the main image
+              card with a soft gradient so it stays legible across
+              dark and bright artwork. Capped at 3 with a +N tile;
+              the 3D tile always sits last outside the cap. */}
+          {(hasMultipleImages || show3DTab) && (() => {
+            const THUMB_CAP = 3
+            const overflow = !showAllThumbs && images.length > THUMB_CAP
+            const visible = overflow ? images.slice(0, THUMB_CAP) : images
+            const hiddenCount = overflow ? images.length - THUMB_CAP : 0
+            return (
+              <div className="absolute inset-x-0 bottom-0 z-10 pointer-events-none">
+                <div className="bg-gradient-to-t from-black/80 via-black/40 to-transparent px-3 pt-8 pb-3">
+                  <div className="pointer-events-auto flex gap-2 overflow-x-auto hide-scrollbar">
+                    {visible.map((image, index) => {
+                      const thumbVariant = imageVariantNames?.[index] ?? null
+                      const stayInPreview = is3DActive && thumbVariant && onVariantSelect
+                      const isActive = stayInPreview ? thumbVariant === selectedVariantName : index === currentIndex
+                      return (
+                        <button
+                          key={index}
+                          onClick={() => {
+                            if (stayInPreview) {
+                              onVariantSelect(thumbVariant)
+                            } else {
+                              goToIndex(index)
+                            }
+                          }}
+                          className={cn(
+                            'relative flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden',
+                            'border-2 transition-all duration-200',
+                            'focus-visible:outline-none focus-visible:ring-2',
+                            isActive ? '' : 'border-white/15 opacity-70 hover:opacity-100',
+                          )}
+                          style={
+                            isActive
+                              ? {
+                                  borderColor: themeColor,
+                                  boxShadow: `0 0 12px ${themeColor}88`,
+                                }
+                              : undefined
+                          }
+                          aria-label={t('viewImage', { number: index + 1 })}
+                          aria-current={isActive ? 'true' : undefined}
+                        >
+                          <Image
+                            src={image.url}
+                            alt={image.altText || `Thumbnail ${index + 1}`}
+                            fill
+                            className="object-cover"
+                            sizes="56px"
+                          />
+                        </button>
+                      )
+                    })}
 
-            {/* +N overflow tile — clicking expands the rest of the strip. */}
-            {overflow && (
-              <button
-                onClick={() => setShowAllThumbs(true)}
-                className={cn(
-                  'relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden',
-                  'border-2 transition-all duration-200',
-                  'flex items-center justify-center',
-                  'bg-black/60 hover:bg-black/40',
-                  'focus-visible:outline-none focus-visible:ring-2',
-                )}
-                style={{ borderColor: `${themeColor}55`, color: themeColor }}
-                aria-label={`Show ${hiddenCount} more images`}
-              >
-                <span className="text-sm font-bold">+{hiddenCount}</span>
-              </button>
-            )}
+                    {overflow && (
+                      <button
+                        onClick={() => setShowAllThumbs(true)}
+                        className={cn(
+                          'relative flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden',
+                          'border-2 transition-all duration-200',
+                          'flex items-center justify-center',
+                          'bg-black/60 hover:bg-black/40',
+                          'focus-visible:outline-none focus-visible:ring-2',
+                        )}
+                        style={{ borderColor: `${themeColor}55`, color: themeColor }}
+                        aria-label={`Show ${hiddenCount} more images`}
+                      >
+                        <span className="text-sm font-bold">+{hiddenCount}</span>
+                      </button>
+                    )}
 
-            {/* 3D Preview thumbnail — last in sequence */}
-            {show3DTab && (
-              <button
-                onClick={() => goToIndex(preview3DIndex)}
-                className={cn(
-                  'relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden',
-                  'border-2 transition-all duration-200',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent,#00f5ff)]',
-                  'flex items-center justify-center',
-                  is3DActive
-                    ? 'border-[color:var(--accent,#00f5ff)] bg-[color:var(--accent,#00f5ff)]/10'
-                    : 'border-transparent opacity-60 hover:opacity-100 bg-white/5'
-                )}
-                aria-label={t('view3DPreview')}
-                aria-current={is3DActive ? 'true' : undefined}
-              >
-                <div className="flex flex-col items-center gap-0.5">
-                  <Box className={cn(
-                    'w-5 h-5 transition-colors',
-                    is3DActive ? 'text-[color:var(--accent,#00f5ff)]' : 'text-white/60'
-                  )} />
-                  <span className={cn(
-                    'text-[9px] font-bold tracking-wide transition-colors',
-                    is3DActive ? 'text-[color:var(--accent,#00f5ff)]' : 'text-white/60'
-                  )}>
-                    3D
-                  </span>
+                    {show3DTab && (
+                      <button
+                        onClick={() => goToIndex(preview3DIndex)}
+                        className={cn(
+                          'relative flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden',
+                          'border-2 transition-all duration-200',
+                          'focus-visible:outline-none focus-visible:ring-2',
+                          'flex items-center justify-center',
+                          is3DActive ? '' : 'border-white/15 opacity-70 hover:opacity-100 bg-white/5',
+                        )}
+                        style={
+                          is3DActive
+                            ? {
+                                borderColor: themeColor,
+                                background: `${themeColor}1f`,
+                                boxShadow: `0 0 12px ${themeColor}88`,
+                              }
+                            : undefined
+                        }
+                        aria-label={t('view3DPreview')}
+                        aria-current={is3DActive ? 'true' : undefined}
+                      >
+                        <div className="flex flex-col items-center gap-0.5">
+                          <Box
+                            className="w-5 h-5 transition-colors"
+                            style={{ color: is3DActive ? themeColor : 'rgba(255,255,255,0.6)' }}
+                          />
+                          <span
+                            className="text-[9px] font-bold tracking-wide transition-colors"
+                            style={{ color: is3DActive ? themeColor : 'rgba(255,255,255,0.6)' }}
+                          >
+                            3D
+                          </span>
+                        </div>
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </button>
-            )}
-          </div>
-          )
-        })()}
+              </div>
+            )
+          })()}
+        </div>
       </div>
     )
   }
