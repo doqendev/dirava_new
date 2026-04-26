@@ -227,18 +227,23 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
           className="pointer-events-none absolute inset-x-0 -inset-y-2 rounded-2xl blur-3xl"
           style={{ background: `radial-gradient(60% 60% at 50% 50%, ${themeColor}1f, transparent 70%)` }}
         />
-        {/* Main Image / 3D Preview — animated accent ring around an
-            ambient inner glow. The conic-gradient sweep is provided by
-            the .gallery-animated-ring class in globals.css. */}
+        {/* Gallery card — animated accent ring wraps both the main
+            image area AND the thumbnail strip below, so the ring
+            encompasses everything (matches the reference layout). */}
         <div
-          className="gallery-animated-ring relative aspect-square bg-bg-secondary rounded-xl overflow-hidden group"
+          className="gallery-animated-ring relative bg-bg-secondary rounded-xl overflow-hidden"
           style={{
             ['--gallery-accent' as string]: themeColor,
             boxShadow: `0 0 24px ${themeColor}22, inset 0 0 30px ${themeColor}1a`,
           }}
-          onTouchStart={!is3DActive ? handleTouchStart : undefined}
-          onTouchEnd={!is3DActive ? handleTouchEnd : undefined}
         >
+          {/* Main image area — kept square so the artwork still
+              dominates. */}
+          <div
+            className="relative aspect-square overflow-hidden group"
+            onTouchStart={!is3DActive ? handleTouchStart : undefined}
+            onTouchEnd={!is3DActive ? handleTouchEnd : undefined}
+          >
           <AnimatePresence mode="wait">
             {is3DActive && previewConfig ? (
               <motion.div
@@ -477,20 +482,20 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
 
           {/* Slide counter intentionally removed — the thumbnail strip
               already conveys position and the close button covers 3D. */}
+          </div>
+          {/* end main-image area */}
 
-          {/* Thumbnails strip overlays the bottom of the main image
-              card with a soft gradient so it stays legible across
-              dark and bright artwork. Capped at 3 with a +N tile;
-              the 3D tile always sits last outside the cap. */}
+          {/* Thumbnails strip — sits below the image inside the same
+              outer card so the animated ring encompasses both. */}
           {(hasMultipleImages || show3DTab) && (() => {
             const THUMB_CAP = 3
             const overflow = !showAllThumbs && images.length > THUMB_CAP
             const visible = overflow ? images.slice(0, THUMB_CAP) : images
             const hiddenCount = overflow ? images.length - THUMB_CAP : 0
             return (
-              <div className="absolute inset-x-0 bottom-0 z-10 pointer-events-none">
-                <div className="bg-gradient-to-t from-black/80 via-black/40 to-transparent px-3 pt-8 pb-3">
-                  <div className="pointer-events-auto flex gap-2 overflow-x-auto hide-scrollbar">
+              <div className="border-t border-white/5 bg-black/30 px-3 py-3">
+                <div>
+                  <div className="flex gap-2 overflow-x-auto hide-scrollbar">
                     {visible.map((image, index) => {
                       const thumbVariant = imageVariantNames?.[index] ?? null
                       const stayInPreview = is3DActive && thumbVariant && onVariantSelect
