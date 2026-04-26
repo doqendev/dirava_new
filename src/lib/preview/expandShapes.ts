@@ -4,12 +4,27 @@ import ClipperLib from 'clipper-lib'
 // Scale factor for Clipper (works with integers internally)
 const CLIPPER_SCALE = 1000
 
+export type StrokeJoinType = 'round' | 'miter' | 'square'
+
 /**
  * Expand shapes uniformly using Clipper's polygon offset.
  * Handles corners, self-intersections, and complex topology correctly.
+ *
+ * `joinType`:
+ *   'round'  (default) — circular arcs at outside corners
+ *   'miter'            — sharp corners that follow the original
+ *                        polygon's angle (good for text strokes that
+ *                        should mirror the glyph's pointy bits)
+ *   'square'           — square caps
  */
-export function expandShapes(shapes: THREE.Shape[], strokeWidth: number): THREE.Shape[] {
+export function expandShapes(
+  shapes: THREE.Shape[],
+  strokeWidth: number,
+  joinType: StrokeJoinType = 'round',
+): THREE.Shape[] {
   const result: THREE.Shape[] = []
+  const jt = joinType === 'miter' ? 2 : joinType === 'square' ? 0 : 1
+  const miterLimit = 4
 
   for (const shape of shapes) {
     // Convert outer contour to Clipper path
@@ -20,9 +35,9 @@ export function expandShapes(shapes: THREE.Shape[], strokeWidth: number): THREE.
     }))
 
     // Offset outer contour outward (positive delta)
-    const outerOffset = new ClipperLib.ClipperOffset()
+    const outerOffset = new ClipperLib.ClipperOffset(miterLimit)
     outerOffset.ArcTolerance = 5
-    outerOffset.AddPath(clipperOuter, 1 /* jtRound */, 0 /* etClosedPolygon */)
+    outerOffset.AddPath(clipperOuter, jt, 0 /* etClosedPolygon */)
     const outerSolution: ClipperLib.Paths = []
     outerOffset.Execute(outerSolution, strokeWidth * CLIPPER_SCALE)
 

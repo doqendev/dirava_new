@@ -154,7 +154,9 @@ function extrudedMesh(
   depthScale: number,
 ): THREE.Mesh | null {
   if (!shapes || shapes.length === 0) return null
-  const working = layer.strokeWidth ? expandShapes(shapes, layer.strokeWidth) : shapes
+  const working = layer.strokeWidth
+    ? expandShapes(shapes, layer.strokeWidth, layer.strokeJoinType ?? 'round')
+    : shapes
   if (working.length === 0) return null
   const geo = new THREE.ExtrudeGeometry(working, {
     depth: layer.depth * depthScale,

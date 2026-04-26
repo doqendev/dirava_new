@@ -3497,6 +3497,7 @@ previewConfigs['bleach-custom-sign'] = {
       metalness: 0.1,
       roughness: 0.5,
       strokeWidth: 0.35,
+      strokeJoinType: 'miter',
     },
     {
       color: '#f2f2f2',
@@ -3505,6 +3506,7 @@ previewConfigs['bleach-custom-sign'] = {
       metalness: 0.05,
       roughness: 0.45,
       strokeWidth: 0.12,
+      strokeJoinType: 'miter',
     },
     {
       color: '#e00a0a',

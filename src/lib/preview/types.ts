@@ -22,6 +22,10 @@ export interface LayerConfig {
   emissiveIntensity?: number
   /** Uniform stroke width to expand the layer outward (in scene units, e.g. 0.2) */
   strokeWidth?: number
+  /** Corner join behaviour for the stroke expansion. Defaults to 'round'.
+   *  Use 'miter' for text strokes that should preserve the glyph's
+   *  pointy outline (e.g. spiky display fonts). */
+  strokeJoinType?: 'round' | 'miter' | 'square'
   /** SVG fill color to match when using svg-extrusion (e.g. '#000000') */
   svgColor?: string
   /** 'extrude' (default) renders solid geometry; 'cut' subtracts holes from other layers */
