@@ -3497,7 +3497,7 @@ previewConfigs['bleach-custom-sign'] = {
       metalness: 0.1,
       roughness: 0.5,
       strokeWidth: 0.35,
-      strokeJoinType: 'square',
+      strokeJoinType: 'round',
       // Blue back-stroke renders solid (no inner counters); the white
       // and red layers keep their holes so D/A/P/O etc. read with
       // proper letter counters.
@@ -3510,7 +3510,7 @@ previewConfigs['bleach-custom-sign'] = {
       metalness: 0.05,
       roughness: 0.45,
       strokeWidth: 0.12,
-      strokeJoinType: 'square',
+      strokeJoinType: 'round',
     },
     {
       color: '#e00a0a',
