@@ -237,10 +237,11 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
             boxShadow: `0 0 24px ${themeColor}22, inset 0 0 30px ${themeColor}1a`,
           }}
         >
-          {/* Main image area — kept square so the artwork still
-              dominates. */}
+          {/* Main image area — slightly taller than square so the 3D
+              preview's bottom name-input + Add row has breathing room
+              before the thumbnail strip beneath. */}
           <div
-            className="relative aspect-square overflow-hidden group"
+            className="relative aspect-[4/5] overflow-hidden group"
             onTouchStart={!is3DActive ? handleTouchStart : undefined}
             onTouchEnd={!is3DActive ? handleTouchEnd : undefined}
           >
