@@ -35,26 +35,17 @@ export function LimitedSlotsBanner({ accent = '#22c55e' }: LimitedSlotsBannerPro
   const cell = (n: number, label: string) => (
     <div className="flex flex-col items-center">
       <div
-        className="relative flex h-12 w-14 items-center justify-center overflow-hidden rounded-md border"
+        className="flex h-11 w-12 items-center justify-center rounded-md border sm:h-12 sm:w-14"
         style={{
-          borderColor: `${accent}33`,
-          background: 'rgba(0, 0, 0, 0.45)',
-          boxShadow: `inset 0 0 14px ${accent}1f`,
+          borderColor: `${accent}26`,
+          background: 'rgba(0, 0, 0, 0.55)',
         }}
       >
-        <span className="font-mono text-xl font-bold tabular-nums tracking-wider text-white">
+        <span className="font-mono text-lg font-bold tabular-nums text-white sm:text-xl">
           {n.toString().padStart(2, '0')}
         </span>
-        {/* Tiny accent underglow at the bottom of each cell. */}
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-x-2 bottom-0 h-px"
-          style={{ background: accent, boxShadow: `0 0 8px ${accent}` }}
-        />
       </div>
-      <span
-        className="mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50"
-      >
+      <span className="mt-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/45 sm:text-[10px]">
         {label}
       </span>
     </div>
@@ -62,49 +53,41 @@ export function LimitedSlotsBanner({ accent = '#22c55e' }: LimitedSlotsBannerPro
 
   return (
     <div
-      className="relative flex items-center gap-4 overflow-hidden rounded-2xl border p-4 sm:gap-5 sm:p-5"
+      className="relative flex flex-wrap items-center gap-3 overflow-hidden rounded-xl border p-3 sm:flex-nowrap sm:gap-4 sm:p-4"
       style={{
         borderColor: `${accent}55`,
-        background: `linear-gradient(135deg, ${accent}14, rgba(0, 0, 0, 0.4) 60%)`,
-        boxShadow: `0 0 24px ${accent}22, inset 0 0 30px ${accent}14`,
+        background: `linear-gradient(180deg, ${accent}14 0%, rgba(0, 0, 0, 0.55) 100%)`,
+        boxShadow: `0 0 18px ${accent}1a`,
       }}
     >
-      {/* Soft accent halo behind the icon. */}
-      <span
-        aria-hidden
-        className="pointer-events-none absolute -left-12 top-1/2 h-32 w-32 -translate-y-1/2 rounded-full blur-3xl"
-        style={{ background: `${accent}33` }}
-      />
-
       <div
-        className="relative flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl border"
+        className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md border sm:h-10 sm:w-10"
         style={{
           borderColor: `${accent}55`,
-          background: `${accent}22`,
-          boxShadow: `0 0 18px ${accent}55, inset 0 0 12px ${accent}33`,
+          background: `${accent}1f`,
         }}
       >
-        <Zap className="h-7 w-7" style={{ color: accent, filter: `drop-shadow(0 0 6px ${accent})` }} />
+        <Zap className="h-5 w-5" style={{ color: accent }} />
       </div>
 
-      <div className="relative min-w-0 flex-1">
+      <div className="min-w-0 flex-1">
         <div
-          className="text-sm font-bold uppercase tracking-[0.16em]"
-          style={{ color: accent, textShadow: `0 0 10px ${accent}55` }}
+          className="text-[13px] font-bold uppercase tracking-[0.06em] sm:text-sm"
+          style={{ color: accent }}
         >
           Limited production slots!
         </div>
-        <p className="mt-1 text-xs leading-snug text-white/65">
+        <p className="mt-0.5 text-[11px] leading-snug text-white/70 sm:text-xs">
           We only take a few orders each day
           <br className="hidden sm:block" /> to ensure premium quality.
         </p>
       </div>
 
-      <div className="relative flex items-center gap-1.5 sm:gap-2">
+      <div className="flex w-full items-center justify-end gap-1.5 sm:w-auto sm:gap-2">
         {cell(t.h, 'hrs')}
-        <span className="-mt-4 text-xl font-bold text-white/30">:</span>
+        <span className="-mt-3 text-lg font-bold text-white/30">:</span>
         {cell(t.m, 'mins')}
-        <span className="-mt-4 text-xl font-bold text-white/30">:</span>
+        <span className="-mt-3 text-lg font-bold text-white/30">:</span>
         {cell(t.s, 'secs')}
       </div>
     </div>
