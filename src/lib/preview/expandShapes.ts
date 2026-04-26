@@ -105,14 +105,14 @@ export function expandShapes(
           mx = n1.nx * strokeWidth
           my = n1.ny * strokeWidth
         } else {
+          // Standard miter offset: each new vertex sits at the
+          // intersection of the two offset edges.
+          //   v_new = v + (n1 + n2) / (1 + n1·n2) * strokeWidth
+          // For a flat edge that simplifies to v + n * strokeWidth.
           const miterLen = strokeWidth / denom
           const clamped = Math.max(-MITER_CAP * strokeWidth, Math.min(MITER_CAP * strokeWidth, miterLen))
-          mx = sumX * clamped * 0.5
-          my = sumY * clamped * 0.5
-          // The formula above gives 2·strokeWidth direction, so
-          // multiply by 0.5 to land exactly strokeWidth into the poly.
-          // (Derived from offset = n1+n2 rescaled so that distance to
-          // each original edge equals strokeWidth.)
+          mx = sumX * clamped
+          my = sumY * clamped
         }
         const newX = curr.x + mx
         const newY = curr.y + my
