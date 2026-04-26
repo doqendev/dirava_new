@@ -200,17 +200,17 @@
      can't crop right/bottom on certain browsers. */
   inset: 0;
   border-radius: inherit;
-  padding: 2px;
-  /* Two-comet sweep: every side stays lit at a low base intensity,
-     with two bright peaks travelling around so the motion reads
-     continuously on all four edges. */
+  padding: 1.5px;
+  /* Premium two-comet sweep: a soft accent base sits on every side,
+     two muted peaks drift around. Lower contrast + slower travel
+     reads as ambient rather than attention-grabbing. */
   background: conic-gradient(
     from var(--gallery-ring-angle),
-    color-mix(in srgb, var(--gallery-accent, #00f5ff) 25%, transparent) 0deg,
-    var(--gallery-accent, #00f5ff) 90deg,
-    color-mix(in srgb, var(--gallery-accent, #00f5ff) 25%, transparent) 180deg,
-    var(--gallery-accent, #00f5ff) 270deg,
-    color-mix(in srgb, var(--gallery-accent, #00f5ff) 25%, transparent) 360deg
+    color-mix(in srgb, var(--gallery-accent, #00f5ff) 14%, transparent) 0deg,
+    color-mix(in srgb, var(--gallery-accent, #00f5ff) 60%, transparent) 90deg,
+    color-mix(in srgb, var(--gallery-accent, #00f5ff) 14%, transparent) 180deg,
+    color-mix(in srgb, var(--gallery-accent, #00f5ff) 60%, transparent) 270deg,
+    color-mix(in srgb, var(--gallery-accent, #00f5ff) 14%, transparent) 360deg
   );
   /* Set both prefixed and unprefixed mask + composite so every
      current browser carves out the centre and leaves only the
@@ -225,7 +225,7 @@
           mask-composite: exclude;
   pointer-events: none;
   z-index: 1;
-  animation: gallery-ring-spin 5.5s linear infinite;
+  animation: gallery-ring-spin 14s linear infinite;
 }
 
 @keyframes gallery-ring-spin {
