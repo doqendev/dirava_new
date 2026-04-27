@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { Brush, Package, Shield, Sparkles, Lightbulb, Box } from 'lucide-react'
+import { Brush, Package, Sparkles, Lightbulb, Box } from 'lucide-react'
 
 export interface ProductChip {
   icon: LucideIcon
@@ -8,15 +8,17 @@ export interface ProductChip {
 }
 
 /**
- * Three short attribute chips shown directly under the product title.
- * Keyed by product handle. Falls back to a sensible default trio when
- * a handle has no entry.
+ * Short attribute chips shown directly under the product title.
+ * Keyed by product handle. Falls back to a sensible default pair when
+ * a handle has no entry. Kept intentionally minimal — only highlight
+ * differentiators, never generic trust signals (those live below the
+ * CTA so they support the buying decision instead of crowding the
+ * top of the page).
  */
 export const productChips: Record<string, ProductChip[]> = {
   'one-piece-custom-sign': [
     { icon: Brush, label: 'UV painted' },
     { icon: Package, label: 'Made to order' },
-    { icon: Shield, label: 'Sturdy plastic' },
   ],
   'one-piece-custom-keychain': [
     { icon: Brush, label: 'UV painted' },
@@ -31,12 +33,10 @@ export const productChips: Record<string, ProductChip[]> = {
   'demon-slayer-custom-sign': [
     { icon: Brush, label: 'UV painted' },
     { icon: Package, label: 'Made to order' },
-    { icon: Shield, label: 'Sturdy plastic' },
   ],
   'dragon-ball-custom-sign': [
     { icon: Brush, label: 'UV painted' },
     { icon: Package, label: 'Made to order' },
-    { icon: Shield, label: 'Sturdy plastic' },
   ],
   'dragon-ball-custom-keychain': [
     { icon: Brush, label: 'UV painted' },
@@ -46,7 +46,6 @@ export const productChips: Record<string, ProductChip[]> = {
   'hunter-x-hunter-custom-sign': [
     { icon: Brush, label: 'UV painted' },
     { icon: Package, label: 'Made to order' },
-    { icon: Shield, label: 'Sturdy plastic' },
   ],
   'hunter-x-hunter-custom-keychain': [
     { icon: Brush, label: 'UV painted' },
@@ -56,24 +55,20 @@ export const productChips: Record<string, ProductChip[]> = {
   'bleach-custom-sign': [
     { icon: Brush, label: 'UV painted' },
     { icon: Package, label: 'Made to order' },
-    { icon: Shield, label: 'Sturdy plastic' },
   ],
   'attack-on-titan-custom-sign': [
     { icon: Brush, label: 'UV painted' },
     { icon: Package, label: 'Made to order' },
-    { icon: Shield, label: 'Sturdy plastic' },
   ],
   'digimon-custom-sign': [
     { icon: Brush, label: 'UV painted' },
     { icon: Package, label: 'Made to order' },
-    { icon: Shield, label: 'Sturdy plastic' },
   ],
 }
 
 const DEFAULT_CHIPS: ProductChip[] = [
   { icon: Brush, label: 'UV painted' },
   { icon: Package, label: 'Made to order' },
-  { icon: Shield, label: 'Sturdy plastic' },
 ]
 
 export function getProductChips(handle: string): ProductChip[] {

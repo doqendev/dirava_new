@@ -22,7 +22,6 @@ import { StickyAddToCart } from '@/components/product/StickyAddToCart'
 import { PersonalizeCard } from '@/components/product/PersonalizeCard'
 import { TitleChips } from '@/components/product/TitleChips'
 import { RatingOrdersChip } from '@/components/product/RatingOrdersChip'
-import { GuaranteeTiles } from '@/components/product/GuaranteeTiles'
 import { SocialProofBar } from '@/components/product/SocialProofBar'
 import { LimitedSlotsBanner } from '@/components/product/LimitedSlotsBanner'
 import { TrustStrip } from '@/components/product/TrustStrip'
@@ -457,9 +456,6 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 </span>
               )}
             </div>
-
-            {/* Guarantee tiles — Handmade / Premium / Ships from EU */}
-            <GuaranteeTiles accent={themeColor} />
 
             {/* Size Guide Button - only for apparel with a matching size guide */}
             {sizeGuide && (
