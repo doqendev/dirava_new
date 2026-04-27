@@ -235,7 +235,7 @@ export function Footer() {
           style={{ backgroundColor: 'var(--accent, #00f5ff)' }}
         />
 
-        <div className="relative max-w-7xl mx-auto px-4 py-12 md:py-16">
+        <div className="relative max-w-7xl mx-auto px-4 py-8 md:py-16">
           <div className="max-w-2xl">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -257,8 +257,8 @@ export function Footer() {
       </div>
 
       {/* Main Footer Links */}
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+      <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12">
           {/* Shop Links */}
           <FooterLinkColumn title={t('shop')} links={shopLinks} />
 

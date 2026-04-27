@@ -343,20 +343,6 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         <ProductLifestyleGallery productHandle={product.handle} />
       </div>
 
-      {/* You Might Also Like */}
-      {recommendations.length > 0 && (
-        <div className="px-4 py-12 max-w-7xl mx-auto">
-          <YouMightAlsoLike
-            products={recommendations}
-            themeColor={
-              UNIVERSE_CONFIG[
-                (product.productUniverse || universe) as keyof typeof UNIVERSE_CONFIG
-              ]?.color
-            }
-          />
-        </div>
-      )}
-
       {/* Recently Viewed */}
       <div className="px-4 py-12 max-w-7xl mx-auto border-t border-border-subtle">
         <RecentlyViewed
@@ -386,6 +372,22 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       <div className="px-4 py-12 max-w-7xl mx-auto border-t border-border-subtle">
         <ProductFAQ productHandle={product.handle} />
       </div>
+
+      {/* You Might Also Like — pushed to the bottom of the product page
+          so the customer stays focused on the main product through
+          gallery → reviews → FAQ before alternative products surface. */}
+      {recommendations.length > 0 && (
+        <div className="px-4 py-12 max-w-7xl mx-auto border-t border-border-subtle">
+          <YouMightAlsoLike
+            products={recommendations}
+            themeColor={
+              UNIVERSE_CONFIG[
+                (product.productUniverse || universe) as keyof typeof UNIVERSE_CONFIG
+              ]?.color
+            }
+          />
+        </div>
+      )}
     </div>
   )
 }

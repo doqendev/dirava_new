@@ -32,8 +32,8 @@ export function LimitedSlotsBanner({ accent = '#19ff7a', productHandle }: Limite
     <div
       className="relative flex flex-col items-stretch gap-2 overflow-hidden rounded-[11px] border bg-[#010506] px-3 py-2.5 sm:min-h-[72px] sm:flex-row sm:items-center sm:gap-0 sm:px-[20px] sm:py-3"
       style={{
-        borderColor: `rgba(${accentRgb}, 0.11)`,
-        boxShadow: `0 0 0 1px rgba(0, 0, 0, 0.4), inset 0 0 8px rgba(${accentRgb}, 0.012), inset 0 1px 0 rgba(${accentRgb}, 0.025)`,
+        borderColor: `rgba(${accentRgb}, 0.08)`,
+        boxShadow: `0 0 0 1px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(${accentRgb}, 0.018)`,
       }}
     >
       <div

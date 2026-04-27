@@ -4,7 +4,8 @@ import { useState, useMemo, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { ArrowLeft, ChevronDown } from 'lucide-react'
+import { ArrowLeft, ChevronDown, Zap } from 'lucide-react'
+import { getProductSlots } from '@/data/productSlots'
 import { cn } from '@/lib/utils/cn'
 import { formatPrice } from '@/lib/utils/formatPrice'
 import { UNIVERSE_CONFIG, MAX_PERSONALIZATION_LENGTH } from '@/lib/utils/constants'
@@ -457,6 +458,29 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               <div className="pt-1">
                 <SocialProofBar productHandle={product.handle} accent={themeColor} />
               </div>
+
+              {/* Mini urgency line — a quieter sibling to the full
+                  "limited production slots" banner that lives further
+                  down. Surfaces scarcity above the fold without adding
+                  another full block. */}
+              {(() => {
+                const { available, total } = getProductSlots(product.handle)
+                return (
+                  <div className="flex items-center gap-1.5 pt-0.5 text-[11px] font-medium leading-none text-white/55">
+                    <Zap
+                      className="h-3 w-3 flex-shrink-0"
+                      strokeWidth={2.5}
+                      style={{ color: themeColor, fill: themeColor, filter: `drop-shadow(0 0 3px ${themeColor}55)` }}
+                    />
+                    <span>
+                      <strong className="font-semibold text-white/85">{available}</strong>
+                      <span className="mx-0.5 text-white/35">/</span>
+                      <span className="text-white/55">{total}</span>
+                      <span className="ml-1 uppercase tracking-wide text-white/45">slots left</span>
+                    </span>
+                  </div>
+                )
+              })()}
 
               <a href="#reviews" className="block w-fit hover:opacity-80 transition-opacity">
                 <RatingOrdersChip

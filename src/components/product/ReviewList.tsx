@@ -159,8 +159,7 @@ export default function ReviewList({ productHandle, color }: ReviewListProps) {
 
         {reviews.length === 0 ? (
           <div className="bg-bg-card/50 backdrop-blur-sm border border-border-subtle rounded-xl p-8 text-center">
-            <p className="text-lg font-medium mb-2">{t('noReviews')}</p>
-            <p className="text-white/60">{t('noReviewsDescription')}</p>
+            <p className="text-lg font-medium">{t('beFirst')}</p>
           </div>
         ) : (
           <div className="space-y-4">
