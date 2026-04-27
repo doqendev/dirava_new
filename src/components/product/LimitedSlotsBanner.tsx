@@ -18,14 +18,21 @@ function timeUntilMidnight(): { h: number; m: number; s: number } {
   return { h, m, s }
 }
 
+function hexToRgb(hex: string): string {
+  const match = hex.replace('#', '').match(/.{2}/g)
+  if (!match || match.length < 3) return '25, 255, 122'
+  return `${parseInt(match[0]!, 16)}, ${parseInt(match[1]!, 16)}, ${parseInt(match[2]!, 16)}`
+}
+
 /**
  * Limited-slots banner shown under the gallery: lightning icon + copy
  * on the left, ticking countdown (HRS / MINS / SECS) on the right.
  * The countdown resets at local midnight so it's consistent across
  * visitors but never fakes "expires in 5 minutes" desperation.
  */
-export function LimitedSlotsBanner({ accent = '#22c55e' }: LimitedSlotsBannerProps) {
+export function LimitedSlotsBanner({ accent = '#19ff7a' }: LimitedSlotsBannerProps) {
   const [t, setT] = useState(() => timeUntilMidnight())
+  const accentRgb = hexToRgb(accent)
 
   useEffect(() => {
     const id = setInterval(() => setT(timeUntilMidnight()), 1000)
@@ -35,59 +42,64 @@ export function LimitedSlotsBanner({ accent = '#22c55e' }: LimitedSlotsBannerPro
   const cell = (n: number, label: string) => (
     <div className="flex flex-col items-center">
       <div
-        className="flex h-11 w-12 items-center justify-center rounded-md border sm:h-12 sm:w-14"
+        className="flex h-[38px] w-[50px] items-center justify-center rounded-[7px] border bg-[#071112] shadow-[0_0_14px_rgba(0,0,0,0.35)] sm:h-[40px] sm:w-[54px]"
         style={{
-          borderColor: `${accent}26`,
-          background: 'rgba(0, 0, 0, 0.55)',
+          borderColor: `rgba(${accentRgb}, 0.2)`,
+          boxShadow: `inset 0 0 16px rgba(${accentRgb}, 0.08), 0 0 14px rgba(0, 0, 0, 0.35)`,
         }}
       >
-        <span className="font-mono text-lg font-bold tabular-nums text-white sm:text-xl">
+        <span className="font-mono text-[20px] font-black leading-none tabular-nums text-white">
           {n.toString().padStart(2, '0')}
         </span>
       </div>
-      <span className="mt-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/45 sm:text-[10px]">
-        {label}
+      <span className="mt-[5px] text-[9px] font-bold uppercase leading-none tracking-normal text-white">
+        {label.toUpperCase()}
       </span>
     </div>
   )
 
   return (
     <div
-      className="relative flex flex-wrap items-center gap-3 overflow-hidden rounded-xl border p-3 sm:flex-nowrap sm:gap-4 sm:p-4"
+      className="relative flex min-h-[90px] items-center overflow-hidden rounded-[11px] border bg-[#020b0c] px-7 py-4"
       style={{
-        borderColor: `${accent}55`,
-        background: `linear-gradient(180deg, ${accent}14 0%, rgba(0, 0, 0, 0.55) 100%)`,
-        boxShadow: `0 0 18px ${accent}1a`,
+        borderColor: `rgba(${accentRgb}, 0.72)`,
+        boxShadow: `0 0 0 1px rgba(0, 0, 0, 0.45), inset 0 0 28px rgba(${accentRgb}, 0.08)`,
       }}
     >
       <div
-        className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md border sm:h-10 sm:w-10"
+        className="pointer-events-none absolute inset-0"
         style={{
-          borderColor: `${accent}55`,
-          background: `${accent}1f`,
+          background: `radial-gradient(circle at 20% 50%, rgba(${accentRgb}, 0.12), transparent 34%), linear-gradient(90deg, rgba(${accentRgb}, 0.07), transparent 55%)`,
         }}
-      >
-        <Zap className="h-5 w-5" style={{ color: accent }} />
-      </div>
+      />
 
-      <div className="min-w-0 flex-1">
-        <div
-          className="text-[13px] font-bold uppercase tracking-[0.06em] sm:text-sm"
-          style={{ color: accent }}
-        >
-          Limited production slots!
+      <div className="relative flex min-w-0 flex-1 items-center gap-4 pr-6">
+        <Zap
+          className="h-11 w-11 flex-shrink-0"
+          strokeWidth={1.5}
+          style={{ color: accent, fill: accent, stroke: accent }}
+        />
+
+        <div className="min-w-0">
+          <div
+            className="text-[14px] font-black uppercase leading-tight tracking-normal"
+            style={{ color: accent }}
+          >
+            Limited production slots!
+          </div>
+          <p className="mt-1 max-w-[220px] text-[12px] font-medium leading-[1.32] text-white">
+            We only take a few orders each day to ensure premium quality.
+          </p>
         </div>
-        <p className="mt-0.5 text-[11px] leading-snug text-white/70 sm:text-xs">
-          We only take a few orders each day
-          <br className="hidden sm:block" /> to ensure premium quality.
-        </p>
       </div>
 
-      <div className="flex w-full items-center justify-end gap-1.5 sm:w-auto sm:gap-2">
+      <div className="relative hidden h-[42px] w-px flex-shrink-0 bg-[#1d2a2b] sm:block" />
+
+      <div className="relative flex flex-shrink-0 items-start gap-[9px] pl-6">
         {cell(t.h, 'hrs')}
-        <span className="-mt-3 text-lg font-bold text-white/30">:</span>
+        <span className="pt-[7px] text-[22px] font-black leading-none text-white">:</span>
         {cell(t.m, 'mins')}
-        <span className="-mt-3 text-lg font-bold text-white/30">:</span>
+        <span className="pt-[7px] text-[22px] font-black leading-none text-white">:</span>
         {cell(t.s, 'secs')}
       </div>
     </div>
