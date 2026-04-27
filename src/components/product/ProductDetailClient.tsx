@@ -11,7 +11,6 @@ import { UNIVERSE_CONFIG, MAX_PERSONALIZATION_LENGTH } from '@/lib/utils/constan
 import { ProductGallery } from '@/components/product/ProductGallery'
 import type { ProductGalleryHandle } from '@/components/product/ProductGallery'
 import { VariantSelector } from '@/components/product/VariantSelector'
-import { QuantitySelector } from '@/components/product/QuantitySelector'
 import { AddToCartButton } from '@/components/product/AddToCartButton'
 import { WishlistButton } from '@/components/product/WishlistButton'
 import { Badge } from '@/components/ui/Badge'
@@ -161,8 +160,10 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
     return initial
   })
 
-  // Quantity state
-  const [quantity, setQuantity] = useState(1)
+  // Quantity is fixed at 1 on the PDP — adjustments happen in the
+  // cart drawer instead so the buying flow stays focused on
+  // personalization → add-to-cart.
+  const quantity = 1
 
   // Ref for sticky add-to-cart IntersectionObserver
   const cartButtonRef = useRef<HTMLDivElement>(null)
@@ -398,13 +399,6 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               } : undefined}
             />
 
-            {/* Order steps + trust badges — desktop only (below thumbnails).
-                On mobile they render inside the info column, after Add-to-Cart. */}
-            {/* Limited slots banner sits under the gallery on desktop;
-                a thin strip of urgency that doesn't shout. */}
-            <div className="mt-4 hidden lg:block">
-              <LimitedSlotsBanner accent={themeColor} productHandle={product.handle} />
-            </div>
           </div>
 
           {/* Product Info */}
@@ -490,25 +484,6 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               </div>
             )}
 
-            {/* Standalone quantity is shown ONLY for non-personalized
-                products. For personalized products the quantity is
-                hoisted into the PersonalizeCard so the buying flow
-                (input → quantity → CTA) reads top-to-bottom inside a
-                single card. */}
-            {!product.personalization && (
-              <div>
-                <label className="block text-sm font-medium text-white/70 mb-2">
-                  {t('quantity')}
-                </label>
-                <QuantitySelector
-                  quantity={quantity}
-                  onQuantityChange={setQuantity}
-                  min={1}
-                  max={10}
-                />
-              </div>
-            )}
-
             {/* Stock Indicator (hidden for personalized products) */}
             {selectedVariant && !product.personalization && (
               <StockIndicator
@@ -525,23 +500,10 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   maxLength={MAX_PERSONALIZATION_LENGTH}
                   inputRef={personalizationInputRef}
                   themeColor={themeColor}
-                  quantity={
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/55">
-                        {t('quantity')}
-                      </span>
-                      <QuantitySelector
-                        quantity={quantity}
-                        onQuantityChange={setQuantity}
-                        min={1}
-                        max={10}
-                      />
-                    </div>
-                  }
                   cta={
                     <AddToCartButton
                       variantId={selectedVariant?.id || ''}
-                      quantity={quantity}
+                      quantity={1}
                       available={selectedVariant?.availableForSale ?? false}
                       requiresPersonalization={product.personalization}
                       personalizationValue={personalizationName}

@@ -65,7 +65,7 @@ export function PersonalizeCard({
 
   return (
     <section
-      className="relative overflow-hidden rounded-[11px] border bg-[#020b0c] px-4 py-4 sm:px-5 sm:py-5"
+      className="relative overflow-hidden rounded-[11px] border bg-[#020b0c] px-4 py-3 sm:px-5 sm:py-3.5"
       style={{
         borderColor: `rgba(${accentRgb}, 0.34)`,
         boxShadow: `0 0 8px rgba(${accentRgb}, 0.055), 0 0 0 1px rgba(0, 0, 0, 0.58), inset 0 0 24px rgba(${accentRgb}, 0.04), inset 0 1px 0 rgba(${accentRgb}, 0.08)`,
@@ -217,7 +217,7 @@ export function PersonalizeCard({
 
       {socialProof && (
         <div
-          className="relative mt-3 border-t pt-2.5"
+          className="relative mt-4 border-t pt-3.5"
           style={{ borderColor: `rgba(${accentRgb}, 0.12)` }}
         >
           {socialProof}
