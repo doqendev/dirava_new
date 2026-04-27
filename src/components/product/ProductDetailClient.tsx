@@ -528,6 +528,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   maxLength={MAX_PERSONALIZATION_LENGTH}
                   inputRef={personalizationInputRef}
                   themeColor={themeColor}
+                  onPreview3D={previewConfig ? () => galleryRef.current?.goTo3D() : undefined}
                   cta={
                     <AddToCartButton
                       variantId={selectedVariant?.id || ''}

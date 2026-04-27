@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, AlertCircle } from 'lucide-react'
+import { Box, Check, AlertCircle } from 'lucide-react'
 import type { Ref, ReactNode } from 'react'
 import { cn } from '@/lib/utils/cn'
 import { isBlockedName } from '@/lib/utils/personalizationBlocklist'
@@ -24,6 +24,11 @@ interface PersonalizeCardProps {
   /** When false, the input + CTA are visible but the input keeps a
    *  neutral border. When true, the active "ready" state lights up. */
   isReady?: boolean
+  /** Mobile-only "3D Preview" pill. The desktop layout relies on the
+   *  gallery's pill (always in view), but on mobile the gallery
+   *  scrolls away once the customer is typing — so this in-card
+   *  pill keeps the preview discoverable. */
+  onPreview3D?: () => void
 }
 
 function hexToRgb(hex: string): string {
@@ -50,6 +55,7 @@ export function PersonalizeCard({
   quantity,
   socialProof,
   isReady,
+  onPreview3D,
 }: PersonalizeCardProps) {
   const [focused, setFocused] = useState(false)
   const accentRgb = hexToRgb(themeColor)
@@ -185,6 +191,21 @@ export function PersonalizeCard({
       </div>
 
       {quantity && <div className="relative mt-3">{quantity}</div>}
+
+      {onPreview3D && (
+        <button
+          type="button"
+          onClick={onPreview3D}
+          className="lg:hidden relative mt-3 flex w-full items-center justify-center gap-1.5 rounded-[9px] border bg-white/[0.025] px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.14em] text-white/85 transition-colors hover:bg-white/[0.05] hover:text-white"
+          style={{
+            borderColor: `rgba(${accentRgb}, 0.32)`,
+          }}
+          aria-label="Open 3D preview"
+        >
+          <Box className="h-3.5 w-3.5" strokeWidth={2.25} style={{ color: themeColor }} />
+          3D Preview
+        </button>
+      )}
 
       <div
         className={cn(
