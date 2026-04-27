@@ -430,10 +430,10 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
 
               <div className="flex items-baseline gap-3 pt-1.5">
                 <span
-                  className="text-[32px] md:text-[34px] font-mono font-black leading-none"
+                  className="text-[36px] md:text-[38px] font-mono font-black leading-none"
                   style={{
                     color: themeColor,
-                    textShadow: `0 0 18px ${themeColor}33`,
+                    textShadow: `0 0 22px ${themeColor}66, 0 0 6px ${themeColor}55`,
                   }}
                 >
                   {formatPrice(
@@ -454,7 +454,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               {/* Mobile social proof — surfaces urgency above the
                   fold on small screens. Desktop reuses the same data
                   inside the PersonalizeCard, below the CTA. */}
-              <div className="lg:hidden pt-1">
+              <div className="pt-1">
                 <SocialProofBar productHandle={product.handle} accent={themeColor} />
               </div>
 
@@ -521,9 +521,6 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                       className="!py-4 !text-[15px]"
                     />
                   }
-                  socialProof={
-                    <SocialProofBar productHandle={product.handle} accent={themeColor} />
-                  }
                 />
               </div>
             ) : (
@@ -550,15 +547,6 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   size="lg"
                   className="w-full justify-center py-3"
                 />
-              </div>
-            )}
-
-            {/* For non-personalized products the social proof still
-                lives outside the cart block (no PersonalizeCard to
-                tuck it inside). */}
-            {!product.personalization && (
-              <div className="pt-7">
-                <SocialProofBar productHandle={product.handle} accent={themeColor} />
               </div>
             )}
 

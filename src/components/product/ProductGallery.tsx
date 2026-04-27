@@ -567,13 +567,12 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                           'border-2 transition-all duration-200',
                           'focus-visible:outline-none focus-visible:ring-2',
                           'flex items-center justify-center',
-                          is3DActive ? '' : 'border-white/15 opacity-70 hover:opacity-100 bg-white/5',
+                          is3DActive ? '' : 'border-white/15 opacity-70 hover:opacity-100',
                         )}
                         style={
                           is3DActive
                             ? {
                                 borderColor: themeColor,
-                                background: `${themeColor}1f`,
                                 boxShadow: `0 0 12px ${themeColor}88`,
                               }
                             : undefined
@@ -581,13 +580,13 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                         aria-label={t('view3DPreview')}
                         aria-current={is3DActive ? 'true' : undefined}
                       >
-                        <div className="flex flex-col items-center gap-0.5">
+                        <div className="flex flex-col items-center gap-0.5 leading-none">
                           <Box
-                            className="w-5 h-5 transition-colors"
-                            style={{ color: is3DActive ? themeColor : 'rgba(255,255,255,0.6)' }}
+                            className="w-[18px] h-[18px] transition-colors"
+                            style={{ color: is3DActive ? themeColor : 'rgba(255,255,255,0.7)' }}
                           />
                           <span
-                            className="text-[9px] font-bold tracking-wide transition-colors"
+                            className="text-[8.5px] font-semibold uppercase tracking-wide leading-none transition-colors"
                             style={{ color: is3DActive ? themeColor : 'rgba(255,255,255,0.6)' }}
                           >
                             3D

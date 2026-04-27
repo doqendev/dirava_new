@@ -54,7 +54,7 @@ export function RatingOrdersChip({ rating, productHandle, accent = '#22c55e' }: 
       <div className="mt-3 flex items-center gap-2 text-sm text-white/70">
         <Star className="h-4 w-4" style={{ color: accent, fill: accent }} />
         <span>
-          Trusted by <strong className="text-white">{formatOrders(orders)}</strong> customers
+          Trusted by <strong className="text-white">{formatOrders(orders)}</strong>
         </span>
       </div>
     )

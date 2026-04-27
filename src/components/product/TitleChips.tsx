@@ -18,7 +18,7 @@ interface TitleChipsProps {
 export function TitleChips({ chips }: TitleChipsProps) {
   if (!chips.length) return null
   return (
-    <div className="mt-3 flex flex-wrap items-center text-[11.5px] font-bold uppercase tracking-[0.14em] text-white/75">
+    <div className="mt-4 flex flex-wrap items-center text-[11.5px] font-bold uppercase tracking-[0.14em] text-white/75">
       {chips.map((chip, i) => (
         <span key={`${i}-${chip.label}`} className="flex items-center">
           {i > 0 && (

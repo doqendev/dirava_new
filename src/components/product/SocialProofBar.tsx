@@ -51,12 +51,20 @@ export function SocialProofBar({ productHandle, accent = '#22c55e' }: SocialProo
   const sold = Math.floor(2 + rng() * 6) // 2 - 7
 
   return (
-    <div className="flex items-center gap-1.5 text-[12px] leading-none text-white/65">
-      <Flame className="h-3 w-3 flex-shrink-0" strokeWidth={2.25} style={{ color: accent }} />
+    <div className="flex items-center gap-1.5 text-[12px] leading-none text-white/75">
+      <Flame
+        className="h-3.5 w-3.5 flex-shrink-0"
+        strokeWidth={2.5}
+        style={{
+          color: accent,
+          fill: accent,
+          filter: `drop-shadow(0 0 4px ${accent}66)`,
+        }}
+      />
       <span className="truncate">
-        <strong className="font-semibold text-white/90">{viewing}</strong> viewing now
-        <span className="mx-1.5 text-white/30">·</span>
-        <strong className="font-semibold text-white/90">{sold}</strong> sold in the last hour
+        <strong className="font-semibold text-white">{viewing}</strong> viewing now
+        <span className="mx-1.5 text-white/35">·</span>
+        <strong className="font-semibold text-white">{sold}</strong> sold in the last hour
       </span>
     </div>
   )
