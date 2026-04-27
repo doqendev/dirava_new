@@ -223,7 +223,7 @@
   -webkit-mask-composite: xor;
           mask-composite: exclude;
   pointer-events: none;
-  z-index: 1;
+  z-index: 40;
   animation: gallery-ring-spin 28s linear infinite;
 }
 
@@ -233,7 +233,7 @@
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  z-index: 2;
+  z-index: 41;
   background:
     linear-gradient(
       90deg,
