@@ -93,11 +93,22 @@ export function SocialProofBar({ productHandle }: SocialProofBarProps) {
 
     const recompute = () => {
       const now = new Date()
-      // Viewer random walk: ±1–2 each tick, clamped to [5, 25] so it
-      // feels live but stays within "small custom shop" plausibility.
+      // Viewer fluctuation: every tick we move v by a step in
+      // [-5, -1] ∪ [+1, +5] (never 0), so the number is *always*
+      // different from the previous render. Clamped to [6, 24] so it
+      // stays within "small custom shop" plausibility.
       viewerSeed = (Math.imul(48271, viewerSeed) >>> 0) % 0x7fffffff
-      const step = ((viewerSeed % 5) - 2) // -2..+2
-      v = Math.max(5, Math.min(25, v + step))
+      const magnitude = (viewerSeed % 5) + 1 // 1..5
+      viewerSeed = (Math.imul(48271, viewerSeed) >>> 0) % 0x7fffffff
+      const direction = viewerSeed & 1 ? 1 : -1
+      let next = v + magnitude * direction
+      if (next < 6) next = 6 + magnitude // bounce off the floor
+      if (next > 24) next = 24 - magnitude // bounce off the ceiling
+      // Belt-and-braces: if a bounce somehow lands on the same value,
+      // nudge by 1 in the other direction so the user never sees the
+      // same number twice in a row.
+      if (next === v) next = v === 6 ? 7 : v - 1
+      v = next
       setViewing(v)
 
       // Sold count = how many of today's tick times have already passed.
@@ -108,10 +119,10 @@ export function SocialProofBar({ productHandle }: SocialProofBarProps) {
 
     recompute()
     setHydrated(true)
-    // Viewer fluctuation cadence — every 10s. The sold count rarely
+    // Viewer fluctuation cadence — every 30s. The sold count rarely
     // changes between ticks (handful per day) but recomputing each
     // interval is cheap and lets in-page customers catch real ticks.
-    const id = setInterval(recompute, 10_000)
+    const id = setInterval(recompute, 30_000)
     return () => clearInterval(id)
   }, [productHandle])
 
