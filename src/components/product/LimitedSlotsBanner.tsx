@@ -62,14 +62,56 @@ export function LimitedSlotsBanner({ accent = '#19ff7a' }: LimitedSlotsBannerPro
     <div
       className="relative flex min-h-[90px] items-center overflow-hidden rounded-[11px] border bg-[#020b0c] px-[26px] py-4"
       style={{
-        borderColor: `rgba(${accentRgb}, 0.5)`,
-        boxShadow: `0 0 10px rgba(${accentRgb}, 0.075), 0 0 0 1px rgba(0, 0, 0, 0.55), inset 0 0 24px rgba(${accentRgb}, 0.045), inset 0 1px 0 rgba(${accentRgb}, 0.1)`,
+        borderColor: `rgba(${accentRgb}, 0.34)`,
+        boxShadow: `0 0 8px rgba(${accentRgb}, 0.055), 0 0 0 1px rgba(0, 0, 0, 0.58), inset 0 0 24px rgba(${accentRgb}, 0.04), inset 0 1px 0 rgba(${accentRgb}, 0.08)`,
       }}
     >
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background: `radial-gradient(circle at 19% 50%, rgba(${accentRgb}, 0.075), transparent 32%), linear-gradient(90deg, rgba(${accentRgb}, 0.035), transparent 55%)`,
+          background: `radial-gradient(circle at 18% 50%, rgba(${accentRgb}, 0.07), transparent 30%), linear-gradient(90deg, rgba(${accentRgb}, 0.03), transparent 55%)`,
+        }}
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute left-4 top-0 h-px w-[36%]"
+        style={{
+          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.52), rgba(${accentRgb}, 0.16), transparent)`,
+        }}
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute right-9 top-0 h-px w-[18%]"
+        style={{
+          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.24), transparent)`,
+        }}
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute bottom-0 left-6 h-px w-[24%]"
+        style={{
+          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.28), transparent)`,
+        }}
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute bottom-0 right-5 h-px w-[30%]"
+        style={{
+          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.18), rgba(${accentRgb}, 0.36), transparent)`,
+        }}
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute left-0 top-4 h-[48%] w-px"
+        style={{
+          background: `linear-gradient(180deg, transparent, rgba(${accentRgb}, 0.34), rgba(${accentRgb}, 0.12), transparent)`,
+        }}
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute right-0 bottom-5 h-[34%] w-px"
+        style={{
+          background: `linear-gradient(180deg, transparent, rgba(${accentRgb}, 0.22), transparent)`,
         }}
       />
 
