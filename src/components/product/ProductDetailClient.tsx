@@ -25,10 +25,7 @@ import { RatingOrdersChip } from '@/components/product/RatingOrdersChip'
 import { SocialProofBar } from '@/components/product/SocialProofBar'
 import { LimitedSlotsBanner } from '@/components/product/LimitedSlotsBanner'
 import { TrustStrip } from '@/components/product/TrustStrip'
-import { WhyHitsDifferent } from '@/components/product/WhyHitsDifferent'
-import { HowItsMade } from '@/components/product/HowItsMade'
 import { getProductChips } from '@/data/productChips'
-import { getProductFeatureTiles } from '@/data/productFeatureTiles'
 import { useTrackProductView } from '@/hooks/useTrackProductView'
 import { useCookieConsentStore } from '@/stores/cookieConsentStore'
 import { trackViewContent } from '@/lib/tracking/trackClear'
@@ -738,15 +735,6 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             </div>
           </div>
         </div>
-      </div>
-
-      {/* New PDP sections: Why-hits-different + How-it's-made + trust
-          strip. Sit between the buy-box grid and the existing reviews
-          section (which lives outside this component, in the page
-          shell). */}
-      <div className="relative px-4 pb-10 max-w-7xl mx-auto w-full space-y-6">
-        <WhyHitsDifferent tiles={getProductFeatureTiles(product.handle)} accent={themeColor} />
-        <HowItsMade accent={themeColor} />
       </div>
 
       {/* Size Guide Modal */}
