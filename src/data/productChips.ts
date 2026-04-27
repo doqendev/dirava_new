@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { Brush, Package, Sparkles, Lightbulb, Box } from 'lucide-react'
+import { Brush, Package, Lightbulb, Box } from 'lucide-react'
 
 export interface ProductChip {
   icon: LucideIcon
@@ -27,8 +27,7 @@ export const productChips: Record<string, ProductChip[]> = {
   ],
   'one-piece-custom-led-lightbox-sign': [
     { icon: Lightbulb, label: 'LED-lit' },
-    { icon: Package, label: 'Made to order' },
-    { icon: Sparkles, label: 'Acrylic + LED' },
+    { icon: Brush, label: 'UV painted' },
   ],
   'demon-slayer-custom-sign': [
     { icon: Brush, label: 'UV painted' },
