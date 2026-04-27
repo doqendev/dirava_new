@@ -102,10 +102,10 @@ export function LimitedSlotsBanner({ accent = '#19ff7a', productHandle }: Limite
             className="text-[12px] font-black uppercase leading-tight tracking-normal sm:text-[14px]"
             style={{ color: accent }}
           >
-            Limited production slots!
+            Limited daily production
           </div>
-          <p className="mt-0.5 max-w-none text-[10.5px] font-medium leading-[1.3] text-white sm:mt-1 sm:max-w-[230px] sm:text-[12px]">
-            We only take a few orders at a time to keep quality high. As we finish each piece, a slot opens up.
+          <p className="mt-0.5 max-w-none text-[10.5px] font-medium leading-[1.3] text-white sm:mt-1 sm:max-w-[240px] sm:text-[12px]">
+            We only make a small number of custom signs each day to keep quality high.
           </p>
         </div>
       </div>
@@ -124,7 +124,7 @@ export function LimitedSlotsBanner({ accent = '#19ff7a', productHandle }: Limite
             {available}
           </span>
           <span className="text-[10px] font-bold uppercase leading-none tracking-[0.12em] text-white/55 sm:text-[11px]">
-            / {total} slots left
+            production spots left today
           </span>
         </div>
         <div

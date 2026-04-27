@@ -369,7 +369,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
           <span className="text-sm">{t('backTo', { name: universeName })}</span>
         </Link>
 
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 w-full">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 w-full">
           {/* Gallery */}
           <div className="w-full min-w-0">
             <ProductGallery
@@ -480,6 +480,26 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             {options.length > 0 &&
               !(options.length === 1 && options[0]?.name === 'Title' && options[0]?.values.length === 1 && options[0]?.values[0] === 'Default Title') && (
               <div className="space-y-3">
+                {/* One Piece variant tiles ARE the Jolly Roger selector
+                    — make that explicit with a small header so the
+                    customer immediately understands what they're
+                    picking. Scoped to the four handles where the
+                    crew-symbol vocabulary applies. */}
+                {[
+                  'one-piece-custom-sign',
+                  'one-piece-magnet',
+                  'one-piece-custom-keychain',
+                  'one-piece-custom-led-lightbox-sign',
+                ].includes(product.handle) && getVariantImages(product.handle) && (
+                  <div>
+                    <h2 className="text-[13px] font-bold uppercase tracking-[0.12em] text-white">
+                      Choose your Jolly Roger
+                    </h2>
+                    <p className="mt-1 text-[12px] leading-snug text-white/55">
+                      Select your crew symbol, then enter your name below.
+                    </p>
+                  </div>
+                )}
                 <VariantSelector
                   options={options}
                   variants={product.variants}
