@@ -201,16 +201,15 @@
   inset: 0;
   border-radius: inherit;
   padding: 1.5px;
-  /* Premium two-comet sweep: a soft accent base sits on every side,
-     two muted peaks drift around. Lower contrast + slower travel
-     reads as ambient rather than attention-grabbing. */
+  /* Premium low-contrast sweep: the accent is intentionally uneven and
+     quiet, so the media frame feels lit rather than outlined. */
   background: conic-gradient(
     from var(--gallery-ring-angle),
-    color-mix(in srgb, var(--gallery-accent, #00f5ff) 14%, transparent) 0deg,
-    color-mix(in srgb, var(--gallery-accent, #00f5ff) 60%, transparent) 90deg,
-    color-mix(in srgb, var(--gallery-accent, #00f5ff) 14%, transparent) 180deg,
-    color-mix(in srgb, var(--gallery-accent, #00f5ff) 60%, transparent) 270deg,
-    color-mix(in srgb, var(--gallery-accent, #00f5ff) 14%, transparent) 360deg
+    color-mix(in srgb, var(--gallery-accent, #00f5ff) 7%, transparent) 0deg,
+    color-mix(in srgb, var(--gallery-accent, #00f5ff) 18%, transparent) 76deg,
+    color-mix(in srgb, var(--gallery-accent, #00f5ff) 5%, transparent) 146deg,
+    color-mix(in srgb, var(--gallery-accent, #00f5ff) 24%, transparent) 254deg,
+    color-mix(in srgb, var(--gallery-accent, #00f5ff) 8%, transparent) 360deg
   );
   /* Set both prefixed and unprefixed mask + composite so every
      current browser carves out the centre and leaves only the
@@ -225,7 +224,45 @@
           mask-composite: exclude;
   pointer-events: none;
   z-index: 1;
-  animation: gallery-ring-spin 14s linear infinite;
+  animation: gallery-ring-spin 28s linear infinite;
+}
+
+.gallery-animated-ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 2;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 3%,
+      color-mix(in srgb, var(--gallery-accent, #00f5ff) 42%, transparent) 17%,
+      color-mix(in srgb, var(--gallery-accent, #00f5ff) 14%, transparent) 42%,
+      transparent 61%
+    ) top / 100% 1px no-repeat,
+    linear-gradient(
+      90deg,
+      transparent 9%,
+      color-mix(in srgb, var(--gallery-accent, #00f5ff) 18%, transparent) 27%,
+      transparent 45%,
+      color-mix(in srgb, var(--gallery-accent, #00f5ff) 32%, transparent) 76%,
+      transparent 96%
+    ) bottom / 100% 1px no-repeat,
+    linear-gradient(
+      180deg,
+      transparent 9%,
+      color-mix(in srgb, var(--gallery-accent, #00f5ff) 30%, transparent) 30%,
+      color-mix(in srgb, var(--gallery-accent, #00f5ff) 10%, transparent) 57%,
+      transparent 80%
+    ) left / 1px 100% no-repeat,
+    linear-gradient(
+      180deg,
+      transparent 18%,
+      color-mix(in srgb, var(--gallery-accent, #00f5ff) 18%, transparent) 56%,
+      transparent 79%
+    ) right / 1px 100% no-repeat;
 }
 
 @keyframes gallery-ring-spin {

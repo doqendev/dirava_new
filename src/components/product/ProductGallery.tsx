@@ -225,7 +225,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
         <div
           aria-hidden
           className="pointer-events-none absolute inset-x-0 -inset-y-2 rounded-2xl blur-3xl"
-          style={{ background: `radial-gradient(60% 60% at 50% 50%, ${themeColor}1f, transparent 70%)` }}
+          style={{ background: `radial-gradient(60% 60% at 50% 50%, ${themeColor}12, transparent 70%)` }}
         />
         {/* Gallery card — animated accent ring wraps both the main
             image area AND the thumbnail strip below, so the ring
@@ -234,7 +234,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
           className="gallery-animated-ring relative bg-bg-secondary rounded-xl overflow-hidden"
           style={{
             ['--gallery-accent' as string]: themeColor,
-            boxShadow: `0 0 24px ${themeColor}22, inset 0 0 30px ${themeColor}1a`,
+            boxShadow: `0 0 14px ${themeColor}10, inset 0 0 24px ${themeColor}0d`,
           }}
         >
           {/* Main image area — kept 1:1 so artwork still dominates.
