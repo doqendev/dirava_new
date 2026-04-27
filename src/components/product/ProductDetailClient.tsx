@@ -355,12 +355,12 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
         }}
       />
 
-      <div className="relative px-4 py-6 max-w-7xl mx-auto w-full">
+      <div className="relative px-4 pt-3 pb-6 md:py-6 max-w-7xl mx-auto w-full">
         {/* Back link */}
         <Link
           href={`/worlds/${universe}`}
           className={cn(
-            'inline-flex items-center gap-2 mb-6',
+            'inline-flex items-center gap-2 mb-3 md:mb-6',
             'text-white/50 hover:text-white',
             'transition-colors duration-200'
           )}
