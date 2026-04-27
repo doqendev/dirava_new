@@ -21,9 +21,9 @@ export function TitleChips({ chips, accent = '#22c55e' }: TitleChipsProps) {
         return (
           <li
             key={`${i}-${chip.label}`}
-            className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-white/70"
+            className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-white/55"
           >
-            <Icon className="h-3.5 w-3.5" style={{ color: accent }} />
+            <Icon className="h-3.5 w-3.5 opacity-80" style={{ color: accent }} />
             <span>{chip.label}</span>
           </li>
         )

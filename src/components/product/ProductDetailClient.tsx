@@ -405,56 +405,58 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             {/* Buy box — plain stacked column (no card chrome), mirroring
                 the design reference. Keeps the same vertical rhythm. */}
             <div className="space-y-6">
-            {/* Badges */}
-            {(product.rarity && product.rarity !== 'common' || hasDiscount) && (
-              <div className="flex flex-wrap gap-2">
-                {product.rarity && product.rarity !== 'common' && (
-                  <Badge variant={product.rarity === 'legendary' ? 'yellow' : 'purple'}>
-                    {product.rarity}
-                  </Badge>
-                )}
-                {hasDiscount && (
-                  <Badge variant="pink">{tCommon('sale').toUpperCase()}</Badge>
-                )}
-              </div>
-            )}
+            {/* Title cluster — kept tighter than the surrounding
+                space-y-6 so title / price / rating / features read
+                as one identifying group instead of disconnected
+                rows. Hierarchy intent: title → price → rating →
+                features. */}
+            <div className="space-y-2.5">
+              {(product.rarity && product.rarity !== 'common' || hasDiscount) && (
+                <div className="flex flex-wrap gap-2">
+                  {product.rarity && product.rarity !== 'common' && (
+                    <Badge variant={product.rarity === 'legendary' ? 'yellow' : 'purple'}>
+                      {product.rarity}
+                    </Badge>
+                  )}
+                  {hasDiscount && (
+                    <Badge variant="pink">{tCommon('sale').toUpperCase()}</Badge>
+                  )}
+                </div>
+              )}
 
-            {/* Title */}
-            <h1 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-wide">
-              {product.title}
-            </h1>
+              <h1 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-wide">
+                {product.title}
+              </h1>
 
-            {/* Three-attribute chips (UV painted · Made to order · …) */}
-            <TitleChips chips={getProductChips(product.handle)} accent={themeColor} />
-
-            {/* Real rating + display orders count */}
-            <a href="#reviews" className="block w-fit hover:opacity-80 transition-opacity">
-              <RatingOrdersChip
-                rating={product.rating}
-                productHandle={product.handle}
-                accent={themeColor}
-              />
-            </a>
-
-            {/* Price */}
-            <div className="flex items-baseline gap-3">
-              <span
-                className="text-2xl md:text-3xl font-mono font-bold"
-                style={{ color: themeColor }}
-              >
-                {formatPrice(
-                  selectedVariant?.price.amount || product.priceRange.minVariantPrice.amount,
-                  selectedVariant?.price.currencyCode || product.priceRange.minVariantPrice.currencyCode
-                )}
-              </span>
-              {hasDiscount && (
-                <span className="text-lg font-mono text-white/40 line-through">
+              <div className="flex items-baseline gap-3">
+                <span
+                  className="text-2xl md:text-3xl font-mono font-bold"
+                  style={{ color: themeColor }}
+                >
                   {formatPrice(
-                    product.compareAtPriceRange!.minVariantPrice.amount,
-                    product.compareAtPriceRange!.minVariantPrice.currencyCode
+                    selectedVariant?.price.amount || product.priceRange.minVariantPrice.amount,
+                    selectedVariant?.price.currencyCode || product.priceRange.minVariantPrice.currencyCode
                   )}
                 </span>
-              )}
+                {hasDiscount && (
+                  <span className="text-lg font-mono text-white/40 line-through">
+                    {formatPrice(
+                      product.compareAtPriceRange!.minVariantPrice.amount,
+                      product.compareAtPriceRange!.minVariantPrice.currencyCode
+                    )}
+                  </span>
+                )}
+              </div>
+
+              <a href="#reviews" className="block w-fit hover:opacity-80 transition-opacity">
+                <RatingOrdersChip
+                  rating={product.rating}
+                  productHandle={product.handle}
+                  accent={themeColor}
+                />
+              </a>
+
+              <TitleChips chips={getProductChips(product.handle)} accent={themeColor} />
             </div>
 
             {/* Size Guide Button - only for apparel with a matching size guide */}
