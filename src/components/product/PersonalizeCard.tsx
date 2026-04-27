@@ -58,10 +58,6 @@ export function PersonalizeCard({
   const valid = (isReady ?? true) && hasValue && !blocked
   const errorRgb = '255, 90, 90'
   const counterColor = hasValue ? themeColor : 'rgba(255,255,255,0.32)'
-  // Halo behind the CTA — uses neon-green so it pairs with the
-  // CTA fill (the button itself is intentionally green regardless of
-  // universe accent, since it's the dominant action on the page).
-  const ctaHaloRgb = '25, 255, 122'
 
   return (
     <section
@@ -200,7 +196,7 @@ export function PersonalizeCard({
           aria-hidden
           className="cta-halo pointer-events-none absolute -inset-1 rounded-[12px]"
           style={{
-            boxShadow: `0 0 28px rgba(${ctaHaloRgb}, 0.5), 0 0 60px rgba(${ctaHaloRgb}, 0.25)`,
+            boxShadow: `0 0 28px rgba(${accentRgb}, 0.5), 0 0 60px rgba(${accentRgb}, 0.25)`,
           }}
         />
         <div className="relative">{cta}</div>

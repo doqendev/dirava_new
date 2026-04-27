@@ -517,7 +517,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                       personalizationValue={personalizationName}
                       onPersonalizationError={handlePersonalizationError}
                       attributes={cartAttributes}
-                      themeColor="#19ff7a"
+                      themeColor={themeColor}
                       className="!py-4 !text-[15px]"
                     />
                   }
