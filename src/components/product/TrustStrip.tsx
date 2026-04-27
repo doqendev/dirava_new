@@ -21,12 +21,12 @@ export function TrustStrip() {
         return (
           <li
             key={i}
-            className="flex items-center gap-2 rounded-xl border border-white/[0.025] bg-transparent px-3 py-2"
+            className="flex items-center gap-2 rounded-xl border border-white/[0.018] bg-transparent px-3 py-2"
           >
-            <Icon className="h-4 w-4 flex-shrink-0 text-white/25" />
+            <Icon className="h-4 w-4 flex-shrink-0 text-white/20" />
             <div className="min-w-0 leading-tight">
-              <div className="text-[11px] font-semibold uppercase tracking-wide text-white/50">{it.title}</div>
-              <div className="truncate text-[10px] text-white/25">{it.sub}</div>
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-white/40">{it.title}</div>
+              <div className="truncate text-[10px] text-white/20">{it.sub}</div>
             </div>
           </li>
         )

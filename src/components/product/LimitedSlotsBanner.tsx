@@ -30,10 +30,10 @@ export function LimitedSlotsBanner({ accent = '#19ff7a', productHandle }: Limite
 
   return (
     <div
-      className="relative flex flex-col items-stretch gap-2 overflow-hidden rounded-[11px] border bg-[#010708] px-3 py-3 sm:min-h-[82px] sm:flex-row sm:items-center sm:gap-0 sm:px-[22px] sm:py-3.5"
+      className="relative flex flex-col items-stretch gap-2 overflow-hidden rounded-[11px] border bg-[#010506] px-3 py-2.5 sm:min-h-[72px] sm:flex-row sm:items-center sm:gap-0 sm:px-[20px] sm:py-3"
       style={{
-        borderColor: `rgba(${accentRgb}, 0.16)`,
-        boxShadow: `0 0 0 1px rgba(0, 0, 0, 0.45), inset 0 0 12px rgba(${accentRgb}, 0.018), inset 0 1px 0 rgba(${accentRgb}, 0.035)`,
+        borderColor: `rgba(${accentRgb}, 0.11)`,
+        boxShadow: `0 0 0 1px rgba(0, 0, 0, 0.4), inset 0 0 8px rgba(${accentRgb}, 0.012), inset 0 1px 0 rgba(${accentRgb}, 0.025)`,
       }}
     >
       <div
@@ -87,13 +87,13 @@ export function LimitedSlotsBanner({ accent = '#19ff7a', productHandle }: Limite
 
       <div className="relative flex min-w-0 flex-1 items-center gap-2.5 pr-0 sm:gap-[14px] sm:pr-5">
         <Zap
-          className="h-7 w-5 flex-shrink-0 sm:h-9 sm:w-7"
+          className="h-6 w-5 flex-shrink-0 sm:h-8 sm:w-6"
           strokeWidth={1.5}
           style={{
             color: accent,
             fill: accent,
             stroke: accent,
-            filter: `drop-shadow(0 0 4px rgba(${accentRgb}, 0.45))`,
+            filter: `drop-shadow(0 0 2px rgba(${accentRgb}, 0.3))`,
           }}
         />
 
@@ -118,8 +118,8 @@ export function LimitedSlotsBanner({ accent = '#19ff7a', productHandle }: Limite
       >
         <div className="flex items-baseline justify-center gap-1.5 sm:justify-end">
           <span
-            className="font-mono text-[22px] font-black leading-none tabular-nums sm:text-[26px]"
-            style={{ color: accent, textShadow: `0 0 6px rgba(${accentRgb}, 0.32)` }}
+            className="font-mono text-[20px] font-black leading-none tabular-nums sm:text-[24px]"
+            style={{ color: accent, textShadow: `0 0 3px rgba(${accentRgb}, 0.18)` }}
           >
             {available}
           </span>
@@ -138,8 +138,8 @@ export function LimitedSlotsBanner({ accent = '#19ff7a', productHandle }: Limite
             className="absolute inset-y-0 left-0 rounded-full"
             style={{
               width: `${filledPct}%`,
-              background: `linear-gradient(90deg, rgba(${accentRgb}, 0.4), rgba(${accentRgb}, 0.85))`,
-              boxShadow: `0 0 5px rgba(${accentRgb}, 0.3)`,
+              background: `linear-gradient(90deg, rgba(${accentRgb}, 0.3), rgba(${accentRgb}, 0.65))`,
+              boxShadow: `0 0 3px rgba(${accentRgb}, 0.2)`,
             }}
           />
         </div>

@@ -558,11 +558,11 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 strip in the buying column on every viewport. The left
                 column under the gallery stays clean (the banner used to
                 duplicate there). */}
-            <div className={cn(product.personalization ? 'pt-3.5' : 'pt-5')}>
+            <div className={cn(product.personalization ? 'pt-6' : 'pt-7')}>
               <LimitedSlotsBanner accent={themeColor} productHandle={product.handle} />
             </div>
 
-            <div className="pt-3.5">
+            <div className="pt-4">
               <TrustStrip />
             </div>
             </div>
