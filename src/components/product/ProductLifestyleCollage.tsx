@@ -29,6 +29,9 @@ export function ProductLifestyleCollage({ scenes }: ProductLifestyleCollageProps
 
   return (
     <section className="relative px-4 pb-12 max-w-7xl mx-auto w-full">
+      <h2 className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.22em] text-white/85 sm:mb-5 sm:text-sm">
+        Get inspired
+      </h2>
       <div className="columns-2 gap-3 sm:gap-4 md:columns-3">
         {scenes.map((scene, i) => (
           <div key={`${scene.url}-${i}`} className="mb-3 sm:mb-4 break-inside-avoid">

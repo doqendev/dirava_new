@@ -100,17 +100,9 @@ async function getProduct(handle: string) {
     //   ["https://.../desk.jpg", { "url": "https://.../wall.jpg", "alt": "Wall" }]
     // Anything malformed becomes an empty array so the collage simply
     // doesn't render.
-    // TEMP debug — remove once metafield wiring is confirmed working.
-    // Logs in the Next.js dev server console (terminal where pnpm dev runs).
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[lifestyle_scenes] all metafields:', product.metafields)
-    }
     const lifestyleScenesRaw = product.metafields?.find(
       (mf) => mf?.key === 'lifestyle_scenes'
     )?.value
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[lifestyle_scenes] raw value:', lifestyleScenesRaw)
-    }
     const lifestyleScenes: LifestyleScene[] = (() => {
       if (!lifestyleScenesRaw) return []
       try {
