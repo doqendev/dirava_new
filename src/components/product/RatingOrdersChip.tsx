@@ -43,9 +43,24 @@ function formatOrders(n: number): string {
  * per-product display number.
  */
 export function RatingOrdersChip({ rating, productHandle, accent = '#22c55e' }: RatingOrdersChipProps) {
-  const avg = rating?.averageRating ?? 4.8
-  const showAvg = avg.toFixed(1)
   const orders = ordersCountFor(productHandle)
+  const hasReviews = (rating?.reviewCount ?? 0) > 0
+
+  if (!hasReviews) {
+    // No real reviews yet — surface social proof as orders only,
+    // never fake a rating. Reads as a confidence signal without
+    // implying a 0.0 score the product hasn't earned.
+    return (
+      <div className="mt-3 flex items-center gap-2 text-sm text-white/70">
+        <Star className="h-4 w-4" style={{ color: accent, fill: accent }} />
+        <span>
+          Trusted by <strong className="text-white">{formatOrders(orders)}</strong> customers
+        </span>
+      </div>
+    )
+  }
+
+  const showAvg = rating!.averageRating.toFixed(1)
   return (
     <div className="mt-3 flex items-center gap-3 text-sm">
       <div className="flex items-center gap-1.5">

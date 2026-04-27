@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Box, Check, AlertCircle } from 'lucide-react'
+import { Check, AlertCircle } from 'lucide-react'
 import type { Ref, ReactNode } from 'react'
 import { cn } from '@/lib/utils/cn'
 import { isBlockedName } from '@/lib/utils/personalizationBlocklist'
@@ -15,14 +15,15 @@ interface PersonalizeCardProps {
   themeColor?: string
   /** AddToCartButton — caller passes it in fully wired up. */
   cta: ReactNode
-  /** Wishlist button slot (optional). */
-  wishlist?: ReactNode
+  /** Quantity selector slot (rendered between input + CTA so the
+   *  buying flow reads top-to-bottom inside one card). */
+  quantity?: ReactNode
+  /** Live social-proof line (rendered below the CTA + trust line) — a
+   *  last urgency nudge right before the click. */
+  socialProof?: ReactNode
   /** When false, the input + CTA are visible but the input keeps a
    *  neutral border. When true, the active "ready" state lights up. */
   isReady?: boolean
-  /** When provided, renders a "3D Preview" pill in the header that
-   *  triggers the gallery's 3D mode. */
-  onPreview3D?: () => void
 }
 
 function hexToRgb(hex: string): string {
@@ -32,10 +33,12 @@ function hexToRgb(hex: string): string {
 }
 
 /**
- * Featured "Personalize your sign" panel — uses the same dark
- * accent-bordered chrome as the LimitedSlotsBanner for visual
- * coherence (inset radial wash + scattered hairline accent lines on
- * the perimeter).
+ * Self-contained buying-flow card. Holds:
+ *   1. name input  → 2. validation status → 3. quantity → 4. CTA
+ *   5. trust microcopy → 6. live social proof
+ * The 3D preview button is intentionally NOT rendered here — the only
+ * 3D entry point lives on the gallery image so customers don't see two
+ * competing buttons for the same action.
  */
 export function PersonalizeCard({
   value,
@@ -44,9 +47,9 @@ export function PersonalizeCard({
   inputRef,
   themeColor = '#22c55e',
   cta,
-  wishlist,
+  quantity,
+  socialProof,
   isReady,
-  onPreview3D,
 }: PersonalizeCardProps) {
   const [focused, setFocused] = useState(false)
   const accentRgb = hexToRgb(themeColor)
@@ -55,6 +58,10 @@ export function PersonalizeCard({
   const valid = (isReady ?? true) && hasValue && !blocked
   const errorRgb = '255, 90, 90'
   const counterColor = hasValue ? themeColor : 'rgba(255,255,255,0.32)'
+  // Halo behind the CTA — uses neon-green so it pairs with the
+  // CTA fill (the button itself is intentionally green regardless of
+  // universe accent, since it's the dominant action on the page).
+  const ctaHaloRgb = '25, 255, 122'
 
   return (
     <section
@@ -116,24 +123,7 @@ export function PersonalizeCard({
         }}
       />
 
-      {onPreview3D && (
-        <header className="relative flex items-center justify-end">
-          <button
-            type="button"
-            onClick={onPreview3D}
-            className="inline-flex flex-shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-[9.5px] font-bold uppercase tracking-[0.12em] text-white/80 transition-colors hover:text-white sm:text-[10px]"
-            style={{
-              borderColor: `rgba(${accentRgb}, 0.28)`,
-              backgroundColor: `rgba(${accentRgb}, 0.05)`,
-            }}
-          >
-            <Box className="h-3 w-3" strokeWidth={2} />
-            3D Preview
-          </button>
-        </header>
-      )}
-
-      <div className={cn('relative', onPreview3D ? 'mt-3' : '')}>
+      <div className="relative">
         <input
           ref={inputRef}
           type="text"
@@ -165,8 +155,6 @@ export function PersonalizeCard({
               : `inset 0 0 10px rgba(${accentRgb}, 0.03)`,
           }}
         />
-        {/* Char counter pinned inside the input — green when valid,
-            red when the input is blocked. */}
         <span
           aria-hidden
           className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono font-semibold tabular-nums uppercase tracking-wide transition-colors"
@@ -176,10 +164,7 @@ export function PersonalizeCard({
         </span>
       </div>
 
-      {/* Tri-state status — fixed-height row so the card never jumps
-          when the message appears. Empty: nothing visible; valid:
-          green "Ready to order"; blocked: red "This name isn't
-          allowed". */}
+      {/* Tri-state status — fixed-height row so the card never jumps. */}
       <div className="relative mt-2 flex h-4 items-center justify-center">
         {valid && (
           <span
@@ -202,6 +187,8 @@ export function PersonalizeCard({
         )}
       </div>
 
+      {quantity && <div className="relative mt-3">{quantity}</div>}
+
       <div
         className={cn(
           'cta-halo-wrap relative mt-3 transition-opacity',
@@ -213,7 +200,7 @@ export function PersonalizeCard({
           aria-hidden
           className="cta-halo pointer-events-none absolute -inset-1 rounded-[12px]"
           style={{
-            boxShadow: `0 0 28px rgba(${accentRgb}, 0.45), 0 0 60px rgba(${accentRgb}, 0.22)`,
+            boxShadow: `0 0 28px rgba(${ctaHaloRgb}, 0.5), 0 0 60px rgba(${ctaHaloRgb}, 0.25)`,
           }}
         />
         <div className="relative">{cta}</div>
@@ -228,7 +215,14 @@ export function PersonalizeCard({
         Ships in 2–3 days
       </p>
 
-      {wishlist && <div className="relative mt-2">{wishlist}</div>}
+      {socialProof && (
+        <div
+          className="relative mt-3 border-t pt-2.5"
+          style={{ borderColor: `rgba(${accentRgb}, 0.12)` }}
+        >
+          {socialProof}
+        </div>
+      )}
     </section>
   )
 }

@@ -490,18 +490,24 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               </div>
             )}
 
-            {/* Quantity */}
-            <div>
-              <label className="block text-sm font-medium text-white/70 mb-2">
-                {t('quantity')}
-              </label>
-              <QuantitySelector
-                quantity={quantity}
-                onQuantityChange={setQuantity}
-                min={1}
-                max={10}
-              />
-            </div>
+            {/* Standalone quantity is shown ONLY for non-personalized
+                products. For personalized products the quantity is
+                hoisted into the PersonalizeCard so the buying flow
+                (input → quantity → CTA) reads top-to-bottom inside a
+                single card. */}
+            {!product.personalization && (
+              <div>
+                <label className="block text-sm font-medium text-white/70 mb-2">
+                  {t('quantity')}
+                </label>
+                <QuantitySelector
+                  quantity={quantity}
+                  onQuantityChange={setQuantity}
+                  min={1}
+                  max={10}
+                />
+              </div>
+            )}
 
             {/* Stock Indicator (hidden for personalized products) */}
             {selectedVariant && !product.personalization && (
@@ -512,14 +518,26 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             )}
 
             {product.personalization ? (
-              <div ref={cartButtonRef}>
+              <div ref={cartButtonRef} className="lg:-mt-2">
                 <PersonalizeCard
                   value={personalizationName}
                   onChange={(v) => setPersonalizationName(previewConfig ? getPreviewDisplayText(v, previewConfig, '') : v)}
                   maxLength={MAX_PERSONALIZATION_LENGTH}
                   inputRef={personalizationInputRef}
                   themeColor={themeColor}
-                  onPreview3D={previewConfig ? () => galleryRef.current?.goTo3D() : undefined}
+                  quantity={
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/55">
+                        {t('quantity')}
+                      </span>
+                      <QuantitySelector
+                        quantity={quantity}
+                        onQuantityChange={setQuantity}
+                        min={1}
+                        max={10}
+                      />
+                    </div>
+                  }
                   cta={
                     <AddToCartButton
                       variantId={selectedVariant?.id || ''}
@@ -529,9 +547,12 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                       personalizationValue={personalizationName}
                       onPersonalizationError={handlePersonalizationError}
                       attributes={cartAttributes}
-                      themeColor={themeColor}
+                      themeColor="#19ff7a"
                       className="!py-4 !text-[15px]"
                     />
+                  }
+                  socialProof={
+                    <SocialProofBar productHandle={product.handle} accent={themeColor} />
                   }
                 />
               </div>
@@ -542,7 +563,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   quantity={quantity}
                   available={selectedVariant?.availableForSale ?? false}
                   attributes={cartAttributes}
-                  themeColor={themeColor}
+                  themeColor="#19ff7a"
                 />
                 <WishlistButton
                   product={{
@@ -562,14 +583,15 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               </div>
             )}
 
-            {/* Inline social proof + trust strip — sit right after the
-                buy box on every product. Extra top padding so the
-                CTA gets visual breathing room before the supporting
-                signals start. */}
-            <div className="pt-7">
-              <SocialProofBar productHandle={product.handle} accent={themeColor} />
-            </div>
-            <div className="pt-5">
+            {/* For non-personalized products the social proof still
+                lives outside the cart block (no PersonalizeCard to
+                tuck it inside). */}
+            {!product.personalization && (
+              <div className="pt-7">
+                <SocialProofBar productHandle={product.handle} accent={themeColor} />
+              </div>
+            )}
+            <div className={cn(product.personalization ? 'pt-3' : 'pt-5')}>
               <TrustStrip />
             </div>
             </div>
