@@ -553,19 +553,20 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 <SocialProofBar productHandle={product.handle} accent={themeColor} />
               </div>
             )}
-            <div className={cn(product.personalization ? 'pt-3' : 'pt-5')}>
+
+            {/* Limited slots — sits between social proof and the trust
+                strip in the buying column on every viewport. The left
+                column under the gallery stays clean (the banner used to
+                duplicate there). */}
+            <div className={cn(product.personalization ? 'pt-3.5' : 'pt-5')}>
+              <LimitedSlotsBanner accent={themeColor} productHandle={product.handle} />
+            </div>
+
+            <div className="pt-3.5">
               <TrustStrip />
             </div>
             </div>
             {/* end buy box card */}
-
-            {/* Limited slots banner — mobile placement: sits between
-                the buy box and the description so it doesn't crowd the
-                price + cart actions above. Desktop renders it under
-                the gallery. */}
-            <div className="lg:hidden pt-4">
-              <LimitedSlotsBanner accent={themeColor} productHandle={product.handle} />
-            </div>
 
             {/* Collapsible panels — border-top separators, display title,
                 accent chevron when open. Matches the design. */}
