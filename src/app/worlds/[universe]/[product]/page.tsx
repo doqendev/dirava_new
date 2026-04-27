@@ -96,8 +96,10 @@ async function getProduct(handle: string) {
     )?.value || null
 
     // Parse the per-product lifestyle scenes metafield. Schema is a
-    // JSON array of `{url, width, height, alt?}`. Anything malformed
-    // becomes an empty array so the collage simply doesn't render.
+    // JSON array of either bare URL strings or `{url, alt?}` objects:
+    //   ["https://.../desk.jpg", { "url": "https://.../wall.jpg", "alt": "Wall" }]
+    // Anything malformed becomes an empty array so the collage simply
+    // doesn't render.
     const lifestyleScenesRaw = product.metafields?.find(
       (mf) => mf?.key === 'lifestyle_scenes'
     )?.value
@@ -106,13 +108,13 @@ async function getProduct(handle: string) {
       try {
         const parsed = JSON.parse(lifestyleScenesRaw)
         if (!Array.isArray(parsed)) return []
-        return parsed.filter(
-          (s): s is LifestyleScene =>
-            !!s &&
-            typeof s.url === 'string' &&
-            typeof s.width === 'number' &&
-            typeof s.height === 'number'
-        )
+        return parsed.flatMap((s): LifestyleScene[] => {
+          if (typeof s === 'string' && s.length > 0) return [{ url: s }]
+          if (s && typeof s === 'object' && typeof s.url === 'string' && s.url.length > 0) {
+            return [{ url: s.url, ...(typeof s.alt === 'string' ? { alt: s.alt } : {}) }]
+          }
+          return []
+        })
       } catch {
         return []
       }
