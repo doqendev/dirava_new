@@ -44,8 +44,8 @@ export function LimitedSlotsBanner({ accent = '#19ff7a' }: LimitedSlotsBannerPro
       <div
         className="flex h-[40px] w-[46px] items-center justify-center rounded-[7px] border bg-[#071112]"
         style={{
-          borderColor: `rgba(${accentRgb}, 0.18)`,
-          boxShadow: `inset 0 0 16px rgba(${accentRgb}, 0.08), 0 0 13px rgba(${accentRgb}, 0.08), 0 0 14px rgba(0, 0, 0, 0.35)`,
+          borderColor: `rgba(${accentRgb}, 0.12)`,
+          boxShadow: `inset 0 0 14px rgba(${accentRgb}, 0.045), 0 0 10px rgba(${accentRgb}, 0.045), 0 0 14px rgba(0, 0, 0, 0.35)`,
         }}
       >
         <span className="font-mono text-[20px] font-black leading-none tabular-nums text-white">
@@ -62,14 +62,14 @@ export function LimitedSlotsBanner({ accent = '#19ff7a' }: LimitedSlotsBannerPro
     <div
       className="relative flex min-h-[90px] items-center overflow-hidden rounded-[11px] border bg-[#020b0c] px-[26px] py-4"
       style={{
-        borderColor: `rgba(${accentRgb}, 0.72)`,
-        boxShadow: `0 0 16px rgba(${accentRgb}, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.45), inset 0 0 28px rgba(${accentRgb}, 0.08), inset 0 1px 0 rgba(${accentRgb}, 0.18)`,
+        borderColor: `rgba(${accentRgb}, 0.5)`,
+        boxShadow: `0 0 10px rgba(${accentRgb}, 0.075), 0 0 0 1px rgba(0, 0, 0, 0.55), inset 0 0 24px rgba(${accentRgb}, 0.045), inset 0 1px 0 rgba(${accentRgb}, 0.1)`,
       }}
     >
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background: `radial-gradient(circle at 19% 50%, rgba(${accentRgb}, 0.16), transparent 31%), linear-gradient(90deg, rgba(${accentRgb}, 0.08), transparent 55%)`,
+          background: `radial-gradient(circle at 19% 50%, rgba(${accentRgb}, 0.075), transparent 32%), linear-gradient(90deg, rgba(${accentRgb}, 0.035), transparent 55%)`,
         }}
       />
 
