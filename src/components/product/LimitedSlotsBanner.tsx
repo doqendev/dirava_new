@@ -42,10 +42,10 @@ export function LimitedSlotsBanner({ accent = '#19ff7a' }: LimitedSlotsBannerPro
   const cell = (n: number, label: string) => (
     <div className="flex flex-col items-center">
       <div
-        className="flex h-[38px] w-[50px] items-center justify-center rounded-[7px] border bg-[#071112] shadow-[0_0_14px_rgba(0,0,0,0.35)] sm:h-[40px] sm:w-[54px]"
+        className="flex h-[40px] w-[46px] items-center justify-center rounded-[7px] border bg-[#071112]"
         style={{
-          borderColor: `rgba(${accentRgb}, 0.2)`,
-          boxShadow: `inset 0 0 16px rgba(${accentRgb}, 0.08), 0 0 14px rgba(0, 0, 0, 0.35)`,
+          borderColor: `rgba(${accentRgb}, 0.18)`,
+          boxShadow: `inset 0 0 16px rgba(${accentRgb}, 0.08), 0 0 13px rgba(${accentRgb}, 0.08), 0 0 14px rgba(0, 0, 0, 0.35)`,
         }}
       >
         <span className="font-mono text-[20px] font-black leading-none tabular-nums text-white">
@@ -60,24 +60,29 @@ export function LimitedSlotsBanner({ accent = '#19ff7a' }: LimitedSlotsBannerPro
 
   return (
     <div
-      className="relative flex min-h-[90px] items-center overflow-hidden rounded-[11px] border bg-[#020b0c] px-7 py-4"
+      className="relative flex min-h-[90px] items-center overflow-hidden rounded-[11px] border bg-[#020b0c] px-[26px] py-4"
       style={{
         borderColor: `rgba(${accentRgb}, 0.72)`,
-        boxShadow: `0 0 0 1px rgba(0, 0, 0, 0.45), inset 0 0 28px rgba(${accentRgb}, 0.08)`,
+        boxShadow: `0 0 16px rgba(${accentRgb}, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.45), inset 0 0 28px rgba(${accentRgb}, 0.08), inset 0 1px 0 rgba(${accentRgb}, 0.18)`,
       }}
     >
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background: `radial-gradient(circle at 20% 50%, rgba(${accentRgb}, 0.12), transparent 34%), linear-gradient(90deg, rgba(${accentRgb}, 0.07), transparent 55%)`,
+          background: `radial-gradient(circle at 19% 50%, rgba(${accentRgb}, 0.16), transparent 31%), linear-gradient(90deg, rgba(${accentRgb}, 0.08), transparent 55%)`,
         }}
       />
 
-      <div className="relative flex min-w-0 flex-1 items-center gap-4 pr-6">
+      <div className="relative flex min-w-0 flex-1 items-center gap-[14px] pr-5">
         <Zap
-          className="h-11 w-11 flex-shrink-0"
+          className="h-11 w-8 flex-shrink-0"
           strokeWidth={1.5}
-          style={{ color: accent, fill: accent, stroke: accent }}
+          style={{
+            color: accent,
+            fill: accent,
+            stroke: accent,
+            filter: `drop-shadow(0 0 7px rgba(${accentRgb}, 0.82)) drop-shadow(0 0 16px rgba(${accentRgb}, 0.36))`,
+          }}
         />
 
         <div className="min-w-0">
@@ -87,7 +92,7 @@ export function LimitedSlotsBanner({ accent = '#19ff7a' }: LimitedSlotsBannerPro
           >
             Limited production slots!
           </div>
-          <p className="mt-1 max-w-[220px] text-[12px] font-medium leading-[1.32] text-white">
+          <p className="mt-1 max-w-[205px] text-[12px] font-medium leading-[1.32] text-white">
             We only take a few orders each day to ensure premium quality.
           </p>
         </div>
@@ -95,7 +100,7 @@ export function LimitedSlotsBanner({ accent = '#19ff7a' }: LimitedSlotsBannerPro
 
       <div className="relative hidden h-[42px] w-px flex-shrink-0 bg-[#1d2a2b] sm:block" />
 
-      <div className="relative flex flex-shrink-0 items-start gap-[9px] pl-6">
+      <div className="relative flex flex-shrink-0 items-start gap-2 pl-[22px]">
         {cell(t.h, 'hrs')}
         <span className="pt-[7px] text-[22px] font-black leading-none text-white">:</span>
         {cell(t.m, 'mins')}
