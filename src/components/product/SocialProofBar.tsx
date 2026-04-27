@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Flame } from 'lucide-react'
 
 interface SocialProofBarProps {
   /** Stable per-product seed so each product has its own (different) numbers. */
   productHandle: string
+  /** Accepted for API stability — no longer applied (the line is now
+   *  purely textual to keep the UI clean). */
   accent?: string
 }
 
@@ -33,11 +34,13 @@ function rngFromSeed(seed: number) {
 }
 
 /**
- * Single-line live-feel proof: "🔥 X viewing now · Y sold in the last
- * hour". Numbers shift every 25s so the feed feels alive but never
- * fakes desperation.
+ * Single-line live-feel proof: "X viewing now · Y sold in the last
+ * hour". Text-only by design — emoji-style icons (flame, eye) read as
+ * "hype noise" and clash with the premium, minimal direction of the
+ * rest of the PDP. Numbers shift every 25s so the feed feels alive
+ * but never fakes desperation.
  */
-export function SocialProofBar({ productHandle, accent = '#22c55e' }: SocialProofBarProps) {
+export function SocialProofBar({ productHandle }: SocialProofBarProps) {
   const baseSeed = seedFrom(productHandle)
   const [now, setNow] = useState(0)
 
@@ -51,16 +54,7 @@ export function SocialProofBar({ productHandle, accent = '#22c55e' }: SocialProo
   const sold = Math.floor(2 + rng() * 6) // 2 - 7
 
   return (
-    <div className="flex items-center gap-1.5 text-[12px] leading-none text-white/75">
-      <Flame
-        className="h-3.5 w-3.5 flex-shrink-0"
-        strokeWidth={2.5}
-        style={{
-          color: accent,
-          fill: accent,
-          filter: `drop-shadow(0 0 4px ${accent}66)`,
-        }}
-      />
+    <div className="text-[12px] leading-none text-white/75">
       <span className="truncate">
         <strong className="font-semibold text-white">{viewing}</strong> viewing now
         <span className="mx-1.5 text-white/35">·</span>
