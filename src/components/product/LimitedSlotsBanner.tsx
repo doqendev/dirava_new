@@ -60,7 +60,7 @@ export function LimitedSlotsBanner({ accent = '#19ff7a' }: LimitedSlotsBannerPro
 
   return (
     <div
-      className="relative flex min-h-[90px] items-center overflow-hidden rounded-[11px] border bg-[#020b0c] px-[26px] py-4"
+      className="relative flex flex-col items-stretch gap-3 overflow-hidden rounded-[11px] border bg-[#020b0c] px-4 py-4 sm:min-h-[90px] sm:flex-row sm:items-center sm:gap-0 sm:px-[26px]"
       style={{
         borderColor: `rgba(${accentRgb}, 0.34)`,
         boxShadow: `0 0 8px rgba(${accentRgb}, 0.055), 0 0 0 1px rgba(0, 0, 0, 0.58), inset 0 0 24px rgba(${accentRgb}, 0.04), inset 0 1px 0 rgba(${accentRgb}, 0.08)`,
@@ -115,9 +115,9 @@ export function LimitedSlotsBanner({ accent = '#19ff7a' }: LimitedSlotsBannerPro
         }}
       />
 
-      <div className="relative flex min-w-0 flex-1 items-center gap-[14px] pr-5">
+      <div className="relative flex min-w-0 flex-1 items-center gap-3 pr-0 sm:gap-[14px] sm:pr-5">
         <Zap
-          className="h-11 w-8 flex-shrink-0"
+          className="h-10 w-7 flex-shrink-0 sm:h-11 sm:w-8"
           strokeWidth={1.5}
           style={{
             color: accent,
@@ -129,12 +129,12 @@ export function LimitedSlotsBanner({ accent = '#19ff7a' }: LimitedSlotsBannerPro
 
         <div className="min-w-0">
           <div
-            className="text-[14px] font-black uppercase leading-tight tracking-normal"
+            className="text-[13px] font-black uppercase leading-tight tracking-normal sm:text-[14px]"
             style={{ color: accent }}
           >
             Limited production slots!
           </div>
-          <p className="mt-1 max-w-[205px] text-[12px] font-medium leading-[1.32] text-white">
+          <p className="mt-1 max-w-none text-[11px] font-medium leading-[1.35] text-white sm:max-w-[205px] sm:text-[12px]">
             We only take a few orders each day to ensure premium quality.
           </p>
         </div>
@@ -142,7 +142,10 @@ export function LimitedSlotsBanner({ accent = '#19ff7a' }: LimitedSlotsBannerPro
 
       <div className="relative hidden h-[42px] w-px flex-shrink-0 bg-[#1d2a2b] sm:block" />
 
-      <div className="relative flex flex-shrink-0 items-start gap-2 pl-[22px]">
+      <div
+        className="relative flex w-full flex-shrink-0 items-start justify-center gap-2 border-t pt-3 sm:w-auto sm:justify-start sm:border-t-0 sm:pt-0 sm:pl-[22px]"
+        style={{ borderColor: `rgba(${accentRgb}, 0.12)` }}
+      >
         {cell(t.h, 'hrs')}
         <span className="pt-[7px] text-[22px] font-black leading-none text-white">:</span>
         {cell(t.m, 'mins')}
