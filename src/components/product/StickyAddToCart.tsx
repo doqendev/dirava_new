@@ -60,7 +60,7 @@ export function StickyAddToCart({
   if (!isVisible) return null
 
   return (
-    <div className="fixed bottom-16 left-0 right-0 z-40 lg:hidden bg-bg-primary/95 backdrop-blur-md border-t border-white/10 px-4 py-3 safe-area-pb">
+    <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-bg-primary/95 backdrop-blur-md border-t border-white/10 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
       <div className="flex items-center gap-3 max-w-lg mx-auto">
         <div className="flex-1 min-w-0">
           <p className="text-white text-sm font-medium truncate">{productTitle}</p>
