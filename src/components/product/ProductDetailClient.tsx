@@ -403,7 +403,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             {/* Limited slots banner sits under the gallery on desktop;
                 a thin strip of urgency that doesn't shout. */}
             <div className="mt-4 hidden lg:block">
-              <LimitedSlotsBanner accent={themeColor} />
+              <LimitedSlotsBanner accent={themeColor} productHandle={product.handle} />
             </div>
           </div>
 
@@ -467,12 +467,6 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             {/* Guarantee tiles — Handmade / Premium / Ships from EU */}
             <GuaranteeTiles accent={themeColor} />
 
-            {/* Limited slots banner on mobile (desktop renders it under
-                the gallery instead). */}
-            <div className="lg:hidden">
-              <LimitedSlotsBanner accent={themeColor} />
-            </div>
-
             {/* Size Guide Button - only for apparel with a matching size guide */}
             {sizeGuide && (
               <div className="flex justify-end">
@@ -525,6 +519,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   maxLength={MAX_PERSONALIZATION_LENGTH}
                   inputRef={personalizationInputRef}
                   themeColor={themeColor}
+                  onPreview3D={previewConfig ? () => galleryRef.current?.goTo3D() : undefined}
                   cta={
                     <AddToCartButton
                       variantId={selectedVariant?.id || ''}
@@ -535,23 +530,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                       onPersonalizationError={handlePersonalizationError}
                       attributes={cartAttributes}
                       themeColor={themeColor}
-                    />
-                  }
-                  wishlist={
-                    <WishlistButton
-                      product={{
-                        productId: product.id,
-                        variantId: selectedVariant?.id || '',
-                        handle: product.handle,
-                        title: product.title,
-                        price: selectedVariant?.price || product.priceRange.minVariantPrice,
-                        compareAtPrice: selectedVariant?.compareAtPrice || product.compareAtPriceRange?.minVariantPrice,
-                        image: product.images[0] || null,
-                        universe,
-                      }}
-                      variant="button"
-                      size="lg"
-                      className="w-full justify-center py-3"
+                      className="!py-4 !text-[15px]"
                     />
                   }
                 />
@@ -584,13 +563,25 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             )}
 
             {/* Inline social proof + trust strip — sit right after the
-                buy box on every product. */}
-            <div className="pt-1">
+                buy box on every product. Extra top padding so the
+                CTA gets visual breathing room before the supporting
+                signals start. */}
+            <div className="pt-7">
               <SocialProofBar productHandle={product.handle} accent={themeColor} />
             </div>
-            <TrustStrip />
+            <div className="pt-5">
+              <TrustStrip />
+            </div>
             </div>
             {/* end buy box card */}
+
+            {/* Limited slots banner — mobile placement: sits between
+                the buy box and the description so it doesn't crowd the
+                price + cart actions above. Desktop renders it under
+                the gallery. */}
+            <div className="lg:hidden pt-4">
+              <LimitedSlotsBanner accent={themeColor} productHandle={product.handle} />
+            </div>
 
             {/* Collapsible panels — border-top separators, display title,
                 accent chevron when open. Matches the design. */}

@@ -1,9 +1,10 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
-import { Sparkles, Check } from 'lucide-react'
+import { useState } from 'react'
+import { Box, Check, AlertCircle } from 'lucide-react'
 import type { Ref, ReactNode } from 'react'
 import { cn } from '@/lib/utils/cn'
+import { isBlockedName } from '@/lib/utils/personalizationBlocklist'
 
 interface PersonalizeCardProps {
   value: string
@@ -19,12 +20,22 @@ interface PersonalizeCardProps {
   /** When false, the input + CTA are visible but the input keeps a
    *  neutral border. When true, the active "ready" state lights up. */
   isReady?: boolean
+  /** When provided, renders a "3D Preview" pill in the header that
+   *  triggers the gallery's 3D mode. */
+  onPreview3D?: () => void
+}
+
+function hexToRgb(hex: string): string {
+  const match = hex.replace('#', '').match(/.{2}/g)
+  if (!match || match.length < 3) return '25, 255, 122'
+  return `${parseInt(match[0]!, 16)}, ${parseInt(match[1]!, 16)}, ${parseInt(match[2]!, 16)}`
 }
 
 /**
- * Featured "Personalize your sign" panel that wraps the name input,
- * char counter, validation badge, primary CTA and wishlist button in a
- * single neon-bordered card.
+ * Featured "Personalize your sign" panel — uses the same dark
+ * accent-bordered chrome as the LimitedSlotsBanner for visual
+ * coherence (inset radial wash + scattered hairline accent lines on
+ * the perimeter).
  */
 export function PersonalizeCard({
   value,
@@ -35,72 +46,189 @@ export function PersonalizeCard({
   cta,
   wishlist,
   isReady,
+  onPreview3D,
 }: PersonalizeCardProps) {
-  const t = useTranslations('product')
-  const ready = isReady ?? value.trim().length > 0
-  const placeholder = t('personalizationPlaceholder')
+  const [focused, setFocused] = useState(false)
+  const accentRgb = hexToRgb(themeColor)
+  const hasValue = value.trim().length > 0
+  const blocked = hasValue && isBlockedName(value)
+  const valid = (isReady ?? true) && hasValue && !blocked
+  const errorRgb = '255, 90, 90'
+  const counterColor = hasValue ? themeColor : 'rgba(255,255,255,0.32)'
 
   return (
     <section
-      className="relative overflow-hidden rounded-2xl border bg-white/[0.02] p-5 sm:p-6"
+      className="relative overflow-hidden rounded-[11px] border bg-[#020b0c] px-4 py-4 sm:px-5 sm:py-5"
       style={{
-        borderColor: `${themeColor}55`,
-        boxShadow: `0 0 24px ${themeColor}22 inset`,
+        borderColor: `rgba(${accentRgb}, 0.34)`,
+        boxShadow: `0 0 8px rgba(${accentRgb}, 0.055), 0 0 0 1px rgba(0, 0, 0, 0.58), inset 0 0 24px rgba(${accentRgb}, 0.04), inset 0 1px 0 rgba(${accentRgb}, 0.08)`,
       }}
     >
-      {/* subtle accent halo at the top of the card */}
+      {/* radial accent wash + soft horizontal gradient */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: `radial-gradient(circle at 18% 0%, rgba(${accentRgb}, 0.08), transparent 38%), linear-gradient(180deg, rgba(${accentRgb}, 0.03), transparent 60%)`,
+        }}
+      />
+      {/* hairline accent lines around the perimeter — same vocabulary
+          as the slots banner so the two cards feel like a set */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-x-6 -top-12 h-24 rounded-full blur-3xl"
-        style={{ background: `${themeColor}22` }}
+        className="pointer-events-none absolute left-4 top-0 h-px w-[36%]"
+        style={{
+          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.52), rgba(${accentRgb}, 0.16), transparent)`,
+        }}
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute right-9 top-0 h-px w-[18%]"
+        style={{
+          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.24), transparent)`,
+        }}
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute bottom-0 left-6 h-px w-[24%]"
+        style={{
+          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.28), transparent)`,
+        }}
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute bottom-0 right-5 h-px w-[30%]"
+        style={{
+          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.18), rgba(${accentRgb}, 0.36), transparent)`,
+        }}
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute left-0 top-4 h-[48%] w-px"
+        style={{
+          background: `linear-gradient(180deg, transparent, rgba(${accentRgb}, 0.34), rgba(${accentRgb}, 0.12), transparent)`,
+        }}
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute right-0 bottom-5 h-[34%] w-px"
+        style={{
+          background: `linear-gradient(180deg, transparent, rgba(${accentRgb}, 0.22), transparent)`,
+        }}
       />
 
-      <header className="relative flex items-center gap-2">
-        <Sparkles className="h-4 w-4" style={{ color: themeColor }} />
-        <h2
-          className="text-sm font-semibold uppercase tracking-[0.18em]"
-          style={{ color: themeColor }}
-        >
-          Personalize your sign
-        </h2>
-      </header>
-      <p className="relative mt-1 text-xs text-white/65">
-        Type your name and see it come to life!
-      </p>
+      {onPreview3D && (
+        <header className="relative flex items-center justify-end">
+          <button
+            type="button"
+            onClick={onPreview3D}
+            className="inline-flex flex-shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-[9.5px] font-bold uppercase tracking-[0.12em] text-white/80 transition-colors hover:text-white sm:text-[10px]"
+            style={{
+              borderColor: `rgba(${accentRgb}, 0.28)`,
+              backgroundColor: `rgba(${accentRgb}, 0.05)`,
+            }}
+          >
+            <Box className="h-3 w-3" strokeWidth={2} />
+            3D Preview
+          </button>
+        </header>
+      )}
 
-      <div className="relative mt-4">
+      <div className={cn('relative', onPreview3D ? 'mt-3' : '')}>
         <input
           ref={inputRef}
           type="text"
           value={value}
           maxLength={maxLength}
           onChange={(e) => onChange(e.target.value.slice(0, maxLength))}
-          placeholder={placeholder}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          placeholder="Type your name"
+          aria-label="Your name on the sign"
           className={cn(
-            'block w-full rounded-xl border-2 bg-black/60 px-5 py-4 text-center text-2xl font-bold uppercase tracking-[0.18em] text-white placeholder-white/30 outline-none transition-colors',
+            'block h-12 w-full rounded-[9px] border bg-[#071112] px-4 pr-16 text-left text-base font-bold uppercase tracking-[0.08em] leading-none text-white placeholder-white/20 outline-none transition-all duration-200 sm:text-[17px]',
           )}
           style={{
-            borderColor: ready ? themeColor : 'rgba(255,255,255,0.15)',
-            boxShadow: ready ? `0 0 22px ${themeColor}55` : 'none',
+            caretColor: blocked ? `rgb(${errorRgb})` : themeColor,
+            borderColor: blocked
+              ? `rgba(${errorRgb}, 0.7)`
+              : focused
+              ? `rgba(${accentRgb}, 0.85)`
+              : valid
+              ? `rgba(${accentRgb}, 0.5)`
+              : `rgba(${accentRgb}, 0.16)`,
+            boxShadow: blocked
+              ? `inset 0 0 14px rgba(${errorRgb}, 0.12), 0 0 0 3px rgba(${errorRgb}, 0.18), 0 0 14px rgba(${errorRgb}, 0.3)`
+              : focused
+              ? `inset 0 0 14px rgba(${accentRgb}, 0.1), 0 0 0 3px rgba(${accentRgb}, 0.18), 0 0 14px rgba(${accentRgb}, 0.32)`
+              : valid
+              ? `inset 0 0 12px rgba(${accentRgb}, 0.06), 0 0 8px rgba(${accentRgb}, 0.18)`
+              : `inset 0 0 10px rgba(${accentRgb}, 0.03)`,
           }}
         />
+        {/* Char counter pinned inside the input — green when valid,
+            red when the input is blocked. */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono font-semibold tabular-nums uppercase tracking-wide transition-colors"
+          style={{ color: counterColor }}
+        >
+          {value.length}/{maxLength}
+        </span>
       </div>
 
-      <div className="relative mt-2 flex items-center justify-between text-[11px]">
-        <span className="font-mono tabular-nums text-white/50">
-          {value.length} / {maxLength} characters
-        </span>
-        {ready && (
-          <span className="flex items-center gap-1 font-semibold" style={{ color: themeColor }}>
-            <Check className="h-3.5 w-3.5" />
-            Looks perfect!
+      {/* Tri-state status — fixed-height row so the card never jumps
+          when the message appears. Empty: nothing visible; valid:
+          green "Ready to order"; blocked: red "This name isn't
+          allowed". */}
+      <div className="relative mt-2 flex h-4 items-center justify-center">
+        {valid && (
+          <span
+            className="inline-flex items-center gap-1 text-[11px] font-semibold leading-none"
+            style={{ color: themeColor }}
+          >
+            <Check className="h-3 w-3" strokeWidth={3} />
+            Ready to order
+          </span>
+        )}
+        {blocked && (
+          <span
+            className="inline-flex items-center gap-1 text-[11px] font-semibold leading-none"
+            style={{ color: `rgb(${errorRgb})` }}
+            role="alert"
+          >
+            <AlertCircle className="h-3 w-3" strokeWidth={2.5} />
+            This name isn&apos;t allowed
           </span>
         )}
       </div>
 
-      <div className="relative mt-5">{cta}</div>
+      <div
+        className={cn(
+          'cta-halo-wrap relative mt-3 transition-opacity',
+          blocked && 'pointer-events-none opacity-40',
+        )}
+        aria-disabled={blocked || undefined}
+      >
+        <span
+          aria-hidden
+          className="cta-halo pointer-events-none absolute -inset-1 rounded-[12px]"
+          style={{
+            boxShadow: `0 0 28px rgba(${accentRgb}, 0.45), 0 0 60px rgba(${accentRgb}, 0.22)`,
+          }}
+        />
+        <div className="relative">{cta}</div>
+      </div>
 
-      {wishlist && <div className="relative mt-3">{wishlist}</div>}
+      <p
+        className="relative mt-3.5 text-center text-[10.5px] font-semibold uppercase leading-none tracking-[0.16em]"
+        style={{ color: `rgba(${accentRgb}, 0.7)` }}
+      >
+        Made to order
+        <span className="mx-1.5 text-white/30">·</span>
+        Ships in 2–3 days
+      </p>
+
+      {wishlist && <div className="relative mt-2">{wishlist}</div>}
     </section>
   )
 }

@@ -270,3 +270,28 @@
     --gallery-ring-angle: 360deg;
   }
 }
+
+/* Subtle 'breathing' halo behind the personalize CTA — fades in on
+ * hover and gently pulses so the primary action feels alive without
+ * shouting. */
+@keyframes cta-halo-pulse {
+  0%, 100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.015);
+  }
+}
+
+.cta-halo {
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+
+.cta-halo-wrap:hover .cta-halo,
+.cta-halo-wrap:focus-within .cta-halo {
+  opacity: 1;
+  animation: cta-halo-pulse 1.6s ease-in-out infinite;
+}

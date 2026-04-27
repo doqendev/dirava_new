@@ -150,7 +150,15 @@ export function AddToCartButton({
         )}
         style={
           themeColor && state === 'idle'
-            ? ({ '--ug': themeColor, boxShadow: `0 0 20px ${themeColor}55` } as React.CSSProperties)
+            ? ({
+                '--ug': themeColor,
+                // Subtle vertical gradient + inset top highlight + soft
+                // outer drop shadow integrate the loud accent fill into
+                // the dark card surface so the button reads as premium
+                // instead of flat-and-loud.
+                backgroundImage: `linear-gradient(180deg, ${themeColor}, ${themeColor}cf)`,
+                boxShadow: `0 6px 18px ${themeColor}33, 0 0 0 1px ${themeColor}55, inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.18)`,
+              } as React.CSSProperties)
             : undefined
         }
       >

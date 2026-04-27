@@ -1,21 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { Zap } from 'lucide-react'
+import { getProductSlots } from '@/data/productSlots'
 
 interface LimitedSlotsBannerProps {
   accent?: string
-}
-
-function timeUntilMidnight(): { h: number; m: number; s: number } {
-  const now = new Date()
-  const tomorrow = new Date(now)
-  tomorrow.setHours(24, 0, 0, 0)
-  const diff = tomorrow.getTime() - now.getTime()
-  const h = Math.floor(diff / 3_600_000)
-  const m = Math.floor((diff / 60_000) % 60)
-  const s = Math.floor((diff / 1_000) % 60)
-  return { h, m, s }
+  /** Product handle — used to read its bucketed slot total + the
+   *  per-day deterministic available count. */
+  productHandle: string
 }
 
 function hexToRgb(hex: string): string {
@@ -30,46 +22,24 @@ function hexToRgb(hex: string): string {
  * The countdown resets at local midnight so it's consistent across
  * visitors but never fakes "expires in 5 minutes" desperation.
  */
-export function LimitedSlotsBanner({ accent = '#19ff7a' }: LimitedSlotsBannerProps) {
-  const [t, setT] = useState(() => timeUntilMidnight())
+export function LimitedSlotsBanner({ accent = '#19ff7a', productHandle }: LimitedSlotsBannerProps) {
   const accentRgb = hexToRgb(accent)
-
-  useEffect(() => {
-    const id = setInterval(() => setT(timeUntilMidnight()), 1000)
-    return () => clearInterval(id)
-  }, [])
-
-  const cell = (n: number, label: string) => (
-    <div className="flex flex-col items-center">
-      <div
-        className="flex h-[40px] w-[46px] items-center justify-center rounded-[7px] border bg-[#071112]"
-        style={{
-          borderColor: `rgba(${accentRgb}, 0.12)`,
-          boxShadow: `inset 0 0 14px rgba(${accentRgb}, 0.045), 0 0 10px rgba(${accentRgb}, 0.045), 0 0 14px rgba(0, 0, 0, 0.35)`,
-        }}
-      >
-        <span className="font-mono text-[20px] font-black leading-none tabular-nums text-white">
-          {n.toString().padStart(2, '0')}
-        </span>
-      </div>
-      <span className="mt-[5px] text-[9px] font-bold uppercase leading-none tracking-normal text-white">
-        {label.toUpperCase()}
-      </span>
-    </div>
-  )
+  const { available, total } = getProductSlots(productHandle)
+  const filled = Math.max(0, Math.min(total, total - available))
+  const filledPct = total === 0 ? 0 : (filled / total) * 100
 
   return (
     <div
-      className="relative flex flex-col items-stretch gap-3 overflow-hidden rounded-[11px] border bg-[#020b0c] px-4 py-4 sm:min-h-[90px] sm:flex-row sm:items-center sm:gap-0 sm:px-[26px]"
+      className="relative flex flex-col items-stretch gap-2 overflow-hidden rounded-[11px] border bg-[#010708] px-3 py-3 sm:min-h-[82px] sm:flex-row sm:items-center sm:gap-0 sm:px-[22px] sm:py-3.5"
       style={{
-        borderColor: `rgba(${accentRgb}, 0.34)`,
-        boxShadow: `0 0 8px rgba(${accentRgb}, 0.055), 0 0 0 1px rgba(0, 0, 0, 0.58), inset 0 0 24px rgba(${accentRgb}, 0.04), inset 0 1px 0 rgba(${accentRgb}, 0.08)`,
+        borderColor: `rgba(${accentRgb}, 0.16)`,
+        boxShadow: `0 0 0 1px rgba(0, 0, 0, 0.45), inset 0 0 12px rgba(${accentRgb}, 0.018), inset 0 1px 0 rgba(${accentRgb}, 0.035)`,
       }}
     >
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background: `radial-gradient(circle at 18% 50%, rgba(${accentRgb}, 0.07), transparent 30%), linear-gradient(90deg, rgba(${accentRgb}, 0.03), transparent 55%)`,
+          background: `radial-gradient(circle at 18% 50%, rgba(${accentRgb}, 0.04), transparent 30%), linear-gradient(90deg, rgba(${accentRgb}, 0.015), transparent 55%)`,
         }}
       />
       <span
@@ -115,27 +85,27 @@ export function LimitedSlotsBanner({ accent = '#19ff7a' }: LimitedSlotsBannerPro
         }}
       />
 
-      <div className="relative flex min-w-0 flex-1 items-center gap-3 pr-0 sm:gap-[14px] sm:pr-5">
+      <div className="relative flex min-w-0 flex-1 items-center gap-2.5 pr-0 sm:gap-[14px] sm:pr-5">
         <Zap
-          className="h-10 w-7 flex-shrink-0 sm:h-11 sm:w-8"
+          className="h-7 w-5 flex-shrink-0 sm:h-9 sm:w-7"
           strokeWidth={1.5}
           style={{
             color: accent,
             fill: accent,
             stroke: accent,
-            filter: `drop-shadow(0 0 7px rgba(${accentRgb}, 0.82)) drop-shadow(0 0 16px rgba(${accentRgb}, 0.36))`,
+            filter: `drop-shadow(0 0 4px rgba(${accentRgb}, 0.45))`,
           }}
         />
 
         <div className="min-w-0">
           <div
-            className="text-[13px] font-black uppercase leading-tight tracking-normal sm:text-[14px]"
+            className="text-[12px] font-black uppercase leading-tight tracking-normal sm:text-[14px]"
             style={{ color: accent }}
           >
             Limited production slots!
           </div>
-          <p className="mt-1 max-w-none text-[11px] font-medium leading-[1.35] text-white sm:max-w-[205px] sm:text-[12px]">
-            We only take a few orders each day to ensure premium quality.
+          <p className="mt-0.5 max-w-none text-[10.5px] font-medium leading-[1.3] text-white sm:mt-1 sm:max-w-[230px] sm:text-[12px]">
+            We only take a few orders at a time to keep quality high. As we finish each piece, a slot opens up.
           </p>
         </div>
       </div>
@@ -143,14 +113,36 @@ export function LimitedSlotsBanner({ accent = '#19ff7a' }: LimitedSlotsBannerPro
       <div className="relative hidden h-[42px] w-px flex-shrink-0 bg-[#1d2a2b] sm:block" />
 
       <div
-        className="relative flex w-full flex-shrink-0 items-start justify-center gap-2 border-t pt-3 sm:w-auto sm:justify-start sm:border-t-0 sm:pt-0 sm:pl-[22px]"
+        className="relative flex w-full flex-shrink-0 flex-col items-stretch gap-1.5 border-t pt-2 sm:w-auto sm:items-end sm:border-t-0 sm:pt-0 sm:pl-[22px]"
         style={{ borderColor: `rgba(${accentRgb}, 0.12)` }}
       >
-        {cell(t.h, 'hrs')}
-        <span className="pt-[7px] text-[22px] font-black leading-none text-white">:</span>
-        {cell(t.m, 'mins')}
-        <span className="pt-[7px] text-[22px] font-black leading-none text-white">:</span>
-        {cell(t.s, 'secs')}
+        <div className="flex items-baseline justify-center gap-1.5 sm:justify-end">
+          <span
+            className="font-mono text-[22px] font-black leading-none tabular-nums sm:text-[26px]"
+            style={{ color: accent, textShadow: `0 0 6px rgba(${accentRgb}, 0.32)` }}
+          >
+            {available}
+          </span>
+          <span className="text-[10px] font-bold uppercase leading-none tracking-[0.12em] text-white/55 sm:text-[11px]">
+            / {total} slots left
+          </span>
+        </div>
+        <div
+          className="relative h-[5px] w-full overflow-hidden rounded-full sm:w-[150px]"
+          style={{
+            background: `rgba(${accentRgb}, 0.1)`,
+            boxShadow: `inset 0 0 6px rgba(${accentRgb}, 0.08)`,
+          }}
+        >
+          <div
+            className="absolute inset-y-0 left-0 rounded-full"
+            style={{
+              width: `${filledPct}%`,
+              background: `linear-gradient(90deg, rgba(${accentRgb}, 0.4), rgba(${accentRgb}, 0.85))`,
+              boxShadow: `0 0 5px rgba(${accentRgb}, 0.3)`,
+            }}
+          />
+        </div>
       </div>
     </div>
   )

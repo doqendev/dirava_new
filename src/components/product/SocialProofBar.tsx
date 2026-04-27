@@ -20,19 +20,22 @@ function seedFrom(handle: string): number {
 }
 
 function rngFromSeed(seed: number) {
+  // `Math.imul` returns a signed 32-bit int, and JS `%` is remainder
+  // (not modulo) — so the previous `s % 0x7fffffff` could land negative
+  // and bleed through to negative viewer/sold counts. The `>>> 0`
+  // forces unsigned before the mod so `s` is always in [0, 0x7fffffff)
+  // and `s / 0x7fffffff` stays in [0, 1).
   let s = seed || 1
   return () => {
-    s = Math.imul(48271, s) % 0x7fffffff
+    s = (Math.imul(48271, s) >>> 0) % 0x7fffffff
     return s / 0x7fffffff
   }
 }
 
-const AVATAR_COLORS = ['#22c55e', '#3b82f6', '#f97316', '#ec4899', '#a855f7']
-
 /**
- * Avatar pile + "X people viewing now" + "Y sold in the last hour".
- * Numbers vary per product (seeded by handle) and slowly tick across
- * the session to feel alive.
+ * Single-line live-feel proof: "🔥 X viewing now · Y sold in the last
+ * hour". Numbers shift every 25s so the feed feels alive but never
+ * fakes desperation.
  */
 export function SocialProofBar({ productHandle, accent = '#22c55e' }: SocialProofBarProps) {
   const baseSeed = seedFrom(productHandle)
@@ -43,37 +46,18 @@ export function SocialProofBar({ productHandle, accent = '#22c55e' }: SocialProo
     return () => clearInterval(id)
   }, [])
 
-  // Per-product, shifts every 25s so the numbers feel live.
   const rng = rngFromSeed(baseSeed + now * 13)
   const viewing = Math.floor(8 + rng() * 14) // 8 - 21
   const sold = Math.floor(2 + rng() * 6) // 2 - 7
 
-  const avatarRng = rngFromSeed(baseSeed + 7)
-  const avatars = Array.from({ length: 4 }).map(() => AVATAR_COLORS[Math.floor(avatarRng() * AVATAR_COLORS.length)]!)
-
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-white/80">
-      <div className="flex items-center">
-        <div className="flex -space-x-2">
-          {avatars.map((c, i) => (
-            <span
-              key={i}
-              aria-hidden
-              className="h-6 w-6 rounded-full border border-[#0a0a12]"
-              style={{ background: `linear-gradient(135deg, ${c}, ${c}99)` }}
-            />
-          ))}
-        </div>
-        <span className="ml-2.5">
-          <strong className="font-semibold text-white">{viewing} people</strong> are viewing this
-        </span>
-      </div>
-      <div className="flex items-center gap-1.5">
-        <Flame className="h-4 w-4" style={{ color: accent }} />
-        <span>
-          <strong className="font-semibold text-white">{sold} sold</strong> in the last hour
-        </span>
-      </div>
+    <div className="flex items-center gap-1.5 text-[12px] leading-none text-white/65">
+      <Flame className="h-3 w-3 flex-shrink-0" strokeWidth={2.25} style={{ color: accent }} />
+      <span className="truncate">
+        <strong className="font-semibold text-white/90">{viewing}</strong> viewing now
+        <span className="mx-1.5 text-white/30">·</span>
+        <strong className="font-semibold text-white/90">{sold}</strong> sold in the last hour
+      </span>
     </div>
   )
 }
