@@ -9,7 +9,7 @@ import { ProductDetailClient } from '@/components/product/ProductDetailClient'
 import { YouMightAlsoLike } from '@/components/product/YouMightAlsoLike'
 import { RecentlyViewed } from '@/components/product/RecentlyViewed'
 import ReviewList from '@/components/product/ReviewList'
-import { ProductLifestyleGallery } from '@/components/product/ProductLifestyleGallery'
+import { ProductLifestyleCollage, type LifestyleScene } from '@/components/product/ProductLifestyleCollage'
 import { ProductFAQ } from '@/components/product/ProductFAQ'
 import { getLocalizedFaqs } from '@/data/faq'
 import { getLocalizedProductFaqs, generalFaqIndices } from '@/data/productFaqs'
@@ -95,6 +95,29 @@ async function getProduct(handle: string) {
       (mf) => mf?.key === 'features'
     )?.value || null
 
+    // Parse the per-product lifestyle scenes metafield. Schema is a
+    // JSON array of `{url, width, height, alt?}`. Anything malformed
+    // becomes an empty array so the collage simply doesn't render.
+    const lifestyleScenesRaw = product.metafields?.find(
+      (mf) => mf?.key === 'lifestyle_scenes'
+    )?.value
+    const lifestyleScenes: LifestyleScene[] = (() => {
+      if (!lifestyleScenesRaw) return []
+      try {
+        const parsed = JSON.parse(lifestyleScenesRaw)
+        if (!Array.isArray(parsed)) return []
+        return parsed.filter(
+          (s): s is LifestyleScene =>
+            !!s &&
+            typeof s.url === 'string' &&
+            typeof s.width === 'number' &&
+            typeof s.height === 'number'
+        )
+      } catch {
+        return []
+      }
+    })()
+
     // Get the product's true universe from its own metafield/collections, so
     // theming always matches the product itself rather than the URL segment
     // (a shopper may land here from a cross-universe recommended card).
@@ -127,6 +150,7 @@ async function getProduct(handle: string) {
       collectionHandle,
       productUniverse,
       featuresOverride,
+      lifestyleScenes,
       tags: product.tags || [],
     }
   } catch (error) {
@@ -338,10 +362,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         product={{ ...product, rating: reviewStats }}
       />
 
-      {/* Lifestyle Gallery */}
-      <div className="px-4 py-8 max-w-7xl mx-auto">
-        <ProductLifestyleGallery productHandle={product.handle} />
-      </div>
+      {/* Lifestyle collage — masonry of per-product scene photos sourced
+          from the `custom.lifestyle_scenes` Shopify metafield. Renders
+          nothing when the product has no scenes set. */}
+      <ProductLifestyleCollage scenes={product.lifestyleScenes} />
 
       {/* Recently Viewed */}
       <div className="px-4 py-12 max-w-7xl mx-auto border-t border-border-subtle">
