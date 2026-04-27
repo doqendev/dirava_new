@@ -18,11 +18,11 @@ interface TitleChipsProps {
 export function TitleChips({ chips }: TitleChipsProps) {
   if (!chips.length) return null
   return (
-    <div className="mt-3 flex flex-wrap items-center text-[11px] font-semibold uppercase tracking-[0.14em] text-white/55">
+    <div className="mt-3 flex flex-wrap items-center text-[11.5px] font-bold uppercase tracking-[0.14em] text-white/75">
       {chips.map((chip, i) => (
         <span key={`${i}-${chip.label}`} className="flex items-center">
           {i > 0 && (
-            <span aria-hidden className="mx-2.5 text-white/25">
+            <span aria-hidden className="mx-2.5 text-white/30">
               ·
             </span>
           )}

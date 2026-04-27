@@ -17,6 +17,14 @@ export function BottomNav({ className }: BottomNavProps) {
   const t = useTranslations('nav')
   const { openSearch } = useUIStore()
 
+  // Hide on product detail pages — the sticky add-to-cart bar lives
+  // there instead, and competing exit points distract from the buying
+  // flow. Matches /products/<handle> and /worlds/<universe>/<product>.
+  const isProductPage =
+    /^\/products\/[^/]+$/.test(pathname) ||
+    /^\/worlds\/[^/]+\/[^/]+/.test(pathname)
+  if (isProductPage) return null
+
   const linkItems = [
     {
       icon: <Home className="w-5 h-5" strokeWidth={1.5} />,

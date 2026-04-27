@@ -545,14 +545,17 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                         className={cn(
                           'relative flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden',
                           'border-2 transition-all duration-200',
-                          'flex items-center justify-center',
+                          'flex flex-col items-center justify-center gap-0.5',
                           'bg-black/60 hover:bg-black/40',
                           'focus-visible:outline-none focus-visible:ring-2',
                         )}
                         style={{ borderColor: `${themeColor}55`, color: themeColor }}
-                        aria-label={`Show ${hiddenCount} more images`}
+                        aria-label={`View all ${images.length} images`}
                       >
-                        <span className="text-sm font-bold">+{hiddenCount}</span>
+                        <span className="text-sm font-bold leading-none">+{hiddenCount}</span>
+                        <span className="text-[8.5px] font-semibold uppercase tracking-wide leading-none text-white/60">
+                          View all
+                        </span>
                       </button>
                     )}
 

@@ -428,10 +428,13 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 {product.title}
               </h1>
 
-              <div className="flex items-baseline gap-3">
+              <div className="flex items-baseline gap-3 pt-1.5">
                 <span
-                  className="text-2xl md:text-3xl font-mono font-bold"
-                  style={{ color: themeColor }}
+                  className="text-[32px] md:text-[34px] font-mono font-black leading-none"
+                  style={{
+                    color: themeColor,
+                    textShadow: `0 0 18px ${themeColor}33`,
+                  }}
                 >
                   {formatPrice(
                     selectedVariant?.price.amount || product.priceRange.minVariantPrice.amount,
@@ -446,6 +449,13 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                     )}
                   </span>
                 )}
+              </div>
+
+              {/* Mobile social proof — surfaces urgency above the
+                  fold on small screens. Desktop reuses the same data
+                  inside the PersonalizeCard, below the CTA. */}
+              <div className="lg:hidden pt-1">
+                <SocialProofBar productHandle={product.handle} accent={themeColor} />
               </div>
 
               <a href="#reviews" className="block w-fit hover:opacity-80 transition-opacity">
