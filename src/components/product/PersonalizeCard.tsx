@@ -61,61 +61,62 @@ export function PersonalizeCard({
 
   return (
     <section
-      className="relative overflow-hidden rounded-[11px] border bg-[#020b0c] px-4 py-2.5 sm:px-5 sm:py-3"
+      className="relative overflow-hidden rounded-[11px] border bg-white/[0.022] px-4 py-2.5 sm:px-5 sm:py-3"
       style={{
-        borderColor: `rgba(${accentRgb}, 0.34)`,
-        boxShadow: `0 0 8px rgba(${accentRgb}, 0.055), 0 0 0 1px rgba(0, 0, 0, 0.58), inset 0 0 24px rgba(${accentRgb}, 0.04), inset 0 1px 0 rgba(${accentRgb}, 0.08)`,
+        borderColor: `rgba(${accentRgb}, 0.22)`,
+        boxShadow: `inset 0 1px 0 rgba(${accentRgb}, 0.06), inset 0 0 16px rgba(${accentRgb}, 0.022)`,
       }}
     >
-      {/* radial accent wash + soft horizontal gradient */}
+      {/* radial accent wash — lighter than before so the card reads as
+          a translucent elevation rather than a separate dark panel. */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background: `radial-gradient(circle at 18% 0%, rgba(${accentRgb}, 0.08), transparent 38%), linear-gradient(180deg, rgba(${accentRgb}, 0.03), transparent 60%)`,
+          background: `radial-gradient(circle at 18% 0%, rgba(${accentRgb}, 0.05), transparent 42%), linear-gradient(180deg, rgba(${accentRgb}, 0.018), transparent 60%)`,
         }}
       />
-      {/* hairline accent lines around the perimeter — same vocabulary
-          as the slots banner so the two cards feel like a set */}
+      {/* hairline accent lines around the perimeter — toned down ~40%
+          so they whisper instead of fence the panel off from the page */}
       <span
         aria-hidden
         className="pointer-events-none absolute left-4 top-0 h-px w-[36%]"
         style={{
-          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.52), rgba(${accentRgb}, 0.16), transparent)`,
+          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.32), rgba(${accentRgb}, 0.1), transparent)`,
         }}
       />
       <span
         aria-hidden
         className="pointer-events-none absolute right-9 top-0 h-px w-[18%]"
         style={{
-          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.24), transparent)`,
+          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.16), transparent)`,
         }}
       />
       <span
         aria-hidden
         className="pointer-events-none absolute bottom-0 left-6 h-px w-[24%]"
         style={{
-          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.28), transparent)`,
+          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.18), transparent)`,
         }}
       />
       <span
         aria-hidden
         className="pointer-events-none absolute bottom-0 right-5 h-px w-[30%]"
         style={{
-          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.18), rgba(${accentRgb}, 0.36), transparent)`,
+          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.12), rgba(${accentRgb}, 0.22), transparent)`,
         }}
       />
       <span
         aria-hidden
         className="pointer-events-none absolute left-0 top-4 h-[48%] w-px"
         style={{
-          background: `linear-gradient(180deg, transparent, rgba(${accentRgb}, 0.34), rgba(${accentRgb}, 0.12), transparent)`,
+          background: `linear-gradient(180deg, transparent, rgba(${accentRgb}, 0.22), rgba(${accentRgb}, 0.08), transparent)`,
         }}
       />
       <span
         aria-hidden
         className="pointer-events-none absolute right-0 bottom-5 h-[34%] w-px"
         style={{
-          background: `linear-gradient(180deg, transparent, rgba(${accentRgb}, 0.22), transparent)`,
+          background: `linear-gradient(180deg, transparent, rgba(${accentRgb}, 0.14), transparent)`,
         }}
       />
 
