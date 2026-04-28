@@ -17,6 +17,7 @@ interface HeaderProps {
 
 export function Header({ className }: HeaderProps) {
   const tCommon = useTranslations('common')
+  const tHeader = useTranslations('header')
   const { openCart, openSearch, openMobileMenu } = useUIStore()
   const totalQuantity = useCartStore((state) => state.totalQuantity)
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated())
@@ -43,7 +44,7 @@ export function Header({ className }: HeaderProps) {
               'text-white/70 hover:text-white transition-colors',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan rounded-lg'
             )}
-            aria-label="Open menu"
+            aria-label={tHeader('openMenu')}
           >
             <Menu className="w-5 h-5" />
           </button>

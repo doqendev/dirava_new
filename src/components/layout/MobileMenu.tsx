@@ -33,6 +33,7 @@ const policyLinks = [
 export function MobileMenu() {
   const t = useTranslations('common')
   const tFooter = useTranslations('footer')
+  const tHeader = useTranslations('header')
   const { isMobileMenuOpen, closeMobileMenu } = useUIStore()
   const pathname = usePathname()
 
@@ -79,7 +80,7 @@ export function MobileMenu() {
               'flex flex-col',
               'lg:hidden'
             )}
-            aria-label="Mobile navigation"
+            aria-label={tHeader('mobileNavigation')}
           >
             {/* Header */}
             <div className="flex items-center justify-between px-5 h-16 border-b border-border-subtle">
@@ -87,7 +88,7 @@ export function MobileMenu() {
               <button
                 onClick={closeMobileMenu}
                 className="w-10 h-10 flex items-center justify-center text-white/60 hover:text-white transition-colors"
-                aria-label="Close menu"
+                aria-label={tHeader('closeMenu')}
               >
                 <X className="w-5 h-5" />
               </button>

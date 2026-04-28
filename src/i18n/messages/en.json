@@ -46,7 +46,12 @@
     "soldOut": "Sold Out",
     "bundles": "Bundles",
     "contact": "Contact",
-    "faq": "FAQ"
+    "faq": "FAQ",
+    "closeModal": "Close modal",
+    "dismiss": "Dismiss",
+    "notifications": "Notifications",
+    "scrollLeft": "Scroll left",
+    "scrollRight": "Scroll right"
   },
   "nav": {
     "account": "Account",
@@ -63,7 +68,12 @@
     "tagline": "Your Anime Spirit",
     "searchProducts": "Search products",
     "openCart": "Open cart",
-    "openWishlist": "Open wishlist"
+    "openWishlist": "Open wishlist",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "mobileNavigation": "Mobile navigation",
+    "mainNavigation": "Main navigation",
+    "changeLanguage": "Change language and country"
   },
   "footer": {
     "joinSpirit": "Join the Spirit",
@@ -89,7 +99,8 @@
     "faq": "FAQ",
     "about": "About",
     "guides": "Guides",
-    "contactUs": "Contact Us"
+    "contactUs": "Contact Us",
+    "siteFooter": "Site footer"
   },
   "product": {
     "addToCart": "Add to Cart",
@@ -248,7 +259,8 @@
     "failedToAdd": "Failed to add item to cart",
     "failedToAddBundle": "Failed to add bundle to cart",
     "failedToUpdate": "Failed to update item",
-    "failedToRemove": "Failed to remove item"
+    "failedToRemove": "Failed to remove item",
+    "shoppingCart": "Shopping cart"
   },
   "discount": {
     "haveCode": "Have a discount code?",
@@ -265,7 +277,9 @@
     "emptyDescription": "Save items you love by clicking the heart icon on any product.",
     "itemsSaved": "{count} {count, plural, one {item} other {items}} saved",
     "addedOn": "Added {date}",
-    "moveToCart": "Move to Cart"
+    "moveToCart": "Move to Cart",
+    "loadingProductDetails": "Loading product details...",
+    "enterNameForPersonalization": "Enter name for personalization"
   },
   "account": {
     "myAccount": "My Account",
@@ -478,7 +492,8 @@
     "sale": "Sale",
     "saleDescription": "Great deals on anime merchandise",
     "noSaleItems": "No Sale Items",
-    "noSaleDescription": "Check back soon for upcoming deals and discounts!"
+    "noSaleDescription": "Check back soon for upcoming deals and discounts!",
+    "loadingMore": "Loading more..."
   },
   "contact": {
     "title": "Contact Us",
@@ -619,7 +634,7 @@
         },
         "1": {
           "heading": "Europe (Domestic)",
-          "content": "Standard Shipping (5-10 business days): \u20ac4.99 or FREE on orders over \u20ac45"
+          "content": "Standard Shipping (5-10 business days): €4.99 or FREE on orders over €45"
         },
         "2": {
           "heading": "United Kingdom",
@@ -748,7 +763,7 @@
         },
         "3": {
           "heading": "Responsible for Content",
-          "content": "Responsible according to \u00a7 55 Abs. 2 RStV: [Name to be added]"
+          "content": "Responsible according to § 55 Abs. 2 RStV: [Name to be added]"
         },
         "4": {
           "heading": "EU Online Dispute Resolution",
@@ -756,7 +771,7 @@
         },
         "5": {
           "heading": "Liability for Content",
-          "content": "As a service provider, we are responsible for our own content on these pages according to general laws (\u00a7 7 Abs. 1 TMG). According to \u00a7\u00a7 8 to 10 TMG, however, we are not obligated to monitor transmitted or stored third-party information or to investigate circumstances that indicate illegal activity."
+          "content": "As a service provider, we are responsible for our own content on these pages according to general laws (§ 7 Abs. 1 TMG). According to §§ 8 to 10 TMG, however, we are not obligated to monitor transmitted or stored third-party information or to investigate circumstances that indicate illegal activity."
         },
         "6": {
           "heading": "Liability for Links",

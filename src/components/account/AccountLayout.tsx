@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
 import {
   LayoutDashboard,
@@ -32,6 +33,7 @@ interface AccountLayoutProps {
 }
 
 export function AccountLayout({ children, title, description }: AccountLayoutProps) {
+  const tAuth = useTranslations('auth')
   const router = useRouter()
   const pathname = usePathname()
   const { customer, isLoading } = useRequireAuth()
@@ -109,7 +111,7 @@ export function AccountLayout({ children, title, description }: AccountLayoutPro
                 className="w-full flex items-center gap-3 px-4 py-3 text-white/50 hover:text-white hover:bg-white/5 transition-colors border-t border-border-subtle"
               >
                 <LogOut className="w-5 h-5" />
-                <span>Sign Out</span>
+                <span>{tAuth('signOut')}</span>
               </button>
             </nav>
           </aside>

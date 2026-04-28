@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
@@ -29,6 +30,7 @@ export function Modal({
   size = 'md',
   className,
 }: ModalProps) {
+  const tCommon = useTranslations('common')
   const modalRef = useRef<HTMLDivElement>(null)
 
   // Handle escape key
@@ -130,7 +132,7 @@ export function Modal({
                       'transition-colors duration-200',
                       'focus:outline-none focus:ring-2 focus:ring-neon-cyan'
                     )}
-                    aria-label="Close modal"
+                    aria-label={tCommon('closeModal')}
                   >
                     <X className="w-5 h-5" />
                   </button>

@@ -15,6 +15,7 @@ interface BottomNavProps {
 export function BottomNav({ className }: BottomNavProps) {
   const pathname = usePathname()
   const t = useTranslations('nav')
+  const tHeader = useTranslations('header')
   const { openSearch } = useUIStore()
 
   // Hide on product detail pages — the sticky add-to-cart bar lives
@@ -109,7 +110,7 @@ export function BottomNav({ className }: BottomNavProps) {
         'border-t border-white/10',
         className
       )}
-      aria-label="Main navigation"
+      aria-label={tHeader('mainNavigation')}
     >
       <div className="flex items-center justify-around h-[70px] pb-safe px-4">
         {linkItems.map((item) => {

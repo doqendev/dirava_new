@@ -30,6 +30,7 @@ export function DropRunway({
   className,
 }: DropRunwayProps) {
   const t = useTranslations('home')
+  const tCommon = useTranslations('common')
   const scrollRef = useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
@@ -84,7 +85,7 @@ export function DropRunway({
                 'disabled:opacity-30 disabled:cursor-not-allowed',
                 'transition-colors duration-200'
               )}
-              aria-label="Scroll left"
+              aria-label={tCommon('scrollLeft')}
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -98,7 +99,7 @@ export function DropRunway({
                 'disabled:opacity-30 disabled:cursor-not-allowed',
                 'transition-colors duration-200'
               )}
-              aria-label="Scroll right"
+              aria-label={tCommon('scrollRight')}
             >
               <ChevronRight className="w-4 h-4" />
             </button>

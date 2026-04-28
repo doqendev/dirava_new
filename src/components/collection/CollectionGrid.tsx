@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Loader2, PackageX } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
@@ -43,6 +44,7 @@ export function CollectionGrid({
   filters,
   themeColor,
 }: CollectionGridProps) {
+  const t = useTranslations('collection')
   const gridColumns = useUIStore((state) => state.gridColumns)
 
   // Grid option 3 = compact mode (4 columns, no details)
@@ -184,7 +186,7 @@ export function CollectionGrid({
                 className="w-5 h-5 animate-spin"
                 style={{ color: themeColor }}
               />
-              <span className="text-white/50 text-sm">Loading more...</span>
+              <span className="text-white/50 text-sm">{t('loadingMore')}</span>
             </div>
           )}
         </div>

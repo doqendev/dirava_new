@@ -46,7 +46,12 @@
     "soldOut": "Agotado",
     "bundles": "Packs",
     "contact": "Contacto",
-    "faq": "FAQ"
+    "faq": "FAQ",
+    "closeModal": "Cerrar ventana",
+    "dismiss": "Descartar",
+    "notifications": "Notificaciones",
+    "scrollLeft": "Desplazar a la izquierda",
+    "scrollRight": "Desplazar a la derecha"
   },
   "nav": {
     "account": "Cuenta",
@@ -63,7 +68,12 @@
     "tagline": "Tu Espíritu Anime",
     "searchProducts": "Buscar productos",
     "openCart": "Abrir carrito",
-    "openWishlist": "Abrir favoritos"
+    "openWishlist": "Abrir favoritos",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "mobileNavigation": "Navegación móvil",
+    "mainNavigation": "Navegación principal",
+    "changeLanguage": "Cambiar idioma y país"
   },
   "footer": {
     "joinSpirit": "Únete al Espíritu",
@@ -89,7 +99,8 @@
     "faq": "Preguntas frecuentes",
     "about": "Sobre nosotros",
     "guides": "Guías",
-    "contactUs": "Contacto"
+    "contactUs": "Contacto",
+    "siteFooter": "Pie de página del sitio"
   },
   "product": {
     "addToCart": "Añadir al carrito",
@@ -248,7 +259,8 @@
     "failedToAdd": "No se pudo añadir el artículo",
     "failedToAddBundle": "No se pudo añadir el paquete",
     "failedToUpdate": "No se pudo actualizar el artículo",
-    "failedToRemove": "No se pudo eliminar el artículo"
+    "failedToRemove": "No se pudo eliminar el artículo",
+    "shoppingCart": "Carrito de compras"
   },
   "discount": {
     "haveCode": "¿Tienes un código de descuento?",
@@ -265,7 +277,9 @@
     "emptyDescription": "Guarda artículos haciendo clic en el icono de corazón.",
     "itemsSaved": "{count} {count, plural, one {artículo} other {artículos}} guardado(s)",
     "addedOn": "Añadido el {date}",
-    "moveToCart": "Mover al carrito"
+    "moveToCart": "Mover al carrito",
+    "loadingProductDetails": "Cargando detalles del producto…",
+    "enterNameForPersonalization": "Ingresa el nombre para la personalización"
   },
   "account": {
     "myAccount": "Mi cuenta",
@@ -478,7 +492,8 @@
     "sale": "Ofertas",
     "saleDescription": "Grandes ofertas en merchandising anime",
     "noSaleItems": "Sin artículos en oferta",
-    "noSaleDescription": "¡Vuelve pronto para próximas ofertas y descuentos!"
+    "noSaleDescription": "¡Vuelve pronto para próximas ofertas y descuentos!",
+    "loadingMore": "Cargando más…"
   },
   "contact": {
     "title": "Contacto",

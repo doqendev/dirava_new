@@ -219,7 +219,7 @@ export function Footer() {
   ]
 
   return (
-    <footer className="bg-bg-primary border-t border-border-subtle" aria-label="Site footer">
+    <footer className="bg-bg-primary border-t border-border-subtle" aria-label={t('siteFooter')}>
       {/* Newsletter Section — accent-tinted via --accent CSS var published
           by the active product/world page. Falls back to cyan. */}
       <div

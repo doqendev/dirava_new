@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Globe, ChevronDown } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils/cn'
@@ -38,6 +39,7 @@ const SHOPPING_COUNTRIES: ShoppingCountry[] = [
 
 export function LocaleSwitcher() {
   const router = useRouter()
+  const tHeader = useTranslations('header')
   const locale = useLocaleStore((s) => s.locale)
   const currency = useLocaleStore((s) => s.currency)
   const country = useLocaleStore((s) => s.country)
@@ -85,7 +87,7 @@ export function LocaleSwitcher() {
           'hover:bg-white/10 hover:text-white',
           'transition-colors duration-200'
         )}
-        aria-label="Change language and country"
+        aria-label={tHeader('changeLanguage')}
         aria-expanded={isOpen}
       >
         <Globe className="w-4 h-4" />

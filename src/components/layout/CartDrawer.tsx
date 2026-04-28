@@ -159,7 +159,7 @@ export function CartDrawer() {
             tabIndex={-1}
             role="dialog"
             aria-modal="true"
-            aria-label="Shopping cart"
+            aria-label={t('shoppingCart')}
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border-subtle">
@@ -267,7 +267,7 @@ export function CartDrawer() {
                                   'disabled:opacity-50 disabled:cursor-not-allowed',
                                   'transition-colors'
                                 )}
-                                aria-label="Decrease quantity"
+                                aria-label={t('decreaseQuantity')}
                               >
                                 <Minus className="w-4 h-4" />
                               </button>
@@ -283,7 +283,7 @@ export function CartDrawer() {
                                   'disabled:opacity-50 disabled:cursor-not-allowed',
                                   'transition-colors'
                                 )}
-                                aria-label="Increase quantity"
+                                aria-label={t('increaseQuantity')}
                               >
                                 <Plus className="w-4 h-4" />
                               </button>

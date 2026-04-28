@@ -46,7 +46,12 @@
     "soldOut": "Épuisé",
     "bundles": "Bundles",
     "contact": "Contact",
-    "faq": "FAQ"
+    "faq": "FAQ",
+    "closeModal": "Fermer la fenêtre",
+    "dismiss": "Fermer",
+    "notifications": "Notifications",
+    "scrollLeft": "Défiler à gauche",
+    "scrollRight": "Défiler à droite"
   },
   "nav": {
     "account": "Compte",
@@ -63,7 +68,12 @@
     "tagline": "Ton Esprit Anime",
     "searchProducts": "Rechercher des produits",
     "openCart": "Ouvrir le panier",
-    "openWishlist": "Ouvrir les favoris"
+    "openWishlist": "Ouvrir les favoris",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "mobileNavigation": "Navigation mobile",
+    "mainNavigation": "Navigation principale",
+    "changeLanguage": "Changer la langue et le pays"
   },
   "footer": {
     "joinSpirit": "Rejoins l'Esprit",
@@ -89,7 +99,8 @@
     "faq": "FAQ",
     "about": "À propos",
     "guides": "Guides",
-    "contactUs": "Nous contacter"
+    "contactUs": "Nous contacter",
+    "siteFooter": "Pied de page du site"
   },
   "product": {
     "addToCart": "Ajouter au panier",
@@ -248,7 +259,8 @@
     "failedToAdd": "Impossible d'ajouter l'article",
     "failedToAddBundle": "Impossible d'ajouter le lot",
     "failedToUpdate": "Impossible de mettre à jour l'article",
-    "failedToRemove": "Impossible de supprimer l'article"
+    "failedToRemove": "Impossible de supprimer l'article",
+    "shoppingCart": "Panier"
   },
   "discount": {
     "haveCode": "Avez-vous un code promo ?",
@@ -265,7 +277,9 @@
     "emptyDescription": "Sauvegarde des articles en cliquant sur l'icône cœur.",
     "itemsSaved": "{count} {count, plural, one {article} other {articles}} sauvegardé(s)",
     "addedOn": "Ajouté le {date}",
-    "moveToCart": "Ajouter au panier"
+    "moveToCart": "Ajouter au panier",
+    "loadingProductDetails": "Chargement des détails du produit…",
+    "enterNameForPersonalization": "Entrer un nom pour la personnalisation"
   },
   "account": {
     "myAccount": "Mon compte",
@@ -478,7 +492,8 @@
     "sale": "Soldes",
     "saleDescription": "Super offres sur le merchandising anime",
     "noSaleItems": "Pas d'articles en solde",
-    "noSaleDescription": "Reviens bientôt pour les prochaines offres et réductions !"
+    "noSaleDescription": "Reviens bientôt pour les prochaines offres et réductions !",
+    "loadingMore": "Chargement…"
   },
   "contact": {
     "title": "Contact",

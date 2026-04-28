@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
@@ -20,6 +21,7 @@ const styles = {
 }
 
 function ToastItem({ toast }: { toast: Toast }) {
+  const tCommon = useTranslations('common')
   const { dismiss } = useToastStore()
   const Icon = icons[toast.type]
 
@@ -43,7 +45,7 @@ function ToastItem({ toast }: { toast: Toast }) {
       <button
         onClick={() => dismiss(toast.id)}
         className="flex-shrink-0 text-white/40 hover:text-white transition-colors"
-        aria-label="Dismiss"
+        aria-label={tCommon('dismiss')}
       >
         <X className="w-4 h-4" />
       </button>
@@ -52,6 +54,7 @@ function ToastItem({ toast }: { toast: Toast }) {
 }
 
 export function ToastContainer() {
+  const tCommon = useTranslations('common')
   const { toasts } = useToastStore()
 
   return (
@@ -61,7 +64,7 @@ export function ToastContainer() {
         'bottom-24 right-4 lg:bottom-6 lg:right-6'
       )}
       aria-live="polite"
-      aria-label="Notifications"
+      aria-label={tCommon('notifications')}
     >
       <AnimatePresence mode="popLayout">
         {toasts.map((toast) => (

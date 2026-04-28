@@ -96,6 +96,7 @@ function clearRecentSearches(): void {
 export function SearchModal() {
   const t = useTranslations('search')
   const tCommon = useTranslations('common')
+  const tHeader = useTranslations('header')
   const { isSearchOpen, closeSearch } = useUIStore()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<PredictiveProduct[]>([])
@@ -298,7 +299,7 @@ export function SearchModal() {
             className="fixed top-0 left-0 right-0 z-50 pt-4 px-4 md:pt-20"
             role="dialog"
             aria-modal="true"
-            aria-label="Search products"
+            aria-label={tHeader('searchProducts')}
           >
             <div className="max-w-2xl mx-auto">
               <div className="bg-bg-primary border border-border-subtle rounded-2xl shadow-2xl overflow-hidden">

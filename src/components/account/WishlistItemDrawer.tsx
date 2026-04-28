@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { ShoppingCart, Loader2, Heart } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
@@ -41,6 +42,8 @@ interface WishlistItemDrawerProps {
 }
 
 export function WishlistItemDrawer({ item, isOpen, onClose }: WishlistItemDrawerProps) {
+  const tProduct = useTranslations('product')
+  const tWishlist = useTranslations('wishlist')
   const addToCart = useCartStore((state) => state.addItem)
   const { removeItem: removeFromWishlist } = useWishlistStore()
   const openCart = useUIStore((state) => state.openCart)
@@ -156,11 +159,11 @@ export function WishlistItemDrawer({ item, isOpen, onClose }: WishlistItemDrawer
     !(product.options.length === 1 && product.options[0]?.values.length === 1)
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Add to Cart" size="md">
+    <Modal isOpen={isOpen} onClose={onClose} title={tProduct('addToCart')} size="md">
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-12">
           <Loader2 className="w-8 h-8 text-neon-cyan animate-spin mb-4" />
-          <p className="text-white/60">Loading product details...</p>
+          <p className="text-white/60">{tWishlist('loadingProductDetails')}</p>
         </div>
       ) : error ? (
         <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -249,7 +252,7 @@ export function WishlistItemDrawer({ item, isOpen, onClose }: WishlistItemDrawer
                   setPersonalizationName(e.target.value)
                   if (personalizationError) setPersonalizationError(null)
                 }}
-                placeholder="Enter name for personalization"
+                placeholder={tWishlist('enterNameForPersonalization')}
                 className={`w-full px-4 py-3 bg-black/80 border rounded-lg text-white placeholder-white/40 focus:outline-none transition-colors ${
                   personalizationError
                     ? 'border-red-500 focus:border-red-500'

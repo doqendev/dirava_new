@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, X, SlidersHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
@@ -206,6 +207,7 @@ export function SearchFilters({
   totalResults,
   filteredResults,
 }: SearchFiltersProps) {
+  const t = useTranslations('filters')
   const hasActiveFilters =
     filters.priceRange[0] > minPrice ||
     filters.priceRange[1] < maxPrice ||
@@ -244,7 +246,7 @@ export function SearchFilters({
       </div>
 
       {/* Price Range */}
-      <FilterSection title="Price Range">
+      <FilterSection title={t('priceRange')}>
         <PriceRangeSlider
           min={minPrice}
           max={maxPrice}
@@ -257,7 +259,7 @@ export function SearchFilters({
 
       {/* Universe */}
       {availableUniverses.length > 0 && (
-        <FilterSection title="Universe">
+        <FilterSection title={t('world')}>
           <CheckboxGroup
             options={availableUniverses}
             selected={filters.universes}
@@ -270,7 +272,7 @@ export function SearchFilters({
 
       {/* Product Type */}
       {availableProductTypes.length > 0 && (
-        <FilterSection title="Product Type">
+        <FilterSection title={t('productType')}>
           <CheckboxGroup
             options={availableProductTypes}
             selected={filters.productTypes}

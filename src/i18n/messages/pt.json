@@ -46,7 +46,12 @@
     "soldOut": "Esgotado",
     "bundles": "Packs",
     "contact": "Contacto",
-    "faq": "FAQ"
+    "faq": "FAQ",
+    "closeModal": "Fechar janela",
+    "dismiss": "Dispensar",
+    "notifications": "Notificações",
+    "scrollLeft": "Deslocar para a esquerda",
+    "scrollRight": "Deslocar para a direita"
   },
   "nav": {
     "account": "Conta",
@@ -63,7 +68,12 @@
     "tagline": "O Teu Espírito Anime",
     "searchProducts": "Pesquisar produtos",
     "openCart": "Abrir cesto",
-    "openWishlist": "Abrir favoritos"
+    "openWishlist": "Abrir favoritos",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu",
+    "mobileNavigation": "Navegação móvel",
+    "mainNavigation": "Navegação principal",
+    "changeLanguage": "Alterar idioma e país"
   },
   "footer": {
     "joinSpirit": "Junta-te ao Espírito",
@@ -89,7 +99,8 @@
     "faq": "Perguntas Frequentes",
     "about": "Sobre",
     "guides": "Guias",
-    "contactUs": "Contacte-nos"
+    "contactUs": "Contacte-nos",
+    "siteFooter": "Rodapé do site"
   },
   "product": {
     "addToCart": "Adicionar ao cesto",
@@ -248,7 +259,8 @@
     "failedToAdd": "Não foi possível adicionar o artigo",
     "failedToAddBundle": "Não foi possível adicionar o pacote",
     "failedToUpdate": "Não foi possível atualizar o artigo",
-    "failedToRemove": "Não foi possível remover o artigo"
+    "failedToRemove": "Não foi possível remover o artigo",
+    "shoppingCart": "Carrinho de compras"
   },
   "discount": {
     "haveCode": "Tens um código de desconto?",
@@ -265,7 +277,9 @@
     "emptyDescription": "Guarda itens clicando no ícone de coração.",
     "itemsSaved": "{count} {count, plural, one {item} other {itens}} guardado(s)",
     "addedOn": "Adicionado em {date}",
-    "moveToCart": "Mover para o cesto"
+    "moveToCart": "Mover para o cesto",
+    "loadingProductDetails": "A carregar detalhes do produto…",
+    "enterNameForPersonalization": "Insere o nome para personalização"
   },
   "account": {
     "myAccount": "A minha conta",
@@ -478,7 +492,8 @@
     "sale": "Promoções",
     "saleDescription": "Ótimas ofertas em produtos anime",
     "noSaleItems": "Sem itens em promoção",
-    "noSaleDescription": "Volta em breve para próximas ofertas e descontos!"
+    "noSaleDescription": "Volta em breve para próximas ofertas e descontos!",
+    "loadingMore": "A carregar mais…"
   },
   "contact": {
     "title": "Contacto",
