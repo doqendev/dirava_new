@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { ShoppingCart, Pencil, Box, Brush, Check, Truck } from 'lucide-react'
 
 const STEPS = [
@@ -20,12 +21,13 @@ interface HowItsMadeProps {
  * Universal flow for every product.
  */
 export function HowItsMade({ accent = '#22c55e' }: HowItsMadeProps) {
+  const t = useTranslations('product')
   return (
     <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 sm:p-6">
       <h2 className="mb-6 text-center text-sm font-semibold uppercase tracking-[0.2em] text-white/90 flex items-center justify-center gap-3">
         <span className="h-px w-6 bg-white/20" aria-hidden />
         <span style={{ color: accent }} aria-hidden>◆</span>
-        <span>How it&apos;s made &mdash; just for you</span>
+        <span>{t('howItsMade')}</span>
         <span style={{ color: accent }} aria-hidden>◆</span>
         <span className="h-px w-6 bg-white/20" aria-hidden />
       </h2>

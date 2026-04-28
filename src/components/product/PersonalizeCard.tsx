@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Box, AlertCircle } from 'lucide-react'
 import type { Ref, ReactNode } from 'react'
 import { cn } from '@/lib/utils/cn'
@@ -51,6 +52,7 @@ export function PersonalizeCard({
   socialProof,
   onPreview3D,
 }: PersonalizeCardProps) {
+  const t = useTranslations('product')
   const [focused, setFocused] = useState(false)
   const accentRgb = hexToRgb(themeColor)
   const hasValue = value.trim().length > 0
@@ -72,10 +74,10 @@ export function PersonalizeCard({
           className="font-display text-[13px] font-bold uppercase tracking-[0.16em] sm:text-sm"
           style={{ color: themeColor }}
         >
-          Personalize your sign
+          {t('personalizeYourSign')}
         </h3>
         <p className="mt-1.5 text-[13px] leading-snug text-white/65 sm:text-sm">
-          Enter your name to personalize your product.
+          {t('personalizeYourSignSub')}
         </p>
       </header>
 
@@ -89,8 +91,8 @@ export function PersonalizeCard({
           onChange={(e) => onChange(e.target.value.slice(0, maxLength))}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          placeholder="Type your name"
-          aria-label="Your name on the sign"
+          placeholder={t('personalizationPlaceholder')}
+          aria-label={t('personalizationNameLabel')}
           className={cn(
             'block h-14 w-full rounded-xl border bg-transparent pl-5 text-left text-base font-bold uppercase tracking-[0.1em] leading-none text-white placeholder-white/30 outline-none transition-all duration-200 sm:text-lg',
             // Right-padding only reserves room for the inline 3D pill
@@ -143,7 +145,7 @@ export function PersonalizeCard({
               <button
                 type="button"
                 onClick={onPreview3D}
-                aria-label="Open 3D preview"
+                aria-label={t('personalizationOpen3D')}
                 className="pointer-events-auto hidden sm:inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] transition-all duration-150 hover:scale-[1.03] active:scale-95 focus:outline-none focus-visible:ring-2"
                 style={{
                   color: themeColor,
@@ -168,7 +170,7 @@ export function PersonalizeCard({
         <button
           type="button"
           onClick={onPreview3D}
-          aria-label="Open 3D preview"
+          aria-label={t('personalizationOpen3D')}
           className="sm:hidden mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 text-[11.5px] font-bold uppercase tracking-[0.14em] transition-all duration-150 active:scale-[0.985] focus:outline-none focus-visible:ring-2"
           style={{
             color: themeColor,
@@ -188,7 +190,7 @@ export function PersonalizeCard({
       {blocked && (
         <div className="mt-2 flex items-center gap-1.5 text-[11.5px] font-semibold leading-none" role="alert">
           <AlertCircle className="h-3.5 w-3.5" strokeWidth={2.5} style={{ color: `rgb(${errorRgb})` }} />
-          <span style={{ color: `rgb(${errorRgb})` }}>This name isn&apos;t allowed</span>
+          <span style={{ color: `rgb(${errorRgb})` }}>{t('personalizationBlocked')}</span>
         </div>
       )}
 

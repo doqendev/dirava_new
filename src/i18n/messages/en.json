@@ -193,6 +193,22 @@
       "step6Title": "Arrived",
       "step6Sub": "Day 7-12"
     },
+    "whyThisHitsDifferent": "Why this hits different",
+    "howItsMade": "How it's made - just for you",
+    "personalizationBlocked": "This name isn't allowed",
+    "personalizationNameLabel": "Your name on the sign",
+    "personalizationOpen3D": "Open 3D preview",
+    "descriptionSizes": "Sizes",
+    "descriptionCare": "Care",
+    "descriptionSizeCol": "Size",
+    "descriptionMeasurementsCol": "Width / Height (cm)",
+    "socialProofLoading": "Loading activity…",
+    "chooseYourJollyRoger": "Choose your Jolly Roger",
+    "jollyRogerSubhead": "Select your crew symbol, then enter your name below.",
+    "personalizeYourSign": "Personalize your sign",
+    "personalizeYourSignSub": "Enter your name to personalize your product.",
+    "personalizationDefaultCenter": "Default (center)",
+    "personalizationBetweenLetters": "Between letter {a} ({letterA}) and letter {b} ({letterB})",
     "trustBadges": {
       "freeShippingTitle": "Free shipping",
       "freeShippingSub": "orders over {threshold}",
@@ -1061,8 +1077,68 @@
     "learnMore": "Learn more about Mizoke",
     "readFaq": "Read FAQ"
   },
+  "productFaq": {
+    "changeName": {
+      "question": "Can I change the name after ordering?",
+      "answer": "Yes, you can change the name as long as you contact us before production starts. Production usually begins within 1-3 business days, so email support@mizoke.com as soon as possible. Once production has started, no further changes are possible."
+    },
+    "nameLimit": {
+      "question": "How many characters are allowed in the personalized name?",
+      "answer": "The personalized name is limited to 12 characters. If you need a longer name for a specific design, contact support@mizoke.com before ordering - in some cases we can fit more characters depending on product size and layout."
+    }
+  },
   "faq": {
     "title": "Frequently Asked Questions",
+    "items": {
+      "0": {
+        "question": "How long does shipping take?",
+        "answer": "Orders to Europe and the UK typically arrive within 5-10 business days. Canada 7-14 days, Australia 10-20 days, and other international destinations 14-35 days. Free worldwide shipping on orders over the local-currency equivalent of €45 (£40 UK, $65 CAD, $75 AUD). Custom items are made to order in 1-3 business days; non-custom items are processed in 1-3 business days before shipping. US shipping is currently suspended due to ongoing tariff changes."
+      },
+      "1": {
+        "question": "Do you ship internationally?",
+        "answer": "Yes! We ship to most countries worldwide. International shipping costs are calculated at checkout based on your location and order weight. Please note that international orders may be subject to customs fees and import duties, which are the responsibility of the recipient. Note: US shipping is currently suspended due to ongoing tariff changes."
+      },
+      "2": {
+        "question": "What is your return policy?",
+        "answer": "We accept returns within 30 days of delivery for most non-custom items. Products must be unused, unworn, and in their original packaging with all tags attached. Custom or personalized items (such as LED signs, desk signs, keychains, or apparel with a personalized name) are not returnable once production has started, as each piece is made just for you. Limited drops, opened collectibles, and final-sale items are also non-returnable. If an item arrives damaged or defective, we'll replace it free of charge - email support@mizoke.com with photos. Visit our returns page to start a return."
+      },
+      "3": {
+        "question": "How do I track my order?",
+        "answer": "Once your order ships, you'll receive an email with tracking information. You can also track your order by logging into your account and visiting the order history page, or by visiting our tracking page and entering your order number and email address."
+      },
+      "4": {
+        "question": "Who designs the products?",
+        "answer": "Mizoke products are original designs by Neo Stage Collective, inspired by popular anime characters and series. Our custom signs, keychains, magnets, and apparel feature fan-art interpretations produced in Portugal. Each item is hand-crafted or DTF-printed to order. For questions about a specific design, contact support@mizoke.com."
+      },
+      "5": {
+        "question": "What payment methods do you accept?",
+        "answer": "We accept all major credit cards (Visa, Mastercard, American Express, Discover), PayPal, Apple Pay, Google Pay, and Shop Pay. All transactions are protected by SSL encryption to keep your payment information safe."
+      },
+      "6": {
+        "question": "Can I cancel or modify my order?",
+        "answer": "Custom items (LED signs, desk signs, keychains, apparel) can be modified or canceled as long as production hasn't started. Since production usually begins within 1-3 business days, contact support@mizoke.com as soon as possible. Once production is underway, custom items cannot be canceled or modified. Non-custom items can be canceled at any time before shipping. After shipping, no cancellation is possible."
+      },
+      "7": {
+        "question": "What are \"drops\" and how do they work?",
+        "answer": "Drops are limited-edition product releases available for a limited time or in limited quantities. While a drop is active, you can buy as long as stock lasts. Some drops require sign-up or notification subscription. Once a drop sells out, items are typically not restocked."
+      },
+      "8": {
+        "question": "Do you offer size exchanges?",
+        "answer": "Yes, we offer size exchanges within 30 days of delivery, subject to availability. Simply start a return through your account and select \"exchange\" as the reason. Return shipping costs are the responsibility of the customer. If your desired size isn't available, you can choose a refund instead."
+      },
+      "9": {
+        "question": "How do I find the right size?",
+        "answer": "Each product page includes a detailed size chart with measurements. We recommend measuring a well-fitting garment and comparing it to our chart. If you're between two sizes, we generally recommend going up. Feel free to contact us with any sizing questions."
+      },
+      "10": {
+        "question": "What if my item arrives damaged?",
+        "answer": "If your item arrives damaged or defective, contact us within 48 hours of delivery with photos of the damage. We'll arrange a free return and send a replacement or refund the full purchase price, your choice. Keep the original packaging until the issue is resolved."
+      },
+      "11": {
+        "question": "How do I contact customer support?",
+        "answer": "You can reach our support team via our contact page, by email at support@mizoke.com, or through our social media channels. We typically respond within 24-48 hours on business days. For urgent order issues, please include your order number."
+      }
+    },
     "subtitle": "Find answers to common questions about our products, shipping, and more.",
     "stillHaveQuestions": "Still have questions?",
     "supportDescription": "Can't find the answer you're looking for? Our support team is here to help.",

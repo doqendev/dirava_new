@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 interface SocialProofBarProps {
   /** Stable per-product seed so each product has its own (different) numbers. */
@@ -83,6 +84,7 @@ export function SocialProofBar({ productHandle }: SocialProofBarProps) {
   // server uses UTC date which would mismatch). To avoid hydration
   // mismatch we render placeholders on the very first frame and fill
   // in real numbers in an effect.
+  const t = useTranslations('product')
   const [hydrated, setHydrated] = useState(false)
   const [viewing, setViewing] = useState(0)
   const [sold, setSold] = useState(0)
@@ -131,7 +133,7 @@ export function SocialProofBar({ productHandle }: SocialProofBarProps) {
     // height as the populated state so layout doesn't jump.
     return (
       <div className="text-[11px] leading-none text-white/30">
-        <span>Loading activity…</span>
+        <span>{t('socialProofLoading')}</span>
       </div>
     )
   }

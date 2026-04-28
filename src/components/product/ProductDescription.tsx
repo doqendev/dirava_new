@@ -1,4 +1,7 @@
+'use client'
+
 import type { ReactNode } from 'react'
+import { useTranslations } from 'next-intl'
 
 type ProductType = 'desk-sign' | 'keychain' | 'led-sign' | 'hoodie' | 'tshirt' | 'magnet'
 
@@ -51,13 +54,14 @@ const TSHIRT_SIZES: Array<[string, string]> = [
 ]
 
 function SizeTable({ rows, note }: { rows: Array<[string, string]>; note?: string }) {
+  const t = useTranslations('product')
   return (
     <div>
       <table className="w-full text-left">
         <thead>
           <tr className="border-b border-white/10">
-            <th className="py-2 pr-4 font-semibold text-white/85">Size</th>
-            <th className="py-2 font-semibold text-white/85">Width / Height (cm)</th>
+            <th className="py-2 pr-4 font-semibold text-white/85">{t('descriptionSizeCol')}</th>
+            <th className="py-2 font-semibold text-white/85">{t('descriptionMeasurementsCol')}</th>
           </tr>
         </thead>
         <tbody>
@@ -182,6 +186,7 @@ function LedSignDescription({ personalized }: { personalized: boolean }) {
 }
 
 function HoodieDescription() {
+  const t = useTranslations('product')
   return (
     <>
       <FeatureLines
@@ -195,13 +200,13 @@ function HoodieDescription() {
         ]}
       />
       <div className="mt-5">
-        <p className="!my-0 font-semibold text-white/85">Sizes</p>
+        <p className="!my-0 font-semibold text-white/85">{t('descriptionSizes')}</p>
         <div className="mt-1.5">
           <SizeTable rows={HOODIE_SIZES} />
         </div>
       </div>
       <div className="mt-5">
-        <p className="!my-0 font-semibold text-white/85">Care</p>
+        <p className="!my-0 font-semibold text-white/85">{t('descriptionCare')}</p>
         <div className="mt-1.5">
           <FeatureLines
             items={[
@@ -217,6 +222,7 @@ function HoodieDescription() {
 }
 
 function TshirtDescription() {
+  const t = useTranslations('product')
   return (
     <>
       <FeatureLines
@@ -230,13 +236,13 @@ function TshirtDescription() {
         ]}
       />
       <div className="mt-5">
-        <p className="!my-0 font-semibold text-white/85">Sizes</p>
+        <p className="!my-0 font-semibold text-white/85">{t('descriptionSizes')}</p>
         <div className="mt-1.5">
           <SizeTable rows={TSHIRT_SIZES} />
         </div>
       </div>
       <div className="mt-5">
-        <p className="!my-0 font-semibold text-white/85">Care</p>
+        <p className="!my-0 font-semibold text-white/85">{t('descriptionCare')}</p>
         <div className="mt-1.5">
           <FeatureLines
             items={[

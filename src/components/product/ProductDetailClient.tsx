@@ -205,8 +205,13 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
   // warehouse side. Only internal slots are valid now — the ball always
   // lives between two letters.
   const describeBallPosition = (name: string, slot: number): string => {
-    if (name.length < 2) return 'Default (center)'
-    return `Between letter ${slot} (${name[slot - 1]}) and letter ${slot + 1} (${name[slot]})`
+    if (name.length < 2) return t('personalizationDefaultCenter')
+    return t('personalizationBetweenLetters', {
+      a: slot,
+      letterA: name[slot - 1] ?? '',
+      b: slot + 1,
+      letterB: name[slot] ?? '',
+    })
   }
 
   // Unified cart attributes used by every add-to-cart surface on this
@@ -493,10 +498,10 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 ].includes(product.handle) && getVariantImages(product.handle) && (
                   <div>
                     <h2 className="text-[13px] font-bold uppercase tracking-[0.12em] text-white">
-                      Choose your Jolly Roger
+                      {t('chooseYourJollyRoger')}
                     </h2>
                     <p className="mt-1 text-[12px] leading-snug text-white/55">
-                      Select your crew symbol, then enter your name below.
+                      {t('jollyRogerSubhead')}
                     </p>
                   </div>
                 )}

@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import type { FeatureTile } from '@/data/productFeatureTiles'
 
 interface WhyHitsDifferentProps {
@@ -11,13 +12,14 @@ interface WhyHitsDifferentProps {
  * 4-tile grid below the gallery — title "WHY THIS HITS DIFFERENT".
  */
 export function WhyHitsDifferent({ tiles, accent = '#22c55e' }: WhyHitsDifferentProps) {
+  const t = useTranslations('product')
   if (tiles.length === 0) return null
   return (
     <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 sm:p-6">
       <h2 className="mb-5 text-center text-sm font-semibold uppercase tracking-[0.2em] text-white/90 flex items-center justify-center gap-3">
         <span className="h-px w-6 bg-white/20" aria-hidden />
         <span style={{ color: accent }} aria-hidden>◆</span>
-        <span>Why this hits different</span>
+        <span>{t('whyThisHitsDifferent')}</span>
         <span style={{ color: accent }} aria-hidden>◆</span>
         <span className="h-px w-6 bg-white/20" aria-hidden />
       </h2>
