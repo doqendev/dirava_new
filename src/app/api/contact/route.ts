@@ -1,10 +1,17 @@
 import { NextResponse } from 'next/server'
 import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimit'
+import { requireSameOrigin } from '@/lib/utils/csrf'
 
 const SHOPIFY_STORE_DOMAIN = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN
 
 export async function POST(request: Request) {
   try {
+    // State-changing POST: reject cross-origin requests up front. Pairs
+    // with the per-IP rate limit + honeypot below to make the contact
+    // form a hostile target for bots without adding any user friction.
+    const csrfReject = requireSameOrigin(request)
+    if (csrfReject) return csrfReject
+
     const ip = getClientIp(request)
     const rl = await checkRateLimit(`contact:${ip}`, { maxRequests: 5, windowSeconds: 600 })
     if (rl.limited) {
@@ -15,7 +22,20 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { name, email, subject, message } = body
+    const { name, email, subject, message, website } = body
+
+    // Honeypot. The form renders a hidden `website` input that real
+    // users never see (display:none + tabIndex=-1 + aria-hidden), but
+    // form-spam bots fill every field they find. If anything is in
+    // there, silently return 200 so the bot's success heuristic is
+    // satisfied while we do nothing - we do NOT forward to Shopify.
+    if (typeof website === 'string' && website.trim().length > 0) {
+      console.warn(`[Contact Form] Honeypot triggered (ip=${ip})`)
+      return NextResponse.json(
+        { success: true, message: 'Message sent successfully' },
+        { status: 200, headers: { 'Cache-Control': 'no-store' } }
+      )
+    }
 
     if (!name || name.trim().length < 2) {
       return NextResponse.json({ error: 'Name must be at least 2 characters' }, { status: 400 })

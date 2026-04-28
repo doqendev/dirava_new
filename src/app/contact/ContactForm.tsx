@@ -65,6 +65,10 @@ export function ContactForm() {
     orderNumber: '',
     message: '',
   })
+  // Honeypot. Real users never see / type into this; spam bots fill
+  // every field they parse. The server returns a fake 200 if it's
+  // non-empty so bots think they succeeded while we drop the request.
+  const [honeypot, setHoneypot] = useState('')
   const [errors, setErrors] = useState<FormErrors>({})
   const [status, setStatus] = useState<ContactStatus>('idle')
 
@@ -102,6 +106,7 @@ export function ContactForm() {
           email: formData.email,
           subject: formData.subject,
           message: formData.message,
+          website: honeypot,
         }),
       })
 
@@ -122,6 +127,7 @@ export function ContactForm() {
         orderNumber: '',
         message: '',
       })
+      setHoneypot('')
 
       // Reset after 5 seconds
       setTimeout(() => setStatus('idle'), 5000)
@@ -146,6 +152,33 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Honeypot. Off-screen + tabIndex=-1 + aria-hidden + autoComplete=off
+          so real users (and password managers + screen readers) never
+          touch it. Bots that walk the DOM fill every input they find,
+          which the server uses to silently drop the submission. The
+          name "website" is generic enough that bots target it. */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          left: '-9999px',
+          width: '1px',
+          height: '1px',
+          overflow: 'hidden',
+        }}
+      >
+        <label htmlFor="contact-website-hp">Website</label>
+        <input
+          id="contact-website-hp"
+          type="text"
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+        />
+      </div>
+
       {/* Name and Email Row */}
       <div className="grid sm:grid-cols-2 gap-4">
         <Input
