@@ -294,7 +294,7 @@ export function QuickViewModal() {
               )}
               role="dialog"
               aria-modal="true"
-              aria-label="Quick view"
+              aria-label={t('quickView')}
             >
               {/* Header */}
               <div className="flex items-center justify-between px-3 py-2.5 sm:p-4 border-b border-border-subtle">
@@ -390,7 +390,7 @@ export function QuickViewModal() {
                                         const sliced = e.target.value.slice(0, MAX_PERSONALIZATION_LENGTH)
                                         setPersonalizationName(previewConfig ? getPreviewDisplayText(sliced, previewConfig, '') : sliced)
                                       }}
-                                      placeholder="Name"
+                                      placeholder={t('personalizationPlaceholder')}
                                       className={cn(
                                         'w-full px-3 py-2.5 rounded-lg text-sm text-white placeholder-white/40',
                                         'bg-white/10 backdrop-blur-md border border-white/20',

@@ -91,6 +91,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
   ) {
     const t = useTranslations('gallery')
     const tCommon = useTranslations('common')
+    const tProduct = useTranslations('product')
     const containerRef = useRef<HTMLDivElement>(null)
     const [currentIndex, setCurrentIndex] = useState(initialImageIndex ?? 0)
     const [isZoomed, setIsZoomed] = useState(false)
@@ -296,7 +297,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                               const sliced = e.target.value.slice(0, MAX_PERSONALIZATION_LENGTH)
                               onPreviewTextChange(previewConfig ? getPreviewDisplayText(sliced, previewConfig, '') : sliced)
                             }}
-                            placeholder="Name"
+                            placeholder={tProduct('personalizationPlaceholder')}
                             className={cn(
                               'flex-1 min-w-0 px-3 py-2.5 rounded-lg text-sm text-white placeholder-white/40',
                               'bg-white/10 backdrop-blur-md border border-white/20',

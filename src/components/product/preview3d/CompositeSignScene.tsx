@@ -225,7 +225,7 @@ function buildTiledBarGeometry(
   return merged
 }
 
-function SceneLoadingSpinner({ label }: { label: string }) {
+function SceneLoadingSpinner({ label }: { label?: string }) {
   return (
     <Html center>
       <Preview3DLoadingIndicator label={label} />
@@ -1106,7 +1106,7 @@ export function CompositeSignScene({ config, svgPath, text, selectedVariantName,
       <>
         <color attach="background" args={[config.background || '#0a0a12']} />
         <StudioLighting />
-        <SceneLoadingSpinner label="Loading..." />
+        <SceneLoadingSpinner />
       </>
     )
   }

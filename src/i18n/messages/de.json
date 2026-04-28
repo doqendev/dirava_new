@@ -198,6 +198,7 @@
     "personalizationBlocked": "Dieser Name ist nicht erlaubt",
     "personalizationNameLabel": "Dein Name auf dem Schild",
     "personalizationOpen3D": "3D-Vorschau öffnen",
+    "dragonBallPosition": "Dragon-Ball-Position",
     "descriptionSizes": "Größen",
     "descriptionCare": "Pflege",
     "descriptionSizeCol": "Größe",
@@ -846,7 +847,8 @@
     "maxPhotos": "Maximal 3 Fotos",
     "uploading": "Bilder werden hochgeladen...",
     "photoTooLarge": "Bild muss unter 5 MB sein",
-    "invalidPhotoType": "Nur JPG, PNG und WebP Bilder erlaubt"
+    "invalidPhotoType": "Nur JPG, PNG und WebP Bilder erlaubt",
+    "photoAlt": "Rezensionsfoto"
   },
   "share": {
     "label": "Teilen:",

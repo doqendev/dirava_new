@@ -570,7 +570,7 @@ export function BleachSignScene({ text, config }: BleachSignSceneProps) {
         <color attach="background" args={[config.background || '#0a0a12']} />
         <StudioLighting />
         <Html center>
-          <Preview3DLoadingIndicator label="Loading model..." />
+          <Preview3DLoadingIndicator />
         </Html>
       </>
     )

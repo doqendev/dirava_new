@@ -275,7 +275,7 @@ export default function ReviewList({ productHandle, color }: ReviewListProps) {
           >
             <Image
               src={lightbox.images[lightbox.index]!}
-              alt="Review photo"
+              alt={t('photoAlt')}
               fill
               className="object-contain"
               sizes="90vw"

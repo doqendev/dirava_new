@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 
 interface BallPositionPickerProps {
   /** The currently displayed text — dot count is text.length + 1. */
@@ -34,6 +35,7 @@ export function BallPositionPicker({
   secondHalfColor = '#e20a0a',
   ballIconSrc = '/svgs/preview/dball.svg',
 }: BallPositionPickerProps) {
+  const t = useTranslations('product')
   const chars = useMemo(() => Array.from(text), [text])
   const n = chars.length
 
@@ -46,7 +48,7 @@ export function BallPositionPicker({
     <div
       className={`flex items-center justify-center gap-0.5 px-2 py-1 ${className ?? ''}`.trim()}
       role="radiogroup"
-      aria-label="Dragon Ball position"
+      aria-label={t('dragonBallPosition')}
     >
       {chars.map((ch, charIdx) => {
         // Render the letter. A dot precedes every letter except the

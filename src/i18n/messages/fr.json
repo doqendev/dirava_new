@@ -198,6 +198,7 @@
     "personalizationBlocked": "Ce nom n'est pas autorisé",
     "personalizationNameLabel": "Votre nom sur le panneau",
     "personalizationOpen3D": "Ouvrir l'aperçu 3D",
+    "dragonBallPosition": "Position de la Dragon Ball",
     "descriptionSizes": "Tailles",
     "descriptionCare": "Entretien",
     "descriptionSizeCol": "Taille",
@@ -846,7 +847,8 @@
     "maxPhotos": "3 photos maximum",
     "uploading": "Envoi des images...",
     "photoTooLarge": "L'image doit faire moins de 5 Mo",
-    "invalidPhotoType": "Seuls les formats JPG, PNG et WebP sont acceptés"
+    "invalidPhotoType": "Seuls les formats JPG, PNG et WebP sont acceptés",
+    "photoAlt": "Photo d'avis"
   },
   "share": {
     "label": "Partager :",

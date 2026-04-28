@@ -198,6 +198,7 @@
     "personalizationBlocked": "Este nombre no está permitido",
     "personalizationNameLabel": "Tu nombre en el cartel",
     "personalizationOpen3D": "Abrir vista previa 3D",
+    "dragonBallPosition": "Posición de la Dragon Ball",
     "descriptionSizes": "Tallas",
     "descriptionCare": "Cuidado",
     "descriptionSizeCol": "Talla",
@@ -846,7 +847,8 @@
     "maxPhotos": "Máximo 3 fotos",
     "uploading": "Subiendo imágenes...",
     "photoTooLarge": "La imagen debe pesar menos de 5 MB",
-    "invalidPhotoType": "Solo se permiten imágenes JPG, PNG y WebP"
+    "invalidPhotoType": "Solo se permiten imágenes JPG, PNG y WebP",
+    "photoAlt": "Foto de reseña"
   },
   "share": {
     "label": "Compartir:",

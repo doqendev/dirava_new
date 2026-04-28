@@ -879,7 +879,7 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
         <color attach="background" args={[config.background || '#0a0a12']} />
         <StudioLighting />
         <Html center>
-          <Preview3DLoadingIndicator label="Loading model..." />
+          <Preview3DLoadingIndicator />
         </Html>
       </>
     )

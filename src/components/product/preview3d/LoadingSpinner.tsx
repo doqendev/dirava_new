@@ -1,16 +1,22 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils/cn'
 
 interface Preview3DLoadingIndicatorProps {
+  /** Optional override. When omitted, falls back to the translated
+   *  `product.preview3dLoading` ("Loading...") so the indicator is
+   *  localised by default for every 3D scene. */
   label?: string
   className?: string
 }
 
 export function Preview3DLoadingIndicator({
-  label = 'Loading...',
+  label,
   className,
 }: Preview3DLoadingIndicatorProps) {
+  const t = useTranslations('product')
+  const text = label ?? t('preview3dLoading')
   return (
     <div className={cn('pointer-events-none flex flex-col items-center gap-3', className)}>
       <div className="relative h-11 w-11">
@@ -19,7 +25,7 @@ export function Preview3DLoadingIndicator({
         <div className="absolute inset-[4px] rounded-full border-2 border-transparent border-t-neon-cyan border-r-neon-cyan animate-spin" />
       </div>
       <p className="text-xs text-white/60 tracking-[0.08em]">
-        {label}
+        {text}
       </p>
     </div>
   )

@@ -198,6 +198,7 @@
     "personalizationBlocked": "Este nome não é permitido",
     "personalizationNameLabel": "O teu nome no letreiro",
     "personalizationOpen3D": "Abrir pré-visualização 3D",
+    "dragonBallPosition": "Posição da Dragon Ball",
     "descriptionSizes": "Tamanhos",
     "descriptionCare": "Cuidados",
     "descriptionSizeCol": "Tamanho",
@@ -846,7 +847,8 @@
     "maxPhotos": "Máximo 3 fotos",
     "uploading": "A enviar imagens...",
     "photoTooLarge": "A imagem deve ter menos de 5 MB",
-    "invalidPhotoType": "Apenas imagens JPG, PNG e WebP são permitidas"
+    "invalidPhotoType": "Apenas imagens JPG, PNG e WebP são permitidas",
+    "photoAlt": "Foto de avaliação"
   },
   "share": {
     "label": "Partilhar:",

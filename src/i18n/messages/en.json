@@ -198,6 +198,7 @@
     "personalizationBlocked": "This name isn't allowed",
     "personalizationNameLabel": "Your name on the sign",
     "personalizationOpen3D": "Open 3D preview",
+    "dragonBallPosition": "Dragon Ball position",
     "descriptionSizes": "Sizes",
     "descriptionCare": "Care",
     "descriptionSizeCol": "Size",
@@ -846,7 +847,8 @@
     "maxPhotos": "Maximum 3 photos",
     "uploading": "Uploading images...",
     "photoTooLarge": "Image must be under 5MB",
-    "invalidPhotoType": "Only JPG, PNG, and WebP images allowed"
+    "invalidPhotoType": "Only JPG, PNG, and WebP images allowed",
+    "photoAlt": "Review photo"
   },
   "share": {
     "label": "Share:",
