@@ -93,7 +93,7 @@ export function PersonalizeCard({
           aria-label="Your name on the sign"
           className={cn(
             'block h-14 w-full rounded-xl border bg-transparent pl-5 text-left text-base font-bold uppercase tracking-[0.1em] leading-none text-white placeholder-white/30 outline-none transition-all duration-200 sm:text-lg',
-            onPreview3D ? 'pr-[110px]' : 'pr-20',
+            onPreview3D ? 'pr-[150px]' : 'pr-20',
           )}
           style={{
             caretColor: blocked ? `rgb(${errorRgb})` : themeColor,
@@ -110,8 +110,11 @@ export function PersonalizeCard({
           }}
         />
 
-        {/* Right-side cluster: counter · divider · 3D pill (when wired) */}
-        <div className="pointer-events-none absolute right-4 top-1/2 flex -translate-y-1/2 items-center gap-3">
+        {/* Right-side cluster: counter · thin divider · 3D View pill.
+            Pointer-events stay off on the wrapper so the input still
+            takes clicks across the row; the 3D button re-enables them
+            on itself so it remains tappable. */}
+        <div className="pointer-events-none absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-2.5">
           <span
             aria-hidden
             className="font-mono text-xs font-semibold tabular-nums tracking-wide transition-colors"
@@ -122,20 +125,30 @@ export function PersonalizeCard({
 
           {onPreview3D && (
             <>
+              {/* Hairline divider — full pill height, soft edges via
+                  fade-out gradient so it reads as a separator, not a
+                  hard partition. */}
               <span
                 aria-hidden
-                className="h-5 w-px"
-                style={{ background: `rgba(${accentRgb}, 0.35)` }}
+                className="h-7 w-px"
+                style={{
+                  background: `linear-gradient(180deg, transparent 0%, rgba(${accentRgb}, 0.45) 30%, rgba(${accentRgb}, 0.45) 70%, transparent 100%)`,
+                }}
               />
               <button
                 type="button"
                 onClick={onPreview3D}
                 aria-label="Open 3D preview"
-                className="pointer-events-auto inline-flex items-center gap-1.5 rounded-md px-1.5 py-1 text-xs font-bold uppercase tracking-[0.14em] transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2"
-                style={{ color: themeColor }}
+                className="pointer-events-auto inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] transition-all duration-150 hover:scale-[1.03] active:scale-95 focus:outline-none focus-visible:ring-2"
+                style={{
+                  color: themeColor,
+                  borderColor: `rgba(${accentRgb}, 0.55)`,
+                  background: `rgba(${accentRgb}, 0.1)`,
+                  boxShadow: `inset 0 1px 0 rgba(${accentRgb}, 0.18), 0 0 10px rgba(${accentRgb}, 0.18)`,
+                }}
               >
-                <Box className="h-4 w-4" strokeWidth={2.25} />
-                3D
+                <Box className="h-3.5 w-3.5" strokeWidth={2.25} />
+                3D View
               </button>
             </>
           )}
