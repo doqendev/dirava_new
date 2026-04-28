@@ -93,7 +93,11 @@ export function PersonalizeCard({
           aria-label="Your name on the sign"
           className={cn(
             'block h-14 w-full rounded-xl border bg-transparent pl-5 text-left text-base font-bold uppercase tracking-[0.1em] leading-none text-white placeholder-white/30 outline-none transition-all duration-200 sm:text-lg',
-            onPreview3D ? 'pr-[150px]' : 'pr-20',
+            // Right-padding only reserves room for the inline 3D pill
+            // on >=sm, where it sits inside the input. On smaller
+            // mobiles the pill drops to its own row below the input,
+            // so the name has the full width to breathe.
+            onPreview3D ? 'pr-16 sm:pr-[150px]' : 'pr-16 sm:pr-20',
           )}
           style={{
             caretColor: blocked ? `rgb(${errorRgb})` : themeColor,
@@ -127,10 +131,11 @@ export function PersonalizeCard({
             <>
               {/* Hairline divider — full pill height, soft edges via
                   fade-out gradient so it reads as a separator, not a
-                  hard partition. */}
+                  hard partition. Hidden on mobile (the pill moves
+                  below the input on small screens). */}
               <span
                 aria-hidden
-                className="h-7 w-px"
+                className="hidden sm:block h-7 w-px"
                 style={{
                   background: `linear-gradient(180deg, transparent 0%, rgba(${accentRgb}, 0.45) 30%, rgba(${accentRgb}, 0.45) 70%, transparent 100%)`,
                 }}
@@ -139,7 +144,7 @@ export function PersonalizeCard({
                 type="button"
                 onClick={onPreview3D}
                 aria-label="Open 3D preview"
-                className="pointer-events-auto inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] transition-all duration-150 hover:scale-[1.03] active:scale-95 focus:outline-none focus-visible:ring-2"
+                className="pointer-events-auto hidden sm:inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] transition-all duration-150 hover:scale-[1.03] active:scale-95 focus:outline-none focus-visible:ring-2"
                 style={{
                   color: themeColor,
                   borderColor: `rgba(${accentRgb}, 0.55)`,
@@ -154,6 +159,28 @@ export function PersonalizeCard({
           )}
         </div>
       </div>
+
+      {/* Mobile-only stand-alone 3D View button. Smaller than the CTA
+          and visually secondary (outlined, low-fill, lighter shadow)
+          so Add to Cart remains the dominant action below it. Hidden
+          on >=sm where the inline pill in the input row takes over. */}
+      {onPreview3D && (
+        <button
+          type="button"
+          onClick={onPreview3D}
+          aria-label="Open 3D preview"
+          className="sm:hidden mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 text-[11.5px] font-bold uppercase tracking-[0.14em] transition-all duration-150 active:scale-[0.985] focus:outline-none focus-visible:ring-2"
+          style={{
+            color: themeColor,
+            borderColor: `rgba(${accentRgb}, 0.45)`,
+            background: `rgba(${accentRgb}, 0.06)`,
+            boxShadow: `inset 0 1px 0 rgba(${accentRgb}, 0.12)`,
+          }}
+        >
+          <Box className="h-4 w-4" strokeWidth={2.25} />
+          3D View
+        </button>
+      )}
 
       {/* Blocked-name error — only shown when the entered name fails the
           word-list. The "Ready to order" success state was dropped per
