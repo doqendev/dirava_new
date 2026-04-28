@@ -137,11 +137,14 @@ export function AddToCartButton({
       <Button
         variant="primary"
         size={size}
-        glow="cyan"
         onClick={handleClick}
         disabled={state === 'loading'}
         className={cn(
           'w-full',
+          // Snap state changes (bg color / shadow) instead of animating
+          // them — the 200ms transition mid-frame reads as a glow pulse
+          // and a dark "border" while colors are crossing.
+          '!transition-none',
           themeColor && state === 'idle' && '!bg-[var(--ug)] hover:!bg-[var(--ug)]/90 !text-black',
           state === 'success' && 'bg-neon-green hover:bg-neon-green/90',
           state === 'error' && 'bg-red-500 hover:bg-red-500/90',
@@ -149,14 +152,16 @@ export function AddToCartButton({
           className
         )}
         style={
-          themeColor && state === 'idle'
+          themeColor
             ? ({
                 '--ug': themeColor,
-                // Subtle vertical gradient + inset top highlight + soft
-                // outer drop shadow integrate the loud accent fill into
-                // the dark card surface so the button reads as premium
-                // instead of flat-and-loud.
-                backgroundImage: `linear-gradient(180deg, ${themeColor}, ${themeColor}cf)`,
+                // Shadow stays stable across all states so the button
+                // doesn't appear to "glow" on click as the inline style
+                // transitions in/out. Background gradient is only on
+                // idle so success/error bg classes can take over.
+                ...(state === 'idle' && {
+                  backgroundImage: `linear-gradient(180deg, ${themeColor}, ${themeColor}cf)`,
+                }),
                 boxShadow: `0 6px 18px ${themeColor}33, 0 0 0 1px ${themeColor}55, inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.18)`,
               } as React.CSSProperties)
             : undefined

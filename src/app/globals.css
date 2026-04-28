@@ -43,8 +43,10 @@
 
   body {
     @apply min-h-screen font-body;
-    background: linear-gradient(180deg, #0a0a12 0%, #0d1117 50%, #0a0a12 100%);
-    background-attachment: fixed;
+    /* Reference uses a deep, near-pitch black so the neon accents and
+       product photography pop. No nebula on the page itself — that lives
+       inside the product image. */
+    background: #04040a;
     overflow-x: hidden;
   }
 
