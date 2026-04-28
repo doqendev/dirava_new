@@ -3,6 +3,17 @@ import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_UNIVERSES, GET_SITEMAP_PRODUCTS } from '@/lib/shopify/queries'
 import { SITE_URL } from '@/lib/utils/siteUrl'
 import { PRODUCT_TYPE_OPTIONS } from '@/lib/utils/filters'
+import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
+
+// The `custom.universe` metafield holds the universe SLUG (e.g.
+// "hunter-hunter"), not the literal "true". The previous filter compared
+// against === 'true' and silently excluded every universe + product
+// from the sitemap, which is why /worlds/[universe] and the product
+// pages weren't getting indexed by Google. Compare against the same
+// allow-list the rest of the app uses (UNIVERSE_CONFIG keys).
+const VALID_UNIVERSES = new Set(Object.keys(UNIVERSE_CONFIG))
+const isUniverseMetafield = (value: string | null | undefined): boolean =>
+  !!value && VALID_UNIVERSES.has(value)
 
 interface UniverseNode {
   handle: string
@@ -121,7 +132,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const universesData = await shopifyFetch<UniversesResponse>(GET_UNIVERSES)
     const universes = universesData.collections.edges
       .map((edge) => edge.node)
-      .filter((collection) => collection.metafield?.value === 'true')
+      .filter((collection) => isUniverseMetafield(collection.metafield?.value))
 
     // Add universe pages
     universes.forEach((universe) => {
@@ -141,7 +152,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     products.forEach((product) => {
       // Find the universe collection for this product
       const universeCollection = product.collections.edges.find(
-        (edge) => edge.node.metafield?.value === 'true'
+        (edge) => isUniverseMetafield(edge.node.metafield?.value)
       )
 
       if (universeCollection) {

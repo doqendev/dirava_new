@@ -17,6 +17,7 @@ import { getAuthenticatedCustomer, getCustomerAccessToken } from '@/lib/auth/cus
 import { shopifyClient } from '@/lib/shopify/client'
 import { GET_CUSTOMER } from '@/lib/shopify/customerQueries'
 import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimit'
+import { requireSameOrigin } from '@/lib/utils/csrf'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,6 +32,13 @@ interface CustomerResponse {
 
 export async function POST(request: Request) {
   try {
+    // Account deletion is a destructive action - require a same-origin
+    // POST so a malicious page can't trigger it via a logged-in user
+    // hitting a third-party link. Pairs with the existing daily rate
+    // limit and authenticated session check below.
+    const csrfReject = requireSameOrigin(request)
+    if (csrfReject) return csrfReject
+
     const ip = getClientIp(request)
     const rl = await checkRateLimit(`data-deletion:${ip}`, { maxRequests: 1, windowSeconds: 86400 })
     if (rl.limited) {

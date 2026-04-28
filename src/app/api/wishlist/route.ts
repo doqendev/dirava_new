@@ -3,6 +3,7 @@ import { gql } from 'graphql-request'
 import { shopifyClient } from '@/lib/shopify/client'
 import { adminFetch } from '@/lib/shopify/adminClient'
 import { getAuthenticatedCustomer, getCustomerAccessToken } from '@/lib/auth/customer'
+import { requireSameOrigin } from '@/lib/utils/csrf'
 import type { WishlistItem } from '@/types/wishlist'
 
 const METAFIELD_NAMESPACE = 'custom'
@@ -128,6 +129,12 @@ export async function GET(request: NextRequest) {
 
 // POST - Save customer's wishlist
 export async function POST(request: NextRequest) {
+  // Reject cross-origin POSTs before doing any work. The session cookie
+  // is on a same-site policy already, but an explicit origin check
+  // closes the gap for older browsers and proxied requests.
+  const csrfReject = requireSameOrigin(request)
+  if (csrfReject) return csrfReject
+
   const { customer, response, session } = await getAuthenticatedCustomer(request)
   if (response) {
     return response
