@@ -448,13 +448,11 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 )}
               </div>
 
-              {/* Mobile social proof — surfaces urgency above the
-                  fold on small screens. Desktop reuses the same data
-                  inside the PersonalizeCard, below the CTA. */}
-              <div className="pt-1">
-                <SocialProofBar productHandle={product.handle} accent={themeColor} />
-              </div>
-
+              {/* Trust hierarchy: rating + orders is the *primary* trust
+                  signal (real reviews, durable proof). Live activity
+                  ("X viewing now · Y sold today") follows as a quieter
+                  secondary line — it adds urgency without competing
+                  with the credible top line. */}
               <a href="#reviews" className="block w-fit hover:opacity-80 transition-opacity">
                 <RatingOrdersChip
                   rating={product.rating}
@@ -462,6 +460,10 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   accent={themeColor}
                 />
               </a>
+
+              <div className="pt-0.5">
+                <SocialProofBar productHandle={product.handle} accent={themeColor} />
+              </div>
 
               <TitleChips chips={getProductChips(product.handle)} accent={themeColor} />
             </div>

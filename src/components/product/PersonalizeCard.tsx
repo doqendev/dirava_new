@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Box, Check, AlertCircle } from 'lucide-react'
+import { Box, AlertCircle } from 'lucide-react'
 import type { Ref, ReactNode } from 'react'
 import { cn } from '@/lib/utils/cn'
 import { isBlockedName } from '@/lib/utils/personalizationBlocklist'
@@ -11,121 +11,75 @@ interface PersonalizeCardProps {
   onChange: (v: string) => void
   maxLength: number
   inputRef?: Ref<HTMLInputElement>
-  /** Universe accent (used for header glow + active border). */
+  /** Universe accent (used for header colour + active border + microcopy). */
   themeColor?: string
   /** AddToCartButton — caller passes it in fully wired up. */
   cta: ReactNode
-  /** Quantity selector slot (rendered between input + CTA so the
-   *  buying flow reads top-to-bottom inside one card). */
+  /** Optional quantity selector slot, rendered between input and CTA. */
   quantity?: ReactNode
-  /** Live social-proof line (rendered below the CTA + trust line) — a
-   *  last urgency nudge right before the click. */
+  /** Optional live social-proof line, rendered below the microcopy. */
   socialProof?: ReactNode
-  /** When false, the input + CTA are visible but the input keeps a
-   *  neutral border. When true, the active "ready" state lights up. */
+  /** Reserved (kept for API stability — the new layout shows the
+   *  "Ready to order" state implicitly via the active border). */
   isReady?: boolean
-  /** Mobile-only "3D Preview" pill. The desktop layout relies on the
-   *  gallery's pill (always in view), but on mobile the gallery
-   *  scrolls away once the customer is typing — so this in-card
-   *  pill keeps the preview discoverable. */
+  /** When provided, an inline "3D" affordance appears inside the input
+   *  (right side, after the character counter). Replaces the previous
+   *  mobile-only stand-alone preview button. */
   onPreview3D?: () => void
 }
 
 function hexToRgb(hex: string): string {
   const match = hex.replace('#', '').match(/.{2}/g)
-  if (!match || match.length < 3) return '25, 255, 122'
+  if (!match || match.length < 3) return '0, 245, 255'
   return `${parseInt(match[0]!, 16)}, ${parseInt(match[1]!, 16)}, ${parseInt(match[2]!, 16)}`
 }
 
 /**
- * Self-contained buying-flow card. Holds:
- *   1. name input  → 2. validation status → 3. quantity → 4. CTA
- *   5. trust microcopy → 6. live social proof
- * The 3D preview button is intentionally NOT rendered here — the only
- * 3D entry point lives on the gallery image so customers don't see two
- * competing buttons for the same action.
+ * Buying-flow card: header → name input (with counter + inline 3D
+ * affordance) → CTA → microcopy. Visual language is the cyberpunk
+ * neon-bordered panel with a soft cyan glow — dialled to read as a
+ * single self-contained "build your sign" card.
  */
 export function PersonalizeCard({
   value,
   onChange,
   maxLength,
   inputRef,
-  themeColor = '#22c55e',
+  themeColor = '#00f5ff',
   cta,
   quantity,
   socialProof,
-  isReady,
   onPreview3D,
 }: PersonalizeCardProps) {
   const [focused, setFocused] = useState(false)
   const accentRgb = hexToRgb(themeColor)
   const hasValue = value.trim().length > 0
   const blocked = hasValue && isBlockedName(value)
-  const valid = (isReady ?? true) && hasValue && !blocked
   const errorRgb = '255, 90, 90'
-  const counterColor = hasValue ? themeColor : 'rgba(255,255,255,0.32)'
+  const counterColor = hasValue ? themeColor : 'rgba(255,255,255,0.45)'
 
   return (
     <section
-      className="relative overflow-hidden rounded-[11px] border bg-white/[0.022] px-4 py-2.5 sm:px-5 sm:py-3"
+      className="relative overflow-hidden rounded-2xl border bg-[#06080d] p-5 sm:p-6"
       style={{
-        borderColor: `rgba(${accentRgb}, 0.22)`,
-        boxShadow: `inset 0 1px 0 rgba(${accentRgb}, 0.06), inset 0 0 16px rgba(${accentRgb}, 0.022)`,
+        borderColor: `rgba(${accentRgb}, 0.45)`,
+        boxShadow: `0 0 0 1px rgba(${accentRgb}, 0.05), inset 0 0 28px rgba(${accentRgb}, 0.05), 0 18px 40px -24px rgba(${accentRgb}, 0.35)`,
       }}
     >
-      {/* radial accent wash — lighter than before so the card reads as
-          a translucent elevation rather than a separate dark panel. */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background: `radial-gradient(circle at 18% 0%, rgba(${accentRgb}, 0.05), transparent 42%), linear-gradient(180deg, rgba(${accentRgb}, 0.018), transparent 60%)`,
-        }}
-      />
-      {/* hairline accent lines around the perimeter — toned down ~40%
-          so they whisper instead of fence the panel off from the page */}
-      <span
-        aria-hidden
-        className="pointer-events-none absolute left-4 top-0 h-px w-[36%]"
-        style={{
-          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.32), rgba(${accentRgb}, 0.1), transparent)`,
-        }}
-      />
-      <span
-        aria-hidden
-        className="pointer-events-none absolute right-9 top-0 h-px w-[18%]"
-        style={{
-          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.16), transparent)`,
-        }}
-      />
-      <span
-        aria-hidden
-        className="pointer-events-none absolute bottom-0 left-6 h-px w-[24%]"
-        style={{
-          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.18), transparent)`,
-        }}
-      />
-      <span
-        aria-hidden
-        className="pointer-events-none absolute bottom-0 right-5 h-px w-[30%]"
-        style={{
-          background: `linear-gradient(90deg, transparent, rgba(${accentRgb}, 0.12), rgba(${accentRgb}, 0.22), transparent)`,
-        }}
-      />
-      <span
-        aria-hidden
-        className="pointer-events-none absolute left-0 top-4 h-[48%] w-px"
-        style={{
-          background: `linear-gradient(180deg, transparent, rgba(${accentRgb}, 0.22), rgba(${accentRgb}, 0.08), transparent)`,
-        }}
-      />
-      <span
-        aria-hidden
-        className="pointer-events-none absolute right-0 bottom-5 h-[34%] w-px"
-        style={{
-          background: `linear-gradient(180deg, transparent, rgba(${accentRgb}, 0.14), transparent)`,
-        }}
-      />
+      {/* Header */}
+      <header className="relative mb-4">
+        <h3
+          className="font-display text-[13px] font-bold uppercase tracking-[0.16em] sm:text-sm"
+          style={{ color: themeColor }}
+        >
+          Personalize your sign
+        </h3>
+        <p className="mt-1.5 text-[13px] leading-snug text-white/65 sm:text-sm">
+          Enter your name to personalize your product.
+        </p>
+      </header>
 
+      {/* Input row */}
       <div className="relative">
         <input
           ref={inputRef}
@@ -138,7 +92,8 @@ export function PersonalizeCard({
           placeholder="Type your name"
           aria-label="Your name on the sign"
           className={cn(
-            'block h-12 w-full rounded-[9px] border bg-[#071112] px-4 pr-16 text-left text-base font-bold uppercase tracking-[0.08em] leading-none text-white placeholder-white/20 outline-none transition-all duration-200 sm:text-[17px]',
+            'block h-14 w-full rounded-xl border bg-transparent pl-5 text-left text-base font-bold uppercase tracking-[0.1em] leading-none text-white placeholder-white/30 outline-none transition-all duration-200 sm:text-lg',
+            onPreview3D ? 'pr-[110px]' : 'pr-20',
           )}
           style={{
             caretColor: blocked ? `rgb(${errorRgb})` : themeColor,
@@ -146,77 +101,70 @@ export function PersonalizeCard({
               ? `rgba(${errorRgb}, 0.7)`
               : focused
               ? `rgba(${accentRgb}, 0.85)`
-              : valid
-              ? `rgba(${accentRgb}, 0.5)`
-              : `rgba(${accentRgb}, 0.16)`,
+              : `rgba(${accentRgb}, 0.4)`,
             boxShadow: blocked
-              ? `inset 0 0 14px rgba(${errorRgb}, 0.12), 0 0 0 3px rgba(${errorRgb}, 0.18), 0 0 14px rgba(${errorRgb}, 0.3)`
+              ? `inset 0 0 14px rgba(${errorRgb}, 0.12), 0 0 0 3px rgba(${errorRgb}, 0.18)`
               : focused
-              ? `inset 0 0 14px rgba(${accentRgb}, 0.1), 0 0 0 3px rgba(${accentRgb}, 0.18), 0 0 14px rgba(${accentRgb}, 0.32)`
-              : valid
-              ? `inset 0 0 12px rgba(${accentRgb}, 0.06), 0 0 8px rgba(${accentRgb}, 0.18)`
-              : `inset 0 0 10px rgba(${accentRgb}, 0.03)`,
+              ? `inset 0 0 14px rgba(${accentRgb}, 0.08), 0 0 0 3px rgba(${accentRgb}, 0.18), 0 0 14px rgba(${accentRgb}, 0.28)`
+              : `inset 0 0 12px rgba(${accentRgb}, 0.04)`,
           }}
         />
-        <span
-          aria-hidden
-          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono font-semibold tabular-nums uppercase tracking-wide transition-colors"
-          style={{ color: counterColor }}
-        >
-          {value.length}/{maxLength}
-        </span>
+
+        {/* Right-side cluster: counter · divider · 3D pill (when wired) */}
+        <div className="pointer-events-none absolute right-4 top-1/2 flex -translate-y-1/2 items-center gap-3">
+          <span
+            aria-hidden
+            className="font-mono text-xs font-semibold tabular-nums tracking-wide transition-colors"
+            style={{ color: counterColor }}
+          >
+            {value.length}/{maxLength}
+          </span>
+
+          {onPreview3D && (
+            <>
+              <span
+                aria-hidden
+                className="h-5 w-px"
+                style={{ background: `rgba(${accentRgb}, 0.35)` }}
+              />
+              <button
+                type="button"
+                onClick={onPreview3D}
+                aria-label="Open 3D preview"
+                className="pointer-events-auto inline-flex items-center gap-1.5 rounded-md px-1.5 py-1 text-xs font-bold uppercase tracking-[0.14em] transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2"
+                style={{ color: themeColor }}
+              >
+                <Box className="h-4 w-4" strokeWidth={2.25} />
+                3D
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
-      {/* Tri-state status — fixed-height row so the card never jumps. */}
-      <div className="relative mt-2 flex h-4 items-center justify-center">
-        {valid && (
-          <span
-            className="inline-flex items-center gap-1 text-[11px] font-semibold leading-none"
-            style={{ color: themeColor }}
-          >
-            <Check className="h-3 w-3" strokeWidth={3} />
-            Ready to order
-          </span>
-        )}
-        {blocked && (
-          <span
-            className="inline-flex items-center gap-1 text-[11px] font-semibold leading-none"
-            style={{ color: `rgb(${errorRgb})` }}
-            role="alert"
-          >
-            <AlertCircle className="h-3 w-3" strokeWidth={2.5} />
-            This name isn&apos;t allowed
-          </span>
-        )}
-      </div>
-
-      {quantity && <div className="relative mt-3">{quantity}</div>}
-
-      {onPreview3D && (
-        <button
-          type="button"
-          onClick={onPreview3D}
-          className="lg:hidden relative mt-3 flex w-full items-center justify-center gap-1.5 rounded-[9px] border bg-white/[0.025] px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.14em] text-white/85 transition-colors hover:bg-white/[0.05] hover:text-white"
-          style={{
-            borderColor: `rgba(${accentRgb}, 0.32)`,
-          }}
-          aria-label="Open 3D preview"
-        >
-          <Box className="h-3.5 w-3.5" strokeWidth={2.25} style={{ color: themeColor }} />
-          3D Preview
-        </button>
+      {/* Blocked-name error — only shown when the entered name fails the
+          word-list. The "Ready to order" success state was dropped per
+          the redesign; the lit-up input border is signal enough. */}
+      {blocked && (
+        <div className="mt-2 flex items-center gap-1.5 text-[11.5px] font-semibold leading-none" role="alert">
+          <AlertCircle className="h-3.5 w-3.5" strokeWidth={2.5} style={{ color: `rgb(${errorRgb})` }} />
+          <span style={{ color: `rgb(${errorRgb})` }}>This name isn&apos;t allowed</span>
+        </div>
       )}
 
+      {quantity && <div className="mt-4">{quantity}</div>}
+
+      {/* CTA — soft halo behind it that breathes on hover */}
       <div
         className={cn(
-          'cta-halo-wrap relative mt-3 transition-opacity',
+          'cta-halo-wrap relative mt-5 transition-opacity',
           blocked && 'pointer-events-none opacity-40',
         )}
         aria-disabled={blocked || undefined}
       >
         <span
           aria-hidden
-          className="cta-halo pointer-events-none absolute -inset-1 rounded-[12px]"
+          className="cta-halo pointer-events-none absolute -inset-1 rounded-[14px]"
           style={{
             boxShadow: `0 0 28px rgba(${accentRgb}, 0.5), 0 0 60px rgba(${accentRgb}, 0.25)`,
           }}
@@ -224,19 +172,20 @@ export function PersonalizeCard({
         <div className="relative">{cta}</div>
       </div>
 
+      {/* Microcopy — accent-coloured, centered, all-caps */}
       <p
-        className="relative mt-3.5 text-center text-[10.5px] font-semibold uppercase leading-none tracking-[0.16em]"
-        style={{ color: `rgba(${accentRgb}, 0.7)` }}
+        className="mt-4 text-center text-[11px] font-bold uppercase leading-none tracking-[0.18em]"
+        style={{ color: `rgba(${accentRgb}, 0.85)` }}
       >
         Made to order
-        <span className="mx-1.5 text-white/30">·</span>
+        <span className="mx-2 text-white/30">·</span>
         Ships in 2–3 days
       </p>
 
       {socialProof && (
         <div
-          className="relative mt-4 border-t pt-3.5"
-          style={{ borderColor: `rgba(${accentRgb}, 0.12)` }}
+          className="mt-4 border-t pt-3.5"
+          style={{ borderColor: `rgba(${accentRgb}, 0.15)` }}
         >
           {socialProof}
         </div>

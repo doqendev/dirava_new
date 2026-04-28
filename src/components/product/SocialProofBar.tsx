@@ -130,18 +130,21 @@ export function SocialProofBar({ productHandle }: SocialProofBarProps) {
     // Static placeholder during SSR / first paint. Same vertical
     // height as the populated state so layout doesn't jump.
     return (
-      <div className="text-[12px] leading-none text-white/40">
+      <div className="text-[11px] leading-none text-white/30">
         <span>Loading activity…</span>
       </div>
     )
   }
 
+  // Visually secondary to the rating/orders line above: smaller text,
+  // softer fill, no white-bold counts. Communicates "live" without
+  // pulling the eye away from the durable trust signal.
   return (
-    <div className="text-[12px] leading-none text-white/75">
+    <div className="text-[11px] leading-none text-white/55">
       <span className="truncate">
-        <strong className="font-semibold text-white">{viewing}</strong> viewing now
-        <span className="mx-1.5 text-white/35">·</span>
-        <strong className="font-semibold text-white">{sold}</strong> sold today
+        <strong className="font-semibold text-white/80">{viewing}</strong> viewing now
+        <span className="mx-1.5 text-white/25">·</span>
+        <strong className="font-semibold text-white/80">{sold}</strong> sold today
       </span>
     </div>
   )
