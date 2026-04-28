@@ -50,8 +50,11 @@ export function RecentlyViewed({
       </h2>
 
       <div className="relative">
-        {/* Horizontal scroll container on mobile, grid on larger screens */}
-        <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide md:grid md:grid-cols-4 md:overflow-visible md:pb-0">
+        {/* Horizontal scroll container on mobile, grid on larger
+            screens. Scrollbar inherits the universe accent from the
+            global ::-webkit-scrollbar / scrollbar-color rules in
+            globals.css (keyed off --accent-rgb). */}
+        <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory md:grid md:grid-cols-4 md:overflow-visible md:pb-0">
           {displayItems.map((item) => (
             <div
               key={item.productId}

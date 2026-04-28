@@ -219,7 +219,7 @@ export function PersonalizeCard({
       >
         Made to order
         <span className="mx-2 text-white/30">·</span>
-        Ships in 2–3 days
+        Ready in 2-3 days
       </p>
 
       {socialProof && (

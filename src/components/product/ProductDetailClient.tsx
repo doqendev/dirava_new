@@ -25,6 +25,7 @@ import { RatingOrdersChip } from '@/components/product/RatingOrdersChip'
 import { SocialProofBar } from '@/components/product/SocialProofBar'
 import { LimitedSlotsBanner } from '@/components/product/LimitedSlotsBanner'
 import { TrustStrip } from '@/components/product/TrustStrip'
+import { ProductDescription } from '@/components/product/ProductDescription'
 import { getProductChips } from '@/data/productChips'
 import { useTrackProductView } from '@/hooks/useTrackProductView'
 import { useCookieConsentStore } from '@/stores/cookieConsentStore'
@@ -612,12 +613,13 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 <div
                   className={cn(
                     'overflow-hidden transition-all duration-300',
-                    isDescriptionOpen ? 'max-h-[500px] opacity-100 pb-6' : 'max-h-0 opacity-0'
+                    isDescriptionOpen ? 'max-h-[1200px] opacity-100 pb-6' : 'max-h-0 opacity-0'
                   )}
                 >
-                  <div
-                    className="prose prose-invert prose-sm max-w-[680px] text-[14px] text-white/75 leading-relaxed [&_*]:!bg-transparent [&_*]:!text-inherit"
-                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.descriptionHtml) }}
+                  <ProductDescription
+                    handle={product.handle}
+                    isPersonalized={product.personalization}
+                    fallbackHtml={sanitizeHtml(product.descriptionHtml)}
                   />
                 </div>
               </div>
