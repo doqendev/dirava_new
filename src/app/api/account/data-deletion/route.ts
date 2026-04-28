@@ -9,7 +9,10 @@
  */
 
 import { NextResponse } from 'next/server'
-import { appendCustomerComplianceEvent } from '@/lib/shopify/customerCompliance'
+import {
+  appendCustomerComplianceEvent,
+  redactCustomerPII,
+} from '@/lib/shopify/customerCompliance'
 import { getAuthenticatedCustomer, getCustomerAccessToken } from '@/lib/auth/customer'
 import { shopifyClient } from '@/lib/shopify/client'
 import { GET_CUSTOMER } from '@/lib/shopify/customerQueries'
@@ -72,6 +75,26 @@ export async function POST(request: Request) {
       console.error('Failed to record data deletion audit event:', auditError)
     }
 
+    // Attempt automatic PII redaction via the Admin API. Anonymising
+    // (rather than hard-deleting) is the practical Article 17 path
+    // because Shopify keeps order records for financial compliance
+    // and won't delete customers tied to orders. After this runs the
+    // customer can no longer log in and their PII is unlinked from
+    // their identity. We still send the admin notification below as a
+    // belt-and-braces fallback for the cases where redaction fails
+    // (missing Admin API creds, network error, etc).
+    let redactionStatus: 'redacted' | 'manual' = 'manual'
+    try {
+      await redactCustomerPII({
+        customerId: customer.id,
+        customerNumericIdHash: customer.id.split('/').pop() ?? requestedAt,
+      })
+      redactionStatus = 'redacted'
+      console.log(`[GDPR] PII redacted for customer ID: ${customer.id}`)
+    } catch (redactError) {
+      console.error('[GDPR] Automatic redaction failed; falling back to manual workflow:', redactError)
+    }
+
     const shopifyStoreDomain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN
     if (shopifyStoreDomain) {
       try {
@@ -110,9 +133,12 @@ export async function POST(request: Request) {
       {
         success: true,
         message:
-          'Your data deletion request has been received. We will process it within 30 days as required by GDPR. You will receive a confirmation email.',
+          redactionStatus === 'redacted'
+            ? 'Your account has been deleted. Your personal data has been removed from our systems immediately. Order records are kept anonymously for tax and financial compliance only.'
+            : 'Your data deletion request has been received. We will process it within 30 days as required by GDPR. You will receive a confirmation email.',
         requestedAt,
         email: customer.email,
+        status: redactionStatus,
       },
       {
         headers: { 'Cache-Control': 'no-store' },

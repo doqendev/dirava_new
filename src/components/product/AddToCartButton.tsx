@@ -11,6 +11,7 @@ import { useUIStore } from '@/stores/uiStore'
 import { useToastStore } from '@/stores/toastStore'
 import { useCookieConsentStore } from '@/stores/cookieConsentStore'
 import { trackAddToCart } from '@/lib/tracking/trackClear'
+import { isBlockedName } from '@/lib/utils/personalizationBlocklist'
 
 interface AddToCartButtonProps {
   variantId: string
@@ -28,7 +29,7 @@ interface AddToCartButtonProps {
   themeColor?: string
 }
 
-type ButtonState = 'idle' | 'loading' | 'success' | 'error' | 'personalization-error'
+type ButtonState = 'idle' | 'loading' | 'success' | 'error' | 'personalization-error' | 'name-blocked'
 
 export function AddToCartButton({
   variantId,
@@ -58,6 +59,18 @@ export function AddToCartButton({
     // Check personalization requirement
     if (requiresPersonalization && !personalizationValue.trim()) {
       setState('personalization-error')
+      onPersonalizationError?.()
+      setTimeout(() => setState('idle'), 2000)
+      return
+    }
+
+    // Hard-block disallowed names. The PersonalizeCard already shows an
+    // inline warning, but the CTA itself only dims via pointer-events,
+    // which doesn't stop a keyboard Enter or a screen-reader activation.
+    // Block at the click handler so disallowed content can never reach
+    // the cart attributes (and from there, the manufacturer).
+    if (requiresPersonalization && isBlockedName(personalizationValue)) {
+      setState('name-blocked')
       onPersonalizationError?.()
       setTimeout(() => setState('idle'), 2000)
       return
@@ -114,6 +127,7 @@ export function AddToCartButton({
     ),
     error: <>{tCommon('error').toUpperCase()}</>,
     'personalization-error': <>{t('personalizationRequired').toUpperCase()}</>,
+    'name-blocked': <>{t('personalizationBlocked').toUpperCase()}</>,
   }
 
   if (!available) {
@@ -149,6 +163,7 @@ export function AddToCartButton({
           state === 'success' && 'bg-neon-green hover:bg-neon-green/90',
           state === 'error' && 'bg-red-500 hover:bg-red-500/90',
           state === 'personalization-error' && 'bg-orange-500 hover:bg-orange-500/90',
+          state === 'name-blocked' && 'bg-red-500 hover:bg-red-500/90',
           className
         )}
         style={

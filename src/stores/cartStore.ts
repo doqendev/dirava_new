@@ -11,6 +11,7 @@ import {
 } from '@/lib/shopify/mutations'
 import { GET_CART } from '@/lib/shopify/queries'
 import { useLocaleStore } from '@/stores/localeStore'
+import { isBlockedName } from '@/lib/utils/personalizationBlocklist'
 import type { ShopifyCartLine, ShopifyMoney, ShopifyDiscountCode } from '@/types/shopify'
 
 /**
@@ -134,6 +135,23 @@ export const useCartStore = create<CartState>()(
       },
 
       addItem: async (variantId, quantity = 1, attributes) => {
+        // Defense-in-depth: refuse to send a personalization value
+        // through the blocklist. AddToCartButton already checks this
+        // before every click, but any caller that bypasses the button
+        // (programmatic add-to-cart, future code paths) goes through
+        // here too. Throwing keeps the cart in a clean state and lets
+        // the caller surface a toast.
+        if (attributes) {
+          const personalization = attributes.find(
+            (attr) => attr.key === 'Personalization'
+          )
+          if (personalization && isBlockedName(personalization.value)) {
+            const err = new Error('Personalization name is not allowed')
+            ;(err as Error & { code?: string }).code = 'NAME_BLOCKED'
+            throw err
+          }
+        }
+
         const { cartId } = get()
         set({ isLoading: true, error: null })
 
