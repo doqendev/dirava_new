@@ -306,7 +306,13 @@
     "name": "Name",
     "email": "Email",
     "phone": "Phone",
-    "defaultAddress": "Default Address"
+    "defaultAddress": "Default Address",
+    "wishlistDescription": "Items you've saved for later",
+    "profileInformation": "Profile Information",
+    "emailPreferences": "Email Preferences",
+    "profileUpdated": "Profile updated successfully",
+    "marketingEmails": "Marketing emails",
+    "noAddressesYet": "No Addresses Yet"
   },
   "worlds": {
     "exploreTitle": "EXPLORE",

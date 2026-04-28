@@ -306,7 +306,13 @@
     "name": "Nom",
     "email": "Email",
     "phone": "Téléphone",
-    "defaultAddress": "Adresse par défaut"
+    "defaultAddress": "Adresse par défaut",
+    "wishlistDescription": "Articles que vous avez enregistrés",
+    "profileInformation": "Informations du profil",
+    "emailPreferences": "Préférences e-mail",
+    "profileUpdated": "Profil mis à jour avec succès",
+    "marketingEmails": "E-mails marketing",
+    "noAddressesYet": "Pas encore d’adresses"
   },
   "worlds": {
     "exploreTitle": "EXPLOREZ LES",

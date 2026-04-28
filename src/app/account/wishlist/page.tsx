@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Heart, Trash2, ShoppingCart, ArrowRight } from 'lucide-react'
@@ -13,6 +14,8 @@ import { formatPrice } from '@/lib/utils/formatPrice'
 import type { WishlistItem } from '@/types/wishlist'
 
 export default function WishlistPage() {
+  const tWishlist = useTranslations('wishlist')
+  const tAccount = useTranslations('account')
   const { items, removeItem } = useWishlistStore()
 
   // Hydration fix - only render items after mount
@@ -35,7 +38,7 @@ export default function WishlistPage() {
 
   if (!mounted) {
     return (
-      <AccountLayout title="Wishlist" description="Items you've saved for later">
+      <AccountLayout title={tWishlist('title')} description={tAccount('wishlistDescription')}>
         <div className="animate-pulse space-y-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="h-32 bg-bg-card/50 rounded-xl" />
@@ -52,7 +55,7 @@ export default function WishlistPage() {
           <div className="w-16 h-16 rounded-full bg-bg-secondary flex items-center justify-center mx-auto mb-4">
             <Heart className="w-8 h-8 text-white/30" />
           </div>
-          <h2 className="font-display text-xl text-white mb-2">Your Wishlist is Empty</h2>
+          <h2 className="font-display text-xl text-white mb-2">{tWishlist('empty')}</h2>
           <p className="text-white/60 mb-6">
             Save items you love by clicking the heart icon on any product.
           </p>

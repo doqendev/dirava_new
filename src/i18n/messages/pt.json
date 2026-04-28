@@ -306,7 +306,13 @@
     "name": "Nome",
     "email": "Email",
     "phone": "Telefone",
-    "defaultAddress": "Morada predefinida"
+    "defaultAddress": "Morada predefinida",
+    "wishlistDescription": "Artigos que guardaste",
+    "profileInformation": "Informações do perfil",
+    "emailPreferences": "Preferências de e-mail",
+    "profileUpdated": "Perfil atualizado com sucesso",
+    "marketingEmails": "E-mails de marketing",
+    "noAddressesYet": "Ainda sem endereços"
   },
   "worlds": {
     "exploreTitle": "EXPLORA",

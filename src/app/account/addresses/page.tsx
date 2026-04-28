@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { MapPin, Plus, Trash2, Star, Loader2 } from 'lucide-react'
 import { AccountLayout } from '@/components/account/AccountLayout'
 import { AddressForm } from '@/components/account/AddressForm'
@@ -12,6 +13,7 @@ import type { ShopifyCustomerAddress, AddressFormData } from '@/types/customer'
 import { useAuthStore } from '@/stores/authStore'
 
 export default function AddressesPage() {
+  const tAccount = useTranslations('account')
   const { customer } = useRequireAuth()
   const { fetchCustomer } = useAuthStore()
 
@@ -110,7 +112,7 @@ export default function AddressesPage() {
   }
 
   return (
-    <AccountLayout title="Addresses" description="Manage your shipping addresses">
+    <AccountLayout title={tAccount('addresses')} description={tAccount('manageAddressesDescription')}>
       {/* Add Address Button */}
       <div className="mb-6">
         <Button variant="primary" glow="cyan" onClick={openAddModal}>
@@ -125,7 +127,7 @@ export default function AddressesPage() {
           <div className="w-16 h-16 rounded-full bg-bg-secondary flex items-center justify-center mx-auto mb-4">
             <MapPin className="w-8 h-8 text-white/30" />
           </div>
-          <h2 className="font-display text-xl text-white mb-2">No Addresses Yet</h2>
+          <h2 className="font-display text-xl text-white mb-2">{tAccount('noAddressesYet')}</h2>
           <p className="text-white/60">
             Add a shipping address to speed up checkout.
           </p>

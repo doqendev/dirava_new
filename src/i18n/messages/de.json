@@ -306,7 +306,13 @@
     "name": "Name",
     "email": "E-Mail",
     "phone": "Telefon",
-    "defaultAddress": "Standardadresse"
+    "defaultAddress": "Standardadresse",
+    "wishlistDescription": "Artikel, die du gespeichert hast",
+    "profileInformation": "Profilinformationen",
+    "emailPreferences": "E-Mail-Einstellungen",
+    "profileUpdated": "Profil erfolgreich aktualisiert",
+    "marketingEmails": "Marketing-E-Mails",
+    "noAddressesYet": "Noch keine Adressen"
   },
   "worlds": {
     "exploreTitle": "ENTDECKE",

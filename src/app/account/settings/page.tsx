@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Save, AlertCircle, CheckCircle } from 'lucide-react'
 import { AccountLayout } from '@/components/account/AccountLayout'
 import { Input } from '@/components/ui/Input'
@@ -11,6 +12,8 @@ import { useAuthStore } from '@/stores/authStore'
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
 export default function SettingsPage() {
+  const tAccount = useTranslations('account')
+  const tAuth = useTranslations('auth')
   const { customer } = useRequireAuth()
   const { updateCustomer } = useAuthStore()
 
@@ -51,10 +54,10 @@ export default function SettingsPage() {
   }
 
   return (
-    <AccountLayout title="Settings" description="Manage your account settings">
+    <AccountLayout title={tAccount('settings')} description={tAccount('accountSettingsDescription')}>
       {/* Profile Settings */}
       <div className="bg-bg-card/50 backdrop-blur-sm border border-border-subtle rounded-xl p-6 mb-6">
-        <h2 className="font-display text-lg text-white mb-4">Profile Information</h2>
+        <h2 className="font-display text-lg text-white mb-4">{tAccount('profileInformation')}</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">
@@ -105,7 +108,7 @@ export default function SettingsPage() {
           {status === 'success' && (
             <div className="flex items-center gap-2 text-neon-green text-sm">
               <CheckCircle className="w-4 h-4" />
-              <span>Profile updated successfully</span>
+              <span>{tAccount('profileUpdated')}</span>
             </div>
           )}
 
@@ -123,7 +126,7 @@ export default function SettingsPage() {
 
       {/* Password Section */}
       <div className="bg-bg-card/50 backdrop-blur-sm border border-border-subtle rounded-xl p-6">
-        <h2 className="font-display text-lg text-white mb-4">Password</h2>
+        <h2 className="font-display text-lg text-white mb-4">{tAuth('password')}</h2>
         <p className="text-white/60 text-sm mb-4">
           To change your password, use the forgot password flow.
         </p>
@@ -134,7 +137,7 @@ export default function SettingsPage() {
 
       {/* Marketing Preferences - Optional */}
       <div className="bg-bg-card/50 backdrop-blur-sm border border-border-subtle rounded-xl p-6 mt-6">
-        <h2 className="font-display text-lg text-white mb-4">Email Preferences</h2>
+        <h2 className="font-display text-lg text-white mb-4">{tAccount('emailPreferences')}</h2>
         <label className="flex items-start gap-3 cursor-pointer">
           <input
             type="checkbox"
@@ -145,7 +148,7 @@ export default function SettingsPage() {
             }}
           />
           <div>
-            <span className="text-white">Marketing emails</span>
+            <span className="text-white">{tAccount('marketingEmails')}</span>
             <p className="text-sm text-white/50">
               Receive updates about new drops, exclusive offers, and anime culture.
             </p>
