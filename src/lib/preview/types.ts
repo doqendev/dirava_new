@@ -42,6 +42,55 @@ export interface LayerConfig {
   cutGroup?: string
   /** If true on a cut layer, this cut is applied to all non-`noCut` layers, including the base layer. */
   cutThroughAll?: boolean
+  /** Use face normals instead of averaged vertex normals. The default smooth
+   *  shading averages normals at the front-face/side-wall seam, producing a
+   *  bright rim at the silhouette outline that bleeds past an overlaid decal.
+   *  Flat shading makes each face uniformly lit and kills the rim ring. */
+  flatShading?: boolean
+  /** Render this layer with MeshBasicMaterial (unlit, no specular / Fresnel).
+   *  Useful for a silhouette base hidden behind a painted decal: PBR materials
+   *  produce a 4 % Fresnel reflection at glancing angles even at metalness 0,
+   *  which shows as a thin bright rim around the decal. Unlit black eliminates
+   *  that entirely. The layer no longer reacts to scene lighting. */
+  unlit?: boolean
+}
+
+/**
+ * Optional planar overlay rendered on the front face of an svg-extrusion
+ * sign. The decal is a single PNG/WebP authored from the same artboard as
+ * the silhouette SVG, so the painted artwork (gradients, character art,
+ * multi-colour shading) sits flush against the matte 3D-printed body.
+ *
+ * Used to mirror the real product's UV-painted front face — colour fidelity
+ * the per-fill paint-layer pipeline can't reach.
+ */
+export interface FrontDecalConfig {
+  /** Public path to the decal image (PNG/WebP). Must be authored against
+   *  the same bounds as the corresponding SVG silhouette so it overlays 1:1. */
+  texture: string
+  /** Z position in SVG units. Should be ≥ the base silhouette's depth so
+   *  the decal sits flush on the front face. Default 12.05. */
+  zOffset?: number
+  /** Multiplier applied to the decal's color when the LED is "on". Values
+   *  above 1 push bright pixels into HDR territory so the bloom pass
+   *  spreads them as a stronger glow. Default 1 (full texture color). */
+  lightIntensity?: number
+  /** Standard PBR knobs. Defaults tuned for a UV-painted look. */
+  roughness?: number          // default 0.35
+  metalness?: number          // default 0
+  clearcoat?: number          // default 0.4
+  clearcoatRoughness?: number // default 0.3
+  /** When set, paints the decal with an emissive map driven by the texture
+   *  itself. Lets bright pixels self-light without the dark areas glowing. */
+  emissive?: string           // default '#ffffff' when emissiveIntensity > 0
+  emissiveIntensity?: number  // default 0
+  /** Alpha threshold for transparent edges. Default 0.01. */
+  alphaTest?: number
+  /** Multiplier on plane size relative to the SVG bounds (default 1). */
+  scale?: number
+  /** SVG-unit X/Y offset applied after centering on SVG bounds (default 0/0). */
+  offsetX?: number
+  offsetY?: number
 }
 
 export interface CameraConfig {
@@ -67,6 +116,10 @@ export interface PreviewConfig {
   svg?: string
   /** Map variant option value → SVG file path (for variant-specific SVGs) */
   variantSvgs?: Record<string, string>
+  /** Optional front-face painted decal for svg-extrusion signs. */
+  frontDecal?: FrontDecalConfig
+  /** Per-variant front decal overrides (variant name → decal config). */
+  variantFrontDecals?: Record<string, FrontDecalConfig>
   /** Map variant option value → thumbnail image path (for visual variant selector) */
   variantImages?: Record<string, string>
   /** Bar SVG paths for composite-sign type */

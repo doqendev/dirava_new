@@ -2740,13 +2740,37 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   forceUppercase: true,
   svg: '/svgs/preview/one-piece-lightbox-luffy.svg',
   variantSvgs: {
-    Luffy: '/svgs/preview/one-piece-lightbox-luffy.svg',
+    // Luffy now ships as a fully-black silhouette overlaid with a
+    // UV-painted PNG decal (see variantFrontDecals.Luffy below). Other
+    // characters still use the per-fill paint-layer pipeline until their
+    // decal artwork is authored.
+    Luffy: '/svgs/preview/luffy-painted.svg',
     Zoro: '/svgs/preview/one-piece-lightbox-zoro.svg',
     Ace: '/svgs/preview/one-piece-lightbox-ace.svg',
     Chopper: '/svgs/preview/one-piece-lightbox-chopper.svg',
     Law: '/svgs/preview/one-piece-lightbox-law.svg',
     Nami: '/svgs/preview/one-piece-lightbox-nami.svg',
     Shanks: '/svgs/preview/one-piece-lightbox-shanks.svg',
+  },
+  // UV-painted decal artwork. When a variant has an entry here, the scene
+  // overlays the PNG on the silhouette's front face instead of relying on
+  // per-fill paint layers — matches the real product's printed-then-painted
+  // workflow and unlocks gradients / shading the layer pipeline can't do.
+  variantFrontDecals: {
+    Luffy: {
+      texture: '/textures/preview/luffy-painted.png',
+      // Sit just above the 12-unit base so we don't z-fight with the
+      // silhouette's front face.
+      zOffset: 12.05,
+      // Slight clearcoat for the wet UV-painted finish.
+      roughness: 0.35,
+      clearcoat: 0.45,
+      clearcoatRoughness: 0.3,
+      // Decal renders unlit via MeshBasicMaterial; lightIntensity > 1
+      // pushes bright pixels into HDR so the bloom pass turns them into
+      // a stronger LED-style glow.
+      lightIntensity: 1.8,
+    },
   },
   layers: [
     // Black silhouette — the whole lightbox body at 20mm depth.
@@ -2767,12 +2791,15 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
       metalness: 0.1,
       roughness: 0.85,
     },
+    // The painted-decal variant (Luffy) uses pure-black SVG paths. Render
+    // the base unlit so the side walls have zero Fresnel reflection — PBR
+    // materials would otherwise produce a 4 % bright rim at glancing angles
+    // that bleeds past the overlaid decal as a visible white outline.
     {
       svgColor: '#000000',
-      color: '#141414',
+      color: '#000000',
       depth: 12,
-      metalness: 0.1,
-      roughness: 0.85,
+      unlit: true,
     },
     // White UV paint (skull, bones, nameplate text outline area).
     {
@@ -2984,7 +3011,7 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
       metalness: 0.0,
       roughness: 0.4,
       emissive: '#ffffff',
-      emissiveIntensity: 1.6,
+      emissiveIntensity: 1.1,
     },
   ],
   textFontSize: 460,
@@ -3021,6 +3048,16 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   },
   nameplateBoxExpandAfter: 7,
   autoCenterNameplateOnBlueMarker: true,
+  // Luffy's painted SVG is a smaller (1159×1356) all-black silhouette with
+  // no #0000ff marker — autoCenter falls through to this explicit box.
+  // Coords trace the inner dark area of the yellow nameplate frame in the
+  // decal PNG; iterate these if the personalised text doesn't sit centred.
+  variantNameplateBoxes: {
+    Luffy: { x: 200, y: 1130, width: 760, height: 150 },
+  },
+  variantNameplateBoxesExpanded: {
+    Luffy: { x: 170, y: 1130, width: 820, height: 150 },
+  },
   // Bloom post-processing so the bright emissive layers actually glow
   // like an LED sign instead of just reading as a painted colour.
   postprocessingBloom: {

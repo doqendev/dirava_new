@@ -9,6 +9,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { StudioLighting } from './StudioLighting'
 import { SvgExtrudedLayer } from './SvgExtrudedLayer'
+import { SvgFrontDecal } from './SvgFrontDecal'
 import { ExtrudedTextLayer } from './ExtrudedTextLayer'
 import { Preview3DLoadingIndicator } from './LoadingSpinner'
 import { expandShapes } from '@/lib/preview/expandShapes'
@@ -70,6 +71,11 @@ function easeOutBack(t: number): number {
 
 export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, lightOn = true, yOffset = 0 }: SvgExtrusionSceneProps) {
   const [svgData, setSvgData] = useState<ReturnType<SVGLoader['parse']> | null>(null)
+  // viewBox of the loaded SVG (in raw SVG units). Used by the front-face
+  // decal so a PNG authored against the same artboard aligns with the
+  // silhouette regardless of how much padding the path leaves around the
+  // viewBox edges. `null` while the SVG is still loading or has no viewBox.
+  const [svgViewBox, setSvgViewBox] = useState<{ x: number; y: number; width: number; height: number } | null>(null)
   const [font, setFont] = useState<OpentypeFont | null>(null)
   const [loading, setLoading] = useState(true)
   const groupRef = useRef<THREE.Group>(null)
@@ -94,8 +100,22 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
         const loader = new SVGLoader()
         const data = loader.parse(svgText)
 
+        // Pull viewBox out of the raw XML — SVGLoader doesn't surface it
+        // and the front-face decal needs it to size itself against the
+        // original artboard (which the painted PNG is exported from)
+        // rather than against the path bbox.
+        const vbMatch = svgText.match(/viewBox\s*=\s*["']\s*([\d.+-eE\s,]+)\s*["']/)
+        let viewBox: { x: number; y: number; width: number; height: number } | null = null
+        if (vbMatch && vbMatch[1]) {
+          const parts = vbMatch[1].split(/[\s,]+/).map(Number).filter((n) => !Number.isNaN(n))
+          if (parts.length >= 4 && parts[2]! > 0 && parts[3]! > 0) {
+            viewBox = { x: parts[0]!, y: parts[1]!, width: parts[2]!, height: parts[3]! }
+          }
+        }
+
         if (!cancelled) {
           setSvgData(data)
+          setSvgViewBox(viewBox)
           setLoading(false)
         }
       } catch (error) {
@@ -217,6 +237,17 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
     displayText.length,
     detectedBlueCenter,
   ])
+
+  // Pick the active painted-front decal for the current variant. Per-variant
+  // overrides win; otherwise falls back to the global config.frontDecal.
+  // Variants without a decal entry render the existing per-fill paint
+  // layers as before.
+  const activeFrontDecal = useMemo(() => {
+    if (selectedVariantName && config.variantFrontDecals?.[selectedVariantName]) {
+      return config.variantFrontDecals[selectedVariantName]
+    }
+    return config.frontDecal
+  }, [config.frontDecal, config.variantFrontDecals, selectedVariantName])
 
   // Effective per-character step (in fontSize units).
   //
@@ -775,6 +806,18 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
                   lightOn={lightOn}
                 />
               ))}
+            {/* Painted front decal — replaces the per-fill paint layers
+                with a single PNG/WebP authored from the same artboard as
+                the silhouette. Mirrors the real product's UV-painted face
+                so gradients and character art render with full fidelity. */}
+            {activeFrontDecal && (
+              <SvgFrontDecal
+                config={activeFrontDecal}
+                viewBox={svgViewBox}
+                depthScale={DEPTH_SCALE}
+                lightOn={lightOn}
+              />
+            )}
           </group>
 
           {/* Text layers — centered on the SVG, or in the nameplate box
