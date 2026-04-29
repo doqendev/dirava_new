@@ -2730,9 +2730,9 @@ const previewConfigs: Record<string, PreviewConfig> = {
  * of the art. Painted layers are mildly emissive so the product reads as
  * LED-lit.
  *
- * Character coverage currently starts with Luffy; additional characters
- * are added by dropping matching SVGs under /public/svgs/preview/ and
- * extending the `variantSvgs` map below.
+ * Painted-decal character coverage is added by dropping a black silhouette
+ * SVG under /public/svgs/preview/ and its matching no-black PNG decal under
+ * /public/textures/preview/, then extending the maps below.
  */
 previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   type: 'svg-extrusion',
@@ -2740,17 +2740,17 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   forceUppercase: true,
   svg: '/svgs/preview/one-piece-lightbox-luffy.svg',
   variantSvgs: {
-    // Luffy now ships as a fully-black silhouette overlaid with a
-    // UV-painted PNG decal (see variantFrontDecals.Luffy below). Other
+    // Painted variants ship as fully-black silhouettes overlaid with
+    // UV-painted PNG decals (see variantFrontDecals below). Other
     // characters still use the per-fill paint-layer pipeline until their
     // decal artwork is authored.
     Luffy: '/svgs/preview/luffy-painted.svg',
-    Zoro: '/svgs/preview/one-piece-lightbox-zoro.svg',
-    Ace: '/svgs/preview/one-piece-lightbox-ace.svg',
-    Chopper: '/svgs/preview/one-piece-lightbox-chopper.svg',
-    Law: '/svgs/preview/one-piece-lightbox-law.svg',
-    Nami: '/svgs/preview/one-piece-lightbox-nami.svg',
-    Shanks: '/svgs/preview/one-piece-lightbox-shanks.svg',
+    Zoro: '/svgs/preview/zoro-painted.svg',
+    Ace: '/svgs/preview/ace-painted.svg',
+    Chopper: '/svgs/preview/chopper-painted.svg',
+    Law: '/svgs/preview/law-painted.svg',
+    Nami: '/svgs/preview/nami-painted.svg',
+    Shanks: '/svgs/preview/shanks-painted.svg',
   },
   // UV-painted decal artwork. When a variant has an entry here, the scene
   // overlays the PNG on the silhouette's front face instead of relying on
@@ -2766,20 +2766,141 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
       roughness: 0.35,
       clearcoat: 0.45,
       clearcoatRoughness: 0.3,
-      // Brighten the physical/emissive decal just enough for the bloom
-      // pass to catch near-white highlights without washing saturated
-      // mid-tones (yellow hat, red band) toward white.
-      lightIntensity: 1.15,
-      emissive: '#fff2c2',
-      emissiveIntensity: 0.55,
+      // Keep the lit face bright, but avoid pushing the whole decal into
+      // broad HDR bloom. The premium read comes from tight acrylic edge
+      // diffusion, not a soft halo around every painted pixel.
+      lightIntensity: 1.14,
+      emissive: '#ffffff',
+      emissiveIntensity: 0.36,
       internalGlow: {
-        opacity: 0.55,
-        intensity: 1.4,
-        blur: 11,
-        threshold: 38,
-        scale: 1.018,
+        opacity: 0.2,
+        intensity: 0.82,
+        blur: 6,
+        threshold: 56,
+        scale: 1.006,
         zOffset: 12.22,
-        warmth: 0.26,
+        color: '#ffffff',
+        warmth: 0,
+      },
+    },
+    Zoro: {
+      texture: '/textures/preview/zoro-painted.png',
+      zOffset: 12.05,
+      roughness: 0.35,
+      clearcoat: 0.45,
+      clearcoatRoughness: 0.3,
+      lightIntensity: 1.13,
+      emissive: '#ffffff',
+      emissiveIntensity: 0.34,
+      internalGlow: {
+        opacity: 0.18,
+        intensity: 0.76,
+        blur: 5,
+        threshold: 56,
+        scale: 1.006,
+        zOffset: 12.22,
+        color: '#ffffff',
+        warmth: 0,
+      },
+    },
+    Ace: {
+      texture: '/textures/preview/ace-painted.png',
+      zOffset: 12.05,
+      roughness: 0.35,
+      clearcoat: 0.45,
+      clearcoatRoughness: 0.3,
+      lightIntensity: 1.13,
+      emissive: '#ffffff',
+      emissiveIntensity: 0.34,
+      internalGlow: {
+        opacity: 0.18,
+        intensity: 0.74,
+        blur: 5,
+        threshold: 58,
+        scale: 1.006,
+        zOffset: 12.22,
+        color: '#ffffff',
+        warmth: 0.02,
+      },
+    },
+    Chopper: {
+      texture: '/textures/preview/chopper-painted.png',
+      zOffset: 12.05,
+      roughness: 0.35,
+      clearcoat: 0.45,
+      clearcoatRoughness: 0.3,
+      lightIntensity: 1.14,
+      emissive: '#ffffff',
+      emissiveIntensity: 0.35,
+      internalGlow: {
+        opacity: 0.19,
+        intensity: 0.78,
+        blur: 6,
+        threshold: 54,
+        scale: 1.006,
+        zOffset: 12.22,
+        color: '#ffffff',
+        warmth: 0,
+      },
+    },
+    Law: {
+      texture: '/textures/preview/law-painted.png',
+      zOffset: 12.05,
+      roughness: 0.35,
+      clearcoat: 0.45,
+      clearcoatRoughness: 0.3,
+      lightIntensity: 1.15,
+      emissive: '#ffffff',
+      emissiveIntensity: 0.36,
+      internalGlow: {
+        opacity: 0.2,
+        intensity: 0.84,
+        blur: 6,
+        threshold: 56,
+        scale: 1.006,
+        zOffset: 12.22,
+        color: '#ffe78a',
+        warmth: 0.08,
+      },
+    },
+    Nami: {
+      texture: '/textures/preview/nami-painted.png',
+      zOffset: 12.05,
+      roughness: 0.35,
+      clearcoat: 0.45,
+      clearcoatRoughness: 0.3,
+      lightIntensity: 1.14,
+      emissive: '#ffffff',
+      emissiveIntensity: 0.34,
+      internalGlow: {
+        opacity: 0.18,
+        intensity: 0.76,
+        blur: 5,
+        threshold: 56,
+        scale: 1.006,
+        zOffset: 12.22,
+        color: '#ffffff',
+        warmth: 0.04,
+      },
+    },
+    Shanks: {
+      texture: '/textures/preview/shanks-painted.png',
+      zOffset: 12.05,
+      roughness: 0.35,
+      clearcoat: 0.45,
+      clearcoatRoughness: 0.3,
+      lightIntensity: 1.12,
+      emissive: '#ffffff',
+      emissiveIntensity: 0.32,
+      internalGlow: {
+        opacity: 0.17,
+        intensity: 0.72,
+        blur: 5,
+        threshold: 58,
+        scale: 1.006,
+        zOffset: 12.22,
+        color: '#ffffff',
+        warmth: 0,
       },
     },
   },
@@ -2802,10 +2923,10 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
       metalness: 0.1,
       roughness: 0.85,
     },
-    // The painted-decal variant (Luffy) uses pure-black SVG paths. Render
-    // the base unlit so the side walls have zero Fresnel reflection — PBR
-    // materials would otherwise produce a 4 % bright rim at glancing angles
-    // that bleeds past the overlaid decal as a visible white outline.
+    // Painted-decal variants use pure-black SVG paths. Render the base
+    // unlit so the side walls have zero Fresnel reflection — PBR materials
+    // would otherwise produce a 4 % bright rim at glancing angles that
+    // bleeds past the overlaid decal as a visible white outline.
     {
       svgColor: '#000000',
       color: '#000000',
@@ -3018,26 +3139,41 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
     {
       color: '#ffffff',
       depth: 0.005,
-      offsetZ: 12.45,
+      offsetZ: 12.86,
       metalness: 0.0,
-      roughness: 0.4,
-      emissive: '#ffffff',
-      emissiveIntensity: 1.1,
+      roughness: 0.28,
+      unlit: true,
+      // Match the decal's neutral/cool LED diffuser while keeping the
+      // letters crisp enough to feel like a physical acrylic insert.
+      emissive: '#f2fbff',
+      emissiveIntensity: 1.55,
     },
   ],
   textFontSize: 460,
-  // Short names scale up until they fill ~96% of the nameplate width.
-  // The height ratio is intentionally >1 so the width-derived font size
-  // isn't capped prematurely — the ONEPIECE font's cap height is ~0.7×
-  // fontSize, so a ratio of 1.1 still fits visually inside the plate
-  // while letting 4-6 char names reach full width edge-to-edge.
-  textMaxWidthRatio: 0.96,
-  textMaxHeightRatio: 1.1,
+  // Short names scale up until they fill the nameplate nicely. Longer
+  // names tighten spacing first so letters stay large; font size only
+  // shrinks once spacing can no longer keep the name inside the border.
+  textMaxWidthRatio: 0.86,
+  textMaxHeightRatio: 1.32,
+  textMaxHeightRatioByLength: {
+    7: 1.28,
+    8: 1.02,
+    9: 0.92,
+    10: 0.82,
+    11: 0.72,
+    12: 0.64,
+  },
   // Wider letter spacing so the nameplate reads like an engraved
   // inscription and short names stretch across the widened text box.
-  // Long names auto-reduce this spacing down to a natural-touch floor
-  // so they still fit between the yellow frame edges.
-  textLetterSpacing: 0.25,
+  textLetterSpacing: 0.22,
+  textLetterSpacingByLength: {
+    4: 0.21,
+    5: 0.2,
+    6: 0.2,
+    7: 0.15,
+  },
+  textLetterSpacingAfterLength: 6,
+  textLetterSpacingAfterValue: 0.19,
   // Nameplate tuning for the shared 1860×1691 canvas all variants now
   // use. Blue plate is ~970×270 SVG units; the box below is sized a
   // bit larger so text can spill onto the yellow frame interior on
@@ -3057,43 +3193,40 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
     width: 1100,
     height: 260,
   },
-  nameplateBoxExpandAfter: 7,
+  nameplateBoxExpandAfter: 6,
   autoCenterNameplateOnBlueMarker: true,
-  // Luffy's painted SVG is a smaller (1159×1356) all-black silhouette with
-  // no #0000ff marker — autoCenter falls through to this explicit box.
-  // Coords trace the inner dark area of the yellow nameplate frame in the
-  // decal PNG; iterate these if the personalised text doesn't sit centred.
+  // Painted-decal variants use all-black silhouettes with no #0000ff marker,
+  // so autoCenter falls through to these explicit boxes. Coords trace the
+  // inner dark area of each decal PNG's nameplate frame; iterate these if
+  // the personalised text doesn't sit centred.
   variantNameplateBoxes: {
-    Luffy: { x: 175, y: 1115, width: 760, height: 175 },
+    Luffy: { x: 167, y: 1088, width: 790, height: 190 },
+    Zoro: { x: 155, y: 1052, width: 830, height: 182 },
+    Ace: { x: 90, y: 1208, width: 858, height: 190 },
+    Chopper: { x: 155, y: 1058, width: 834, height: 190 },
+    Law: { x: 278, y: 953, width: 690, height: 180 },
+    Nami: { x: 92, y: 1009, width: 778, height: 190 },
+    Shanks: { x: 220, y: 950, width: 856, height: 190 },
   },
   variantNameplateBoxesExpanded: {
-    Luffy: { x: 145, y: 1115, width: 820, height: 175 },
+    Luffy: { x: 140, y: 1088, width: 845, height: 190 },
+    Zoro: { x: 145, y: 1052, width: 850, height: 182 },
+    Ace: { x: 78, y: 1208, width: 882, height: 190 },
+    Chopper: { x: 143, y: 1058, width: 858, height: 190 },
+    Law: { x: 266, y: 953, width: 714, height: 180 },
+    Nami: { x: 80, y: 1009, width: 802, height: 190 },
+    Shanks: { x: 208, y: 950, width: 880, height: 190 },
   },
   // Bloom post-processing so the bright emissive layers actually glow
   // like an LED sign instead of just reading as a painted colour.
   postprocessingBloom: {
-    intensity: 0.4,
+    intensity: 0.22,
     // Raised so only near-white highlights (skull, bones, name text) cross
     // the threshold — coloured mid-tones (yellow hat, red band) stay fully
     // saturated instead of washing toward white.
-    luminanceThreshold: 0.85,
-    luminanceSmoothing: 0.7,
+    luminanceThreshold: 0.82,
+    luminanceSmoothing: 0.38,
   },
-  // Names longer than 9 characters are allowed to shrink below the base
-  // font size (down to 80% of it) so the adaptive spacing doesn't have
-  // to squash letters into each other to fit.
-  textShrinkAfter: 9,
-  textShrinkFloorRatio: 0.45,
-  // Per-length overrides — only 9 and 12 need special handling; all
-  // other lengths use the default floor (or no shrink for ≤9).
-  textShrinkFloorByLength: {
-    9: 0.55,
-    12: 0.35,
-  },
-  // Don't let the adaptive spacing ever pull letters into each other —
-  // once the configured gap would need to go below 0.05 to fit, the
-  // scene instead falls back to shrinking the font (see textShrinkAfter).
-  textMinLetterSpacing: 0.05,
   // The One Piece font's Q has an oversized descender tail that
   // dragged the bbox-centred text block upward whenever a name
   // contained it. Fix: exclude Q from the centering reference (the
@@ -3131,24 +3264,24 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   scene: {
     variant: 'lightbox',
     ambientIntensity: 0.18,
-    keyIntensity: 0.95,
-    fillIntensity: 0.42,
-    rimIntensity: 0.8,
+    keyIntensity: 0.82,
+    fillIntensity: 0.3,
+    rimIntensity: 0.42,
     floorColor: '#070b12',
     floorEmissive: '#061524',
-    floorEmissiveIntensity: 0.24,
+    floorEmissiveIntensity: 0.04,
     wallColor: '#090f1d',
     wallEmissive: '#071426',
-    wallEmissiveIntensity: 0.32,
-    accentColor: '#ffd34a',
-    ledGlowColor: '#fff0bd',
-    ledGlowIntensity: 2.4,
-    ledGlowDistance: 16,
+    wallEmissiveIntensity: 0.14,
+    accentColor: '#f2fbff',
+    ledGlowColor: '#eaf7ff',
+    ledGlowIntensity: 0.9,
+    ledGlowDistance: 8.5,
     floorSize: [34, 30],
     wallSize: [34, 22],
     wallZ: -4.8,
     groundPadding: 0.08,
-    shadowOpacity: 0.42,
+    shadowOpacity: 0.24,
     fogColor: '#05070d',
     fogNear: 17,
     fogFar: 42,

@@ -51,13 +51,15 @@ export function ExtrudedTextLayer({ shapes, layer, depthScale, lightOn = true, c
       if (solidShapes.length === 0) return null
       const expanded = expandShapes(solidShapes, layer.strokeWidth)
       // Re-add shrunk holes from original shapes after expansion
-      for (let i = 0; i < expanded.length && i < shapes.length; i++) {
-        const src = shapes[i]
-        const dst = expanded[i]
-        if (!src || !dst) continue
-        for (const hole of src.holes) {
-          const shrunk = shrinkContour(hole.getPoints(), layer.strokeWidth)
-          dst.holes.push(new THREE.Path(shrunk))
+      if (!layer.stripHoles) {
+        for (let i = 0; i < expanded.length && i < shapes.length; i++) {
+          const src = shapes[i]
+          const dst = expanded[i]
+          if (!src || !dst) continue
+          for (const hole of src.holes) {
+            const shrunk = shrinkContour(hole.getPoints(), layer.strokeWidth)
+            dst.holes.push(new THREE.Path(shrunk))
+          }
         }
       }
       finalShapes = expanded
@@ -94,21 +96,45 @@ export function ExtrudedTextLayer({ shapes, layer, depthScale, lightOn = true, c
 
     geo.computeVertexNormals()
     return geo
-  }, [shapes, layer.depth, layer.strokeWidth, depthScale, centerBounds])
+  }, [shapes, layer.depth, layer.strokeWidth, layer.stripHoles, depthScale, centerBounds])
 
   const material = useMemo(() => {
     const baseIntensity = layer.emissiveIntensity ?? 0
     // Mirror the paint layers: keep ~18% emissive in the off state so the
     // text stays legible without the full "lit" glow.
     const emissiveIntensity = lightOn ? baseIntensity : baseIntensity * 0.18
+    const opacity = lightOn ? (layer.opacity ?? 1) : Math.min(layer.opacity ?? 1, 0.22)
+    if (layer.additive) {
+      const additiveIntensity = lightOn ? (layer.emissiveIntensity ?? 1) : (layer.emissiveIntensity ?? 1) * 0.18
+      return new THREE.MeshBasicMaterial({
+        color: new THREE.Color(layer.emissive ?? layer.color).multiplyScalar(additiveIntensity),
+        transparent: true,
+        opacity,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        toneMapped: false,
+      })
+    }
+    if (layer.unlit) {
+      const unlitIntensity = lightOn ? (layer.emissiveIntensity ?? 1) : (layer.emissiveIntensity ?? 1) * 0.18
+      return new THREE.MeshBasicMaterial({
+        color: new THREE.Color(layer.emissive ?? layer.color).multiplyScalar(unlitIntensity),
+        transparent: true,
+        opacity,
+        toneMapped: false,
+      })
+    }
     return new THREE.MeshStandardMaterial({
       color: layer.color,
       metalness: layer.metalness ?? 0.1,
       roughness: layer.roughness ?? 0.7,
       emissive: emissiveIntensity > 0 ? new THREE.Color(layer.emissive ?? layer.color) : new THREE.Color(0, 0, 0),
       emissiveIntensity,
+      transparent: true,
+      opacity,
+      toneMapped: false,
     })
-  }, [layer.color, layer.metalness, layer.roughness, layer.emissive, layer.emissiveIntensity, lightOn])
+  }, [layer.additive, layer.color, layer.metalness, layer.opacity, layer.roughness, layer.emissive, layer.emissiveIntensity, layer.unlit, lightOn])
 
   if (!geometry) return null
 
@@ -122,7 +148,8 @@ export function ExtrudedTextLayer({ shapes, layer, depthScale, lightOn = true, c
       position={[0, 0, scaledOffset]}
       scale={[1, -1, 1]}
       castShadow
-      receiveShadow
+      receiveShadow={!layer.additive}
+      renderOrder={layer.additive ? 1 : 3}
     />
   )
 }

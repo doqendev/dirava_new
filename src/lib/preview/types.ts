@@ -20,6 +20,10 @@ export interface LayerConfig {
   emissive?: string
   /** Emissive strength (default 0). Set > 0 to make the layer appear self-lit. */
   emissiveIntensity?: number
+  /** Optional material alpha. Mainly used for additive glow layers. */
+  opacity?: number
+  /** Render as additive self-lit light instead of opaque painted material. */
+  additive?: boolean
   /** Uniform stroke width to expand the layer outward (in scene units, e.g. 0.2) */
   strokeWidth?: number
   /** Corner join behaviour for the stroke expansion. Defaults to 'round'.
@@ -94,6 +98,7 @@ export interface FrontDecalConfig {
     threshold?: number
     scale?: number
     zOffset?: number
+    color?: string
     warmth?: number
   }
   /** Alpha threshold for transparent edges. Default 0.01. */
@@ -209,12 +214,29 @@ export interface PreviewConfig {
    *  consume (default 0.9). Prevents short names from scaling until they
    *  exceed the box vertically. */
   textMaxHeightRatio?: number
+  /**
+   * Per-length height caps. The largest configured key less than or equal
+   * to the current text length wins, so a key at 12 also applies to 13+.
+   */
+  textMaxHeightRatioByLength?: Record<number, number>
   /** Additional overlap between letters for text-extrusion (fraction of font size, default 0.1). */
   textCharOverlap?: number
   /** Text spacing strategy for text-extrusion. `advance` uses glyph advance widths (combo-independent). */
   textSpacingMode?: 'shape-overlap' | 'advance'
   /** Extra letter spacing in font-size units when textSpacingMode is `advance` (e.g. 0.05). */
   textLetterSpacing?: number
+  /** Exact per-length spacing overrides. */
+  textLetterSpacingByLength?: Record<number, number>
+  /** Once text length is greater than this, use `textLetterSpacingAfterValue`. */
+  textLetterSpacingAfterLength?: number
+  /** Fixed letter spacing used after `textLetterSpacingAfterLength`. */
+  textLetterSpacingAfterValue?: number
+  /**
+   * Keep configured letter spacing even when the name is long. When paired
+   * with `textShrinkToFit`, overflow is handled by reducing font size rather
+   * than squeezing letters closer together.
+   */
+  textPreserveLetterSpacing?: boolean
   /**
    * For products where the personalised text sits *inside* the artwork (e.g.
    * a lightbox with a nameplate plate), declare the nameplate rectangle in
@@ -290,6 +312,12 @@ export interface PreviewConfig {
    * of base and 12-char names to 35%, regardless of `textShrinkAfter`.
    */
   textShrinkFloorByLength?: Record<number, number>
+  /**
+   * When true, font size is purely fit-driven: short names can grow up to
+   * the width/height caps, and long names shrink as soon as their measured
+   * width would overflow those caps. This bypasses `textShrinkAfter`.
+   */
+  textShrinkToFit?: boolean
   /**
    * Lower clamp for the adaptive letter spacing (default -0.1). Raise
    * toward 0 to prevent letters from overlapping when the name is long

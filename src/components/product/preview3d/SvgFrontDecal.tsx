@@ -44,7 +44,7 @@ function createInternalGlowTexture(
   if (!maskContext) return null
 
   const threshold = config.threshold ?? 34
-  const warmth = config.warmth ?? 0.18
+  const warmth = config.warmth ?? 0
   const data = source.data
   for (let i = 0; i < data.length; i += 4) {
     const r = data[i] ?? 0
@@ -63,8 +63,8 @@ function createInternalGlowTexture(
       continue
     }
 
-    // Warm the isolated light slightly, matching the real sign's creamy
-    // internal diffuser while preserving saturated yellow/red accents.
+    // Optional tint bias for variants that need warmer/cooler diffusion.
+    // Luffy uses neutral 6500K white, so warmth stays at zero.
     data[i] = Math.min(255, r + 255 * warmth * strength)
     data[i + 1] = Math.min(255, g + 170 * warmth * strength)
     data[i + 2] = Math.max(0, b - 80 * warmth * strength)
@@ -81,12 +81,12 @@ function createInternalGlowTexture(
 
   glowContext.globalCompositeOperation = 'lighter'
   glowContext.filter = `blur(${config.blur ?? 9}px)`
-  glowContext.globalAlpha = 0.9
+  glowContext.globalAlpha = 0.55
   glowContext.drawImage(maskCanvas, 0, 0)
-  glowContext.globalAlpha = 0.45
+  glowContext.globalAlpha = 0.24
   glowContext.drawImage(maskCanvas, 0, 0)
   glowContext.filter = 'none'
-  glowContext.globalAlpha = 0.55
+  glowContext.globalAlpha = 0.28
   glowContext.drawImage(maskCanvas, 0, 0)
 
   const texture = new THREE.CanvasTexture(glowCanvas)
@@ -174,6 +174,7 @@ export function SvgFrontDecal({
   const glowConfig = config.internalGlow
   const glowOpacity = lightOn ? (glowConfig?.opacity ?? 0.55) : 0.04
   const glowIntensity = glowConfig?.intensity ?? 1.45
+  const glowColor = new THREE.Color(glowConfig?.color ?? '#f2fbff').multiplyScalar(glowIntensity)
   const glowScale = glowConfig?.scale ?? 1.015
   const glowZ = ((glowConfig?.zOffset ?? zOffset + 0.12) * depthScale)
 
@@ -213,7 +214,7 @@ export function SvgFrontDecal({
           <planeGeometry args={[viewBox.width, viewBox.height]} />
           <meshBasicMaterial
             map={glowTexture}
-            color={new THREE.Color(glowIntensity, glowIntensity * 0.96, glowIntensity * 0.82)}
+            color={glowColor}
             transparent
             opacity={glowOpacity}
             depthWrite={false}

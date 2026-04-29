@@ -254,6 +254,10 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
   // Defaults to a small negative overlap so naturally-kerned shapes touch;
   // a positive configured value adds visible gap between letters.
   //
+  // Some products want the font to shrink rather than the letter spacing
+  // to compress. In that mode this returns the configured spacing and the
+  // measured-width font-size path handles overflow.
+  //
   // When a nameplateBox is defined, we *adaptively reduce* the spacing for
   // long names so they still fit inside the plate at the base font size:
   // for short names the configured spacing wins, but if even the
@@ -262,6 +266,17 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
   // beyond the default contour-touching behaviour).
   const effectiveLetterSpacing = useMemo(() => {
     const configured = config.textLetterSpacing ?? -0.1
+    const exactSpacing = config.textLetterSpacingByLength?.[displayText.length]
+    if (exactSpacing !== undefined) return exactSpacing
+    if (
+      config.textLetterSpacingAfterLength !== undefined
+      && config.textLetterSpacingAfterValue !== undefined
+    ) {
+      return displayText.length > config.textLetterSpacingAfterLength
+        ? config.textLetterSpacingAfterValue
+        : configured
+    }
+    if (config.textPreserveLetterSpacing) return configured
     if (!font || !activeNameplateBox || !config.textLayers) return configured
 
     const gapCount = Math.max(0, displayText.length - 1)
@@ -288,6 +303,10 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
     font,
     displayText,
     config.textLetterSpacing,
+    config.textLetterSpacingByLength,
+    config.textLetterSpacingAfterLength,
+    config.textLetterSpacingAfterValue,
+    config.textPreserveLetterSpacing,
     config.textFontSize,
     config.textLayers,
     activeNameplateBox,
@@ -323,8 +342,21 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
     // they don't grow taller than the plate. Short names can exceed the
     // base size up to 5×; long names stay at exactly the base size.
     const maxHeight = activeNameplateBox?.height
-    const heightRatio = config.textMaxHeightRatio ?? 0.9
+    let heightRatio = config.textMaxHeightRatio ?? 0.9
+    if (config.textMaxHeightRatioByLength) {
+      const matchingLength = Object.keys(config.textMaxHeightRatioByLength)
+        .map(Number)
+        .filter((length) => length <= displayText.length)
+        .sort((a, b) => b - a)[0]
+      if (matchingLength !== undefined) {
+        heightRatio = config.textMaxHeightRatioByLength[matchingLength] ?? heightRatio
+      }
+    }
     const heightCap = maxHeight ? maxHeight * heightRatio : Infinity
+
+    if (config.textShrinkToFit) {
+      return Math.min(heightCap, Math.min(baseFontSize * 5, scaled))
+    }
 
     // Size floor determines how small the font can get. Per-length
     // overrides (textShrinkFloorByLength) always win — use them to
@@ -348,7 +380,7 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
       heightCap,
       Math.max(sizeFloor, Math.min(baseFontSize * 5, scaled)),
     )
-  }, [font, displayText, config.textFontSize, config.textLayers, config.textMaxWidthRatio, config.textMaxHeightRatio, config.textShrinkAfter, config.textShrinkFloorRatio, config.textShrinkFloorByLength, activeNameplateBox, svgBounds.width, effectiveLetterSpacing])
+  }, [font, displayText, config.textFontSize, config.textLayers, config.textMaxWidthRatio, config.textMaxHeightRatio, config.textMaxHeightRatioByLength, config.textShrinkAfter, config.textShrinkFloorRatio, config.textShrinkFloorByLength, config.textShrinkToFit, activeNameplateBox, svgBounds.width, effectiveLetterSpacing])
 
   // Compute text shapes ONCE using per-character contour classification.
   // Shared between textSubtractGeometry and ExtrudedTextLayer to avoid

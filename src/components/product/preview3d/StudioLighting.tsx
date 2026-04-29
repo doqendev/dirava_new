@@ -52,9 +52,14 @@ export function StudioLighting({
       {/* Ambient fill */}
       <ambientLight intensity={ambientIntensity} color={ambientColor} />
 
-      {/* Key light with shadows for grounded depth */}
+      {/* Key light with shadows for grounded depth. Lightbox variant
+       *  pulls the position closer to head-on so the painted decal lights
+       *  symmetrically top-to-bottom — the previous high-and-right
+       *  position made bloom contributions visibly stronger above any
+       *  bright element (e.g. the upper bones glowed harder than the lower
+       *  ones). */}
       <directionalLight
-        position={isLightbox ? [2.6, 7, 10] : [2, 6.5, 14]}
+        position={isLightbox ? [1.5, 3.5, 12] : [2, 6.5, 14]}
         intensity={keyIntensity}
         color={keyColor}
         castShadow
@@ -72,14 +77,16 @@ export function StudioLighting({
 
       {/* Cool fill */}
       <directionalLight
-        position={isLightbox ? [-8, 3.4, 6] : [-9, 5, 8]}
+        position={isLightbox ? [-8, 1.5, 6] : [-9, 5, 8]}
         intensity={fillIntensity}
         color={fillColor}
       />
 
-      {/* Back edge highlight */}
+      {/* Back edge highlight — head-on behind the sign for the lightbox
+       *  variant so the rim contribution doesn't sit asymmetrically on the
+       *  top edges of the painted decal and silhouette outline. */}
       <directionalLight
-        position={isLightbox ? [4.5, 4.2, -8] : [0, 3, -10]}
+        position={isLightbox ? [0, 0, -10] : [0, 3, -10]}
         intensity={rimIntensity}
         color={rimColor}
       />
@@ -102,21 +109,20 @@ export function StudioLighting({
           />
           <pointLight
             position={[-4.4, floorY + 3.1, 1.7]}
-            intensity={lightOn ? 0.55 : 0.04}
+            intensity={lightOn ? 0.32 : 0.04}
             color={fillColor}
-            distance={11}
+            distance={8}
             decay={2}
           />
           <spotLight
             position={[4.4, floorY + 7, 5.5]}
-            angle={0.45}
+            angle={0.38}
             penumbra={0.7}
-            intensity={lightOn ? 0.75 : 0.18}
+            intensity={lightOn ? 0.42 : 0.12}
             color={accentColor}
-            distance={18}
+            distance={13}
             decay={2}
           />
-
           {/* Matte wall behind the product, close enough to catch LED spill. */}
           <mesh
             position={[0, floorY + wallSize[1] / 2, wallZ]}
@@ -140,8 +146,8 @@ export function StudioLighting({
           <planeGeometry args={floorSize} />
           <meshStandardMaterial
             color={floorColor}
-            metalness={0.05}
-            roughness={isLightbox ? 0.92 : 0.88}
+            metalness={isLightbox ? 0.02 : 0.05}
+            roughness={isLightbox ? 0.94 : 0.88}
             emissive={floorEmissive}
             emissiveIntensity={floorEmissiveIntensity}
           />
