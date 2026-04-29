@@ -665,6 +665,9 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
   }, [textSubtractGeometry, cutSubtractGeometry])
 
   const scale = config.scale ?? 0.02
+  const groundY = yOffset - (svgBounds.height * scale) / 2 - (config.scene?.groundPadding ?? 0.15)
+  const useCameraOrbit = config.scene?.variant === 'lightbox'
+  const controlsTarget: [number, number, number] = [0, yOffset, 0]
   const shouldAnimateIntro = !shouldReduceMotion && !hasPlayedIntroRef.current
   const initialScaleMultiplier = shouldAnimateIntro ? INTRO_START_SCALE_MULTIPLIER : INTRO_END_SCALE_MULTIPLIER
   const initialRotation = shouldAnimateIntro ? INTRO_START_ROTATION : INTRO_END_ROTATION
@@ -751,7 +754,7 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
     return (
       <>
         <color attach="background" args={[config.background || '#0a0a12']} />
-        <StudioLighting />
+        <StudioLighting scene={config.scene} floorY={groundY} lightOn={lightOn} />
         <Html center>
           <Preview3DLoadingIndicator />
         </Html>
@@ -763,21 +766,21 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
     <>
       <color attach="background" args={[config.background || '#0a0a12']} />
 
-      <StudioLighting />
+      <StudioLighting scene={config.scene} floorY={groundY} lightOn={lightOn} />
 
-      {/* Scale SVG coords to scene units, flip Y, and center.
-          Outer wrapper applies yOffset (mobile nudge) in world space, before
-          PresentationControls, so the tilt/rotation still pivots around the
-          model centre. */}
+      {/* Scale SVG coords to scene units, flip Y, and center. Lightbox
+          scenes keep the mesh fixed on the surface and orbit the camera
+          instead, so the base cannot rotate through the floor. */}
       <group position={[0, yOffset, 0]}>
       <PresentationControls
         global
         cursor
+        enabled={!useCameraOrbit}
         speed={1}
         zoom={1}
         rotation={PRESENTATION_BASE_ROTATION}
-        polar={[-0.35, 0.35]}
-        azimuth={[-0.85, 0.85]}
+        polar={useCameraOrbit ? [0, 0] : [-0.35, 0.35]}
+        azimuth={useCameraOrbit ? [0, 0] : [-0.85, 0.85]}
       >
         <group
           ref={groupRef}
@@ -854,23 +857,27 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
       </group>
 
       <ContactShadows
-        position={[0, -9.85, 0]}
-        opacity={0.2}
-        scale={60}
-        blur={2.8}
+        position={[0, groundY + 0.05, 0]}
+        opacity={config.scene?.shadowOpacity ?? 0.2}
+        scale={config.scene?.variant === 'lightbox' ? 28 : 60}
+        blur={config.scene?.variant === 'lightbox' ? 3.4 : 2.8}
         far={20}
       />
 
       <OrbitControls
         enablePan={false}
-        enableRotate={false}
+        enableRotate={useCameraOrbit}
+        enableDamping={useCameraOrbit}
+        dampingFactor={0.08}
         minDistance={5}
         maxDistance={40}
         autoRotate={false}
         autoRotateSpeed={0}
-        maxPolarAngle={Math.PI * 0.7}
-        minPolarAngle={Math.PI * 0.3}
-        target={[0, 0, 0]}
+        maxPolarAngle={useCameraOrbit ? Math.PI * 0.58 : Math.PI * 0.7}
+        minPolarAngle={useCameraOrbit ? Math.PI * 0.42 : Math.PI * 0.3}
+        minAzimuthAngle={useCameraOrbit ? -0.8 : -Infinity}
+        maxAzimuthAngle={useCameraOrbit ? 0.8 : Infinity}
+        target={controlsTarget}
       />
 
       {/* Bloom post-processing — gives emissive layers true light-bleed

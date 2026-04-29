@@ -84,6 +84,18 @@ export interface FrontDecalConfig {
    *  itself. Lets bright pixels self-light without the dark areas glowing. */
   emissive?: string           // default '#ffffff' when emissiveIntensity > 0
   emissiveIntensity?: number  // default 0
+  /** Optional generated soft-light layer derived from the same texture.
+   *  It isolates non-black pixels, blurs them, and renders them additively
+   *  above the painted face to mimic a diffused internal LED panel. */
+  internalGlow?: {
+    opacity?: number
+    intensity?: number
+    blur?: number
+    threshold?: number
+    scale?: number
+    zOffset?: number
+    warmth?: number
+  }
   /** Alpha threshold for transparent edges. Default 0.01. */
   alphaTest?: number
   /** Multiplier on plane size relative to the SVG bounds (default 1). */
@@ -91,6 +103,38 @@ export interface FrontDecalConfig {
   /** SVG-unit X/Y offset applied after centering on SVG bounds (default 0/0). */
   offsetX?: number
   offsetY?: number
+}
+
+export interface PreviewSceneConfig {
+  /** Optional studio treatment for products that need more than the
+   *  default neutral floor. */
+  variant?: 'default' | 'lightbox'
+  ambientColor?: string
+  ambientIntensity?: number
+  keyColor?: string
+  keyIntensity?: number
+  fillColor?: string
+  fillIntensity?: number
+  rimColor?: string
+  rimIntensity?: number
+  floorColor?: string
+  floorEmissive?: string
+  floorEmissiveIntensity?: number
+  wallColor?: string
+  wallEmissive?: string
+  wallEmissiveIntensity?: number
+  accentColor?: string
+  ledGlowColor?: string
+  ledGlowIntensity?: number
+  ledGlowDistance?: number
+  floorSize?: [number, number]
+  wallSize?: [number, number]
+  wallZ?: number
+  groundPadding?: number
+  shadowOpacity?: number
+  fogColor?: string
+  fogNear?: number
+  fogFar?: number
 }
 
 export interface CameraConfig {
@@ -111,6 +155,7 @@ export interface PreviewConfig {
   maxChars?: number
   scale?: number
   background?: string
+  scene?: PreviewSceneConfig
   model?: string
   /** SVG file path for svg-extrusion type (single SVG) */
   svg?: string

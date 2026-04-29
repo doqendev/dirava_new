@@ -2766,10 +2766,21 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
       roughness: 0.35,
       clearcoat: 0.45,
       clearcoatRoughness: 0.3,
-      // Decal renders unlit via MeshBasicMaterial; lightIntensity > 1
-      // pushes bright pixels into HDR so the bloom pass turns them into
-      // a stronger LED-style glow.
-      lightIntensity: 1.8,
+      // Brighten the physical/emissive decal just enough for the bloom
+      // pass to catch near-white highlights without washing saturated
+      // mid-tones (yellow hat, red band) toward white.
+      lightIntensity: 1.15,
+      emissive: '#fff2c2',
+      emissiveIntensity: 0.55,
+      internalGlow: {
+        opacity: 0.55,
+        intensity: 1.4,
+        blur: 11,
+        threshold: 38,
+        scale: 1.018,
+        zOffset: 12.22,
+        warmth: 0.26,
+      },
     },
   },
   layers: [
@@ -3053,17 +3064,20 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
   // Coords trace the inner dark area of the yellow nameplate frame in the
   // decal PNG; iterate these if the personalised text doesn't sit centred.
   variantNameplateBoxes: {
-    Luffy: { x: 200, y: 1130, width: 760, height: 150 },
+    Luffy: { x: 175, y: 1115, width: 760, height: 175 },
   },
   variantNameplateBoxesExpanded: {
-    Luffy: { x: 170, y: 1130, width: 820, height: 150 },
+    Luffy: { x: 145, y: 1115, width: 820, height: 175 },
   },
   // Bloom post-processing so the bright emissive layers actually glow
   // like an LED sign instead of just reading as a painted colour.
   postprocessingBloom: {
-    intensity: 0.35,
-    luminanceThreshold: 0.6,
-    luminanceSmoothing: 0.85,
+    intensity: 0.4,
+    // Raised so only near-white highlights (skull, bones, name text) cross
+    // the threshold — coloured mid-tones (yellow hat, red band) stay fully
+    // saturated instead of washing toward white.
+    luminanceThreshold: 0.85,
+    luminanceSmoothing: 0.7,
   },
   // Names longer than 9 characters are allowed to shrink below the base
   // font size (down to 80% of it) so the adaptive spacing doesn't have
@@ -3106,14 +3120,39 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
     O: 1.1,
   },
   camera: {
-    position: [0, 0, 22],
+    position: [0, 0, 18],
     fov: 45,
     autoRotate: false,
   },
   // Lightbox SVG is ~1638×1919 — three-ish times the character-sheet size,
   // so the scale is correspondingly smaller to fit the viewport.
   scale: 0.006,
-  background: '#0a0a12',
+  background: '#05070d',
+  scene: {
+    variant: 'lightbox',
+    ambientIntensity: 0.18,
+    keyIntensity: 0.95,
+    fillIntensity: 0.42,
+    rimIntensity: 0.8,
+    floorColor: '#070b12',
+    floorEmissive: '#061524',
+    floorEmissiveIntensity: 0.24,
+    wallColor: '#090f1d',
+    wallEmissive: '#071426',
+    wallEmissiveIntensity: 0.32,
+    accentColor: '#ffd34a',
+    ledGlowColor: '#fff0bd',
+    ledGlowIntensity: 2.4,
+    ledGlowDistance: 16,
+    floorSize: [34, 30],
+    wallSize: [34, 22],
+    wallZ: -4.8,
+    groundPadding: 0.08,
+    shadowOpacity: 0.42,
+    fogColor: '#05070d',
+    fogNear: 17,
+    fogFar: 42,
+  },
   variantImages: {
     Luffy: '/images/characters/style_1.png',
     Zoro: '/images/characters/style_2.png',

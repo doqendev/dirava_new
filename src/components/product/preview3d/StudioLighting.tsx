@@ -1,16 +1,62 @@
 'use client'
 
-export function StudioLighting() {
+import type { PreviewSceneConfig } from '@/lib/preview/types'
+
+interface StudioLightingProps {
+  scene?: PreviewSceneConfig
+  floorY?: number
+  lightOn?: boolean
+}
+
+export function StudioLighting({
+  scene,
+  floorY = -10,
+  lightOn = true,
+}: StudioLightingProps) {
+  const isLightbox = scene?.variant === 'lightbox'
+  const ambientIntensity = scene?.ambientIntensity ?? (isLightbox ? 0.22 : 0.35)
+  const ambientColor = scene?.ambientColor ?? (isLightbox ? '#d8ecff' : '#dbe8ff')
+  const keyIntensity = scene?.keyIntensity ?? (isLightbox ? 1.05 : 1.15)
+  const keyColor = scene?.keyColor ?? '#ffffff'
+  const fillIntensity = scene?.fillIntensity ?? (isLightbox ? 0.36 : 0.6)
+  const fillColor = scene?.fillColor ?? (isLightbox ? '#45cfff' : '#85b8ff')
+  const rimIntensity = scene?.rimIntensity ?? (isLightbox ? 0.9 : 0.35)
+  const rimColor = scene?.rimColor ?? (isLightbox ? '#ff526d' : '#ffffff')
+  const floorColor = scene?.floorColor ?? (isLightbox ? '#080c14' : '#0a1022')
+  const floorEmissive = scene?.floorEmissive ?? (isLightbox ? '#07182a' : '#021028')
+  const floorEmissiveIntensity = scene?.floorEmissiveIntensity ?? (isLightbox ? 0.28 : 0.2)
+  const floorSize = scene?.floorSize ?? [80, 80]
+  const wallSize = scene?.wallSize ?? [42, 24]
+  const wallZ = scene?.wallZ ?? -5.2
+  const wallColor = scene?.wallColor ?? '#0b1020'
+  const wallEmissive = scene?.wallEmissive ?? '#050b18'
+  const wallEmissiveIntensity = scene?.wallEmissiveIntensity ?? 0.45
+  const accentColor = scene?.accentColor ?? '#ffd84a'
+  const ledGlowColor = scene?.ledGlowColor ?? '#fff2c2'
+  const ledGlowIntensity = lightOn ? (scene?.ledGlowIntensity ?? 2.4) : 0.08
+  const ledGlowDistance = scene?.ledGlowDistance ?? 15
+
   return (
     <>
+      {isLightbox && (
+        <fog
+          attach="fog"
+          args={[
+            scene?.fogColor ?? '#05070d',
+            scene?.fogNear ?? 18,
+            scene?.fogFar ?? 44,
+          ]}
+        />
+      )}
+
       {/* Ambient fill */}
-      <ambientLight intensity={0.35} color="#dbe8ff" />
+      <ambientLight intensity={ambientIntensity} color={ambientColor} />
 
       {/* Key light with shadows for grounded depth */}
       <directionalLight
-        position={[2, 6.5, 14]}
-        intensity={1.15}
-        color="#ffffff"
+        position={isLightbox ? [2.6, 7, 10] : [2, 6.5, 14]}
+        intensity={keyIntensity}
+        color={keyColor}
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
@@ -26,28 +72,78 @@ export function StudioLighting() {
 
       {/* Cool fill */}
       <directionalLight
-        position={[-9, 5, 8]}
-        intensity={0.6}
-        color="#85b8ff"
+        position={isLightbox ? [-8, 3.4, 6] : [-9, 5, 8]}
+        intensity={fillIntensity}
+        color={fillColor}
       />
 
       {/* Back edge highlight */}
       <directionalLight
-        position={[0, 3, -10]}
-        intensity={0.35}
-        color="#ffffff"
+        position={isLightbox ? [4.5, 4.2, -8] : [0, 3, -10]}
+        intensity={rimIntensity}
+        color={rimColor}
       />
+
+      {isLightbox && (
+        <>
+          <pointLight
+            position={[0, floorY + 4.6, 2.2]}
+            intensity={ledGlowIntensity}
+            color={ledGlowColor}
+            distance={ledGlowDistance}
+            decay={2}
+          />
+          <pointLight
+            position={[0, floorY + 3.8, -1.6]}
+            intensity={lightOn ? ledGlowIntensity * 0.65 : 0.05}
+            color={ledGlowColor}
+            distance={10}
+            decay={2}
+          />
+          <pointLight
+            position={[-4.4, floorY + 3.1, 1.7]}
+            intensity={lightOn ? 0.55 : 0.04}
+            color={fillColor}
+            distance={11}
+            decay={2}
+          />
+          <spotLight
+            position={[4.4, floorY + 7, 5.5]}
+            angle={0.45}
+            penumbra={0.7}
+            intensity={lightOn ? 0.75 : 0.18}
+            color={accentColor}
+            distance={18}
+            decay={2}
+          />
+
+          {/* Matte wall behind the product, close enough to catch LED spill. */}
+          <mesh
+            position={[0, floorY + wallSize[1] / 2, wallZ]}
+            receiveShadow
+          >
+            <planeGeometry args={wallSize} />
+            <meshStandardMaterial
+              color={wallColor}
+              metalness={0}
+              roughness={0.96}
+              emissive={wallEmissive}
+              emissiveIntensity={wallEmissiveIntensity}
+            />
+          </mesh>
+        </>
+      )}
 
       <group>
         {/* Floor surface */}
-        <mesh position={[0, -10, -0.8]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-          <planeGeometry args={[80, 80]} />
+        <mesh position={[0, floorY, -0.8]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+          <planeGeometry args={floorSize} />
           <meshStandardMaterial
-            color="#0a1022"
+            color={floorColor}
             metalness={0.05}
-            roughness={0.88}
-            emissive="#021028"
-            emissiveIntensity={0.2}
+            roughness={isLightbox ? 0.92 : 0.88}
+            emissive={floorEmissive}
+            emissiveIntensity={floorEmissiveIntensity}
           />
         </mesh>
       </group>

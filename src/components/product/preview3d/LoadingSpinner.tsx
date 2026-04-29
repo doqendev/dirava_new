@@ -1,12 +1,11 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils/cn'
 
 interface Preview3DLoadingIndicatorProps {
-  /** Optional override. When omitted, falls back to the translated
-   *  `product.preview3dLoading` ("Loading...") so the indicator is
-   *  localised by default for every 3D scene. */
+  /** Optional override. Canvas-hosted loaders cannot rely on app context,
+   *  so the default stays literal and callers can pass translated labels
+   *  from normal React trees. */
   label?: string
   className?: string
 }
@@ -15,8 +14,7 @@ export function Preview3DLoadingIndicator({
   label,
   className,
 }: Preview3DLoadingIndicatorProps) {
-  const t = useTranslations('product')
-  const text = label ?? t('preview3dLoading')
+  const text = label ?? 'Loading...'
   return (
     <div className={cn('pointer-events-none flex flex-col items-center gap-3', className)}>
       <div className="relative h-11 w-11">
@@ -30,4 +28,3 @@ export function Preview3DLoadingIndicator({
     </div>
   )
 }
-
