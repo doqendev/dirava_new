@@ -109,18 +109,18 @@ export function StudioLighting({
           />
           <pointLight
             position={[-4.4, floorY + 3.1, 1.7]}
-            intensity={lightOn ? 0.32 : 0.04}
+            intensity={lightOn ? 0.45 : 0.04}
             color={fillColor}
-            distance={8}
+            distance={10}
             decay={2}
           />
           <spotLight
             position={[4.4, floorY + 7, 5.5]}
             angle={0.38}
             penumbra={0.7}
-            intensity={lightOn ? 0.42 : 0.12}
+            intensity={lightOn ? 0.62 : 0.12}
             color={accentColor}
-            distance={13}
+            distance={15}
             decay={2}
           />
           {/* Matte wall behind the product, close enough to catch LED spill. */}

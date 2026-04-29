@@ -81,12 +81,12 @@ function createInternalGlowTexture(
 
   glowContext.globalCompositeOperation = 'lighter'
   glowContext.filter = `blur(${config.blur ?? 9}px)`
-  glowContext.globalAlpha = 0.55
+  glowContext.globalAlpha = 0.74
   glowContext.drawImage(maskCanvas, 0, 0)
-  glowContext.globalAlpha = 0.24
+  glowContext.globalAlpha = 0.34
   glowContext.drawImage(maskCanvas, 0, 0)
   glowContext.filter = 'none'
-  glowContext.globalAlpha = 0.28
+  glowContext.globalAlpha = 0.42
   glowContext.drawImage(maskCanvas, 0, 0)
 
   const texture = new THREE.CanvasTexture(glowCanvas)
