@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
-import { Instagram } from 'lucide-react'
+import { Camera } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { cn } from '@/lib/utils/cn'
@@ -86,7 +86,7 @@ function InstagramPost({ post, instagramUrl }: InstagramPostProps) {
           'bg-gradient-to-br from-neon-purple/20 via-neon-pink/20 to-neon-orange/20',
           'flex items-center justify-center'
         )}>
-          <Instagram className="w-6 h-6 text-white/30" />
+          <Camera className="w-6 h-6 text-white/30" />
         </div>
 
         {/* Image - hidden if error */}
@@ -106,7 +106,7 @@ function InstagramPost({ post, instagramUrl }: InstagramPostProps) {
           'opacity-0 group-hover:opacity-100 transition-opacity duration-300',
           'flex items-center justify-center'
         )}>
-          <Instagram className="w-8 h-8 text-white" />
+          <Camera className="w-8 h-8 text-white" />
         </div>
       </Link>
     </motion.div>
@@ -125,7 +125,7 @@ export function InstagramFeed() {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-neon-purple via-neon-pink to-neon-orange flex items-center justify-center">
-              <Instagram className="w-5 h-5 text-white" />
+              <Camera className="w-5 h-5 text-white" />
             </div>
             <div>
               <h2 className="text-xl md:text-2xl font-bold text-white">

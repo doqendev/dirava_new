@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { customer, response, session } = await getAuthenticatedCustomer(request)
   if (response) {
@@ -29,7 +29,8 @@ export async function GET(
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
-    const orderId = atob(decodeURIComponent(params.id))
+    const { id } = await params
+    const orderId = atob(decodeURIComponent(id))
 
     const orderListResponse = await shopifyClient.request<{
       customer: {

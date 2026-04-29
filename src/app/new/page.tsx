@@ -45,7 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 interface Props {
   searchParams: Promise<Record<string, string | string[] | undefined>>

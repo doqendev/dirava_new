@@ -11,6 +11,7 @@ import {
 } from './config'
 import { getMessages } from './messages'
 import { getCountry, COUNTRY_COOKIE } from './country'
+import { isCrawlerUserAgent } from '@/lib/utils/bot'
 
 // Cookie names for storing user preferences
 export const LOCALE_COOKIE = 'mizoke-locale'
@@ -61,11 +62,17 @@ async function getLocaleFromAcceptLanguage(): Promise<Locale | null> {
 // Get the user's preferred locale
 export async function getLocale(): Promise<Locale> {
   const cookieStore = await cookies()
+  const headersList = await headers()
 
   // 1. Check cookie for saved preference
   const savedLocale = cookieStore.get(LOCALE_COOKIE)?.value as Locale | undefined
   if (savedLocale && locales.includes(savedLocale)) {
     return savedLocale
+  }
+
+  // Bots should see one stable language at cookie-less canonical URLs.
+  if (isCrawlerUserAgent(headersList.get('user-agent'))) {
+    return defaultLocale
   }
 
   // 2. Prefer the browser's declared language when there is no saved choice

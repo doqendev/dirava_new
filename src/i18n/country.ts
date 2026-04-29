@@ -1,5 +1,6 @@
 import { cookies, headers } from 'next/headers'
 import { countryToCurrency, defaultCountry, defaultCurrency, type Currency } from './config'
+import { isCrawlerUserAgent } from '@/lib/utils/bot'
 
 export const COUNTRY_COOKIE = 'mizoke-country'
 
@@ -24,6 +25,10 @@ export async function getCountry(): Promise<string> {
   const cookieValue = cookieStore.get(COUNTRY_COOKIE)?.value
   if (cookieValue && /^[A-Z]{2}$/.test(cookieValue)) {
     return cookieValue
+  }
+  const h = await headers()
+  if (isCrawlerUserAgent(h.get('user-agent'))) {
+    return defaultCountry
   }
   const geo = await getCountryFromHeaders()
   if (geo && /^[A-Z]{2}$/.test(geo.toUpperCase())) {

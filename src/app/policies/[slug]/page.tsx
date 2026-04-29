@@ -5,6 +5,7 @@ import { ContentPageLayout } from '@/components/content/ContentPageLayout'
 import { getAllPolicySlugs, POLICY_SLUGS } from '@/data/policies'
 import { getLocale } from '@/i18n/request'
 import { getMessages } from '@/i18n/messages'
+import { SITE_URL } from '@/lib/utils/siteUrl'
 import type { Metadata } from 'next'
 
 type PolicySlug = (typeof POLICY_SLUGS)[number]
@@ -47,8 +48,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: 'Policy Not Found',
     }
   }
-
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mizoke.com'
 
   return {
     title: policy.title,

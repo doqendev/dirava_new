@@ -5,8 +5,9 @@ export const alt = 'Mizoke Universe'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
-export default function Image({ params }: { params: { universe: string } }) {
-  const universeName = params.universe
+export default async function Image({ params }: { params: Promise<{ universe: string }> }) {
+  const { universe } = await params
+  const universeName = universe
     .replace(/-/g, ' ')
     .replace(/\b\w/g, (c) => c.toUpperCase())
 

@@ -20,6 +20,7 @@ import type { ShopifyProduct } from '@/types/shopify'
 import type { Review } from '@/types/reviews'
 import { SITE_URL } from '@/lib/utils/siteUrl'
 import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
+import { sanitizeHtml } from '@/lib/utils/sanitizeHtml'
 
 // Revalidate every 60 seconds
 export const revalidate = 60
@@ -141,7 +142,7 @@ async function getProduct(handle: string) {
       handle: product.handle,
       title: product.title,
       description: product.description,
-      descriptionHtml: product.descriptionHtml || `<p>${product.description}</p>`,
+      descriptionHtml: sanitizeHtml(product.descriptionHtml || product.description),
       productType: product.productType || '',
       priceRange: product.priceRange,
       compareAtPriceRange: product.compareAtPriceRange,

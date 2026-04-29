@@ -9,9 +9,9 @@ const EMPTY_STATS = {
 
 export async function GET(
   _request: Request,
-  { params }: { params: { handle: string } }
+  { params }: { params: Promise<{ handle: string }> }
 ) {
-  const handle = params.handle
+  const { handle } = await params
 
   // Reviews are non-critical — never 500 the product page over a review
   // fetch failure. Log and return empty data so the UI renders "no reviews yet".

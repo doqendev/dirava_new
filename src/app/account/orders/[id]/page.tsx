@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { use, useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useLocale, useTranslations } from 'next-intl'
@@ -21,7 +21,8 @@ const statusColors: Record<string, string> = {
   PARTIALLY_FULFILLED: 'bg-neon-cyan/20 text-neon-cyan',
 }
 
-export default function OrderDetailPage({ params }: { params: { id: string } }) {
+export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const t = useTranslations('orderHistory')
   const locale = useLocale()
   const { isAuthenticated } = useRequireAuth()
@@ -37,7 +38,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
       }
 
       try {
-        const response = await fetch(`/api/account/orders/${params.id}`, {
+        const response = await fetch(`/api/account/orders/${id}`, {
           cache: 'no-store',
         })
         const data = (await response.json()) as {
@@ -60,7 +61,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
     }
 
     void fetchOrder()
-  }, [isAuthenticated, params.id])
+  }, [isAuthenticated, id])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString(locale, {

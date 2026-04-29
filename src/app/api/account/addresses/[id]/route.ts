@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic'
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const csrfBlock = enforceSameOrigin(request)
   if (csrfBlock) return csrfBlock
@@ -29,7 +29,8 @@ export async function PATCH(
 
   try {
     const body = (await request.json()) as Record<string, string>
-    const addressId = decodeURIComponent(params.id)
+    const { id } = await params
+    const addressId = decodeURIComponent(id)
 
     if (session.mode === 'mock') {
       const updatedCustomer: ShopifyCustomer = {
@@ -97,7 +98,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const csrfBlock = enforceSameOrigin(request)
   if (csrfBlock) return csrfBlock
@@ -112,7 +113,8 @@ export async function DELETE(
   }
 
   try {
-    const addressId = decodeURIComponent(params.id)
+    const { id } = await params
+    const addressId = decodeURIComponent(id)
 
     if (session.mode === 'mock') {
       const nextEdges = customer.addresses.edges.filter((edge) => edge.node.id !== addressId)

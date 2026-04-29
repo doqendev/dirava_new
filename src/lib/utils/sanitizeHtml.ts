@@ -1,12 +1,12 @@
-import DOMPurify from 'isomorphic-dompurify'
+import sanitize from 'sanitize-html'
 
 /**
  * Sanitize HTML from trusted sources (e.g. Shopify product descriptions).
- * Uses DOMPurify with an allowlist of safe tags and attributes.
+ * Uses a server-safe allowlist so product pages can render during SSR.
  */
 export function sanitizeHtml(html: string): string {
-  return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: [
+  return sanitize(html, {
+    allowedTags: [
       'p', 'br', 'strong', 'b', 'em', 'i', 'u',
       'ul', 'ol', 'li',
       'a', 'span', 'div',
@@ -14,6 +14,17 @@ export function sanitizeHtml(html: string): string {
       'table', 'thead', 'tbody', 'tr', 'th', 'td',
       'blockquote', 'hr', 'img',
     ],
-    ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'id', 'src', 'alt', 'width', 'height'],
+    allowedAttributes: {
+      '*': ['class', 'id'],
+      a: ['href', 'target', 'rel'],
+      img: ['src', 'alt', 'width', 'height'],
+    },
+    allowedSchemes: ['http', 'https', 'mailto', 'tel'],
+    allowedSchemesByTag: {
+      img: ['http', 'https', 'data'],
+    },
+    transformTags: {
+      a: sanitize.simpleTransform('a', { rel: 'noopener noreferrer' }, true),
+    },
   })
 }

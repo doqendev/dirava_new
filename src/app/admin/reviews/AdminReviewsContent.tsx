@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import { Shield, Loader2, AlertCircle, Check, X, Star, Image as ImageIcon, ExternalLink, Pencil, Save } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { StarRating } from '@/components/product/StarRating'
@@ -21,12 +21,7 @@ const statusBadgeClasses: Record<TabStatus, string> = {
 }
 
 export default function AdminReviewsContent() {
-  const [adminSecret, setAdminSecret] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('mizoke-admin-secret') || ''
-    }
-    return ''
-  })
+  const [adminSecret, setAdminSecret] = useState('')
   const [reviews, setReviews] = useState<AdminReview[]>([])
   const [activeTab, setActiveTab] = useState<TabStatus>('pending')
   const [isLoading, setIsLoading] = useState(false)
@@ -42,36 +37,33 @@ export default function AdminReviewsContent() {
     content: '',
   })
 
-  // Persist admin secret to sessionStorage (not localStorage — avoid persisting across sessions)
-  useEffect(() => {
-    if (adminSecret) {
-      sessionStorage.setItem('mizoke-admin-secret', adminSecret)
-    }
-  }, [adminSecret])
-
-  const authHeaders = useCallback((): HeadersInit => ({
-    'Authorization': `Bearer ${adminSecret}`,
-    'Content-Type': 'application/json',
-  }), [adminSecret])
-
   const fetchReviews = useCallback(async () => {
-    if (!adminSecret) {
-      setError('Please enter the admin secret')
-      return
-    }
-
     setIsLoading(true)
     setError(null)
 
     try {
-      const response = await fetch('/api/admin/reviews', {
-        headers: authHeaders(),
-      })
+      if (adminSecret) {
+        const sessionResponse = await fetch('/api/admin/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ secret: adminSecret }),
+        })
+        const sessionData = await sessionResponse.json()
+
+        if (!sessionResponse.ok || !sessionData.success) {
+          setError(sessionData.error || 'Invalid admin secret')
+          return
+        }
+
+        setAdminSecret('')
+      }
+
+      const response = await fetch('/api/admin/reviews', { cache: 'no-store' })
 
       const data = await response.json()
 
       if (!response.ok || !data.success) {
-        setError(data.error || 'Failed to fetch reviews')
+        setError(response.status === 401 ? 'Please enter the admin secret' : data.error || 'Failed to fetch reviews')
         return
       }
 
@@ -82,7 +74,14 @@ export default function AdminReviewsContent() {
     } finally {
       setIsLoading(false)
     }
-  }, [adminSecret, authHeaders])
+  }, [adminSecret])
+
+  const logout = async () => {
+    await fetch('/api/admin/session', { method: 'DELETE' }).catch(() => null)
+    setReviews([])
+    setHasFetched(false)
+    setAdminSecret('')
+  }
 
   const startEditing = (review: AdminReview) => {
     setEditingId(review.id)
@@ -105,7 +104,7 @@ export default function AdminReviewsContent() {
       const encodedId = encodeURIComponent(reviewId)
       const response = await fetch(`/api/admin/reviews/${encodedId}`, {
         method: 'PATCH',
-        headers: authHeaders(),
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           authorName: editForm.authorName,
           rating: editForm.rating,
@@ -144,7 +143,7 @@ export default function AdminReviewsContent() {
       const encodedId = encodeURIComponent(reviewId)
       const response = await fetch(`/api/admin/reviews/${encodedId}`, {
         method: 'PATCH',
-        headers: authHeaders(),
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
       })
 
@@ -202,7 +201,7 @@ export default function AdminReviewsContent() {
             />
             <button
               onClick={fetchReviews}
-              disabled={isLoading || !adminSecret}
+              disabled={isLoading}
               className={cn(
                 'flex items-center gap-2 px-6 py-3 rounded-lg font-medium',
                 'bg-neon-purple text-black',
@@ -219,6 +218,18 @@ export default function AdminReviewsContent() {
                 'Load Reviews'
               )}
             </button>
+            {hasFetched && (
+              <button
+                onClick={logout}
+                className={cn(
+                  'px-4 py-3 rounded-lg font-medium',
+                  'border border-border-subtle text-white/70',
+                  'hover:text-white hover:border-white/30 transition-colors'
+                )}
+              >
+                Sign Out
+              </button>
+            )}
           </div>
         </div>
 

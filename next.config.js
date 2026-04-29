@@ -14,11 +14,22 @@ const nextConfig = {
       },
     ],
     formats: ['image/avif', 'image/webp'],
+    qualities: [80, 85],
   },
   // Note: typedRoutes disabled due to dynamic route complexity
   // experimental: {
   //   typedRoutes: true,
   // },
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'mizoke.com' }],
+        destination: 'https://www.mizoke.com/:path*',
+        permanent: true,
+      },
+    ]
+  },
   async headers() {
     return [
       {

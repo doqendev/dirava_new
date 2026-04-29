@@ -36,7 +36,6 @@ import { getPreviewDisplayText } from '@/lib/preview/textTransform'
 import { AccentTheme } from '@/components/theme/AccentTheme'
 import type { ShopifyMoney, ShopifySelectedOption } from '@/types/shopify'
 import type { ReviewRating } from '@/types/reviews'
-import { sanitizeHtml } from '@/lib/utils/sanitizeHtml'
 
 interface ProductVariant {
   id: string
@@ -624,7 +623,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   <ProductDescription
                     handle={product.handle}
                     isPersonalized={product.personalization}
-                    fallbackHtml={sanitizeHtml(product.descriptionHtml)}
+                    fallbackHtml={product.descriptionHtml}
                   />
                 </div>
               </div>

@@ -1,43 +1,23 @@
 import { NextResponse } from 'next/server'
-import crypto from 'crypto'
+import { enforceAdminRateLimit, requireAdminSession } from '@/lib/auth/admin'
+import { requireSameOrigin } from '@/lib/utils/csrf'
 import { updateReviewStatus, updateReview } from '@/lib/reviews/metaobjects'
-
-function isAuthorized(request: Request): boolean {
-  const adminSecret = process.env.ADMIN_SECRET
-
-  if (!adminSecret) {
-    return process.env.NODE_ENV === 'development'
-  }
-
-  const authHeader = request.headers.get('authorization')
-  if (!authHeader) return false
-
-  const token = authHeader.replace('Bearer ', '')
-
-  try {
-    return crypto.timingSafeEqual(
-      Buffer.from(token),
-      Buffer.from(adminSecret)
-    )
-  } catch {
-    return false
-  }
-}
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  if (process.env.NODE_ENV === 'production' && !process.env.ADMIN_SECRET) {
-    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 })
-  }
+  const csrfReject = requireSameOrigin(request)
+  if (csrfReject) return csrfReject
 
-  if (!isAuthorized(request)) {
-    return NextResponse.json(
-      { success: false, error: 'Unauthorized' },
-      { status: 401 }
-    )
-  }
+  const rateLimitReject = await enforceAdminRateLimit(request, 'reviews-update', {
+    maxRequests: 30,
+    windowSeconds: 300,
+  })
+  if (rateLimitReject) return rateLimitReject
+
+  const authReject = requireAdminSession(request)
+  if (authReject) return authReject
 
   try {
     const body = await request.json() as {
@@ -52,7 +32,8 @@ export async function PATCH(
 
     // Shopify metaobject IDs are GIDs — the route param is the raw ID portion
     // The frontend sends the full GID (e.g. "gid://shopify/Metaobject/12345")
-    const reviewId = decodeURIComponent(params.id)
+    const { id } = await params
+    const reviewId = decodeURIComponent(id)
 
     // Status-only update path (backwards compatible)
     if (body.status !== undefined) {
@@ -118,7 +99,7 @@ export async function PATCH(
     console.error('Admin review update error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to update review' },
-      { status: 500 }
+      { status: 500, headers: { 'Cache-Control': 'no-store' } }
     )
   }
 }

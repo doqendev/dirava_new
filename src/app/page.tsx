@@ -25,8 +25,7 @@ export async function generateMetadata() {
   }
 }
 
-// Revalidate every 60 seconds
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 // Valid universe slugs
 const VALID_UNIVERSES = ['one-piece', 'demon-slayer', 'dragon-ball', 'hunter-hunter', 'attack-on-titan', 'digimon', 'jujutsu-kaisen', 'bleach']
