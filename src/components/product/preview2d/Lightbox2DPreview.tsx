@@ -56,7 +56,13 @@ function getFittedFontSize(text: string, boxWidth: number, boxHeight: number, co
 export function Lightbox2DPreview({ config, text, alt, className }: Lightbox2DPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [size, setSize] = useState<PreviewSize>({ width: 0, height: 0 })
+  const [loadedImage, setLoadedImage] = useState<string | null>(null)
+  const [loadedFontFamily, setLoadedFontFamily] = useState<string | null>(null)
   const displayText = text.trim() || 'NAME'
+  const fontFamily = config.fontFamily ?? '"OnePiecePreview", fantasy'
+  const imageReady = loadedImage === config.image
+  const fontReady = loadedFontFamily === fontFamily
+  const previewReady = imageReady && fontReady
 
   useEffect(() => {
     const node = containerRef.current
@@ -75,6 +81,32 @@ export function Lightbox2DPreview({ config, text, alt, className }: Lightbox2DPr
     return () => observer.disconnect()
   }, [])
 
+  useEffect(() => {
+    let cancelled = false
+
+    if (!document.fonts) {
+      setLoadedFontFamily(fontFamily)
+      return undefined
+    }
+
+    const loadFont = async () => {
+      try {
+        await document.fonts.load(`1em ${fontFamily}`)
+        await document.fonts.ready
+      } finally {
+        if (!cancelled) {
+          setLoadedFontFamily(fontFamily)
+        }
+      }
+    }
+
+    loadFont()
+
+    return () => {
+      cancelled = true
+    }
+  }, [fontFamily])
+
   const textStyle = useMemo<CSSProperties>(() => {
     const imageRect = getImageRect(size, config)
     const box = config.textBox
@@ -92,7 +124,7 @@ export function Lightbox2DPreview({ config, text, alt, className }: Lightbox2DPr
       top,
       width,
       height,
-      fontFamily: config.fontFamily ?? '"OnePiecePreview", fantasy',
+      fontFamily,
       fontSize,
       letterSpacing: `${letterSpacing}em`,
       transform: `translateY(${height * (config.textOffsetY ?? 0)}px)`,
@@ -102,11 +134,12 @@ export function Lightbox2DPreview({ config, text, alt, className }: Lightbox2DPr
         `0 0 ${Math.max(8, fontSize * 0.18)}px ${glowColor}`,
       ].join(', '),
     }
-  }, [config, displayText, size])
+  }, [config, displayText, fontFamily, size])
 
   return (
     <div ref={containerRef} className={className}>
       <Image
+        key={config.image}
         src={config.image}
         alt={alt}
         fill
@@ -114,8 +147,21 @@ export function Lightbox2DPreview({ config, text, alt, className }: Lightbox2DPr
         quality={85}
         sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 640px"
         className="object-contain"
+        onLoad={() => setLoadedImage(config.image)}
       />
-      {size.width > 0 && (
+      {!previewReady && (
+        <div
+          aria-label="Loading preview"
+          aria-live="polite"
+          className="absolute inset-0 z-10 flex items-center justify-center bg-black/25 backdrop-blur-[1px]"
+        >
+          <div
+            aria-hidden
+            className="h-9 w-9 animate-spin rounded-full border-2 border-white/20 border-t-white/90 shadow-[0_0_18px_rgba(255,255,255,0.35)]"
+          />
+        </div>
+      )}
+      {size.width > 0 && previewReady && (
         <div
           aria-label={displayText}
           className="pointer-events-none absolute flex items-center justify-center overflow-visible whitespace-nowrap text-center leading-none"
