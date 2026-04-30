@@ -129,13 +129,19 @@ export function Preview3DCanvas({ config, text, selectedVariantName, ballPositio
   const [lightOn, setLightOn] = useState(true)
   const sceneRef = useRef<THREE.Group>(null)
   const isMobile = useIsMobile()
+  const isProductFirstLightbox = config.scene?.variant === 'lightbox'
+  const cameraPosition: [number, number, number] =
+    isMobile && isProductFirstLightbox
+      ? [config.camera.position[0], config.camera.position[1], config.camera.position[2] * 1.32]
+      : config.camera.position
   // Only products that opt into bloom actually have a "light" to toggle;
   // non-LED products hide the switch entirely so it doesn't confuse shoppers.
   const hasLightToggle = Boolean(config.postprocessingBloom)
+  const shouldShowInteractionHint = showHint && !(isMobile && isProductFirstLightbox)
   // Nudge the model up on mobile so it sits above the (typically tall) body
   // content and stays visible in the square canvas without being cropped
   // behind the interaction hint or info chip.
-  const sceneYOffset = isMobile ? 1.2 : 0
+  const sceneYOffset = isMobile ? (isProductFirstLightbox ? -0.35 : 1.2) : 0
 
   // Check WebGL support on mount
   useEffect(() => {
@@ -187,7 +193,7 @@ export function Preview3DCanvas({ config, text, selectedVariantName, ballPositio
         <Canvas
           shadows
           camera={{
-            position: config.camera.position,
+            position: cameraPosition,
             fov: config.camera.fov ?? 50,
             near: config.camera.near ?? 0.1,
             far: config.camera.far ?? 1000,
@@ -243,8 +249,8 @@ export function Preview3DCanvas({ config, text, selectedVariantName, ballPositio
       <div
         className="absolute top-8 inset-x-0 z-10 pointer-events-none flex justify-center"
         style={{
-          opacity: showHint ? 1 : 0,
-          transform: showHint ? 'translateY(0)' : 'translateY(-8px)',
+          opacity: shouldShowInteractionHint ? 1 : 0,
+          transform: shouldShowInteractionHint ? 'translateY(0)' : 'translateY(-8px)',
           transition: 'opacity 1s ease, transform 1s ease',
         }}
       >
@@ -260,11 +266,15 @@ export function Preview3DCanvas({ config, text, selectedVariantName, ballPositio
             <Hand className="w-4 h-4" />
             {t('preview3dDragToRotate')}
           </span>
-          <span className="text-neon-cyan/30">|</span>
-          <span className="flex items-center gap-2">
-            <Search className="w-4 h-4" />
-            {t('preview3dPinchToZoom')}
-          </span>
+          {!isProductFirstLightbox && (
+            <>
+              <span className="text-neon-cyan/30">|</span>
+              <span className="flex items-center gap-2">
+                <Search className="w-4 h-4" />
+                {t('preview3dPinchToZoom')}
+              </span>
+            </>
+          )}
         </div>
       </div>
     </div>

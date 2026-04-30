@@ -888,27 +888,30 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
       </PresentationControls>
       </group>
 
-      <ContactShadows
-        position={[0, groundY + 0.05, 0]}
-        opacity={config.scene?.shadowOpacity ?? 0.2}
-        scale={config.scene?.variant === 'lightbox' ? 28 : 60}
-        blur={config.scene?.variant === 'lightbox' ? 3.4 : 2.8}
-        far={20}
-      />
+      {!useCameraOrbit && (
+        <ContactShadows
+          position={[0, groundY + 0.05, 0]}
+          opacity={config.scene?.shadowOpacity ?? 0.2}
+          scale={60}
+          blur={2.8}
+          far={20}
+        />
+      )}
 
       <OrbitControls
         enablePan={false}
         enableRotate={useCameraOrbit}
+        enableZoom={!useCameraOrbit}
         enableDamping={useCameraOrbit}
         dampingFactor={0.08}
-        minDistance={5}
-        maxDistance={40}
+        minDistance={useCameraOrbit ? 11 : 5}
+        maxDistance={useCameraOrbit ? 15 : 40}
         autoRotate={false}
         autoRotateSpeed={0}
-        maxPolarAngle={useCameraOrbit ? Math.PI * 0.58 : Math.PI * 0.7}
-        minPolarAngle={useCameraOrbit ? Math.PI * 0.42 : Math.PI * 0.3}
-        minAzimuthAngle={useCameraOrbit ? -0.8 : -Infinity}
-        maxAzimuthAngle={useCameraOrbit ? 0.8 : Infinity}
+        maxPolarAngle={useCameraOrbit ? Math.PI * 0.53 : Math.PI * 0.7}
+        minPolarAngle={useCameraOrbit ? Math.PI * 0.47 : Math.PI * 0.3}
+        minAzimuthAngle={useCameraOrbit ? -0.25 : -Infinity}
+        maxAzimuthAngle={useCameraOrbit ? 0.25 : Infinity}
         target={controlsTarget}
       />
 

@@ -106,6 +106,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
     const isComposite = previewConfig?.type === 'composite-sign' && !!previewConfig?.barParts
     const isDragonballSign = previewConfig?.type === 'dragonball-sign' && !!previewConfig.font && !!previewConfig.svg
     const isBleachSign = previewConfig?.type === 'bleach-sign' && !!previewConfig.font && !!previewConfig.bleachFrameSvgs
+    const isProductFirstLightbox = previewConfig?.scene?.variant === 'lightbox'
     const normalizedPreviewText = useMemo(
       () => (previewConfig ? getPreviewDisplayText(previewText, previewConfig, '') : (previewText ?? '')),
       [previewText, previewConfig]
@@ -256,26 +257,38 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                 transition={{ duration: 0.15 }}
                 className="absolute inset-0"
               >
-                <Suspense
-                  fallback={
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0a12]">
-                      <Preview3DLoadingIndicator label={tCommon('loading')} />
-                    </div>
-                  }
-                >
-                  <Preview3DCanvas
-                    config={previewConfig}
-                    text={previewCanvasText}
-                    selectedVariantName={selectedVariantName}
-                    ballPosition={isDragonballSign ? ballPosition : undefined}
-                  />
-                </Suspense>
+                              <div
+                                className={cn(
+                                  'absolute inset-0',
+                                  isProductFirstLightbox && (onPreviewTextChange || canvasCart) && 'max-sm:bottom-[72px]',
+                                )}
+                              >
+                                <Suspense
+                                  fallback={
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0a12]">
+                                      <Preview3DLoadingIndicator label={tCommon('loading')} />
+                                    </div>
+                                  }
+                                >
+                                  <Preview3DCanvas
+                                    config={previewConfig}
+                                    text={previewCanvasText}
+                                    selectedVariantName={selectedVariantName}
+                                    ballPosition={isDragonballSign ? ballPosition : undefined}
+                                  />
+                                </Suspense>
+                              </div>
 
 
                 {/* Bottom bar: input + Add to Cart */}
                 {(onPreviewTextChange || canvasCart) && (
                   <div className="absolute bottom-0 inset-x-0 z-20">
-                    <div className="bg-gradient-to-t from-black/90 via-black/70 to-transparent pt-8 pb-3 px-3">
+                    <div
+                      className={cn(
+                        'bg-gradient-to-t from-black/90 via-black/70 to-transparent pt-8 pb-3 px-3',
+                        isProductFirstLightbox && 'max-sm:border-t max-sm:border-white/10 max-sm:bg-black/85 max-sm:bg-none max-sm:px-2 max-sm:py-2',
+                      )}
+                    >
                       {/* Dragon Ball position picker — a row of clickable dots
                           interleaved with the typed letters. Only shows up on
                           the Dragon Ball sign preview. */}

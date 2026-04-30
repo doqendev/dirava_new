@@ -108,6 +108,11 @@ export function SvgFrontDecal({
   useEffect(() => {
     const loader = new THREE.TextureLoader()
     let cancelled = false
+    let loadedTexture: THREE.Texture | null = null
+    let loadedGlowTexture: THREE.Texture | null = null
+
+    setTexture(null)
+    setGlowTexture(null)
 
     loader.load(
       config.texture,
@@ -118,13 +123,13 @@ export function SvgFrontDecal({
         }
         loaded.colorSpace = THREE.SRGBColorSpace
         loaded.anisotropy = 8
+        loadedTexture = loaded
         setTexture(loaded)
 
         if (config.internalGlow && loaded.image instanceof HTMLImageElement) {
           const generatedGlow = createInternalGlowTexture(loaded.image, config.internalGlow)
-          if (generatedGlow) {
-            setGlowTexture(generatedGlow)
-          }
+          loadedGlowTexture = generatedGlow
+          setGlowTexture(generatedGlow)
         } else {
           setGlowTexture(null)
         }
@@ -137,15 +142,10 @@ export function SvgFrontDecal({
 
     return () => {
       cancelled = true
+      loadedTexture?.dispose()
+      loadedGlowTexture?.dispose()
     }
   }, [config.internalGlow, config.texture])
-
-  useEffect(() => {
-    return () => {
-      texture?.dispose()
-      glowTexture?.dispose()
-    }
-  }, [texture, glowTexture])
 
   if (!texture || !viewBox) return null
 
