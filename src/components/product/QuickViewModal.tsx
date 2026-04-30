@@ -18,6 +18,7 @@ import { getPreviewConfig, getVariantImages } from '@/lib/preview'
 import { getPreviewDisplayText } from '@/lib/preview/textTransform'
 import { Preview3DLoadingIndicator } from '@/components/product/preview3d/LoadingSpinner'
 import { BallPositionPicker } from '@/components/product/preview3d/BallPositionPicker'
+import { Lightbox2DPreview } from '@/components/product/preview2d/Lightbox2DPreview'
 
 const Preview3DCanvas = lazy(() =>
   import('@/components/product/preview3d/Preview3DCanvas').then((mod) => ({
@@ -173,10 +174,11 @@ export function QuickViewModal() {
   const isComposite = previewConfig?.type === 'composite-sign' && !!previewConfig?.barParts
   const isDragonballSign = previewConfig?.type === 'dragonball-sign' && !!previewConfig.font && !!previewConfig.svg
   const isBleachSign = previewConfig?.type === 'bleach-sign' && !!previewConfig.font && !!previewConfig.bleachFrameSvgs
+  const activeLightbox2DPreview = selectedVariantName && previewConfig?.variantLightbox2DPreviews?.[selectedVariantName]
   // Overlay-mode signs auto-place the X, so the picker + cart attribute
   // both get suppressed.
   const ballPickerEnabled = isDragonballSign && previewConfig?.midSpriteMode !== 'overlay'
-  const show3DTab = !!previewConfig && (isTextExtrusion || hasVariantSvg || hasSingleSvg || isComposite || isDragonballSign || isBleachSign)
+  const show3DTab = !!previewConfig && (Boolean(activeLightbox2DPreview) || isTextExtrusion || hasVariantSvg || hasSingleSvg || isComposite || isDragonballSign || isBleachSign)
   const preview3DIndex = product ? product.images.length : 0
   const is3DActive = currentImageIndex === preview3DIndex && show3DTab
 
@@ -361,12 +363,21 @@ export function QuickViewModal() {
                                   </div>
                                 }
                               >
-                                <Preview3DCanvas
-                                  config={previewConfig}
-                                  text={previewCanvasText}
-                                  selectedVariantName={selectedVariantName}
-                                  ballPosition={ballPickerEnabled && personalizationName.length > 0 ? effectiveBallPosition : undefined}
-                                />
+                                {activeLightbox2DPreview ? (
+                                  <Lightbox2DPreview
+                                    config={activeLightbox2DPreview}
+                                    text={previewCanvasText}
+                                    alt={`${product.title} personalized live preview`}
+                                    className="absolute inset-0 overflow-hidden bg-[#05070d]"
+                                  />
+                                ) : (
+                                  <Preview3DCanvas
+                                    config={previewConfig}
+                                    text={previewCanvasText}
+                                    selectedVariantName={selectedVariantName}
+                                    ballPosition={ballPickerEnabled && personalizationName.length > 0 ? effectiveBallPosition : undefined}
+                                  />
+                                )}
                               </Suspense>
 
 
@@ -439,7 +450,7 @@ export function QuickViewModal() {
                             )}
                           >
                             <Box className="w-3.5 h-3.5" />
-                            <span>3D</span>
+                            <span>{activeLightbox2DPreview ? 'Preview' : '3D'}</span>
                           </button>
                         )}
 
@@ -527,7 +538,7 @@ export function QuickViewModal() {
                                   ? 'border-neon-cyan shadow-glow-sm-cyan'
                                   : 'border-transparent opacity-60 hover:opacity-100'
                               )}
-                              aria-label="3D Preview"
+                              aria-label={activeLightbox2DPreview ? 'Live preview' : '3D Preview'}
                             >
                               <Box className="w-5 h-5 text-neon-cyan" />
                             </button>

@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils/cn'
 import { AddToCartButton } from '@/components/product/AddToCartButton'
 import { Preview3DLoadingIndicator } from '@/components/product/preview3d/LoadingSpinner'
 import { BallPositionPicker } from '@/components/product/preview3d/BallPositionPicker'
+import { Lightbox2DPreview } from '@/components/product/preview2d/Lightbox2DPreview'
 import type { PreviewConfig } from '@/lib/preview/types'
 import { getPreviewDisplayText } from '@/lib/preview/textTransform'
 import { MAX_PERSONALIZATION_LENGTH } from '@/lib/utils/constants'
@@ -107,6 +108,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
     const isDragonballSign = previewConfig?.type === 'dragonball-sign' && !!previewConfig.font && !!previewConfig.svg
     const isBleachSign = previewConfig?.type === 'bleach-sign' && !!previewConfig.font && !!previewConfig.bleachFrameSvgs
     const isProductFirstLightbox = previewConfig?.scene?.variant === 'lightbox'
+    const activeLightbox2DPreview = selectedVariantName && previewConfig?.variantLightbox2DPreviews?.[selectedVariantName]
     const normalizedPreviewText = useMemo(
       () => (previewConfig ? getPreviewDisplayText(previewText, previewConfig, '') : (previewText ?? '')),
       [previewText, previewConfig]
@@ -117,7 +119,10 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
     )
 
     // 3D tab is available for text-extrusion (always) or SVG/composite types with content
-    const show3DTab = !!previewConfig && (isTextExtrusion || hasVariantSvg || hasSingleSvg || isComposite || isDragonballSign || isBleachSign)
+    const show3DTab = !!previewConfig && (Boolean(activeLightbox2DPreview) || isTextExtrusion || hasVariantSvg || hasSingleSvg || isComposite || isDragonballSign || isBleachSign)
+    const previewSlideLabel = activeLightbox2DPreview ? 'Live Preview' : '3D Preview'
+    const previewThumbLabel = activeLightbox2DPreview ? 'Preview' : '3D'
+    const previewAriaLabel = activeLightbox2DPreview ? 'View live preview' : t('view3DPreview')
 
     // 3D is the last slide (index = images.length)
     const preview3DIndex = images.length
@@ -247,48 +252,56 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
             onTouchStart={!is3DActive ? handleTouchStart : undefined}
             onTouchEnd={!is3DActive ? handleTouchEnd : undefined}
           >
-          <AnimatePresence mode="wait">
-            {is3DActive && previewConfig ? (
-              <motion.div
-                key="3d-preview"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
-                className="absolute inset-0"
-              >
-                              <div
-                                className={cn(
-                                  'absolute inset-0',
-                                  isProductFirstLightbox && (onPreviewTextChange || canvasCart) && 'max-sm:bottom-[72px]',
-                                )}
-                              >
-                                <Suspense
-                                  fallback={
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0a12]">
-                                      <Preview3DLoadingIndicator label={tCommon('loading')} />
-                                    </div>
-                                  }
-                                >
-                                  <Preview3DCanvas
-                                    config={previewConfig}
-                                    text={previewCanvasText}
-                                    selectedVariantName={selectedVariantName}
-                                    ballPosition={isDragonballSign ? ballPosition : undefined}
-                                  />
-                                </Suspense>
-                              </div>
+            <AnimatePresence mode="wait">
+              {is3DActive && previewConfig ? (
+                <motion.div
+                  key="3d-preview"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute inset-0"
+                >
+                  <div
+                    className={cn(
+                      'absolute inset-0',
+                      isProductFirstLightbox && !activeLightbox2DPreview && (onPreviewTextChange || canvasCart) && 'max-sm:bottom-[72px]',
+                    )}
+                  >
+                    {activeLightbox2DPreview ? (
+                      <Lightbox2DPreview
+                        config={activeLightbox2DPreview}
+                        text={previewCanvasText}
+                        alt={`${productTitle} personalized live preview`}
+                        className="absolute inset-0 overflow-hidden bg-[#05070d]"
+                      />
+                    ) : (
+                      <Suspense
+                        fallback={
+                          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0a12]">
+                            <Preview3DLoadingIndicator label={tCommon('loading')} />
+                          </div>
+                        }
+                      >
+                        <Preview3DCanvas
+                          config={previewConfig}
+                          text={previewCanvasText}
+                          selectedVariantName={selectedVariantName}
+                          ballPosition={isDragonballSign ? ballPosition : undefined}
+                        />
+                      </Suspense>
+                    )}
+                  </div>
 
-
-                {/* Bottom bar: input + Add to Cart */}
-                {(onPreviewTextChange || canvasCart) && (
-                  <div className="absolute bottom-0 inset-x-0 z-20">
-                    <div
-                      className={cn(
-                        'bg-gradient-to-t from-black/90 via-black/70 to-transparent pt-8 pb-3 px-3',
-                        isProductFirstLightbox && 'max-sm:border-t max-sm:border-white/10 max-sm:bg-black/85 max-sm:bg-none max-sm:px-2 max-sm:py-2',
-                      )}
-                    >
+                  {/* Bottom bar: input + Add to Cart */}
+                  {(onPreviewTextChange || canvasCart) && (
+                    <div className="absolute bottom-0 inset-x-0 z-20">
+                      <div
+                        className={cn(
+                          'bg-gradient-to-t from-black/90 via-black/70 to-transparent pt-8 pb-3 px-3',
+                          isProductFirstLightbox && 'max-sm:border-t max-sm:border-white/10 max-sm:bg-black/85 max-sm:bg-none max-sm:px-2 max-sm:py-2',
+                        )}
+                      >
                       {/* Dragon Ball position picker — a row of clickable dots
                           interleaved with the typed letters. Only shows up on
                           the Dragon Ball sign preview. */}
@@ -431,10 +444,10 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                 color: themeColor,
                 boxShadow: `0 0 14px ${themeColor}66`,
               }}
-              aria-label={t('view3DPreview')}
+              aria-label={previewAriaLabel}
             >
               <Box className="w-4 h-4" />
-              <span>3D Preview</span>
+              <span>{previewSlideLabel}</span>
             </button>
           )}
 
@@ -489,7 +502,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                 'transition-all duration-200',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent,#00f5ff)]'
               )}
-              aria-label={t('close3DPreview')}
+              aria-label={activeLightbox2DPreview ? 'Close live preview' : t('close3DPreview')}
             >
               <X className="w-5 h-5" />
             </button>
@@ -591,7 +604,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                               }
                             : undefined
                         }
-                        aria-label={t('view3DPreview')}
+                        aria-label={previewAriaLabel}
                         aria-current={is3DActive ? 'true' : undefined}
                       >
                         <div className="flex flex-col items-center gap-0.5 leading-none">
@@ -603,7 +616,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                             className="text-[8.5px] font-semibold uppercase tracking-wide leading-none transition-colors"
                             style={{ color: is3DActive ? themeColor : 'rgba(255,255,255,0.6)' }}
                           >
-                            3D
+                            {previewThumbLabel}
                           </span>
                         </div>
                       </button>

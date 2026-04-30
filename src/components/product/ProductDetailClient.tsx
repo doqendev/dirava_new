@@ -159,6 +159,10 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
   // Quantity is fixed at 1 on the PDP — adjustments happen in the
   // cart drawer instead so the buying flow stays focused on
   // personalization → add-to-cart.
+  const selectedVariantName = selectedOptions['Color'] || selectedOptions['color'] || ''
+  const activeLightbox2DPreview = selectedVariantName && previewConfig?.variantLightbox2DPreviews?.[selectedVariantName]
+  const previewActionLabel = activeLightbox2DPreview ? 'Live Preview' : '3D View'
+  const previewActionAriaLabel = activeLightbox2DPreview ? 'Open live preview' : undefined
   const quantity = 1
 
   // Ref for sticky add-to-cart IntersectionObserver
@@ -381,7 +385,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               initialImageIndex={initialImageIndex}
               previewConfig={previewConfig}
               previewText={personalizationName}
-              selectedVariantName={selectedOptions['Color'] || selectedOptions['color'] || ''}
+              selectedVariantName={selectedVariantName}
               imageVariantNames={imageVariantNames}
               onVariantSelect={onVariantSelectFromGallery}
               onPreviewTextChange={product.personalization ? setPersonalizationName : undefined}
@@ -533,6 +537,8 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   inputRef={personalizationInputRef}
                   themeColor={themeColor}
                   onPreview3D={previewConfig ? () => galleryRef.current?.goTo3D() : undefined}
+                  previewLabel={previewActionLabel}
+                  previewAriaLabel={previewActionAriaLabel}
                   cta={
                     <AddToCartButton
                       variantId={selectedVariant?.id || ''}

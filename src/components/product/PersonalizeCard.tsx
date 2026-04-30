@@ -27,6 +27,8 @@ interface PersonalizeCardProps {
    *  (right side, after the character counter). Replaces the previous
    *  mobile-only stand-alone preview button. */
   onPreview3D?: () => void
+  previewLabel?: string
+  previewAriaLabel?: string
 }
 
 function hexToRgb(hex: string): string {
@@ -51,6 +53,8 @@ export function PersonalizeCard({
   quantity,
   socialProof,
   onPreview3D,
+  previewLabel = '3D View',
+  previewAriaLabel,
 }: PersonalizeCardProps) {
   const t = useTranslations('product')
   const [focused, setFocused] = useState(false)
@@ -145,7 +149,7 @@ export function PersonalizeCard({
               <button
                 type="button"
                 onClick={onPreview3D}
-                aria-label={t('personalizationOpen3D')}
+                aria-label={previewAriaLabel ?? t('personalizationOpen3D')}
                 className="pointer-events-auto hidden sm:inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] transition-all duration-150 hover:scale-[1.03] active:scale-95 focus:outline-none focus-visible:ring-2"
                 style={{
                   color: themeColor,
@@ -155,7 +159,7 @@ export function PersonalizeCard({
                 }}
               >
                 <Box className="h-3.5 w-3.5" strokeWidth={2.25} />
-                3D View
+                {previewLabel}
               </button>
             </>
           )}
@@ -170,7 +174,7 @@ export function PersonalizeCard({
         <button
           type="button"
           onClick={onPreview3D}
-          aria-label={t('personalizationOpen3D')}
+          aria-label={previewAriaLabel ?? t('personalizationOpen3D')}
           className="sm:hidden mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 text-[11.5px] font-bold uppercase tracking-[0.14em] transition-all duration-150 active:scale-[0.985] focus:outline-none focus-visible:ring-2"
           style={{
             color: themeColor,
@@ -180,7 +184,7 @@ export function PersonalizeCard({
           }}
         >
           <Box className="h-4 w-4" strokeWidth={2.25} />
-          3D View
+          {previewLabel}
         </button>
       )}
 

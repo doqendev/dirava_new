@@ -110,6 +110,33 @@ export interface FrontDecalConfig {
   offsetY?: number
 }
 
+export interface Lightbox2DPreviewConfig {
+  /** Public path to a finished lit product render/photo. */
+  image: string
+  /** Native image dimensions used to map source-pixel coordinates to CSS pixels. */
+  imageWidth: number
+  imageHeight: number
+  /** Nameplate text bounds in native image pixels. */
+  textBox: {
+    x: number
+    y: number
+    width: number
+    height: number
+  }
+  /** Optional controls for text fitting and glow styling. */
+  fontFamily?: string
+  textColor?: string
+  glowColor?: string
+  warmGlowColor?: string
+  letterSpacing?: number
+  maxFontRatio?: number
+  minFontSize?: number
+  fontRatioByLength?: Record<number, number>
+  letterSpacingByLength?: Record<number, number>
+  /** Vertical correction as a ratio of the mapped text box height. */
+  textOffsetY?: number
+}
+
 export interface PreviewSceneConfig {
   /** Optional studio treatment for products that need more than the
    *  default neutral floor. */
@@ -170,6 +197,8 @@ export interface PreviewConfig {
   frontDecal?: FrontDecalConfig
   /** Per-variant front decal overrides (variant name → decal config). */
   variantFrontDecals?: Record<string, FrontDecalConfig>
+  /** Per-variant finished 2D lightbox preview renders with dynamic nameplate text. */
+  variantLightbox2DPreviews?: Record<string, Lightbox2DPreviewConfig>
   /** Map variant option value → thumbnail image path (for visual variant selector) */
   variantImages?: Record<string, string>
   /** Bar SVG paths for composite-sign type */

@@ -2903,6 +2903,34 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
       },
     },
   },
+  variantLightbox2DPreviews: {
+    Luffy: {
+      image: '/textures/preview/one-piece-lightbox-luffy-photo.png',
+      imageWidth: 1254,
+      imageHeight: 1254,
+      // Inner black nameplate area in the supplied finished render.
+      textBox: { x: 418, y: 818, width: 456, height: 94 },
+      fontFamily: '"OnePiecePreview", fantasy',
+      textColor: '#ffffff',
+      glowColor: 'rgba(255, 255, 255, 0.95)',
+      warmGlowColor: 'rgba(255, 211, 61, 0.72)',
+      maxFontRatio: 1.61,
+      minFontSize: 9,
+      fontRatioByLength: {
+        6: 1.45,
+        7: 1.33,
+        9: 1.2,
+        10: 1.09,
+        11: 1,
+        12: 0.93,
+      },
+      letterSpacingByLength: {
+        11: 0.08,
+        12: 0.075,
+      },
+      textOffsetY: 0.32,
+    },
+  },
   layers: [
     // Black silhouette — the whole lightbox body at 20mm depth.
     // Different variants are exported with slightly different black
