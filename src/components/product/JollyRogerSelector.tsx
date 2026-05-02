@@ -1,7 +1,6 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { VariantSelector } from '@/components/product/VariantSelector'
 
@@ -88,21 +87,7 @@ export function JollyRogerSelector({
           showImageLabels
           mobileImageRail
         />
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex w-16 items-center justify-end bg-gradient-to-l from-[#06080d] via-[#06080d]/80 to-transparent pr-1 sm:hidden">
-          <span
-            className="flex h-8 w-8 items-center justify-center rounded-full border bg-black/70 backdrop-blur-sm"
-            style={{
-              borderColor: themeColor ? `${themeColor}66` : 'rgba(0,245,255,0.4)',
-              boxShadow: themeColor ? `0 0 14px ${themeColor}24` : undefined,
-            }}
-          >
-            <ChevronRight
-              className="h-4 w-4"
-              style={{ color: themeColor ?? '#00f5ff' }}
-              strokeWidth={2.5}
-            />
-          </span>
-        </div>
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-9 bg-gradient-to-l from-[#06080d] via-[#06080d]/70 to-transparent sm:hidden" />
       </div>
     </div>
   )

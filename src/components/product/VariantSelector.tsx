@@ -78,7 +78,7 @@ export function VariantSelector({
             <div
               className={cn(
                 mobileImageRail
-                  ? 'max-sm:flex max-sm:gap-2 max-sm:overflow-x-auto max-sm:pb-1 max-sm:pr-14 max-sm:snap-x hide-scrollbar sm:grid sm:grid-cols-8 sm:gap-2'
+                  ? 'max-sm:flex max-sm:gap-2 max-sm:overflow-x-auto max-sm:pb-1 max-sm:pr-8 max-sm:snap-x hide-scrollbar sm:grid sm:grid-cols-8 sm:gap-2'
                   : 'grid grid-cols-5 sm:grid-cols-8 gap-2'
               )}
             >
@@ -97,7 +97,7 @@ export function VariantSelector({
                       'relative aspect-square rounded-lg overflow-hidden',
                       'border-2 transition-all duration-200',
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan',
-                      mobileImageRail && 'max-sm:h-14 max-sm:w-14 max-sm:flex-none max-sm:snap-start',
+                      mobileImageRail && 'max-sm:h-[52px] max-sm:w-[52px] max-sm:flex-none max-sm:snap-start',
                       isSelected
                         ? themeColor
                           ? 'bg-white/10'
