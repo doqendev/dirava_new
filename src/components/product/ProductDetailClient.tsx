@@ -130,6 +130,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
   const previewConfig = useMemo(() => {
     return getPreviewConfig(product.handle)
   }, [product.handle])
+  const variantImages = useMemo(() => getVariantImages(product.handle), [product.handle])
 
   // Selected options state — prefer variant from URL param (e.g., ?variant=Zoro)
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() => {
@@ -161,8 +162,20 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
   // personalization → add-to-cart.
   const selectedVariantName = selectedOptions['Color'] || selectedOptions['color'] || ''
   const activeLightbox2DPreview = selectedVariantName && previewConfig?.variantLightbox2DPreviews?.[selectedVariantName]
+  const startsWithLivePreview = Boolean(
+    activeLightbox2DPreview && previewConfig?.scene?.variant === 'lightbox'
+  )
   const previewActionLabel = activeLightbox2DPreview ? 'Live Preview' : '3D View'
   const previewActionAriaLabel = activeLightbox2DPreview ? 'Open live preview' : undefined
+  const isOnePieceJollyRogerProduct = [
+    'one-piece-custom-sign',
+    'one-piece-magnet',
+    'one-piece-custom-keychain',
+    'one-piece-custom-led-lightbox-sign',
+  ].includes(product.handle)
+  const showJollyRogerSelector = isOnePieceJollyRogerProduct && Boolean(variantImages)
+  const moveJollyRogerSelectorToPreview = startsWithLivePreview && showJollyRogerSelector
+  const galleryInlineControlsEnabled = !moveJollyRogerSelectorToPreview
   const quantity = 1
 
   // Ref for sticky add-to-cart IntersectionObserver
@@ -375,7 +388,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
           <span className="text-sm">{t('backTo', { name: universeName })}</span>
         </Link>
 
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 w-full">
+        <div className="grid gap-5 lg:grid-cols-2 lg:gap-12 w-full">
           {/* Gallery */}
           <div className="w-full min-w-0">
             <ProductGallery
@@ -388,11 +401,35 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               selectedVariantName={selectedVariantName}
               imageVariantNames={imageVariantNames}
               onVariantSelect={onVariantSelectFromGallery}
-              onPreviewTextChange={product.personalization ? setPersonalizationName : undefined}
+              onPreviewTextChange={product.personalization && galleryInlineControlsEnabled ? setPersonalizationName : undefined}
               ballPosition={ballPickerEnabled && personalizationName.length > 0 ? effectiveBallPosition : undefined}
               onBallPositionChange={ballPickerEnabled ? setBallPosition : undefined}
               themeColor={themeColor}
-              canvasCart={previewConfig ? {
+              initialPreviewMode={startsWithLivePreview}
+              previewSelector={moveJollyRogerSelectorToPreview ? (
+                <div className="space-y-3 max-sm:space-y-2">
+                  <div>
+                    <h2 className="text-[11px] font-bold uppercase tracking-[0.14em] text-white">
+                      {t('chooseYourJollyRoger')}
+                    </h2>
+                    <p className="mt-1 text-[11px] leading-snug text-white/50 max-sm:hidden">
+                      Pick the Jolly Roger for your sign.
+                    </p>
+                  </div>
+                  <VariantSelector
+                    options={options}
+                    variants={product.variants}
+                    selectedOptions={selectedOptions}
+                    onOptionChange={handleOptionChange}
+                    optionImages={variantImages ?? undefined}
+                    imageOptionName={variantImages ? 'Color' : undefined}
+                    themeColor={themeColor}
+                    showImageLabels
+                    mobileImageRail
+                  />
+                </div>
+              ) : undefined}
+              canvasCart={previewConfig && galleryInlineControlsEnabled ? {
                 variantId: selectedVariant?.id || '',
                 quantity,
                 available: selectedVariant?.availableForSale ?? false,
@@ -486,6 +523,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
 
             {/* Variant Selector — hide Shopify's default "Title" option for single-variant products */}
             {options.length > 0 &&
+              !moveJollyRogerSelectorToPreview &&
               !(options.length === 1 && options[0]?.name === 'Title' && options[0]?.values.length === 1 && options[0]?.values[0] === 'Default Title') && (
               <div className="space-y-3">
                 {/* One Piece variant tiles ARE the Jolly Roger selector
@@ -498,7 +536,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   'one-piece-magnet',
                   'one-piece-custom-keychain',
                   'one-piece-custom-led-lightbox-sign',
-                ].includes(product.handle) && getVariantImages(product.handle) && (
+                ].includes(product.handle) && variantImages && (
                   <div>
                     <h2 className="text-[13px] font-bold uppercase tracking-[0.12em] text-white">
                       {t('chooseYourJollyRoger')}
@@ -513,8 +551,8 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   variants={product.variants}
                   selectedOptions={selectedOptions}
                   onOptionChange={handleOptionChange}
-                  optionImages={getVariantImages(product.handle)}
-                  imageOptionName={getVariantImages(product.handle) ? 'Color' : undefined}
+                  optionImages={variantImages ?? undefined}
+                  imageOptionName={variantImages ? 'Color' : undefined}
                   themeColor={themeColor}
                 />
               </div>
@@ -581,16 +619,15 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               </div>
             )}
 
-            {/* Limited slots — sits between social proof and the trust
-                strip in the buying column on every viewport. The left
-                column under the gallery stays clean (the banner used to
-                duplicate there). */}
-            <div className={cn(product.personalization ? 'pt-6' : 'pt-7')}>
-              <LimitedSlotsBanner accent={themeColor} productHandle={product.handle} />
-            </div>
-
             <div className="pt-4">
               <TrustStrip />
+            </div>
+
+            {/* Limited slots — keep urgency near the buying flow, after the
+                baseline trust signals so it supports rather than replaces
+                reassurance. The left column under the gallery stays clean. */}
+            <div className={cn(product.personalization ? 'pt-5' : 'pt-7')}>
+              <LimitedSlotsBanner accent={themeColor} productHandle={product.handle} />
             </div>
             </div>
             {/* end buy box card */}

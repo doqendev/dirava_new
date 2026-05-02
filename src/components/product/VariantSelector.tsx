@@ -29,6 +29,10 @@ interface VariantSelectorProps {
   className?: string
   /** Universe accent color — themes the selected chip / tile. */
   themeColor?: string
+  /** Show labels on every visual tile instead of only the selected one. */
+  showImageLabels?: boolean
+  /** On mobile, render image options as a single horizontal rail. */
+  mobileImageRail?: boolean
 }
 
 export function VariantSelector({
@@ -40,6 +44,8 @@ export function VariantSelector({
   imageOptionName,
   className,
   themeColor,
+  showImageLabels = false,
+  mobileImageRail = false,
 }: VariantSelectorProps) {
   // Check if a specific option value is available
   const isOptionAvailable = (optionName: string, optionValue: string) => {
@@ -69,7 +75,13 @@ export function VariantSelector({
 
           {shouldUseImageTiles(option.name) ? (
             /* Image tile grid */
-            <div className="grid grid-cols-5 sm:grid-cols-8 gap-2">
+            <div
+              className={cn(
+                mobileImageRail
+                  ? 'max-sm:flex max-sm:gap-2 max-sm:overflow-x-auto max-sm:pb-1 max-sm:snap-x hide-scrollbar sm:grid sm:grid-cols-8 sm:gap-2'
+                  : 'grid grid-cols-5 sm:grid-cols-8 gap-2'
+              )}
+            >
               {option.values.map((value) => {
                 const isSelected = selectedOptions[option.name] === value
                 const isAvailable = isOptionAvailable(option.name, value)
@@ -85,6 +97,7 @@ export function VariantSelector({
                       'relative aspect-square rounded-lg overflow-hidden',
                       'border-2 transition-all duration-200',
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan',
+                      mobileImageRail && 'max-sm:h-14 max-sm:w-14 max-sm:flex-none max-sm:snap-start',
                       isSelected
                         ? themeColor
                           ? 'bg-white/10'
@@ -106,7 +119,7 @@ export function VariantSelector({
                         src={imageUrl}
                         alt={value}
                         fill
-                        className="object-contain p-1.5"
+                        className={cn('object-contain p-1.5', showImageLabels && 'pb-4')}
                         sizes="80px"
                       />
                     ) : (
@@ -118,15 +131,21 @@ export function VariantSelector({
                     )}
 
                     {/* Selected indicator */}
-                    {isSelected && (
+                    {(isSelected || showImageLabels) && (
                       <div
                         className={cn(
                           'absolute bottom-0 inset-x-0 py-0.5',
-                          !themeColor && 'bg-neon-cyan/90'
+                          !themeColor && isSelected && 'bg-neon-cyan/90',
+                          !isSelected && 'bg-black/60'
                         )}
-                        style={themeColor ? { backgroundColor: themeColor, opacity: 0.9 } : undefined}
+                        style={themeColor && isSelected ? { backgroundColor: themeColor, opacity: 0.9 } : undefined}
                       >
-                        <span className="block text-[8px] font-bold text-black text-center truncate px-0.5">
+                        <span
+                          className={cn(
+                            'block text-[8px] font-bold text-center truncate px-0.5',
+                            isSelected ? 'text-black' : 'text-white/80'
+                          )}
+                        >
                           {value}
                         </span>
                       </div>

@@ -1,36 +1,95 @@
 'use client'
 
-import { Truck, Lock, RefreshCw, Globe } from 'lucide-react'
+import { BadgeCheck, CheckCircle2, PackageCheck, ShieldCheck, Truck } from 'lucide-react'
 
 const ITEMS = [
-  { icon: Truck, title: 'Free shipping', sub: 'Orders over €45' },
-  { icon: Lock, title: 'Secure payment', sub: 'SSL encrypted' },
-  { icon: RefreshCw, title: 'Easy returns', sub: '30-day returns' },
-  { icon: Globe, title: 'Worldwide', sub: 'shipping' },
+  {
+    icon: PackageCheck,
+    title: 'Made to order',
+    sub: 'Production starts after checkout.',
+  },
+  {
+    icon: CheckCircle2,
+    title: 'Checked before packing',
+    sub: 'Name and finish inspected.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Damage replacement',
+    sub: 'Arrives damaged? We replace it.',
+  },
+  {
+    icon: Truck,
+    title: 'Free shipping €45+',
+    sub: 'Rates shown at checkout.',
+  },
 ]
 
 /**
- * 4-icon strip shown right below the cart actions on every product.
- * Replaces the older TrustBadges component visually.
+ * Compact assurance strip shown near the cart action.
+ * Copy is intentionally concrete and safe for personalized products.
  */
 export function TrustStrip() {
   return (
-    <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-      {ITEMS.map((it, i) => {
-        const Icon = it.icon
-        return (
-          <li
-            key={i}
-            className="flex items-center gap-2 rounded-xl border border-white/[0.05] bg-transparent px-3 py-2"
-          >
-            <Icon className="h-4 w-4 flex-shrink-0 text-white/45" />
-            <div className="min-w-0 leading-tight">
-              <div className="text-[11px] font-semibold uppercase tracking-wide text-white/75">{it.title}</div>
-              <div className="truncate text-[10px] text-white/50">{it.sub}</div>
-            </div>
-          </li>
-        )
-      })}
-    </ul>
+    <section
+      aria-label="Made for your order"
+      className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#06080d]/75 px-3.5 py-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] sm:px-4 sm:py-4"
+    >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-px"
+        style={{
+          background: 'linear-gradient(90deg, transparent, rgba(var(--accent-rgb, 0, 245, 255), 0.5), transparent)',
+        }}
+      />
+
+      <header className="flex items-start gap-2.5 border-b border-white/[0.07] pb-3 sm:gap-3">
+        <span
+          className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl border sm:h-9 sm:w-9"
+          style={{
+            borderColor: 'rgba(var(--accent-rgb, 0, 245, 255), 0.2)',
+            background: 'rgba(var(--accent-rgb, 0, 245, 255), 0.07)',
+            boxShadow: '0 0 18px rgba(var(--accent-rgb, 0, 245, 255), 0.1)',
+          }}
+        >
+          <BadgeCheck
+            className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
+            style={{ color: 'rgba(var(--accent-rgb, 0, 245, 255), 0.9)' }}
+          />
+        </span>
+        <div>
+          <p className="font-display text-[11px] font-bold uppercase tracking-[0.16em] text-white sm:text-[12px]">
+            Made for your order
+          </p>
+          <p className="mt-1 text-[11.5px] leading-snug text-white/55 sm:text-[12.5px]">
+            We make your sign after you order and check it before it ships.
+          </p>
+        </div>
+      </header>
+
+      <ul className="mt-2.5 grid grid-cols-2 gap-0">
+        {ITEMS.map((it, i) => {
+          const Icon = it.icon
+          return (
+            <li
+              key={i}
+              className="group flex gap-2.5 border-t border-white/[0.06] py-2.5 odd:pr-2.5 even:border-l even:border-l-white/[0.06] even:pl-2.5 [&:nth-child(-n+2)]:border-t-0 sm:gap-3 sm:py-3 sm:odd:pr-4 sm:even:pl-4"
+            >
+              <Icon
+                className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-white/42 transition-colors group-hover:text-white/65 sm:h-4 sm:w-4"
+              />
+              <div className="min-w-0">
+                <div className="text-[10.5px] font-bold uppercase leading-tight tracking-[0.07em] text-white/82 sm:text-[12px]">
+                  {it.title}
+                </div>
+                <div className="mt-1 text-[10.5px] leading-snug text-white/48 sm:text-[11.5px]">
+                  {it.sub}
+                </div>
+              </div>
+            </li>
+          )
+        })}
+      </ul>
+    </section>
   )
 }

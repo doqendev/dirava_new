@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, lazy, Suspense, forwardRef, useImperativeHandle, useCallback, useMemo } from 'react'
+import { useState, useEffect, useRef, lazy, Suspense, forwardRef, useImperativeHandle, useCallback, useMemo, type ReactNode } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -61,6 +61,10 @@ interface ProductGalleryProps {
   onBallPositionChange?: (value: number) => void
   /** Universe accent color for the gallery card glow / 3D pill / active thumb ring. */
   themeColor?: string
+  /** Start on the live preview / 3D slide instead of the first product photo. */
+  initialPreviewMode?: boolean
+  /** Selector shown below the live preview for product-first 2D lightboxes. */
+  previewSelector?: ReactNode
 }
 
 export interface ProductGalleryHandle {
@@ -87,6 +91,8 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
       ballPosition,
       onBallPositionChange,
       themeColor = '#00f5ff',
+      initialPreviewMode = false,
+      previewSelector,
     },
     ref
   ) {
@@ -94,7 +100,6 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
     const tCommon = useTranslations('common')
     const tProduct = useTranslations('product')
     const containerRef = useRef<HTMLDivElement>(null)
-    const [currentIndex, setCurrentIndex] = useState(initialImageIndex ?? 0)
     const [isZoomed, setIsZoomed] = useState(false)
     const [showAllThumbs, setShowAllThumbs] = useState(false)
     const touchStartRef = useRef<{ x: number; y: number } | null>(null)
@@ -114,8 +119,15 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
       [previewText, previewConfig]
     )
     const previewCanvasText = useMemo(
-      () => (previewConfig ? getPreviewDisplayText(previewText, previewConfig, 'Name') : 'Name'),
-      [previewText, previewConfig]
+      () => {
+        if (!previewConfig) return 'Name'
+        return getPreviewDisplayText(
+          previewText,
+          previewConfig,
+          activeLightbox2DPreview ? 'Your Name' : 'Name'
+        )
+      },
+      [previewText, previewConfig, activeLightbox2DPreview]
     )
 
     // 3D tab is available for text-extrusion (always) or SVG/composite types with content
@@ -123,9 +135,18 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
     const previewSlideLabel = activeLightbox2DPreview ? 'Live Preview' : '3D Preview'
     const previewThumbLabel = activeLightbox2DPreview ? 'Preview' : '3D'
     const previewAriaLabel = activeLightbox2DPreview ? 'View live preview' : t('view3DPreview')
+    const showLightboxModeTabs = isProductFirstLightbox && Boolean(activeLightbox2DPreview) && show3DTab
 
     // 3D is the last slide (index = images.length)
     const preview3DIndex = images.length
+    const selectedVariantImageIndex = useMemo(() => {
+      if (!selectedVariantName || !imageVariantNames?.length) return initialImageIndex ?? 0
+      const index = imageVariantNames.findIndex((name) => name === selectedVariantName)
+      return index >= 0 ? index : (initialImageIndex ?? 0)
+    }, [imageVariantNames, initialImageIndex, selectedVariantName])
+    const [currentIndex, setCurrentIndex] = useState(
+      initialPreviewMode && show3DTab ? preview3DIndex : (initialImageIndex ?? 0)
+    )
     const is3DActive = currentIndex === preview3DIndex
 
     const goTo3D = useCallback(() => {
@@ -152,22 +173,24 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
     )
 
     const goToNext = useCallback(() => {
+      if (images.length === 0) return
       const nextIndex = currentIndex + 1
-      const maxIndex = show3DTab ? images.length : images.length - 1
+      const maxIndex = showLightboxModeTabs ? images.length - 1 : show3DTab ? images.length : images.length - 1
       if (nextIndex > maxIndex) {
         setCurrentIndex(0)
       } else {
         setCurrentIndex(nextIndex)
       }
-    }, [currentIndex, show3DTab, images.length])
+    }, [currentIndex, show3DTab, showLightboxModeTabs, images.length])
 
     const goToPrev = useCallback(() => {
+      if (images.length === 0) return
       if (currentIndex === 0) {
-        setCurrentIndex(show3DTab ? images.length : images.length - 1)
+        setCurrentIndex(showLightboxModeTabs ? images.length - 1 : show3DTab ? images.length : images.length - 1)
       } else {
         setCurrentIndex(currentIndex - 1)
       }
-    }, [currentIndex, show3DTab, images.length])
+    }, [currentIndex, show3DTab, showLightboxModeTabs, images.length])
 
     const goToIndex = (index: number) => {
       setCurrentIndex(index)
@@ -210,7 +233,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
       }
     }, [show3DTab, is3DActive])
 
-    const totalSlides = images.length + (show3DTab ? 1 : 0)
+    const totalSlides = images.length + (show3DTab && !showLightboxModeTabs ? 1 : 0)
 
     if (images.length === 0 && !show3DTab) {
       return (
@@ -248,7 +271,10 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
               The thumbnail strip sits beneath as a sibling and just
               adds to the card's total height. */}
           <div
-            className="relative aspect-square overflow-hidden group"
+            className={cn(
+              'relative aspect-square overflow-hidden group',
+              activeLightbox2DPreview && isProductFirstLightbox && 'max-sm:aspect-[1.16/1]'
+            )}
             onTouchStart={!is3DActive ? handleTouchStart : undefined}
             onTouchEnd={!is3DActive ? handleTouchEnd : undefined}
           >
@@ -273,6 +299,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                         config={activeLightbox2DPreview}
                         text={previewCanvasText}
                         alt={`${productTitle} personalized live preview`}
+                        imageFit="cover"
                         className="absolute inset-0 overflow-hidden bg-[#05070d]"
                       />
                     ) : (
@@ -378,34 +405,35 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
               </motion.div>
             )}
 
-            {/* Preload the neighbouring images so a swipe lands on an already
-                cached + decoded image instead of a spinner. Rendered tiny +
-                invisible; `priority` emits a <link rel="preload"> so the
-                browser fetches them right after the current image. */}
-            {images.length > 1 && (
-              <div aria-hidden="true" className="pointer-events-none absolute h-px w-px overflow-hidden opacity-0">
-                {[
-                  (currentIndex + 1) % images.length,
-                  (currentIndex - 1 + images.length) % images.length,
-                ].filter((i) => i !== currentIndex).map((i) => {
-                  const img = images[i]
-                  if (!img) return null
-                  return (
-                    <Image
-                      key={`preload-${i}`}
-                      src={img.url}
-                      alt=""
-                      width={1}
-                      height={1}
-                      priority
-                      quality={80}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 640px"
-                    />
-                  )
-                })}
-              </div>
-            )}
           </AnimatePresence>
+
+          {/* Preload the neighbouring images so a swipe lands on an already
+              cached + decoded image instead of a spinner. Rendered tiny +
+              invisible; `priority` emits a <link rel="preload"> so the
+              browser fetches them right after the current image. */}
+          {images.length > 1 && (
+            <div aria-hidden="true" className="pointer-events-none absolute h-px w-px overflow-hidden opacity-0">
+              {[
+                (currentIndex + 1) % images.length,
+                (currentIndex - 1 + images.length) % images.length,
+              ].filter((i) => i !== currentIndex).map((i) => {
+                const img = images[i]
+                if (!img) return null
+                return (
+                  <Image
+                    key={`preload-${i}`}
+                    src={img.url}
+                    alt=""
+                    width={1}
+                    height={1}
+                    priority
+                    quality={80}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 640px"
+                  />
+                )
+              })}
+            </div>
+          )}
 
           {/* Zoom indicator (only for images, not 3D) — sits below the 3D
               button so both can coexist on desktop. */}
@@ -428,7 +456,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
           )}
 
           {/* 3D Preview pill — full label, prominent accent fill. */}
-          {show3DTab && !is3DActive && (
+          {show3DTab && !is3DActive && !showLightboxModeTabs && (
             <button
               onClick={() => goToIndex(preview3DIndex)}
               className={cn(
@@ -490,7 +518,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
           )}
 
           {/* Close button for 3D preview */}
-          {is3DActive && (
+          {is3DActive && !activeLightbox2DPreview && (
             <button
               onClick={() => setCurrentIndex(0)}
               className={cn(
@@ -521,13 +549,61 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
             const visible = overflow ? images.slice(0, THUMB_CAP) : images
             const hiddenCount = overflow ? images.length - THUMB_CAP : 0
             return (
-              <div className="px-3 py-3">
+              <div className="px-3 py-3 max-sm:px-2 max-sm:py-2">
+                {showLightboxModeTabs && (
+                  <div className="mb-3 grid grid-cols-2 rounded-xl border border-white/10 bg-black/30 p-1 max-sm:mb-2 max-sm:rounded-lg max-sm:p-0.5">
+                    <button
+                      type="button"
+                      onClick={() => goToIndex(preview3DIndex)}
+                      className={cn(
+                        'rounded-lg px-3 py-2 text-[11px] font-bold uppercase tracking-[0.14em] transition-all',
+                        'max-sm:py-1.5 max-sm:text-[10px] max-sm:tracking-[0.12em]',
+                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent,#00f5ff)]',
+                        is3DActive ? 'text-black' : 'text-white/55 hover:text-white'
+                      )}
+                      style={
+                        {
+                          backgroundColor: is3DActive ? themeColor : 'transparent',
+                          boxShadow: is3DActive ? `0 0 12px ${themeColor}55` : 'none',
+                        }
+                      }
+                      aria-pressed={is3DActive}
+                    >
+                      Preview
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => goToIndex(Math.max(0, Math.min(selectedVariantImageIndex, images.length - 1)))}
+                      className={cn(
+                        'rounded-lg px-3 py-2 text-[11px] font-bold uppercase tracking-[0.14em] transition-all',
+                        'max-sm:py-1.5 max-sm:text-[10px] max-sm:tracking-[0.12em]',
+                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent,#00f5ff)]',
+                        !is3DActive ? 'text-black' : 'text-white/55 hover:text-white'
+                      )}
+                      style={
+                        {
+                          backgroundColor: !is3DActive ? themeColor : 'transparent',
+                          boxShadow: !is3DActive ? `0 0 12px ${themeColor}55` : 'none',
+                        }
+                      }
+                      aria-pressed={!is3DActive}
+                    >
+                      Photos
+                    </button>
+                  </div>
+                )}
+
+                {showLightboxModeTabs && is3DActive && previewSelector ? (
+                  <div className="rounded-xl border border-white/[0.07] bg-black/25 p-3 max-sm:rounded-lg max-sm:p-2">
+                    {previewSelector}
+                  </div>
+                ) : (
                 <div>
                   <div className="flex gap-2 overflow-x-auto hide-scrollbar">
                     {visible.map((image, index) => {
                       const thumbVariant = imageVariantNames?.[index] ?? null
                       const stayInPreview = is3DActive && thumbVariant && onVariantSelect
-                      const isActive = stayInPreview ? thumbVariant === selectedVariantName : index === currentIndex
+                      const isActive = !is3DActive && index === currentIndex
                       return (
                         <button
                           key={index}
@@ -586,7 +662,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                       </button>
                     )}
 
-                    {show3DTab && (
+                    {show3DTab && !showLightboxModeTabs && (
                       <button
                         onClick={() => goToIndex(preview3DIndex)}
                         className={cn(
@@ -623,6 +699,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                     )}
                   </div>
                 </div>
+                )}
               </div>
             )
           })()}

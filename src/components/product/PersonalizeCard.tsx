@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Box, AlertCircle } from 'lucide-react'
+import { AlertCircle, Box, LockKeyhole } from 'lucide-react'
 import type { Ref, ReactNode } from 'react'
 import { cn } from '@/lib/utils/cn'
 import { isBlockedName } from '@/lib/utils/personalizationBlocklist'
@@ -226,6 +226,10 @@ export function PersonalizeCard({
         Made to order
         <span className="mx-2 text-white/30">·</span>
         Ready in 2-3 days
+      </p>
+      <p className="mt-2 flex items-center justify-center gap-1.5 text-[10.5px] font-semibold uppercase leading-none tracking-[0.12em] text-white/42">
+        <LockKeyhole className="h-3 w-3" strokeWidth={2.25} />
+        Encrypted checkout
       </p>
 
       {socialProof && (
