@@ -63,8 +63,10 @@ interface ProductGalleryProps {
   themeColor?: string
   /** Start on the live preview / 3D slide instead of the first product photo. */
   initialPreviewMode?: boolean
-  /** Selector shown below the live preview for product-first 2D lightboxes. */
+  /** Selector shown below an active preview when variants change the preview art. */
   previewSelector?: ReactNode
+  /** Notifies the product page when the live/3D preview is open. */
+  onPreviewActiveChange?: (isActive: boolean) => void
 }
 
 export interface ProductGalleryHandle {
@@ -93,6 +95,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
       themeColor = '#00f5ff',
       initialPreviewMode = false,
       previewSelector,
+      onPreviewActiveChange,
     },
     ref
   ) {
@@ -148,6 +151,10 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
       initialPreviewMode && show3DTab ? preview3DIndex : (initialImageIndex ?? 0)
     )
     const is3DActive = currentIndex === preview3DIndex
+
+    useEffect(() => {
+      onPreviewActiveChange?.(is3DActive)
+    }, [is3DActive, onPreviewActiveChange])
 
     const goTo3D = useCallback(() => {
       setCurrentIndex(preview3DIndex)
@@ -548,6 +555,12 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
             const overflow = !showAllThumbs && images.length > THUMB_CAP
             const visible = overflow ? images.slice(0, THUMB_CAP) : images
             const hiddenCount = overflow ? images.length - THUMB_CAP : 0
+            const showPreviewSelector = is3DActive && Boolean(previewSelector)
+            const showVariantSwipeHint =
+              is3DActive &&
+              !showLightboxModeTabs &&
+              overflow &&
+              imageVariantNames?.some(Boolean)
             return (
               <div className="px-3 py-3 max-sm:px-2 max-sm:py-2">
                 {showLightboxModeTabs && (
@@ -593,20 +606,31 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                   </div>
                 )}
 
-                {showLightboxModeTabs && is3DActive && previewSelector ? (
+                {showPreviewSelector ? (
                   <div className="rounded-xl border border-white/[0.07] bg-black/25 p-3 max-sm:rounded-lg max-sm:p-2">
                     {previewSelector}
                   </div>
                 ) : (
                 <div>
+                  {showVariantSwipeHint && (
+                    <p className="mb-2 text-[10.5px] font-semibold uppercase leading-snug tracking-[0.12em] text-white/50 sm:hidden">
+                      {tProduct('jollyRogerSwipeHint')}
+                    </p>
+                  )}
                   <div className="flex gap-2 overflow-x-auto hide-scrollbar">
                     {visible.map((image, index) => {
                       const thumbVariant = imageVariantNames?.[index] ?? null
+                      const stayInPreview = is3DActive && thumbVariant && onVariantSelect
                       const isActive = !is3DActive && index === currentIndex
                       return (
                         <button
                           key={index}
                           onClick={() => {
+                            if (stayInPreview) {
+                              onVariantSelect(thumbVariant)
+                              return
+                            }
+
                             if (thumbVariant && onVariantSelect) {
                               onVariantSelect(thumbVariant)
                             }

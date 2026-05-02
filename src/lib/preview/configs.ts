@@ -3947,6 +3947,7 @@ const variantImagesOnly: Record<string, Record<string, string>> = {
     'Arlong Pirates': '/images/characters/style_25.png',
     'Arlong': '/images/characters/style_25.png',
   },
+  'one-piece-magnet': previewConfigs['one-piece-custom-sign']?.variantImages ?? {},
 }
 
 const previewHandleAliases: Record<string, string> = {

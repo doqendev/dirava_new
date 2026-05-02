@@ -78,7 +78,7 @@ export function VariantSelector({
             <div
               className={cn(
                 mobileImageRail
-                  ? 'max-sm:flex max-sm:gap-2 max-sm:overflow-x-auto max-sm:pb-1 max-sm:snap-x hide-scrollbar sm:grid sm:grid-cols-8 sm:gap-2'
+                  ? 'max-sm:flex max-sm:gap-2 max-sm:overflow-x-auto max-sm:pb-1 max-sm:pr-14 max-sm:snap-x hide-scrollbar sm:grid sm:grid-cols-8 sm:gap-2'
                   : 'grid grid-cols-5 sm:grid-cols-8 gap-2'
               )}
             >

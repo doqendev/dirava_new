@@ -11,6 +11,7 @@ import { UNIVERSE_CONFIG, MAX_PERSONALIZATION_LENGTH } from '@/lib/utils/constan
 import { ProductGallery } from '@/components/product/ProductGallery'
 import type { ProductGalleryHandle } from '@/components/product/ProductGallery'
 import { VariantSelector } from '@/components/product/VariantSelector'
+import { JollyRogerSelector } from '@/components/product/JollyRogerSelector'
 import { AddToCartButton } from '@/components/product/AddToCartButton'
 import { WishlistButton } from '@/components/product/WishlistButton'
 import { Badge } from '@/components/ui/Badge'
@@ -160,22 +161,45 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
   // Quantity is fixed at 1 on the PDP — adjustments happen in the
   // cart drawer instead so the buying flow stays focused on
   // personalization → add-to-cart.
-  const selectedVariantName = selectedOptions['Color'] || selectedOptions['color'] || ''
+  const variantImageOptionName = useMemo(
+    () => options.find((option) => option.name.toLowerCase() === 'color')?.name,
+    [options]
+  )
+  const selectedVariantName =
+    (variantImageOptionName ? selectedOptions[variantImageOptionName] : undefined)
+    || selectedOptions['Color']
+    || selectedOptions['color']
+    || ''
   const activeLightbox2DPreview = selectedVariantName && previewConfig?.variantLightbox2DPreviews?.[selectedVariantName]
   const hasLivePreviewBuilder = Boolean(
     activeLightbox2DPreview && previewConfig?.scene?.variant === 'lightbox'
   )
   const previewActionLabel = activeLightbox2DPreview ? 'Live Preview' : '3D View'
   const previewActionAriaLabel = activeLightbox2DPreview ? 'Open live preview' : undefined
-  const isOnePieceJollyRogerProduct = [
-    'one-piece-custom-sign',
-    'one-piece-magnet',
-    'one-piece-custom-keychain',
-    'one-piece-custom-led-lightbox-sign',
-  ].includes(product.handle)
-  const showJollyRogerSelector = isOnePieceJollyRogerProduct && Boolean(variantImages)
+  const showJollyRogerSelector = Boolean(variantImages && variantImageOptionName)
+  const showJollyRogerSelectorInPreview = showJollyRogerSelector && Boolean(previewConfig)
   const moveJollyRogerSelectorToPreview = hasLivePreviewBuilder && showJollyRogerSelector
+  const [isGalleryPreviewActive, setIsGalleryPreviewActive] = useState(false)
+  const hideJollyRogerSelectorInBuyBox =
+    moveJollyRogerSelectorToPreview || (showJollyRogerSelectorInPreview && isGalleryPreviewActive)
+  const buyBoxVariantOptions = useMemo(
+    () =>
+      hideJollyRogerSelectorInBuyBox && variantImageOptionName
+        ? options.filter((option) => option.name !== variantImageOptionName)
+        : options,
+    [hideJollyRogerSelectorInBuyBox, options, variantImageOptionName]
+  )
+  const hasBuyBoxVariantOptions = !(
+    buyBoxVariantOptions.length === 0 ||
+    (
+      buyBoxVariantOptions.length === 1 &&
+      buyBoxVariantOptions[0]?.name === 'Title' &&
+      buyBoxVariantOptions[0]?.values.length === 1 &&
+      buyBoxVariantOptions[0]?.values[0] === 'Default Title'
+    )
+  )
   const galleryInlineControlsEnabled = !moveJollyRogerSelectorToPreview
+  const useStreamlinedPersonalization = !hasLivePreviewBuilder && product.handle.includes('sign')
   const quantity = 1
 
   // Ref for sticky add-to-cart IntersectionObserver
@@ -332,14 +356,18 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
         v.image?.url && v.image.url.split('?')[0] === img.url.split('?')[0]
       )
       if (!match) return null
-      const opt = match.selectedOptions.find((o) => o.name === 'Color' || o.name === 'color')
+      const opt = match.selectedOptions.find((o) =>
+        o.name === variantImageOptionName || o.name === 'Color' || o.name === 'color'
+      )
       return opt?.value ?? null
     })
-  }, [product.images, product.variants])
+  }, [product.images, product.variants, variantImageOptionName])
 
   // Called by the gallery when a thumbnail is tapped while 3D is active.
   const onVariantSelectFromGallery = (variantName: string) => {
-    const key = 'Color' in selectedOptions ? 'Color' : 'color' in selectedOptions ? 'color' : 'Color'
+    const key =
+      variantImageOptionName
+      || ('Color' in selectedOptions ? 'Color' : 'color' in selectedOptions ? 'color' : 'Color')
     handleOptionChange(key, variantName)
   }
 
@@ -411,27 +439,20 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               onBallPositionChange={ballPickerEnabled ? setBallPosition : undefined}
               themeColor={themeColor}
               initialPreviewMode={false}
-              previewSelector={moveJollyRogerSelectorToPreview ? (
+              onPreviewActiveChange={setIsGalleryPreviewActive}
+              previewSelector={showJollyRogerSelectorInPreview && variantImages && variantImageOptionName ? (
                 <div className="space-y-3 max-sm:space-y-2.5">
-                  <div>
-                    <h2 className="text-[11px] font-bold uppercase tracking-[0.14em] text-white">
-                      {t('chooseYourJollyRoger')}
-                    </h2>
-                    <p className="mt-1 text-[11px] leading-snug text-white/50 max-sm:hidden">
-                      Pick the Jolly Roger for your sign.
-                    </p>
-                  </div>
-                  <VariantSelector
+                  <JollyRogerSelector
                     options={options}
                     variants={product.variants}
                     selectedOptions={selectedOptions}
                     onOptionChange={handleOptionChange}
-                    optionImages={variantImages ?? undefined}
-                    imageOptionName={variantImages ? 'Color' : undefined}
+                    variantImages={variantImages}
+                    imageOptionName={variantImageOptionName}
                     themeColor={themeColor}
-                    showImageLabels
-                    mobileImageRail
+                    mode="preview"
                   />
+                  {hasLivePreviewBuilder && (
                   <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-stretch lg:hidden">
                     <div className="relative min-w-0">
                       <input
@@ -476,6 +497,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                       className="!h-12 !py-0 !text-[12px] sm:!w-auto sm:!px-5"
                     />
                   </div>
+                  )}
                 </div>
               ) : undefined}
               canvasCart={previewConfig && galleryInlineControlsEnabled ? {
@@ -571,39 +593,27 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             )}
 
             {/* Variant Selector — hide Shopify's default "Title" option for single-variant products */}
-            {options.length > 0 &&
-              !moveJollyRogerSelectorToPreview &&
-              !(options.length === 1 && options[0]?.name === 'Title' && options[0]?.values.length === 1 && options[0]?.values[0] === 'Default Title') && (
+            {hasBuyBoxVariantOptions && (
               <div className="space-y-3">
-                {/* One Piece variant tiles ARE the Jolly Roger selector
-                    — make that explicit with a small header so the
-                    customer immediately understands what they're
-                    picking. Scoped to the four handles where the
-                    crew-symbol vocabulary applies. */}
-                {[
-                  'one-piece-custom-sign',
-                  'one-piece-magnet',
-                  'one-piece-custom-keychain',
-                  'one-piece-custom-led-lightbox-sign',
-                ].includes(product.handle) && variantImages && (
-                  <div>
-                    <h2 className="text-[13px] font-bold uppercase tracking-[0.12em] text-white">
-                      {t('chooseYourJollyRoger')}
-                    </h2>
-                    <p className="mt-1 text-[12px] leading-snug text-white/55">
-                      {t('jollyRogerSubhead')}
-                    </p>
-                  </div>
+                {showJollyRogerSelector && !hideJollyRogerSelectorInBuyBox && variantImages && variantImageOptionName ? (
+                  <JollyRogerSelector
+                    options={buyBoxVariantOptions}
+                    variants={product.variants}
+                    selectedOptions={selectedOptions}
+                    onOptionChange={handleOptionChange}
+                    variantImages={variantImages}
+                    imageOptionName={variantImageOptionName}
+                    themeColor={themeColor}
+                  />
+                ) : (
+                  <VariantSelector
+                    options={buyBoxVariantOptions}
+                    variants={product.variants}
+                    selectedOptions={selectedOptions}
+                    onOptionChange={handleOptionChange}
+                    themeColor={themeColor}
+                  />
                 )}
-                <VariantSelector
-                  options={options}
-                  variants={product.variants}
-                  selectedOptions={selectedOptions}
-                  onOptionChange={handleOptionChange}
-                  optionImages={variantImages ?? undefined}
-                  imageOptionName={variantImages ? 'Color' : undefined}
-                  themeColor={themeColor}
-                />
               </div>
             )}
 
@@ -623,6 +633,8 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   maxLength={MAX_PERSONALIZATION_LENGTH}
                   inputRef={personalizationInputRef}
                   themeColor={themeColor}
+                  layout={useStreamlinedPersonalization ? 'streamlined' : 'standard'}
+                  previewPlacement={useStreamlinedPersonalization ? 'header' : 'input'}
                   onPreview3D={previewConfig ? () => galleryRef.current?.goTo3D() : undefined}
                   previewLabel={previewActionLabel}
                   previewAriaLabel={previewActionAriaLabel}
@@ -636,7 +648,10 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                       onPersonalizationError={handlePersonalizationError}
                       attributes={cartAttributes}
                       themeColor={themeColor}
-                      className="!py-4 !text-[15px]"
+                      className={cn(
+                        '!py-4 !text-[15px]',
+                        useStreamlinedPersonalization && '!h-[54px] !rounded-lg !font-sans !text-[13px] !font-black !tracking-[0.12em]'
+                      )}
                     />
                   }
                 />

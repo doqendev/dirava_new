@@ -11,6 +11,7 @@ import { MAX_PERSONALIZATION_LENGTH } from '@/lib/utils/constants'
 import { formatPrice } from '@/lib/utils/formatPrice'
 import { useUIStore } from '@/stores/uiStore'
 import { VariantSelector } from '@/components/product/VariantSelector'
+import { JollyRogerSelector } from '@/components/product/JollyRogerSelector'
 import { QuantitySelector } from '@/components/product/QuantitySelector'
 import { AddToCartButton } from '@/components/product/AddToCartButton'
 import { WishlistButton } from '@/components/product/WishlistButton'
@@ -164,9 +165,21 @@ export function QuickViewModal() {
     if (!product) return null
     return getPreviewConfig(product.handle)
   }, [product])
+  const variantImages = useMemo(() => {
+    if (!product) return undefined
+    return getVariantImages(product.handle)
+  }, [product])
+  const variantImageOptionName = useMemo(
+    () => product?.options.find((option) => option.name.toLowerCase() === 'color')?.name,
+    [product]
+  )
 
   // 3D preview state
-  const selectedVariantName = selectedOptions['Color'] || selectedOptions['color'] || ''
+  const selectedVariantName =
+    (variantImageOptionName ? selectedOptions[variantImageOptionName] : undefined)
+    || selectedOptions['Color']
+    || selectedOptions['color']
+    || ''
   const isTextExtrusion = previewConfig?.type === 'text-extrusion'
   const isSvgPreview = previewConfig?.type === 'svg-extrusion' || previewConfig?.type === 'composite-sign'
   const hasVariantSvg = isSvgPreview && !!selectedVariantName && !!previewConfig?.variantSvgs?.[selectedVariantName]
@@ -583,14 +596,24 @@ export function QuickViewModal() {
                       {/* Variant Selector — hide Shopify's default "Title" option for single-variant products */}
                       {product.options.length > 0 &&
                         !(product.options.length === 1 && product.options[0]?.name === 'Title' && product.options[0]?.values.length === 1 && product.options[0]?.values[0] === 'Default Title') && (
-                        <VariantSelector
-                          options={product.options}
-                          variants={product.variants}
-                          selectedOptions={selectedOptions}
-                          onOptionChange={handleOptionChange}
-                          optionImages={product ? getVariantImages(product.handle) : undefined}
-                          imageOptionName={product && getVariantImages(product.handle) ? 'Color' : undefined}
-                        />
+                        variantImages && variantImageOptionName ? (
+                          <JollyRogerSelector
+                            options={product.options}
+                            variants={product.variants}
+                            selectedOptions={selectedOptions}
+                            onOptionChange={handleOptionChange}
+                            variantImages={variantImages}
+                            imageOptionName={variantImageOptionName}
+                            mode="preview"
+                          />
+                        ) : (
+                          <VariantSelector
+                            options={product.options}
+                            variants={product.variants}
+                            selectedOptions={selectedOptions}
+                            onOptionChange={handleOptionChange}
+                          />
+                        )
                       )}
 
                       {/* Quantity */}

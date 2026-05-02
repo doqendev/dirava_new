@@ -29,6 +29,8 @@ interface PersonalizeCardProps {
   onPreview3D?: () => void
   previewLabel?: string
   previewAriaLabel?: string
+  layout?: 'standard' | 'streamlined'
+  previewPlacement?: 'input' | 'header'
 }
 
 function hexToRgb(hex: string): string {
@@ -55,6 +57,8 @@ export function PersonalizeCard({
   onPreview3D,
   previewLabel = '3D View',
   previewAriaLabel,
+  layout = 'standard',
+  previewPlacement = 'input',
 }: PersonalizeCardProps) {
   const t = useTranslations('product')
   const [focused, setFocused] = useState(false)
@@ -63,26 +67,66 @@ export function PersonalizeCard({
   const blocked = hasValue && isBlockedName(value)
   const errorRgb = '255, 90, 90'
   const counterColor = hasValue ? themeColor : 'rgba(255,255,255,0.45)'
+  const isStreamlined = layout === 'streamlined'
+  const showHeaderPreview = onPreview3D && previewPlacement === 'header'
+  const showInputPreview = onPreview3D && previewPlacement === 'input'
 
   return (
     <section
-      className="relative overflow-hidden rounded-2xl border bg-[#06080d] p-5 sm:p-6"
+      className={cn(
+        'relative overflow-hidden border bg-[#06080d]',
+        isStreamlined ? 'rounded-xl p-4 sm:p-5' : 'rounded-2xl p-5 sm:p-6'
+      )}
       style={{
         borderColor: `rgba(${accentRgb}, 0.45)`,
-        boxShadow: `0 0 0 1px rgba(${accentRgb}, 0.05), inset 0 0 28px rgba(${accentRgb}, 0.05), 0 18px 40px -24px rgba(${accentRgb}, 0.35)`,
+        boxShadow: isStreamlined
+          ? `0 0 0 1px rgba(${accentRgb}, 0.04), inset 0 0 22px rgba(${accentRgb}, 0.045), 0 14px 34px -26px rgba(${accentRgb}, 0.32)`
+          : `0 0 0 1px rgba(${accentRgb}, 0.05), inset 0 0 28px rgba(${accentRgb}, 0.05), 0 18px 40px -24px rgba(${accentRgb}, 0.35)`,
       }}
     >
       {/* Header */}
-      <header className="relative mb-4">
-        <h3
-          className="font-display text-[13px] font-bold uppercase tracking-[0.16em] sm:text-sm"
-          style={{ color: themeColor }}
-        >
-          {t('personalizeYourSign')}
-        </h3>
-        <p className="mt-1.5 text-[13px] leading-snug text-white/65 sm:text-sm">
-          {t('personalizeYourSignSub')}
-        </p>
+      <header className={cn('relative', isStreamlined ? 'mb-3' : 'mb-4')}>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h3
+              className={cn(
+                'font-display font-bold uppercase',
+                isStreamlined
+                  ? 'whitespace-nowrap text-[12px] tracking-[0.13em] sm:text-[13px] sm:tracking-[0.15em]'
+                  : 'text-[13px] tracking-[0.16em] sm:text-sm'
+              )}
+              style={{ color: themeColor }}
+            >
+              {t('personalizeYourSign')}
+            </h3>
+            <p
+              className={cn(
+                'mt-1.5 leading-snug text-white/65',
+                isStreamlined ? 'text-[12.5px] sm:text-[13px]' : 'text-[13px] sm:text-sm'
+              )}
+            >
+              {t('personalizeYourSignSub')}
+            </p>
+          </div>
+
+          {showHeaderPreview && (
+            <button
+              type="button"
+              onClick={onPreview3D}
+              aria-label={previewAriaLabel ?? t('personalizationOpen3D')}
+              className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-lg border px-2.5 text-[10.5px] font-bold uppercase tracking-[0.11em] transition-all duration-150 active:scale-[0.985] focus:outline-none focus-visible:ring-2 sm:px-3 sm:tracking-[0.13em]"
+              style={{
+                color: themeColor,
+                borderColor: `rgba(${accentRgb}, 0.48)`,
+                background: `rgba(${accentRgb}, 0.07)`,
+                boxShadow: `inset 0 1px 0 rgba(${accentRgb}, 0.12)`,
+              }}
+            >
+              <Box className="h-3.5 w-3.5" strokeWidth={2.25} />
+              {previewLabel}
+            </button>
+          )}
+        </div>
       </header>
 
       {/* Input row */}
@@ -103,7 +147,8 @@ export function PersonalizeCard({
             // on >=sm, where it sits inside the input. On smaller
             // mobiles the pill drops to its own row below the input,
             // so the name has the full width to breathe.
-            onPreview3D ? 'pr-16 sm:pr-[150px]' : 'pr-16 sm:pr-20',
+            showInputPreview ? 'pr-16 sm:pr-[150px]' : 'pr-16 sm:pr-20',
+            isStreamlined && 'h-[54px] rounded-lg bg-white/[0.025] pl-4 placeholder-white/35',
           )}
           style={{
             caretColor: blocked ? `rgb(${errorRgb})` : themeColor,
@@ -133,7 +178,7 @@ export function PersonalizeCard({
             {value.length}/{maxLength}
           </span>
 
-          {onPreview3D && (
+          {showInputPreview && (
             <>
               {/* Hairline divider — full pill height, soft edges via
                   fade-out gradient so it reads as a separator, not a
@@ -170,7 +215,7 @@ export function PersonalizeCard({
           and visually secondary (outlined, low-fill, lighter shadow)
           so Add to Cart remains the dominant action below it. Hidden
           on >=sm where the inline pill in the input row takes over. */}
-      {onPreview3D && (
+      {showInputPreview && (
         <button
           type="button"
           onClick={onPreview3D}
@@ -203,7 +248,8 @@ export function PersonalizeCard({
       {/* CTA — soft halo behind it that breathes on hover */}
       <div
         className={cn(
-          'cta-halo-wrap relative mt-5 transition-opacity',
+          'cta-halo-wrap relative transition-opacity',
+          isStreamlined ? 'mt-4' : 'mt-5',
           blocked && 'pointer-events-none opacity-40',
         )}
         aria-disabled={blocked || undefined}
@@ -220,14 +266,24 @@ export function PersonalizeCard({
 
       {/* Microcopy — accent-coloured, centered, all-caps */}
       <p
-        className="mt-4 text-center text-[11px] font-bold uppercase leading-none tracking-[0.18em]"
+        className={cn(
+          'text-center font-bold uppercase leading-none',
+          isStreamlined
+            ? 'mt-3 text-[10.5px] tracking-[0.15em]'
+            : 'mt-4 text-[11px] tracking-[0.18em]'
+        )}
         style={{ color: `rgba(${accentRgb}, 0.85)` }}
       >
         Made to order
         <span className="mx-2 text-white/30">·</span>
         Ready in 2-3 days
       </p>
-      <p className="mt-2 flex items-center justify-center gap-1.5 text-[10.5px] font-semibold uppercase leading-none tracking-[0.12em] text-white/42">
+      <p
+        className={cn(
+          'mt-2 flex items-center justify-center gap-1.5 font-semibold uppercase leading-none text-white/42',
+          isStreamlined ? 'text-[10px] tracking-[0.1em]' : 'text-[10.5px] tracking-[0.12em]'
+        )}
+      >
         <LockKeyhole className="h-3 w-3" strokeWidth={2.25} />
         Encrypted checkout
       </p>
