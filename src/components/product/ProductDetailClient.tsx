@@ -162,7 +162,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
   // personalization → add-to-cart.
   const selectedVariantName = selectedOptions['Color'] || selectedOptions['color'] || ''
   const activeLightbox2DPreview = selectedVariantName && previewConfig?.variantLightbox2DPreviews?.[selectedVariantName]
-  const startsWithLivePreview = Boolean(
+  const hasLivePreviewBuilder = Boolean(
     activeLightbox2DPreview && previewConfig?.scene?.variant === 'lightbox'
   )
   const previewActionLabel = activeLightbox2DPreview ? 'Live Preview' : '3D View'
@@ -174,7 +174,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
     'one-piece-custom-led-lightbox-sign',
   ].includes(product.handle)
   const showJollyRogerSelector = isOnePieceJollyRogerProduct && Boolean(variantImages)
-  const moveJollyRogerSelectorToPreview = startsWithLivePreview && showJollyRogerSelector
+  const moveJollyRogerSelectorToPreview = hasLivePreviewBuilder && showJollyRogerSelector
   const galleryInlineControlsEnabled = !moveJollyRogerSelectorToPreview
   const quantity = 1
 
@@ -187,6 +187,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
   // Personalization state
   const [personalizationName, setPersonalizationName] = useState('')
   const personalizationInputRef = useRef<HTMLInputElement>(null)
+  const previewPersonalizationInputRef = useRef<HTMLInputElement>(null)
 
   // Dragon Ball position picker state. `null` means "auto-follow midpoint";
   // once the customer clicks a dot it becomes a concrete slot index.
@@ -195,6 +196,10 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
   const handlePersonalizationError = () => {
     personalizationInputRef.current?.focus()
     personalizationInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
+
+  const handlePreviewPersonalizationError = () => {
+    previewPersonalizationInputRef.current?.focus()
   }
 
   const isDragonballSign = previewConfig?.type === 'dragonball-sign'
@@ -405,9 +410,9 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               ballPosition={ballPickerEnabled && personalizationName.length > 0 ? effectiveBallPosition : undefined}
               onBallPositionChange={ballPickerEnabled ? setBallPosition : undefined}
               themeColor={themeColor}
-              initialPreviewMode={startsWithLivePreview}
+              initialPreviewMode={false}
               previewSelector={moveJollyRogerSelectorToPreview ? (
-                <div className="space-y-3 max-sm:space-y-2">
+                <div className="space-y-3 max-sm:space-y-2.5">
                   <div>
                     <h2 className="text-[11px] font-bold uppercase tracking-[0.14em] text-white">
                       {t('chooseYourJollyRoger')}
@@ -427,6 +432,50 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                     showImageLabels
                     mobileImageRail
                   />
+                  <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-stretch lg:hidden">
+                    <div className="relative min-w-0">
+                      <input
+                        ref={previewPersonalizationInputRef}
+                        type="text"
+                        value={personalizationName}
+                        maxLength={MAX_PERSONALIZATION_LENGTH}
+                        onChange={(e) => {
+                          const value = e.target.value.slice(0, MAX_PERSONALIZATION_LENGTH)
+                          setPersonalizationName(previewConfig ? getPreviewDisplayText(value, previewConfig, '') : value)
+                        }}
+                        placeholder={t('personalizationPlaceholder')}
+                        aria-label={t('personalizationNameLabel')}
+                        className={cn(
+                          'h-12 w-full rounded-lg border bg-black/35 px-3 pr-14',
+                          'text-center text-sm font-bold uppercase tracking-[0.12em] text-white placeholder-white/35',
+                          'outline-none transition-colors',
+                          'focus:border-[color:var(--accent,#00f5ff)] focus:ring-1 focus:ring-[color:var(--accent,#00f5ff)]/55'
+                        )}
+                        style={{
+                          borderColor: `${themeColor}66`,
+                          boxShadow: `inset 0 0 14px ${themeColor}14`,
+                        }}
+                      />
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[11px] font-semibold tabular-nums text-white/45"
+                      >
+                        {personalizationName.length}/{MAX_PERSONALIZATION_LENGTH}
+                      </span>
+                    </div>
+                    <AddToCartButton
+                      variantId={selectedVariant?.id || ''}
+                      quantity={1}
+                      available={selectedVariant?.availableForSale ?? false}
+                      requiresPersonalization={product.personalization}
+                      personalizationValue={personalizationName}
+                      onPersonalizationError={handlePreviewPersonalizationError}
+                      attributes={cartAttributes}
+                      themeColor={themeColor}
+                      label="Add to cart"
+                      className="!h-12 !py-0 !text-[12px] sm:!w-auto sm:!px-5"
+                    />
+                  </div>
                 </div>
               ) : undefined}
               canvasCart={previewConfig && galleryInlineControlsEnabled ? {

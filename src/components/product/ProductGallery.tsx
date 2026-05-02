@@ -569,7 +569,7 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                       }
                       aria-pressed={is3DActive}
                     >
-                      Preview
+                      Live Preview
                     </button>
                     <button
                       type="button"
@@ -602,17 +602,15 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                   <div className="flex gap-2 overflow-x-auto hide-scrollbar">
                     {visible.map((image, index) => {
                       const thumbVariant = imageVariantNames?.[index] ?? null
-                      const stayInPreview = is3DActive && thumbVariant && onVariantSelect
                       const isActive = !is3DActive && index === currentIndex
                       return (
                         <button
                           key={index}
                           onClick={() => {
-                            if (stayInPreview) {
+                            if (thumbVariant && onVariantSelect) {
                               onVariantSelect(thumbVariant)
-                            } else {
-                              goToIndex(index)
                             }
+                            goToIndex(index)
                           }}
                           className={cn(
                             'relative flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden',
