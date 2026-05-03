@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { enforceAdminRateLimit, requireAdminSession } from '@/lib/auth/admin'
 import { requireSameOrigin } from '@/lib/utils/csrf'
-import { createReview, ensureReviewOptionalFields } from '@/lib/reviews/metaobjects'
+import { createReview, ensureReviewOptionalFields, getExistingReviewSourceIds } from '@/lib/reviews/metaobjects'
 import { normalizeReviewImportRows, parseReviewCsv } from '@/lib/reviews/importRows'
 
 const MAX_IMPORT_BYTES = 750 * 1024
@@ -92,6 +92,7 @@ export async function POST(request: Request) {
           total: result.rows.length,
           created: 0,
           failed: 0,
+          skipped: 0,
           processed: 0,
           offset: 0,
           batchSize,
@@ -112,13 +113,20 @@ export async function POST(request: Request) {
 
     let created = 0
     let failed = 0
+    let skipped = 0
     const errors: string[] = []
     const batchRows = result.rows.slice(offset, offset + batchSize)
     const nextOffset = Math.min(offset + batchRows.length, result.rows.length)
+    const existingSourceReviewIds = await getExistingReviewSourceIds()
 
     for (let index = 0; index < batchRows.length; index += 1) {
       const row = batchRows[index]
       if (!row) continue
+
+      if (row.sourceReviewId && existingSourceReviewIds.has(row.sourceReviewId)) {
+        skipped += 1
+        continue
+      }
 
       const review = await createReview({
         productHandle: row.productHandle,
@@ -137,6 +145,9 @@ export async function POST(request: Request) {
 
       if (review) {
         created += 1
+        if (row.sourceReviewId) {
+          existingSourceReviewIds.add(row.sourceReviewId)
+        }
       } else {
         failed += 1
         errors.push(`Row ${offset + index + 2}: failed to create review`)
@@ -150,6 +161,7 @@ export async function POST(request: Request) {
         total: result.rows.length,
         created,
         failed,
+        skipped,
         processed: batchRows.length,
         offset,
         batchSize,

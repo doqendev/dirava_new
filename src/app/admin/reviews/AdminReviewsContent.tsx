@@ -13,6 +13,7 @@ interface ImportResult {
   prepared: number
   created: number
   failed: number
+  skipped?: number
   processed?: number
   dryRun?: boolean
   errors?: string[]
@@ -25,6 +26,7 @@ interface ImportResponse {
   total?: number
   created?: number
   failed?: number
+  skipped?: number
   processed?: number
   offset?: number
   batchSize?: number
@@ -211,6 +213,7 @@ export default function AdminReviewsContent() {
       let total = 0
       let created = 0
       let failed = 0
+      let skipped = 0
       let processed = 0
       let hasMore = true
       const errors: string[] = []
@@ -244,12 +247,14 @@ export default function AdminReviewsContent() {
 
         const batchCreated = data.created || 0
         const batchFailed = data.failed || 0
-        const batchProcessed = data.processed || batchCreated + batchFailed
+        const batchSkipped = data.skipped || 0
+        const batchProcessed = data.processed || batchCreated + batchFailed + batchSkipped
         const nextOffset = data.nextOffset ?? offset + batchProcessed
 
         total = data.total || data.prepared || total
         created += batchCreated
         failed += batchFailed
+        skipped += batchSkipped
         processed += batchProcessed
         errors.push(...(data.errors || []))
 
@@ -257,6 +262,7 @@ export default function AdminReviewsContent() {
           prepared: total,
           created,
           failed,
+          skipped,
           processed,
           errors,
         })
@@ -419,7 +425,7 @@ export default function AdminReviewsContent() {
 
               {importResult && (
                 <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm text-white/65">
-                  Processed {importResult.processed || 0}/{importResult.prepared}, created {importResult.created}, failed {importResult.failed}.
+                  Processed {importResult.processed || 0}/{importResult.prepared}, created {importResult.created}, skipped {importResult.skipped || 0}, failed {importResult.failed}.
                   {importResult.errors && importResult.errors.length > 0 && (
                     <ul className="mt-2 space-y-1 text-xs text-red-300">
                       {importResult.errors.slice(0, 5).map((importError) => (

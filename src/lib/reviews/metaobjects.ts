@@ -126,6 +126,23 @@ const GET_REVIEW_DEFINITION = `
   }
 `
 
+const GET_REVIEW_IMPORT_SOURCE_IDS = `
+  query GetReviewImportSourceIds($type: String!, $first: Int!, $after: String) {
+    metaobjects(type: $type, first: $first, after: $after, sortKey: "id", reverse: true) {
+      nodes {
+        fields {
+          key
+          value
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+`
+
 
 // ============================================================================
 // Types for API Responses
@@ -168,6 +185,18 @@ interface ReviewDefinitionResponse {
     id: string
     fieldDefinitions: Array<{ key: string }>
   } | null
+}
+
+interface ReviewImportSourceIdsResponse {
+  metaobjects: {
+    nodes: Array<{
+      fields: MetaobjectField[]
+    }>
+    pageInfo: {
+      hasNextPage: boolean
+      endCursor: string | null
+    }
+  }
 }
 
 // ============================================================================
@@ -390,6 +419,39 @@ export async function ensureReviewOptionalFields(): Promise<boolean> {
     console.error('Error ensuring review optional fields:', error)
     return false
   }
+}
+
+/**
+ * Return source IDs already imported into Shopify. Used by CSV imports to make
+ * retrying a partially completed import skip rows that already exist.
+ */
+export async function getExistingReviewSourceIds(): Promise<Set<string>> {
+  const sourceIds = new Set<string>()
+  let after: string | null = null
+  let hasNextPage = true
+
+  try {
+    while (hasNextPage) {
+      const response: ReviewImportSourceIdsResponse = await adminFetch<ReviewImportSourceIdsResponse>(
+        GET_REVIEW_IMPORT_SOURCE_IDS,
+        { type: 'shop_review', first: 250, after }
+      )
+
+      for (const node of response.metaobjects.nodes) {
+        const sourceReviewId = node.fields.find((field: MetaobjectField) => field.key === 'source_review_id')?.value
+        if (sourceReviewId) {
+          sourceIds.add(sourceReviewId)
+        }
+      }
+
+      after = response.metaobjects.pageInfo.endCursor
+      hasNextPage = response.metaobjects.pageInfo.hasNextPage && Boolean(after)
+    }
+  } catch (error) {
+    console.error('Error fetching review import source IDs:', error)
+  }
+
+  return sourceIds
 }
 
 /**
