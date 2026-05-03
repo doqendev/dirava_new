@@ -8,6 +8,7 @@
     "build": "pnpm preflight && next build",
     "start": "next start",
     "lint": "next lint",
+    "import:reviews": "node scripts/import-reviews.mjs",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",

@@ -30,6 +30,9 @@ export const CREATE_REVIEW_METAOBJECT_DEFINITION = `
         { key: "verified_purchase", name: "Verified Purchase", type: "single_line_text_field" }
         { key: "order_id", name: "Order ID", type: "single_line_text_field" }
         { key: "review_images", name: "Review Images", type: "single_line_text_field" }
+        { key: "created_at", name: "Created At", type: "single_line_text_field" }
+        { key: "country_code", name: "Country Code", type: "single_line_text_field" }
+        { key: "source_review_id", name: "Source Review ID", type: "single_line_text_field" }
       ]
     }) {
       metaobjectDefinition {
@@ -112,6 +115,18 @@ const UPDATE_REVIEW = `
   }
 `
 
+const GET_REVIEW_DEFINITION = `
+  query GetReviewDefinition {
+    metaobjectDefinitionByType(type: "shop_review") {
+      id
+      fieldDefinitions {
+        key
+      }
+    }
+  }
+`
+
+
 // ============================================================================
 // Types for API Responses
 // ============================================================================
@@ -146,6 +161,13 @@ interface UpdateMetaobjectResponse {
     metaobject: MetaobjectNode | null
     userErrors: Array<{ field: string; message: string }>
   }
+}
+
+interface ReviewDefinitionResponse {
+  metaobjectDefinitionByType: {
+    id: string
+    fieldDefinitions: Array<{ key: string }>
+  } | null
 }
 
 // ============================================================================
@@ -208,6 +230,8 @@ function toReviewFields(data: {
   verifiedPurchase?: boolean
   orderId?: string
   countryCode?: string
+  createdAt?: string
+  sourceReviewId?: string
 }): Array<{ key: string; value: string }> {
   const fields: Array<{ key: string; value: string }> = [
     { key: 'product_handle', value: data.productHandle },
@@ -236,6 +260,14 @@ function toReviewFields(data: {
 
   if (data.countryCode) {
     fields.push({ key: 'country_code', value: data.countryCode })
+  }
+
+  if (data.createdAt) {
+    fields.push({ key: 'created_at', value: data.createdAt })
+  }
+
+  if (data.sourceReviewId) {
+    fields.push({ key: 'source_review_id', value: data.sourceReviewId })
   }
 
   return fields
@@ -297,6 +329,70 @@ export async function setupReviewMetaobjectDefinition(): Promise<boolean> {
 }
 
 /**
+ * Existing stores may have an older shop_review definition. Ensure newer
+ * import/display fields exist before admin imports write those fields.
+ */
+export async function ensureReviewOptionalFields(): Promise<boolean> {
+  const optionalFields = [
+    { key: 'created_at', name: 'Created At', type: 'single_line_text_field' },
+    { key: 'country_code', name: 'Country Code', type: 'single_line_text_field' },
+    { key: 'source_review_id', name: 'Source Review ID', type: 'single_line_text_field' },
+  ]
+
+  try {
+    const response = await adminFetch<ReviewDefinitionResponse>(GET_REVIEW_DEFINITION)
+    const definition = response.metaobjectDefinitionByType
+
+    if (!definition) {
+      console.error('Review metaobject definition not found')
+      return false
+    }
+
+    const existing = new Set(definition.fieldDefinitions.map((field) => field.key))
+    const missing = optionalFields.filter((field) => !existing.has(field.key))
+
+    if (missing.length === 0) return true
+
+    for (const field of missing) {
+      const mutation = `
+        mutation AddOptionalReviewField($id: ID!) {
+          metaobjectDefinitionUpdate(
+            id: $id
+            definition: {
+              fieldDefinitions: [
+                { create: { key: "${field.key}", name: "${field.name}", type: "${field.type}" } }
+              ]
+            }
+          ) {
+            metaobjectDefinition { id }
+            userErrors { field message }
+          }
+        }
+      `
+      const updateResponse = await adminFetch<{
+        metaobjectDefinitionUpdate: {
+          metaobjectDefinition: { id: string } | null
+          userErrors: Array<{ field: string[]; message: string }>
+        }
+      }>(mutation, { id: definition.id })
+
+      if (updateResponse.metaobjectDefinitionUpdate.userErrors.length > 0) {
+        console.error(
+          `Failed to add review field ${field.key}:`,
+          updateResponse.metaobjectDefinitionUpdate.userErrors
+        )
+        return false
+      }
+    }
+
+    return true
+  } catch (error) {
+    console.error('Error ensuring review optional fields:', error)
+    return false
+  }
+}
+
+/**
  * Get all reviews, optionally filtered by status (for admin moderation)
  */
 export async function getAllReviews(status?: string): Promise<AdminReview[]> {
@@ -334,11 +430,19 @@ export async function createReview(data: {
   verifiedPurchase?: boolean
   orderId?: string
   countryCode?: string
+  createdAt?: string
+  sourceReviewId?: string
+  status?: 'pending' | 'approved' | 'rejected'
 }): Promise<Review | null> {
-  const handle = `review-${data.productHandle}-${Date.now()}`
+  const handleSeed = `${data.productHandle}-${data.authorName}-${data.sourceReviewId || Date.now()}-${Math.random()}`
+  const handleSuffix = Buffer.from(handleSeed)
+    .toString('base64url')
+    .replace(/[^a-zA-Z0-9_-]/g, '')
+    .slice(0, 24)
+  const handle = `review-${data.productHandle}-${Date.now()}-${handleSuffix}`.slice(0, 255)
   const fields = toReviewFields({
     ...data,
-    status: 'pending',
+    status: data.status || 'pending',
   })
 
   try {

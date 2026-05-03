@@ -1,12 +1,21 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Shield, Loader2, AlertCircle, Check, X, Star, Image as ImageIcon, ExternalLink, Pencil, Save } from 'lucide-react'
+import { Shield, Loader2, AlertCircle, Check, X, Star, Image as ImageIcon, ExternalLink, Pencil, Save, Upload } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { StarRating } from '@/components/product/StarRating'
 import type { AdminReview } from '@/types/reviews'
 
 type TabStatus = 'pending' | 'approved' | 'rejected'
+type ImportStatus = 'pending' | 'approved' | 'rejected'
+
+interface ImportResult {
+  prepared: number
+  created: number
+  failed: number
+  dryRun?: boolean
+  errors?: string[]
+}
 
 const TABS: { status: TabStatus; label: string; color: string }[] = [
   { status: 'pending', label: 'Pending', color: 'text-yellow-400 border-yellow-400' },
@@ -30,6 +39,10 @@ export default function AdminReviewsContent() {
   const [hasFetched, setHasFetched] = useState(false)
   const [expandedImages, setExpandedImages] = useState<string | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [importFile, setImportFile] = useState<File | null>(null)
+  const [importStatus, setImportStatus] = useState<ImportStatus>('pending')
+  const [isImporting, setIsImporting] = useState(false)
+  const [importResult, setImportResult] = useState<ImportResult | null>(null)
   const [editForm, setEditForm] = useState<{ authorName: string; rating: number; title: string; content: string }>({
     authorName: '',
     rating: 5,
@@ -165,6 +178,62 @@ export default function AdminReviewsContent() {
     }
   }
 
+  const importReviews = async () => {
+    if (!importFile) {
+      setError('Choose a CSV file to import')
+      return
+    }
+
+    setIsImporting(true)
+    setError(null)
+    setImportResult(null)
+
+    try {
+      const formData = new FormData()
+      formData.append('file', importFile)
+      formData.append('status', importStatus)
+
+      const response = await fetch('/api/admin/reviews/import', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const data = await response.json() as {
+        success?: boolean
+        error?: string
+        prepared?: number
+        created?: number
+        failed?: number
+        errors?: string[]
+      }
+
+      if (!response.ok || !data.success) {
+        setImportResult({
+          prepared: data.prepared || 0,
+          created: data.created || 0,
+          failed: data.failed || 0,
+          errors: data.errors,
+        })
+        setError(data.error || 'Failed to import reviews')
+        return
+      }
+
+      setImportResult({
+        prepared: data.prepared || 0,
+        created: data.created || 0,
+        failed: data.failed || 0,
+        errors: data.errors,
+      })
+      setImportFile(null)
+      await fetchReviews()
+      setActiveTab(importStatus)
+    } catch {
+      setError('Failed to import reviews')
+    } finally {
+      setIsImporting(false)
+    }
+  }
+
   const filteredReviews = reviews.filter(r => r.status === activeTab)
 
   const counts: Record<TabStatus, number> = {
@@ -247,6 +316,71 @@ export default function AdminReviewsContent() {
         {/* Tabs + Content */}
         {hasFetched && (
           <>
+            {/* Import */}
+            <div className="bg-bg-card border border-border-subtle rounded-xl p-5 mb-6">
+              <div className="flex flex-col gap-4 md:flex-row md:items-end">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Upload className="w-4 h-4 text-neon-purple" />
+                    <h2 className="text-white font-medium">Import reviews</h2>
+                  </div>
+                  <p className="text-xs text-white/45 mb-3">
+                    Upload CSV with productHandle, authorName, rating, title, content, createdAt, countryCode, verifiedPurchase, reviewImages.
+                  </p>
+                  <input
+                    type="file"
+                    accept=".csv,text/csv"
+                    onChange={(event) => setImportFile(event.target.files?.[0] || null)}
+                    className="block w-full text-sm text-white/70 file:mr-4 file:rounded-lg file:border-0 file:bg-white/10 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-white/15"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-white/50 mb-1">Import as</label>
+                  <select
+                    value={importStatus}
+                    onChange={(event) => setImportStatus(event.target.value as ImportStatus)}
+                    className="w-full md:w-36 px-3 py-2.5 rounded-lg bg-bg-secondary border border-border-subtle text-white text-sm focus:outline-none focus:border-neon-purple"
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                </div>
+                <button
+                  onClick={importReviews}
+                  disabled={isImporting || !importFile}
+                  className={cn(
+                    'flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg font-medium',
+                    'bg-neon-purple text-black',
+                    'hover:bg-neon-purple/90 transition-colors',
+                    'disabled:opacity-50 disabled:cursor-not-allowed'
+                  )}
+                >
+                  {isImporting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Importing...
+                    </>
+                  ) : (
+                    'Import CSV'
+                  )}
+                </button>
+              </div>
+
+              {importResult && (
+                <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm text-white/65">
+                  Prepared {importResult.prepared}, created {importResult.created}, failed {importResult.failed}.
+                  {importResult.errors && importResult.errors.length > 0 && (
+                    <ul className="mt-2 space-y-1 text-xs text-red-300">
+                      {importResult.errors.slice(0, 5).map((importError) => (
+                        <li key={importError}>{importError}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Tab Bar */}
             <div className="flex border-b border-border-subtle mb-6">
               {TABS.map(tab => (
