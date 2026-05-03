@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { Shield, Loader2, AlertCircle, Check, X, Star, Image as ImageIcon, ExternalLink, Pencil, Save, Upload } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { StarRating } from '@/components/product/StarRating'
@@ -49,10 +49,17 @@ const statusBadgeClasses: Record<TabStatus, string> = {
   rejected: 'bg-red-500/10 text-red-400 border-red-500/30',
 }
 
+function formatProductHandle(handle: string) {
+  return handle
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase())
+}
+
 export default function AdminReviewsContent() {
   const [adminSecret, setAdminSecret] = useState('')
   const [reviews, setReviews] = useState<AdminReview[]>([])
   const [activeTab, setActiveTab] = useState<TabStatus>('pending')
+  const [selectedProductHandle, setSelectedProductHandle] = useState('all')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loadingActions, setLoadingActions] = useState<Record<string, boolean>>({})
@@ -288,13 +295,34 @@ export default function AdminReviewsContent() {
     }
   }
 
-  const filteredReviews = reviews.filter(r => r.status === activeTab)
-
   const counts: Record<TabStatus, number> = {
     pending: reviews.filter(r => r.status === 'pending').length,
     approved: reviews.filter(r => r.status === 'approved').length,
     rejected: reviews.filter(r => r.status === 'rejected').length,
   }
+
+  const productOptions = useMemo(() => {
+    const countsByHandle = new Map<string, { active: number; total: number }>()
+
+    reviews.forEach((review) => {
+      const current = countsByHandle.get(review.productHandle) || { active: 0, total: 0 }
+      countsByHandle.set(review.productHandle, {
+        active: current.active + (review.status === activeTab ? 1 : 0),
+        total: current.total + 1,
+      })
+    })
+
+    return Array.from(countsByHandle.entries())
+      .map(([handle, count]) => ({ handle, ...count }))
+      .filter((product) => product.active > 0 || product.handle === selectedProductHandle)
+      .sort((a, b) => a.handle.localeCompare(b.handle))
+  }, [activeTab, reviews, selectedProductHandle])
+
+  const filteredReviews = reviews.filter((review) => {
+    if (review.status !== activeTab) return false
+    if (selectedProductHandle === 'all') return true
+    return review.productHandle === selectedProductHandle
+  })
 
   return (
     <div className="min-h-screen bg-bg-primary p-4 md:p-8">
@@ -461,11 +489,41 @@ export default function AdminReviewsContent() {
               ))}
             </div>
 
+            {/* Product Filter */}
+            <div className="bg-bg-card border border-border-subtle rounded-xl p-4 mb-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <label htmlFor="review-product-filter" className="text-sm font-medium text-white">
+                    Filter by product
+                  </label>
+                  <p className="text-xs text-white/45">
+                    Showing {filteredReviews.length} {activeTab} review{filteredReviews.length === 1 ? '' : 's'}
+                  </p>
+                </div>
+                <select
+                  id="review-product-filter"
+                  value={selectedProductHandle}
+                  onChange={(event) => setSelectedProductHandle(event.target.value)}
+                  className="w-full sm:w-80 px-3 py-2.5 rounded-lg bg-bg-secondary border border-border-subtle text-white text-sm focus:outline-none focus:border-neon-purple"
+                >
+                  <option value="all">All products ({counts[activeTab]})</option>
+                  {productOptions.map((product) => (
+                    <option key={product.handle} value={product.handle}>
+                      {formatProductHandle(product.handle)} ({product.active})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             {/* Review Cards */}
             {filteredReviews.length === 0 ? (
               <div className="text-center py-16 text-white/40">
                 <Star className="w-8 h-8 mx-auto mb-3 opacity-30" />
-                <p>No {activeTab} reviews</p>
+                <p>
+                  No {activeTab} reviews
+                  {selectedProductHandle !== 'all' ? ` for ${formatProductHandle(selectedProductHandle)}` : ''}
+                </p>
               </div>
             ) : (
               <div className="space-y-4">
