@@ -5,14 +5,22 @@ import { createReview, ensureReviewOptionalFields } from '@/lib/reviews/metaobje
 import { normalizeReviewImportRows, parseReviewCsv } from '@/lib/reviews/importRows'
 
 const MAX_IMPORT_BYTES = 750 * 1024
+const DEFAULT_BATCH_SIZE = 20
+const MAX_BATCH_SIZE = 40
 const VALID_STATUSES = new Set(['pending', 'approved', 'rejected'])
+
+function parsePositiveInteger(value: FormDataEntryValue | null, fallback: number) {
+  const parsed = Number(value)
+  if (!Number.isInteger(parsed) || parsed < 0) return fallback
+  return parsed
+}
 
 export async function POST(request: Request) {
   const csrfReject = requireSameOrigin(request)
   if (csrfReject) return csrfReject
 
   const rateLimitReject = await enforceAdminRateLimit(request, 'reviews-import', {
-    maxRequests: 10,
+    maxRequests: 120,
     windowSeconds: 300,
   })
   if (rateLimitReject) return rateLimitReject
@@ -25,6 +33,10 @@ export async function POST(request: Request) {
     const file = formData.get('file')
     const status = String(formData.get('status') || 'pending').trim().toLowerCase()
     const dryRun = formData.get('dryRun') === 'true'
+    const offset = parsePositiveInteger(formData.get('offset'), 0)
+    const requestedBatchSize = parsePositiveInteger(formData.get('batchSize'), DEFAULT_BATCH_SIZE)
+    const batchSize = Math.min(Math.max(requestedBatchSize, 1), MAX_BATCH_SIZE)
+    const ensureFields = formData.get('ensureFields') !== 'false'
 
     if (!(file instanceof File)) {
       return NextResponse.json(
@@ -65,6 +77,7 @@ export async function POST(request: Request) {
           error: 'Some rows are invalid',
           errors: result.errors.slice(0, 25),
           prepared: result.rows.length,
+          total: result.rows.length,
         },
         { status: 400 }
       )
@@ -76,16 +89,21 @@ export async function POST(request: Request) {
           success: true,
           dryRun: true,
           prepared: result.rows.length,
+          total: result.rows.length,
           created: 0,
           failed: 0,
+          processed: 0,
+          offset: 0,
+          batchSize,
+          nextOffset: 0,
+          hasMore: false,
           errors: [],
         },
         { headers: { 'Cache-Control': 'no-store' } }
       )
     }
 
-    const fieldsReady = await ensureReviewOptionalFields()
-    if (!fieldsReady) {
+    if (ensureFields && !(await ensureReviewOptionalFields())) {
       return NextResponse.json(
         { success: false, error: 'Review fields are not ready. Run review setup first.' },
         { status: 500 }
@@ -95,9 +113,11 @@ export async function POST(request: Request) {
     let created = 0
     let failed = 0
     const errors: string[] = []
+    const batchRows = result.rows.slice(offset, offset + batchSize)
+    const nextOffset = Math.min(offset + batchRows.length, result.rows.length)
 
-    for (let index = 0; index < result.rows.length; index += 1) {
-      const row = result.rows[index]
+    for (let index = 0; index < batchRows.length; index += 1) {
+      const row = batchRows[index]
       if (!row) continue
 
       const review = await createReview({
@@ -119,7 +139,7 @@ export async function POST(request: Request) {
         created += 1
       } else {
         failed += 1
-        errors.push(`Row ${index + 2}: failed to create review`)
+        errors.push(`Row ${offset + index + 2}: failed to create review`)
       }
     }
 
@@ -127,8 +147,14 @@ export async function POST(request: Request) {
       {
         success: failed === 0,
         prepared: result.rows.length,
+        total: result.rows.length,
         created,
         failed,
+        processed: batchRows.length,
+        offset,
+        batchSize,
+        nextOffset,
+        hasMore: nextOffset < result.rows.length,
         errors,
       },
       {

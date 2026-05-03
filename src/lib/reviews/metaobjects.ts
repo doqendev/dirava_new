@@ -434,12 +434,15 @@ export async function createReview(data: {
   sourceReviewId?: string
   status?: 'pending' | 'approved' | 'rejected'
 }): Promise<Review | null> {
-  const handleSeed = `${data.productHandle}-${data.authorName}-${data.sourceReviewId || Date.now()}-${Math.random()}`
+  const handleSeed = data.sourceReviewId
+    ? `${data.productHandle}-${data.sourceReviewId}`
+    : `${data.productHandle}-${data.authorName}-${Date.now()}-${Math.random()}`
   const handleSuffix = Buffer.from(handleSeed)
     .toString('base64url')
     .replace(/[^a-zA-Z0-9_-]/g, '')
     .slice(0, 24)
-  const handle = `review-${data.productHandle}-${Date.now()}-${handleSuffix}`.slice(0, 255)
+  const handlePrefix = data.sourceReviewId ? 'review-import' : `review-${Date.now()}`
+  const handle = `${handlePrefix}-${data.productHandle}-${handleSuffix}`.slice(0, 255)
   const fields = toReviewFields({
     ...data,
     status: data.status || 'pending',

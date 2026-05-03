@@ -13,7 +13,23 @@ interface ImportResult {
   prepared: number
   created: number
   failed: number
+  processed?: number
   dryRun?: boolean
+  errors?: string[]
+}
+
+interface ImportResponse {
+  success?: boolean
+  error?: string
+  prepared?: number
+  total?: number
+  created?: number
+  failed?: number
+  processed?: number
+  offset?: number
+  batchSize?: number
+  nextOffset?: number
+  hasMore?: boolean
   errors?: string[]
 }
 
@@ -22,6 +38,8 @@ const TABS: { status: TabStatus; label: string; color: string }[] = [
   { status: 'approved', label: 'Approved', color: 'text-neon-green border-neon-green' },
   { status: 'rejected', label: 'Rejected', color: 'text-red-400 border-red-400' },
 ]
+
+const REVIEW_IMPORT_BATCH_SIZE = 20
 
 const statusBadgeClasses: Record<TabStatus, string> = {
   pending: 'bg-yellow-400/10 text-yellow-400 border-yellow-400/30',
@@ -189,41 +207,71 @@ export default function AdminReviewsContent() {
     setImportResult(null)
 
     try {
-      const formData = new FormData()
-      formData.append('file', importFile)
-      formData.append('status', importStatus)
+      let offset = 0
+      let total = 0
+      let created = 0
+      let failed = 0
+      let processed = 0
+      let hasMore = true
+      const errors: string[] = []
 
-      const response = await fetch('/api/admin/reviews/import', {
-        method: 'POST',
-        body: formData,
-      })
+      while (hasMore) {
+        const formData = new FormData()
+        formData.append('file', importFile)
+        formData.append('status', importStatus)
+        formData.append('offset', String(offset))
+        formData.append('batchSize', String(REVIEW_IMPORT_BATCH_SIZE))
+        formData.append('ensureFields', offset === 0 ? 'true' : 'false')
 
-      const data = await response.json() as {
-        success?: boolean
-        error?: string
-        prepared?: number
-        created?: number
-        failed?: number
-        errors?: string[]
-      }
-
-      if (!response.ok || !data.success) {
-        setImportResult({
-          prepared: data.prepared || 0,
-          created: data.created || 0,
-          failed: data.failed || 0,
-          errors: data.errors,
+        const response = await fetch('/api/admin/reviews/import', {
+          method: 'POST',
+          body: formData,
         })
-        setError(data.error || 'Failed to import reviews')
-        return
+
+        const data = await response.json() as ImportResponse
+
+        if (!response.ok || data.error) {
+          setImportResult({
+            prepared: data.total || data.prepared || total,
+            created,
+            failed,
+            processed,
+            errors: [...errors, ...(data.errors || [])],
+          })
+          setError(data.error || 'Failed to import reviews')
+          return
+        }
+
+        const batchCreated = data.created || 0
+        const batchFailed = data.failed || 0
+        const batchProcessed = data.processed || batchCreated + batchFailed
+        const nextOffset = data.nextOffset ?? offset + batchProcessed
+
+        total = data.total || data.prepared || total
+        created += batchCreated
+        failed += batchFailed
+        processed += batchProcessed
+        errors.push(...(data.errors || []))
+
+        setImportResult({
+          prepared: total,
+          created,
+          failed,
+          processed,
+          errors,
+        })
+
+        hasMore = Boolean(data.hasMore)
+        if (hasMore && nextOffset <= offset) {
+          setError('Import stopped because progress stalled. Try a smaller CSV.')
+          return
+        }
+        offset = nextOffset
       }
 
-      setImportResult({
-        prepared: data.prepared || 0,
-        created: data.created || 0,
-        failed: data.failed || 0,
-        errors: data.errors,
-      })
+      if (failed > 0) {
+        setError(`Imported with ${failed} failed row${failed === 1 ? '' : 's'}.`)
+      }
       setImportFile(null)
       await fetchReviews()
       setActiveTab(importStatus)
@@ -359,7 +407,9 @@ export default function AdminReviewsContent() {
                   {isImporting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      Importing...
+                      {importResult?.prepared
+                        ? `Importing ${importResult.processed || 0}/${importResult.prepared}`
+                        : 'Importing...'}
                     </>
                   ) : (
                     'Import CSV'
@@ -369,7 +419,7 @@ export default function AdminReviewsContent() {
 
               {importResult && (
                 <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm text-white/65">
-                  Prepared {importResult.prepared}, created {importResult.created}, failed {importResult.failed}.
+                  Processed {importResult.processed || 0}/{importResult.prepared}, created {importResult.created}, failed {importResult.failed}.
                   {importResult.errors && importResult.errors.length > 0 && (
                     <ul className="mt-2 space-y-1 text-xs text-red-300">
                       {importResult.errors.slice(0, 5).map((importError) => (
