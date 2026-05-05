@@ -20,6 +20,8 @@ interface Preview3DCanvasProps {
   selectedVariantName?: string
   /** Runtime-only prop for the Dragon Ball sign scene: which slot the ball sits in. */
   ballPosition?: number
+  /** Runtime-only prop for Dragon Ball signs: render every O as a Dragon Ball sprite. */
+  replaceOsWithBalls?: boolean
 }
 
 function LoadingFallback({ label }: { label: string }) {
@@ -89,7 +91,16 @@ interface SceneRouterProps extends Preview3DCanvasProps {
   yOffset: number
 }
 
-function SceneRouter({ config, text, selectedVariantName, sceneRef, lightOn, yOffset, ballPosition }: SceneRouterProps) {
+function SceneRouter({
+  config,
+  text,
+  selectedVariantName,
+  sceneRef,
+  lightOn,
+  yOffset,
+  ballPosition,
+  replaceOsWithBalls,
+}: SceneRouterProps) {
   switch (config.type) {
     case 'text-extrusion':
       return <TextExtrusionScene text={text} config={config} />
@@ -113,7 +124,14 @@ function SceneRouter({ config, text, selectedVariantName, sceneRef, lightOn, yOf
       return <CompositeSignScene config={config} svgPath={jollySvgPath} text={text} selectedVariantName={selectedVariantName} sceneRef={sceneRef} />
     }
     case 'dragonball-sign':
-      return <DragonballSignScene text={text} config={config} ballPosition={ballPosition} />
+      return (
+        <DragonballSignScene
+          text={text}
+          config={config}
+          ballPosition={ballPosition}
+          replaceOsWithBalls={replaceOsWithBalls}
+        />
+      )
     case 'bleach-sign':
       return <BleachSignScene text={text} config={config} />
     default:
@@ -121,7 +139,13 @@ function SceneRouter({ config, text, selectedVariantName, sceneRef, lightOn, yOf
   }
 }
 
-export function Preview3DCanvas({ config, text, selectedVariantName, ballPosition }: Preview3DCanvasProps) {
+export function Preview3DCanvas({
+  config,
+  text,
+  selectedVariantName,
+  ballPosition,
+  replaceOsWithBalls,
+}: Preview3DCanvasProps) {
   const t = useTranslations('product')
   const [webGLSupported, setWebGLSupported] = useState<boolean | null>(null)
   const [debouncedText, setDebouncedText] = useState(text)
@@ -210,6 +234,7 @@ export function Preview3DCanvas({ config, text, selectedVariantName, ballPositio
               lightOn={lightOn}
               yOffset={sceneYOffset}
               ballPosition={ballPosition}
+              replaceOsWithBalls={replaceOsWithBalls}
             />
           </Suspense>
         </Canvas>

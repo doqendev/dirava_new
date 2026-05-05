@@ -1,4 +1,4 @@
-import type { PreviewConfig } from './types'
+import type { LayerConfig, PreviewConfig } from './types'
 
 /**
  * Product handle → PreviewConfig map
@@ -37,6 +37,11 @@ const previewConfigs: Record<string, PreviewConfig> = {
       autoRotateSpeed: 1,
     },
     maxChars: 15,
+    // AOT's gothic glyphs need a small fill gap, while the black backing
+    // stroke should still visually connect between letters.
+    textCharOverlap: -0.012,
+    textAutoGlyphGap: 0.29,
+    textMaxSceneWidth: 14.4,
     scale: 1,
     background: '#0a0a12',
   },
@@ -69,8 +74,16 @@ const previewConfigs: Record<string, PreviewConfig> = {
       autoRotateSpeed: 1,
     },
     maxChars: 15,
-    textSpacingMode: 'advance',
-    textLetterSpacing: -0.01,
+    // Keep spacing visually even across this brush-style font; the black
+    // backing stroke should connect while the white faces stay readable.
+    textCharOverlap: 0,
+    textCharOverlapByPair: {
+      am: -0.06,
+      ma: -0.02,
+      me: 0.1,
+    },
+    textAutoGlyphGap: 0.18,
+    textMaxSceneWidth: 14.4,
     scale: 1,
     background: '#0a0a12',
   },
@@ -3471,7 +3484,7 @@ previewConfigs['one-piece-custom-led-lightbox-sign'] = {
 
 previewConfigs['dragon-ball-custom-sign'] = {
   type: 'dragonball-sign',
-  font: '/fonts/preview/Saiyan-Sans.ttf',
+  font: '/fonts/preview/dragon-ball-db.ttf',
   svg: '/svgs/preview/dball.svg',
   forceUppercase: true,
   maxChars: 12,
@@ -3879,10 +3892,6 @@ previewConfigs['bleach-custom-sign'] = {
       roughness: 0.5,
       strokeWidth: 0.35,
       strokeJoinType: 'round',
-      // Blue back-stroke renders solid (no inner counters); the white
-      // and red layers keep their holes so D/A/P/O etc. read with
-      // proper letter counters.
-      stripHoles: true,
     },
     {
       color: '#f2f2f2',
@@ -3910,6 +3919,141 @@ previewConfigs['bleach-custom-sign'] = {
   },
   scale: 1,
   background: '#0a0a12',
+}
+
+previewConfigs['digimon-custom-sign'] = {
+  type: 'svg-extrusion',
+  svg: '/svgs/preview/digimon-custom-sign.svg',
+  font: '/fonts/preview/Pixel-Digivolve-Italic.otf',
+  forceUppercase: true,
+  maxChars: 14,
+  textFontSize: 452,
+  textShrinkToFit: false,
+  textFixedFontSize: true,
+  textSqueezeToFit: true,
+  textMaxWidthRatio: 0.94,
+  textMaxHeightRatio: 1.3,
+  textMinHorizontalScale: 0.46,
+  textMinLetterSpacing: 0.04,
+  textLetterSpacing: 0.04,
+  textLetterSpacingByLength: {
+    3: 0.18,
+    4: 0.18,
+    5: 0.16,
+    6: 0.14,
+    7: 0.1,
+    8: 0.07,
+  },
+  textPreserveLetterSpacing: false,
+  nameplateBox: {
+    x: 300,
+    y: 440,
+    width: 1940,
+    height: 355,
+  },
+  layers: [
+    {
+      svgColor: '#000000',
+      color: '#050505',
+      depth: 12,
+      metalness: 0.05,
+      roughness: 0.75,
+      unlit: true,
+    },
+    {
+      svgColor: '#0e0edd',
+      color: '#0e0edd',
+      depth: 1,
+      offsetZ: 12,
+      metalness: 0.1,
+      roughness: 0.45,
+    },
+    {
+      svgColor: '#dc5618',
+      color: '#0e0edd',
+      depth: 1,
+      offsetZ: 12,
+      metalness: 0.1,
+      roughness: 0.45,
+    },
+    {
+      svgColor: '#f5f500',
+      color: '#0e0edd',
+      depth: 1,
+      offsetZ: 12,
+      metalness: 0.1,
+      roughness: 0.45,
+    },
+    {
+      svgColor: '#dc5618',
+      color: '#dc5618',
+      depth: 1,
+      offsetZ: 13,
+      metalness: 0.12,
+      roughness: 0.42,
+    },
+    {
+      svgColor: '#f5f500',
+      color: '#dc5618',
+      depth: 1,
+      offsetZ: 13,
+      metalness: 0.12,
+      roughness: 0.42,
+    },
+    {
+      svgColor: '#f5f500',
+      color: '#f5f500',
+      depth: 1,
+      offsetZ: 14,
+      metalness: 0.08,
+      roughness: 0.38,
+      emissive: '#fff04d',
+      emissiveIntensity: 0.12,
+    },
+  ],
+  textLayers: [
+    {
+      color: '#f5f500',
+      depth: 1,
+      offsetZ: 15.1,
+      metalness: 0.08,
+      roughness: 0.36,
+      emissive: '#fff04d',
+      emissiveIntensity: 0.14,
+    },
+  ],
+  camera: {
+    position: [0, 1.5, 42],
+    fov: 45,
+    autoRotate: false,
+  },
+  scale: 0.0132,
+  background: '#0a0a12',
+}
+
+const shiftOffsetZ = (layer: LayerConfig, delta: number): LayerConfig => ({
+  ...layer,
+  ...(layer.offsetZ === undefined ? {} : { offsetZ: layer.offsetZ + delta }),
+})
+
+const digimonKeychainBaseDepth = 6
+const digimonSignBaseDepth = previewConfigs['digimon-custom-sign'].layers[0]!.depth
+const digimonKeychainOffsetDelta = digimonKeychainBaseDepth - digimonSignBaseDepth
+
+previewConfigs['digimon-custom-keychain'] = {
+  ...previewConfigs['digimon-custom-sign'],
+  layers: [
+    {
+      ...previewConfigs['digimon-custom-sign'].layers[0]!,
+      depth: digimonKeychainBaseDepth,
+    },
+    ...previewConfigs['digimon-custom-sign'].layers
+      .slice(1)
+      .map((layer) => shiftOffsetZ(layer, digimonKeychainOffsetDelta)),
+  ],
+  textLayers: previewConfigs['digimon-custom-sign'].textLayers!.map((layer) =>
+    shiftOffsetZ(layer, digimonKeychainOffsetDelta),
+  ),
 }
 
 const variantImagesOnly: Record<string, Record<string, string>> = {

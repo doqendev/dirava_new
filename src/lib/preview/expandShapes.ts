@@ -1,21 +1,82 @@
 import * as THREE from 'three'
 import ClipperLib from 'clipper-lib'
 
-// Scale factor for Clipper (works with integers internally)
 const CLIPPER_SCALE = 1000
 
 export type StrokeJoinType = 'round' | 'miter' | 'square'
 
+function pathArea(path: ClipperLib.Path) {
+  let area = 0
+  for (let i = 0; i < path.length; i++) {
+    const a = path[i]!
+    const b = path[(i + 1) % path.length]!
+    area += a.X * b.Y - b.X * a.Y
+  }
+  return area / 2
+}
+
+function pointInPolygon(point: THREE.Vector2, polygon: THREE.Vector2[]) {
+  let inside = false
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const a = polygon[i]!
+    const b = polygon[j]!
+    if (
+      a.y > point.y !== b.y > point.y &&
+      point.x < ((b.x - a.x) * (point.y - a.y)) / (b.y - a.y) + a.x
+    ) {
+      inside = !inside
+    }
+  }
+  return inside
+}
+
+function pathsToShapes(paths: ClipperLib.Paths) {
+  const contours = paths
+    .map((path) => ({
+      points: path.map((p) => new THREE.Vector2(p.X / CLIPPER_SCALE, p.Y / CLIPPER_SCALE)),
+      area: Math.abs(pathArea(path)),
+    }))
+    .filter((contour) => contour.points.length >= 3)
+    .sort((a, b) => b.area - a.area)
+
+  const parents = contours.map(() => -1)
+  const depth = contours.map(() => 0)
+  for (let i = 1; i < contours.length; i++) {
+    const point = contours[i]!.points[0]
+    if (!point) continue
+    for (let j = i - 1; j >= 0; j--) {
+      if (pointInPolygon(point, contours[j]!.points)) {
+        parents[i] = j
+        depth[i] = (depth[j] ?? 0) + 1
+        break
+      }
+    }
+  }
+
+  const shapes: THREE.Shape[] = []
+  const byIdx = new Map<number, THREE.Shape>()
+  for (let i = 0; i < contours.length; i++) {
+    if ((depth[i] ?? 0) % 2 === 0) {
+      const shape = new THREE.Shape(contours[i]!.points)
+      shapes.push(shape)
+      byIdx.set(i, shape)
+    }
+  }
+
+  for (let i = 0; i < contours.length; i++) {
+    if ((depth[i] ?? 0) % 2 !== 1) continue
+    let parent = parents[i] ?? -1
+    while (parent !== -1 && (depth[parent] ?? 0) % 2 !== 0) parent = parents[parent] ?? -1
+    const shape = byIdx.get(parent)
+    if (shape) shape.holes.push(new THREE.Path(contours[i]!.points))
+  }
+
+  return shapes
+}
+
 /**
  * Expand shapes uniformly using Clipper's polygon offset.
- * Handles corners, self-intersections, and complex topology correctly.
- *
- * `joinType`:
- *   'round'  (default) — circular arcs at outside corners
- *   'miter'            — sharp corners that follow the original
- *                        polygon's angle (good for text strokes that
- *                        should mirror the glyph's pointy bits)
- *   'square'           — square caps
+ * Handles corners, self-intersections, holes, and complex topology.
  */
 export function expandShapes(
   shapes: THREE.Shape[],
@@ -24,122 +85,34 @@ export function expandShapes(
 ): THREE.Shape[] {
   const result: THREE.Shape[] = []
   const jt = joinType === 'miter' ? 2 : joinType === 'square' ? 0 : 1
-  // Very high miter limit so even the most acute outer corners (the
-  // pointy spikes in display fonts like Bleach's BLAKE) keep their
-  // tips intact.
   const miterLimit = 100
 
   for (const shape of shapes) {
-    // Convert outer contour to Clipper path
-    const outerPoints = shape.getPoints(12)
-    const clipperOuter: ClipperLib.Path = outerPoints.map((p) => ({
+    const clipperOuter: ClipperLib.Path = shape.getPoints(12).map((p) => ({
       X: Math.round(p.x * CLIPPER_SCALE),
       Y: Math.round(p.y * CLIPPER_SCALE),
     }))
+    if (clipperOuter.length < 3) continue
 
-    // Offset outer contour outward (positive delta)
-    const outerOffset = new ClipperLib.ClipperOffset(miterLimit)
-    outerOffset.ArcTolerance = 5
-    outerOffset.AddPath(clipperOuter, jt, 0 /* etClosedPolygon */)
-    const outerSolution: ClipperLib.Paths = []
-    outerOffset.Execute(outerSolution, strokeWidth * CLIPPER_SCALE)
-
-    if (outerSolution.length === 0) continue
-
-    // Use the first (largest) result as the expanded outer contour
-    const expandedOuter = outerSolution[0]!.map(
-      (p) => new THREE.Vector2(p.X / CLIPPER_SCALE, p.Y / CLIPPER_SCALE)
-    )
-    const expandedShape = new THREE.Shape(expandedOuter)
-
-    // Shrink each hole inward by strokeWidth using edge-normal
-    // offsets. (Clipper's hole offset returns empty in this build
-    // regardless of winding/delta combination — this does the work
-    // manually.) For each vertex we compute the miter offset from the
-    // two adjacent edges' inward normals, so the shrunk hole keeps
-    // the original contour's shape instead of rounding toward a
-    // centroid.
+    const outerArea = pathArea(clipperOuter)
+    const sourcePaths: ClipperLib.Paths = [clipperOuter]
     for (const hole of shape.holes) {
-      const holePoints = hole.getPoints(12)
-      if (holePoints.length < 3) continue
-
-      // Inward direction depends on winding. Shoelace formula: CCW
-      // polygon has positive signed area (in y-up coords). For a hole
-      // inside a Shape, Three.js expects opposite winding to the
-      // outer, so we compute the sign once and use it per-vertex.
-      let signedArea = 0
-      for (let i = 0; i < holePoints.length; i++) {
-        const a = holePoints[i]!
-        const b = holePoints[(i + 1) % holePoints.length]!
-        signedArea += a.x * b.y - b.x * a.y
-      }
-      const ccw = signedArea > 0
-      // Per-edge inward normal (unit length). For CCW, inward is
-      // (-dy, dx); for CW, (dy, -dx).
-      const edgeNormal = (ax: number, ay: number, bx: number, by: number) => {
-        const dx = bx - ax
-        const dy = by - ay
-        const len = Math.sqrt(dx * dx + dy * dy) || 1
-        const nx = ccw ? -dy / len : dy / len
-        const ny = ccw ? dx / len : -dx / len
-        return { nx, ny }
-      }
-
-      const shrunk: THREE.Vector2[] = []
-      let collapsed = false
-      for (let i = 0; i < holePoints.length; i++) {
-        const prev = holePoints[(i - 1 + holePoints.length) % holePoints.length]!
-        const curr = holePoints[i]!
-        const next = holePoints[(i + 1) % holePoints.length]!
-        const n1 = edgeNormal(prev.x, prev.y, curr.x, curr.y)
-        const n2 = edgeNormal(curr.x, curr.y, next.x, next.y)
-        // Miter offset: (n1 + n2) / (1 + n1 · n2). Stable everywhere
-        // except when the two normals are nearly opposite (spike
-        // vertex) — cap the miter length to avoid blow-ups.
-        const sumX = n1.nx + n2.nx
-        const sumY = n1.ny + n2.ny
-        const denom = 1 + n1.nx * n2.nx + n1.ny * n2.ny
-        const MITER_CAP = 100
-        let mx: number
-        let my: number
-        if (Math.abs(denom) < 1 / MITER_CAP) {
-          // Near-colinear reversal — fall back to simple normal of
-          // n1 scaled by strokeWidth.
-          mx = n1.nx * strokeWidth
-          my = n1.ny * strokeWidth
-        } else {
-          // Standard miter offset: each new vertex sits at the
-          // intersection of the two offset edges.
-          //   v_new = v + (n1 + n2) / (1 + n1·n2) * strokeWidth
-          // For a flat edge that simplifies to v + n * strokeWidth.
-          const miterLen = strokeWidth / denom
-          const clamped = Math.max(-MITER_CAP * strokeWidth, Math.min(MITER_CAP * strokeWidth, miterLen))
-          mx = sumX * clamped
-          my = sumY * clamped
-        }
-        const newX = curr.x + mx
-        const newY = curr.y + my
-        // Sanity: if the moved point lands outside the polygon, skip
-        // (e.g. the hole has collapsed at this vertex).
-        shrunk.push(new THREE.Vector2(newX, newY))
-      }
-
-      // Quick collapse test: if the shrunk polygon has flipped sign
-      // (became inside-out), the hole closed entirely.
-      let newSigned = 0
-      for (let i = 0; i < shrunk.length; i++) {
-        const a = shrunk[i]!
-        const b = shrunk[(i + 1) % shrunk.length]!
-        newSigned += a.x * b.y - b.x * a.y
-      }
-      if ((newSigned > 0) !== ccw) collapsed = true
-
-      if (!collapsed && shrunk.length >= 3) {
-        expandedShape.holes.push(new THREE.Path(shrunk))
-      }
+      const holePath: ClipperLib.Path = hole.getPoints(12).map((p) => ({
+        X: Math.round(p.x * CLIPPER_SCALE),
+        Y: Math.round(p.y * CLIPPER_SCALE),
+      }))
+      if (holePath.length < 3) continue
+      if (pathArea(holePath) * outerArea > 0) holePath.reverse()
+      sourcePaths.push(holePath)
     }
 
-    result.push(expandedShape)
+    const offset = new ClipperLib.ClipperOffset(miterLimit)
+    offset.ArcTolerance = 5
+    offset.AddPaths(sourcePaths, jt, 0)
+
+    const solution: ClipperLib.Paths = []
+    offset.Execute(solution, strokeWidth * CLIPPER_SCALE)
+    result.push(...pathsToShapes(solution))
   }
 
   return result

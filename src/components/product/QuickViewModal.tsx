@@ -16,9 +16,11 @@ import { QuantitySelector } from '@/components/product/QuantitySelector'
 import { AddToCartButton } from '@/components/product/AddToCartButton'
 import { WishlistButton } from '@/components/product/WishlistButton'
 import { getPreviewConfig, getVariantImages } from '@/lib/preview'
+import { hasDragonBallOReplacement } from '@/lib/preview/dragonBallOReplacement'
 import { getPreviewDisplayText } from '@/lib/preview/textTransform'
 import { Preview3DLoadingIndicator } from '@/components/product/preview3d/LoadingSpinner'
 import { BallPositionPicker } from '@/components/product/preview3d/BallPositionPicker'
+import { DragonBallOReplacementToggle } from '@/components/product/preview3d/DragonBallOReplacementToggle'
 import { Lightbox2DPreview } from '@/components/product/preview2d/Lightbox2DPreview'
 
 const Preview3DCanvas = lazy(() =>
@@ -69,6 +71,7 @@ export function QuickViewModal() {
   const [personalizationName, setPersonalizationName] = useState('')
   // Dragon Ball picker: null = auto-midpoint, number = explicit slot.
   const [ballPosition, setBallPosition] = useState<number | null>(null)
+  const [replaceOsWithBalls, setReplaceOsWithBalls] = useState(false)
   const personalizationInputRef = useRef<HTMLInputElement>(null)
 
   const handlePersonalizationError = () => {
@@ -89,6 +92,7 @@ export function QuickViewModal() {
       setQuantity(1)
       setPersonalizationName('')
       setBallPosition(null)
+      setReplaceOsWithBalls(false)
 
       try {
         const response = await fetch(`/api/products/${quickViewProduct.handle}`)
@@ -191,6 +195,14 @@ export function QuickViewModal() {
   // Overlay-mode signs auto-place the X, so the picker + cart attribute
   // both get suppressed.
   const ballPickerEnabled = isDragonballSign && previewConfig?.midSpriteMode !== 'overlay'
+  const dragonBallOReplacementEnabled = Boolean(
+    ballPickerEnabled && previewConfig?.svg === '/svgs/preview/dball.svg'
+  )
+  const dragonBallOReplacementActive = Boolean(
+    dragonBallOReplacementEnabled
+    && replaceOsWithBalls
+    && hasDragonBallOReplacement(personalizationName)
+  )
   const show3DTab = !!previewConfig && (Boolean(activeLightbox2DPreview) || isTextExtrusion || hasVariantSvg || hasSingleSvg || isComposite || isDragonballSign || isBleachSign)
   const preview3DIndex = product ? product.images.length : 0
   const is3DActive = currentImageIndex === preview3DIndex && show3DTab
@@ -223,11 +235,13 @@ export function QuickViewModal() {
     const attrs: Array<{ key: string; value: string }> = [
       { key: 'Personalization', value: trimmed },
     ]
-    if (ballPickerEnabled) {
+    if (dragonBallOReplacementActive) {
+      attrs.push({ key: 'Dragon Ball O Replacement', value: 'Yes' })
+    } else if (ballPickerEnabled) {
       attrs.push({ key: 'Ball Position', value: describeBallPosition(trimmed, effectiveBallPosition) })
     }
     return attrs
-  }, [product?.personalization, personalizationName, ballPickerEnabled, effectiveBallPosition])
+  }, [product?.personalization, personalizationName, dragonBallOReplacementActive, ballPickerEnabled, effectiveBallPosition])
 
   // Find selected variant
   const selectedVariant = useMemo(() => {
@@ -388,7 +402,8 @@ export function QuickViewModal() {
                                     config={previewConfig}
                                     text={previewCanvasText}
                                     selectedVariantName={selectedVariantName}
-                                    ballPosition={ballPickerEnabled && personalizationName.length > 0 ? effectiveBallPosition : undefined}
+                                    ballPosition={!dragonBallOReplacementActive && ballPickerEnabled && personalizationName.length > 0 ? effectiveBallPosition : undefined}
+                                    replaceOsWithBalls={dragonBallOReplacementActive}
                                   />
                                 )}
                               </Suspense>
@@ -398,7 +413,13 @@ export function QuickViewModal() {
                               {product.personalization && (
                                 <div className="absolute bottom-0 inset-x-0 z-20">
                                   <div className="bg-gradient-to-t from-black/90 via-black/70 to-transparent pt-8 pb-3 px-3">
-                                    {ballPickerEnabled && personalizationName && (
+                                    {dragonBallOReplacementEnabled && hasDragonBallOReplacement(personalizationName) && (
+                                      <DragonBallOReplacementToggle
+                                        checked={dragonBallOReplacementActive}
+                                        onChange={setReplaceOsWithBalls}
+                                      />
+                                    )}
+                                    {!dragonBallOReplacementActive && ballPickerEnabled && personalizationName && (
                                       <BallPositionPicker
                                         text={personalizationName}
                                         value={effectiveBallPosition}
@@ -657,6 +678,13 @@ export function QuickViewModal() {
                           <p className="mt-1 text-xs text-white/40">
                             {personalizationName.length} / {MAX_PERSONALIZATION_LENGTH}
                           </p>
+                          {dragonBallOReplacementEnabled && hasDragonBallOReplacement(personalizationName) && (
+                            <DragonBallOReplacementToggle
+                              checked={dragonBallOReplacementActive}
+                              onChange={setReplaceOsWithBalls}
+                              className="mt-2 mb-0 h-10 w-full justify-between rounded-lg border-[#ff6c00]/45 bg-[#ff6c00]/10 px-3 text-[11px]"
+                            />
+                          )}
                         </div>
                       )}
 

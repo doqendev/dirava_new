@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useRef, useEffect } from 'react'
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -27,12 +27,14 @@ import { SocialProofBar } from '@/components/product/SocialProofBar'
 import { LimitedSlotsBanner } from '@/components/product/LimitedSlotsBanner'
 import { TrustStrip } from '@/components/product/TrustStrip'
 import { ProductDescription } from '@/components/product/ProductDescription'
+import { DragonBallOReplacementToggle } from '@/components/product/preview3d/DragonBallOReplacementToggle'
 import { getProductChips } from '@/data/productChips'
 import { useTrackProductView } from '@/hooks/useTrackProductView'
 import { useCookieConsentStore } from '@/stores/cookieConsentStore'
 import { trackViewContent } from '@/lib/tracking/trackClear'
 import { getSizeGuide } from '@/data/sizeGuides'
 import { getPreviewConfig, getVariantImages } from '@/lib/preview'
+import { hasDragonBallOReplacement } from '@/lib/preview/dragonBallOReplacement'
 import { getPreviewDisplayText } from '@/lib/preview/textTransform'
 import { AccentTheme } from '@/components/theme/AccentTheme'
 import type { ShopifyMoney, ShopifySelectedOption } from '@/types/shopify'
@@ -216,6 +218,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
   // Dragon Ball position picker state. `null` means "auto-follow midpoint";
   // once the customer clicks a dot it becomes a concrete slot index.
   const [ballPosition, setBallPosition] = useState<number | null>(null)
+  const [replaceOsWithBalls, setReplaceOsWithBalls] = useState(false)
 
   const handlePersonalizationError = () => {
     personalizationInputRef.current?.focus()
@@ -231,6 +234,14 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
   // fraction of the text width, so the ball-position picker doesn't
   // apply and no cart attribute is attached for it.
   const ballPickerEnabled = isDragonballSign && previewConfig?.midSpriteMode !== 'overlay'
+  const dragonBallOReplacementEnabled = Boolean(
+    ballPickerEnabled && previewConfig?.svg === '/svgs/preview/dball.svg'
+  )
+  const dragonBallOReplacementActive = Boolean(
+    dragonBallOReplacementEnabled
+    && replaceOsWithBalls
+    && hasDragonBallOReplacement(personalizationName)
+  )
 
   // Effective ball slot — only *internal* positions are allowed, so the
   // clamp is [1, n - 1]. When the user hasn't manually picked, falls
@@ -249,7 +260,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
   // reads this directly so we don't have to map slot indices on the
   // warehouse side. Only internal slots are valid now — the ball always
   // lives between two letters.
-  const describeBallPosition = (name: string, slot: number): string => {
+  const describeBallPosition = useCallback((name: string, slot: number): string => {
     if (name.length < 2) return t('personalizationDefaultCenter')
     return t('personalizationBetweenLetters', {
       a: slot,
@@ -257,7 +268,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
       b: slot + 1,
       letterB: name[slot] ?? '',
     })
-  }
+  }, [t])
 
   // Unified cart attributes used by every add-to-cart surface on this
   // page (canvas cart, main desktop button, sticky mobile button).
@@ -268,11 +279,13 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
     const attrs: Array<{ key: string; value: string }> = [
       { key: 'Personalization', value: trimmed },
     ]
-    if (ballPickerEnabled) {
+    if (dragonBallOReplacementActive) {
+      attrs.push({ key: 'Dragon Ball O Replacement', value: 'Yes' })
+    } else if (ballPickerEnabled) {
       attrs.push({ key: 'Ball Position', value: describeBallPosition(trimmed, effectiveBallPosition) })
     }
     return attrs
-  }, [product.personalization, personalizationName, ballPickerEnabled, effectiveBallPosition])
+  }, [product.personalization, personalizationName, dragonBallOReplacementActive, ballPickerEnabled, effectiveBallPosition, describeBallPosition])
 
   // Track product view for recently viewed feature
   useTrackProductView({
@@ -435,8 +448,10 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               imageVariantNames={imageVariantNames}
               onVariantSelect={onVariantSelectFromGallery}
               onPreviewTextChange={product.personalization && galleryInlineControlsEnabled ? setPersonalizationName : undefined}
-              ballPosition={ballPickerEnabled && personalizationName.length > 0 ? effectiveBallPosition : undefined}
-              onBallPositionChange={ballPickerEnabled ? setBallPosition : undefined}
+              ballPosition={!dragonBallOReplacementActive && ballPickerEnabled && personalizationName.length > 0 ? effectiveBallPosition : undefined}
+              onBallPositionChange={!dragonBallOReplacementActive && ballPickerEnabled ? setBallPosition : undefined}
+              replaceOsWithBalls={replaceOsWithBalls}
+              onReplaceOsWithBallsChange={dragonBallOReplacementEnabled ? setReplaceOsWithBalls : undefined}
               themeColor={themeColor}
               initialPreviewMode={false}
               onPreviewActiveChange={setIsGalleryPreviewActive}
@@ -638,6 +653,15 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   onPreview3D={previewConfig ? () => galleryRef.current?.goTo3D() : undefined}
                   previewLabel={previewActionLabel}
                   previewAriaLabel={previewActionAriaLabel}
+                  customizationOption={
+                    dragonBallOReplacementEnabled && hasDragonBallOReplacement(personalizationName) ? (
+                      <DragonBallOReplacementToggle
+                        checked={dragonBallOReplacementActive}
+                        onChange={setReplaceOsWithBalls}
+                        className="mb-0 h-10 w-full justify-between rounded-lg border-[#ff6c00]/45 bg-[#ff6c00]/10 px-3 text-[11px] sm:mx-0"
+                      />
+                    ) : undefined
+                  }
                   cta={
                     <AddToCartButton
                       variantId={selectedVariant?.id || ''}
@@ -870,11 +894,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
         requiresPersonalization={product.personalization}
         personalizationValue={personalizationName}
         onPersonalizationError={handlePersonalizationError}
-        attributes={
-          product.personalization && personalizationName.trim()
-            ? [{ key: 'Personalization', value: personalizationName.trim() }]
-            : undefined
-        }
+        attributes={cartAttributes}
         quantity={quantity}
         cartButtonRef={cartButtonRef}
         themeColor={themeColor}

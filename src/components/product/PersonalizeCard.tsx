@@ -18,6 +18,8 @@ interface PersonalizeCardProps {
   cta: ReactNode
   /** Optional quantity selector slot, rendered between input and CTA. */
   quantity?: ReactNode
+  /** Optional product-specific choice shown below the name input. */
+  customizationOption?: ReactNode
   /** Optional live social-proof line, rendered below the microcopy. */
   socialProof?: ReactNode
   /** Reserved (kept for API stability — the new layout shows the
@@ -53,6 +55,7 @@ export function PersonalizeCard({
   themeColor = '#00f5ff',
   cta,
   quantity,
+  customizationOption,
   socialProof,
   onPreview3D,
   previewLabel = '3D View',
@@ -86,27 +89,24 @@ export function PersonalizeCard({
     >
       {/* Header */}
       <header className={cn('relative', isStreamlined ? 'mb-3' : 'mb-4')}>
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
+        <div className="flex flex-wrap items-start justify-between gap-2.5 sm:gap-3">
+          <div className="min-w-0 flex-1 basis-[170px]">
             <h3
               className={cn(
-                'font-display font-bold uppercase',
+                'font-display font-bold uppercase leading-tight',
                 isStreamlined
-                  ? 'whitespace-nowrap text-[12px] tracking-[0.13em] sm:text-[13px] sm:tracking-[0.15em]'
+                  ? 'whitespace-nowrap text-[12px] tracking-[0.13em] max-[360px]:text-[11.5px] max-[360px]:tracking-[0.09em] sm:text-[13px] sm:tracking-[0.15em]'
                   : 'text-[13px] tracking-[0.16em] sm:text-sm'
               )}
               style={{ color: themeColor }}
             >
-              {t('personalizeYourSign')}
+              {isStreamlined ? t('personalizationNameOnSign') : t('personalizeYourSign')}
             </h3>
-            <p
-              className={cn(
-                'mt-1.5 leading-snug text-white/65',
-                isStreamlined ? 'text-[12.5px] sm:text-[13px]' : 'text-[13px] sm:text-sm'
-              )}
-            >
-              {t('personalizeYourSignSub')}
-            </p>
+            {!isStreamlined && (
+              <p className="mt-1.5 text-[13px] leading-snug text-white/65 sm:text-sm">
+                {t('personalizeYourSignSub')}
+              </p>
+            )}
           </div>
 
           {showHeaderPreview && (
@@ -114,15 +114,15 @@ export function PersonalizeCard({
               type="button"
               onClick={onPreview3D}
               aria-label={previewAriaLabel ?? t('personalizationOpen3D')}
-              className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-lg border px-2.5 text-[10.5px] font-bold uppercase tracking-[0.11em] transition-all duration-150 active:scale-[0.985] focus:outline-none focus-visible:ring-2 sm:px-3 sm:tracking-[0.13em]"
+              className="inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-md border px-2 text-[9.5px] font-bold uppercase tracking-[0.08em] transition-all duration-150 active:scale-[0.985] focus:outline-none focus-visible:ring-2 min-[380px]:h-8 min-[380px]:px-2.5 min-[380px]:text-[10px] min-[380px]:tracking-[0.09em] sm:h-9 sm:px-3 sm:tracking-[0.11em]"
               style={{
                 color: themeColor,
-                borderColor: `rgba(${accentRgb}, 0.48)`,
-                background: `rgba(${accentRgb}, 0.07)`,
-                boxShadow: `inset 0 1px 0 rgba(${accentRgb}, 0.12)`,
+                borderColor: `rgba(${accentRgb}, 0.38)`,
+                background: `rgba(${accentRgb}, 0.035)`,
+                boxShadow: `inset 0 1px 0 rgba(${accentRgb}, 0.08)`,
               }}
             >
-              <Box className="h-3.5 w-3.5" strokeWidth={2.25} />
+              <Box className="h-3 w-3" strokeWidth={2.25} />
               {previewLabel}
             </button>
           )}
@@ -243,6 +243,8 @@ export function PersonalizeCard({
         </div>
       )}
 
+      {customizationOption && <div className="mt-3">{customizationOption}</div>}
+
       {quantity && <div className="mt-4">{quantity}</div>}
 
       {/* CTA — soft halo behind it that breathes on hover */}
@@ -276,7 +278,7 @@ export function PersonalizeCard({
       >
         Made to order
         <span className="mx-2 text-white/30">·</span>
-        Ready in 2-3 days
+        {isStreamlined ? 'Ready 2-3 days' : 'Ready in 2-3 days'}
       </p>
       <p
         className={cn(

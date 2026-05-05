@@ -91,6 +91,11 @@ function carveShapesWithPolygon(shapes: THREE.Shape[], cutPoints: THREE.Vector2[
 import { StudioLighting } from './StudioLighting'
 import { Preview3DLoadingIndicator } from './LoadingSpinner'
 import { expandShapes } from '@/lib/preview/expandShapes'
+import {
+  getDragonBallOReplacementPlan,
+  getDragonBallReplacementLetterSide,
+  hasDragonBallOReplacement,
+} from '@/lib/preview/dragonBallOReplacement'
 import type { PreviewConfig, LayerConfig } from '@/lib/preview/types'
 import { getPreviewDisplayText } from '@/lib/preview/textTransform'
 
@@ -104,6 +109,8 @@ interface DragonballSignSceneProps {
    * is preserved.
    */
   ballPosition?: number
+  /** Replace every O with the Dragon Ball sprite and split colours from the O rules. */
+  replaceOsWithBalls?: boolean
 }
 
 // Scene-unit per mm (matches the other scenes, keeps the relief feeling tuned the same).
@@ -319,7 +326,12 @@ function extrudedMesh(
   return new THREE.Mesh(geo, mat)
 }
 
-export function DragonballSignScene({ text, config, ballPosition }: DragonballSignSceneProps) {
+export function DragonballSignScene({
+  text,
+  config,
+  ballPosition,
+  replaceOsWithBalls,
+}: DragonballSignSceneProps) {
   const [font, setFont] = useState<OpentypeFont | null>(null)
   const [svgData, setSvgData] = useState<ReturnType<SVGLoader['parse']> | null>(null)
   const [loading, setLoading] = useState(true)
@@ -402,6 +414,10 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     const kerningTable = config.kerningTable ?? {}
     const flipFirst = new Set(config.letterFlipFirstHalf ?? [])
     const flipSecond = new Set(config.letterFlipSecondHalf ?? [])
+    const oReplacementActive = Boolean(replaceOsWithBalls && hasDragonBallOReplacement(displayText))
+    const oReplacementPlan = oReplacementActive
+      ? getDragonBallOReplacementPlan(displayText)
+      : null
 
     // numYellow = how many letters sit to the LEFT of the ball. Driven
     // by the explicit ballPosition prop when given (clamped into range),
@@ -468,25 +484,26 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
       measuredWidth: number
       data: (typeof letterData)[number]
     }[] = []
-    let ballX = 0
+    const ballPlacements: { x: number; size: number; cy?: number }[] = []
     // Ball is only rendered when there's text AND paint layers to draw
     // it with. Setting ballLayers to [] in a config hides the sprite
     // completely (useful for debugging the text layout).
     const hasBallPaint = (config.ballLayers?.length ?? 0) > 0
-    let ballPresent = n > 0 && hasBallPaint
+    const ballPresent = n > 0 && hasBallPaint
     const overlayMode = config.midSpriteMode === 'overlay'
 
     // If the customer placed the ball before the first letter, insert
     // it here — the in-loop insertion hook only fires after a letter.
     // In overlay mode the text flow doesn't reserve room for the
     // sprite, so skip this branch entirely.
-    if (!overlayMode && ballPresent && numYellow === 0) {
-      ballX = cursorX + midSpriteSpacing / 2
+    if (!oReplacementActive && !overlayMode && ballPresent && numYellow === 0) {
+      ballPlacements.push({ x: cursorX + midSpriteSpacing / 2, size: midSpriteSize })
       cursorX += midSpriteSize + midSpriteSpacing
     }
 
     const baseLetterSpacing = (config.textLetterSpacing ?? 0) * fontSize
     for (let i = 0; i < n; i++) {
+      const ch = displayText[i]!
       if (i > 0) {
         // Global inter-letter gap applied before every letter, then
         // adjusted by the pair-specific kerning override.
@@ -494,13 +511,26 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
         const pair = displayText[i - 1]! + displayText[i]!
         if (kerningTable[pair] !== undefined) cursorX += kerningTable[pair]! * fontSize
       }
-      const ch = displayText[i]!
       const d = Math.min(i, n - 1 - i)
       const scaleFactor = Math.max(1 - d * taper, taperFloor)
       const widthFactor = widthAdjustments[ch] ?? 1
       const data = letterData[i]!
       const measured = (data.maxX - data.minX) * widthFactor * scaleFactor
-      const isYellow = i < numYellow
+      if (oReplacementActive && ch === 'O' && ballPresent) {
+        const measuredHeight = (data.maxY - data.minY) * scaleFactor
+        const replacementSize = Math.max(measured, measuredHeight)
+        ballPlacements.push({
+          x: cursorX + (measured - replacementSize) / 2,
+          size: replacementSize,
+          cy: ((data.minY + data.maxY) / 2) * scaleFactor,
+        })
+        cursorX += measured
+        continue
+      }
+      const replacementSide = oReplacementPlan
+        ? getDragonBallReplacementLetterSide(oReplacementPlan, i)
+        : null
+      const isYellow = replacementSide ? replacementSide === 'yellow' : i < numYellow
       const flip = isYellow ? flipFirst.has(ch) : flipSecond.has(ch)
       positions.push({
         ch,
@@ -514,11 +544,11 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
         data,
       })
       cursorX += measured
-      if (!overlayMode && i === numYellow - 1 && ballPresent) {
+      if (!oReplacementActive && !overlayMode && i === numYellow - 1 && ballPresent) {
         // Ball sits between halves: its left edge starts at cursorX + spacing/2,
         // and the next letter picks up at cursorX + midSpriteSize + spacing
         // (the spacing is negative so the ball overlaps the adjacent letters).
-        ballX = cursorX + midSpriteSpacing / 2
+        ballPlacements.push({ x: cursorX + midSpriteSpacing / 2, size: midSpriteSize })
         cursorX += midSpriteSize + midSpriteSpacing
       }
     }
@@ -532,9 +562,9 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     // fixed fraction of the total text width. Short names (≤ 4 letters)
     // centre it; longer names push it to the 60% mark, matching the
     // legacy 2D preview's layout.
-    if (overlayMode && ballPresent) {
+    if (!oReplacementActive && overlayMode && ballPresent) {
       const fraction = n <= 4 ? 0.5 : 0.6
-      ballX = fraction * totalWidth - midSpriteSize / 2
+      ballPlacements.push({ x: fraction * totalWidth - midSpriteSize / 2, size: midSpriteSize })
     }
 
     // Pass 2: build per-letter shapes at their final transform
@@ -614,15 +644,17 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     const ballLayers = config.ballLayers ?? []
     const ballShapesByColor = new Map<string, THREE.Shape[]>()
     const ballSilhouette: THREE.Shape[] = []
+    const ballCutPolys: THREE.Vector2[][] = []
     let ballBounds = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity }
-    if (ballPresent && svgData) {
+    if (ballPlacements.length > 0 && svgData) {
+      const rawBallShapesByColor = new Map<string, THREE.Shape[]>()
       for (const path of svgData.paths) {
         const hex = '#' + path.color.getHexString()
         const matched = SVGLoader.createShapes(path)
         for (const s of matched) {
-          const prev = ballShapesByColor.get(hex) ?? []
+          const prev = rawBallShapesByColor.get(hex) ?? []
           prev.push(s)
-          ballShapesByColor.set(hex, prev)
+          rawBallShapesByColor.set(hex, prev)
         }
       }
       // Bounding box of the raw SVG so we can scale+position the ball in
@@ -638,25 +670,32 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
         }
       }
       const svgW = ballBounds.maxX - ballBounds.minX
-      const ballScale = svgW > 0 ? midSpriteSize / svgW : 1
       const ballCx = (ballBounds.minX + ballBounds.maxX) / 2
       const ballCy = (ballBounds.minY + ballBounds.maxY) / 2
-      const ballTargetCx = centerOffset + ballX + midSpriteSize / 2
       // Ball's vertical centre lands on the text's vertical centre (same
       // baseline system), with an optional manual nudge. When a
       // reflection is active, the ball instead sits on the mirror
       // axis between main and reflection rows (the same pivotY we
       // used for the mirror flip), so the X emblem bridges the two.
       const yOffsetRel = (config.midSpriteOffsetY ?? 0) * fontSize
-      const textCy = (yMinY + yMaxY) / 2
-      const mirrorAxisY = yMaxY + reflectionGap / 2
+      const textCy = Number.isFinite(yMinY) && Number.isFinite(yMaxY)
+        ? (yMinY + yMaxY) / 2
+        : 0
+      const mirrorAxisY = Number.isFinite(yMaxY)
+        ? yMaxY + reflectionGap / 2
+        : 0
       const ballTargetCy = reflectionActive
         ? mirrorAxisY + yOffsetRel
         : textCy + yOffsetRel
 
       // Helper: scale each shape's points + holes from SVG space into the
       // text's local coord space.
-      const transformBallShapes = (shapes: THREE.Shape[]): THREE.Shape[] => {
+      const transformBallShapes = (
+        shapes: THREE.Shape[],
+        ballTargetCx: number,
+        ballTargetCy: number,
+        ballScale: number,
+      ): THREE.Shape[] => {
         return shapes.map((shape) => {
           const newOuter = shape.getPoints(24).map((pt) => {
             const lx = (pt.x - ballCx) * ballScale + ballTargetCx
@@ -678,19 +717,59 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
         })
       }
 
-      for (const [hex, shapes] of Array.from(ballShapesByColor.entries())) {
-        ballShapesByColor.set(hex, transformBallShapes(shapes))
+      const rawLargestShape = (() => {
+        let outermost: THREE.Shape | null = null
+        let bestArea = -Infinity
+        for (const shapes of Array.from(rawBallShapesByColor.values())) {
+          for (const shape of shapes) {
+            const area = Math.abs(THREE.ShapeUtils.area(shape.getPoints()))
+            if (area > bestArea) {
+              bestArea = area
+              outermost = shape
+            }
+          }
+        }
+        return outermost
+      })()
+      const silhouetteColor = ballLayers[0]?.svgColor ?? ballLayers[0]?.color
+
+      for (const placement of ballPlacements) {
+        const ballScale = svgW > 0 ? placement.size / svgW : 1
+        const ballTargetCx = centerOffset + placement.x + placement.size / 2
+        const placementTargetCy = placement.cy ?? ballTargetCy
+
+        for (const [hex, shapes] of Array.from(rawBallShapesByColor.entries())) {
+          const prev = ballShapesByColor.get(hex) ?? []
+          prev.push(...transformBallShapes(shapes, ballTargetCx, placementTargetCy, ballScale))
+          ballShapesByColor.set(hex, prev)
+        }
+
+        // Silhouette: take the configured base colour. In practice this
+        // is the darkest/black layer covering the full ball. Fall back to
+        // every colour if a custom SVG does not provide that exact fill.
+        if (silhouetteColor) {
+          const match = rawBallShapesByColor.get(silhouetteColor.toLowerCase())
+          if (match && match.length > 0) {
+            ballSilhouette.push(...transformBallShapes(match, ballTargetCx, placementTargetCy, ballScale))
+          }
+        }
+        if (!silhouetteColor) {
+          for (const arr of Array.from(rawBallShapesByColor.values())) {
+            ballSilhouette.push(...transformBallShapes(arr, ballTargetCx, placementTargetCy, ballScale))
+          }
+        }
+
+        if (rawLargestShape) {
+          const transformedCutShape = transformBallShapes(
+            [rawLargestShape],
+            ballTargetCx,
+            placementTargetCy,
+            ballScale,
+          )[0]
+          if (transformedCutShape) ballCutPolys.push(transformedCutShape.getPoints())
+        }
       }
 
-      // Silhouette: take the largest-area paint layer from ballLayers and
-      // use *that* as the base. In practice this is the darkest/black
-      // layer, which already covers the full ball. Fall back to unioning
-      // every color if we can't pick one.
-      const silhouetteColor = ballLayers[0]?.svgColor ?? ballLayers[0]?.color
-      if (silhouetteColor) {
-        const match = ballShapesByColor.get(silhouetteColor.toLowerCase())
-        if (match && match.length > 0) ballSilhouette.push(...match)
-      }
       if (ballSilhouette.length === 0) {
         for (const arr of Array.from(ballShapesByColor.values())) ballSilhouette.push(...arr)
       }
@@ -714,6 +793,7 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     accBB(yellowShapes)
     accBB(redShapes)
     accBB(reflectionShapes)
+    if (fullBB.minX === Infinity) accBB(ballSilhouette)
 
     return {
       yellowShapes,
@@ -721,6 +801,7 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
       reflectionShapes,
       ballShapesByColor,
       ballSilhouette,
+      ballCutPolys,
       bounds: fullBB,
     }
   }, [
@@ -734,7 +815,6 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     config.reflectionOffsetY,
     config.midSpriteMode,
     config.textLetterSpacing,
-    config.midSpriteCutMargin,
     config.centerOutwardTaper,
     config.centerOutwardTaperFloor,
     config.letterWidthAdjustments,
@@ -743,6 +823,7 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     config.letterFlipSecondHalf,
     config.ballLayers,
     ballPosition,
+    replaceOsWithBalls,
   ])
 
   // Build meshes. The base is a stroke-expanded union of all text + ball
@@ -751,7 +832,15 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
   const meshes = useMemo(() => {
     if (!layout) return null
     const out: THREE.Mesh[] = []
-    const { yellowShapes, redShapes, reflectionShapes, ballSilhouette, ballShapesByColor, bounds } = layout
+    const {
+      yellowShapes,
+      redShapes,
+      reflectionShapes,
+      ballSilhouette,
+      ballShapesByColor,
+      ballCutPolys,
+      bounds,
+    } = layout
 
     // Base: stroke-expanded union of every filled shape in the sign,
     // including the mirrored reflection so the red backing extends
@@ -772,34 +861,27 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     // inflated by midSpriteCutMargin. This is used to polygon-carve
     // the text paint (via Clipper) rather than mesh-CSG, which
     // produced unstable results on complex letter outlines (e.g. M).
-    let cutPoly2D: THREE.Vector2[] | null = null
-    const allBallShapes: THREE.Shape[] = []
-    for (const arr of Array.from(ballShapesByColor.values())) allBallShapes.push(...arr)
-    if (allBallShapes.length > 0) {
-      let outermost = allBallShapes[0]!
-      let bestArea = Math.abs(THREE.ShapeUtils.area(outermost.getPoints()))
-      for (const s of allBallShapes) {
-        const a = Math.abs(THREE.ShapeUtils.area(s.getPoints()))
-        if (a > bestArea) { bestArea = a; outermost = s }
-      }
-      const outerPts = outermost.getPoints()
-      if (outerPts.length > 0) {
-        let inflated: THREE.Shape = new THREE.Shape(outerPts)
+    const cutPolys2D = ballCutPolys
+      .map((cutPoly) => {
+        if (cutPoly.length === 0) return null
+        let inflated: THREE.Shape = new THREE.Shape(cutPoly)
         const cutMargin = config.midSpriteCutMargin ?? 0
         if (cutMargin > 0) {
           const expanded = expandShapes([inflated], cutMargin)
           if (expanded.length > 0) inflated = new THREE.Shape(expanded[0]!.getPoints())
         }
-        cutPoly2D = inflated.getPoints()
-      }
-    }
+        return inflated.getPoints()
+      })
+      .filter((cutPoly): cutPoly is THREE.Vector2[] => Boolean(cutPoly && cutPoly.length > 0))
 
     // 2D polygon-carve the text paint shapes against the cut polygon.
     // Preserves existing letter counters (holes stay intact) and
     // leaves the base showing through the carved region as a visible
     // ring between the sprite and the surrounding letters.
-    const yellowCarved = cutPoly2D ? carveShapesWithPolygon(yellowShapes, cutPoly2D) : yellowShapes
-    const redCarved = cutPoly2D ? carveShapesWithPolygon(redShapes, cutPoly2D) : redShapes
+    const carveWithBalls = (shapes: THREE.Shape[]) =>
+      cutPolys2D.reduce((current, cutPoly) => carveShapesWithPolygon(current, cutPoly), shapes)
+    const yellowCarved = cutPolys2D.length > 0 ? carveWithBalls(yellowShapes) : yellowShapes
+    const redCarved = cutPolys2D.length > 0 ? carveWithBalls(redShapes) : redShapes
 
     // Yellow paint layer (first half of text)
     if (config.firstHalfLayer) {
@@ -838,7 +920,7 @@ export function DragonballSignScene({ text, config, ballPosition }: DragonballSi
     // (cut geometry no longer needed — 2D polygon carve replaces mesh CSG)
 
     return out
-  }, [layout, config.baseLayer, config.firstHalfLayer, config.secondHalfLayer, config.reflectionLayer, config.ballLayers, config.midSpriteCutMargin, config.midSpriteMode])
+  }, [layout, config.baseLayer, config.firstHalfLayer, config.secondHalfLayer, config.reflectionLayer, config.ballLayers, config.midSpriteCutMargin])
 
   // Dispose meshes when they change (stale ones would leak GPU memory)
   useEffect(() => {

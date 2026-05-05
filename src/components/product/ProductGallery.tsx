@@ -9,8 +9,10 @@ import { cn } from '@/lib/utils/cn'
 import { AddToCartButton } from '@/components/product/AddToCartButton'
 import { Preview3DLoadingIndicator } from '@/components/product/preview3d/LoadingSpinner'
 import { BallPositionPicker } from '@/components/product/preview3d/BallPositionPicker'
+import { DragonBallOReplacementToggle } from '@/components/product/preview3d/DragonBallOReplacementToggle'
 import { Lightbox2DPreview } from '@/components/product/preview2d/Lightbox2DPreview'
 import type { PreviewConfig } from '@/lib/preview/types'
+import { hasDragonBallOReplacement } from '@/lib/preview/dragonBallOReplacement'
 import { getPreviewDisplayText } from '@/lib/preview/textTransform'
 import { MAX_PERSONALIZATION_LENGTH } from '@/lib/utils/constants'
 
@@ -59,6 +61,10 @@ interface ProductGalleryProps {
   ballPosition?: number
   /** Ball-position picker change handler. Only consumed on dragonball-sign. */
   onBallPositionChange?: (value: number) => void
+  /** Replace every O in Dragon Ball names with a Dragon Ball sprite. */
+  replaceOsWithBalls?: boolean
+  /** Toggle handler for O replacement. Only consumed on dragonball-sign. */
+  onReplaceOsWithBallsChange?: (value: boolean) => void
   /** Universe accent color for the gallery card glow / 3D pill / active thumb ring. */
   themeColor?: string
   /** Start on the live preview / 3D slide instead of the first product photo. */
@@ -92,6 +98,8 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
       onVariantSelect,
       ballPosition,
       onBallPositionChange,
+      replaceOsWithBalls,
+      onReplaceOsWithBallsChange,
       themeColor = '#00f5ff',
       initialPreviewMode = false,
       previewSelector,
@@ -121,6 +129,13 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
       () => (previewConfig ? getPreviewDisplayText(previewText, previewConfig, '') : (previewText ?? '')),
       [previewText, previewConfig]
     )
+    const canReplaceOsWithBalls = Boolean(
+      isDragonballSign
+      && previewConfig?.svg === '/svgs/preview/dball.svg'
+      && onReplaceOsWithBallsChange
+      && hasDragonBallOReplacement(normalizedPreviewText)
+    )
+    const replaceOsWithBallsActive = Boolean(canReplaceOsWithBalls && replaceOsWithBalls)
     const previewCanvasText = useMemo(
       () => {
         if (!previewConfig) return 'Name'
@@ -321,7 +336,8 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                           config={previewConfig}
                           text={previewCanvasText}
                           selectedVariantName={selectedVariantName}
-                          ballPosition={isDragonballSign ? ballPosition : undefined}
+                          ballPosition={isDragonballSign && !replaceOsWithBallsActive ? ballPosition : undefined}
+                          replaceOsWithBalls={replaceOsWithBallsActive}
                         />
                       </Suspense>
                     )}
@@ -339,7 +355,13 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                       {/* Dragon Ball position picker — a row of clickable dots
                           interleaved with the typed letters. Only shows up on
                           the Dragon Ball sign preview. */}
-                      {isDragonballSign && onBallPositionChange && typeof ballPosition === 'number' && normalizedPreviewText && (
+                      {canReplaceOsWithBalls && onReplaceOsWithBallsChange && (
+                        <DragonBallOReplacementToggle
+                          checked={replaceOsWithBallsActive}
+                          onChange={onReplaceOsWithBallsChange}
+                        />
+                      )}
+                      {isDragonballSign && !replaceOsWithBallsActive && onBallPositionChange && typeof ballPosition === 'number' && normalizedPreviewText && (
                         <BallPositionPicker
                           text={normalizedPreviewText}
                           value={ballPosition}

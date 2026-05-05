@@ -354,6 +354,10 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
     }
     const heightCap = maxHeight ? maxHeight * heightRatio : Infinity
 
+    if (config.textFixedFontSize) {
+      return Math.min(baseFontSize, heightCap)
+    }
+
     if (config.textShrinkToFit) {
       return Math.min(heightCap, Math.min(baseFontSize * 5, scaled))
     }
@@ -380,7 +384,35 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
       heightCap,
       Math.max(sizeFloor, Math.min(baseFontSize * 5, scaled)),
     )
-  }, [font, displayText, config.textFontSize, config.textLayers, config.textMaxWidthRatio, config.textMaxHeightRatio, config.textMaxHeightRatioByLength, config.textShrinkAfter, config.textShrinkFloorRatio, config.textShrinkFloorByLength, config.textShrinkToFit, activeNameplateBox, svgBounds.width, effectiveLetterSpacing])
+  }, [font, displayText, config.textFontSize, config.textLayers, config.textMaxWidthRatio, config.textMaxHeightRatio, config.textMaxHeightRatioByLength, config.textFixedFontSize, config.textShrinkAfter, config.textShrinkFloorRatio, config.textShrinkFloorByLength, config.textShrinkToFit, activeNameplateBox, svgBounds.width, effectiveLetterSpacing])
+
+  const textHorizontalScale = useMemo(() => {
+    if (!config.textSqueezeToFit || !font || !config.textLayers) return 1
+
+    const targetRatio = config.textMaxWidthRatio ?? 0.95
+    const referenceWidth = activeNameplateBox?.width ?? svgBounds.width
+    const targetWidth = referenceWidth * targetRatio
+    const naturalWidth = font.getAdvanceWidth(displayText, effectiveFontSize) as number
+    if (!naturalWidth || naturalWidth <= 0) return 1
+
+    const gapCount = Math.max(0, displayText.length - 1)
+    const textWidth = naturalWidth + gapCount * effectiveFontSize * effectiveLetterSpacing
+    if (textWidth <= targetWidth) return 1
+
+    const minScale = config.textMinHorizontalScale ?? 0.7
+    return Math.max(minScale, targetWidth / textWidth)
+  }, [
+    font,
+    displayText,
+    config.textSqueezeToFit,
+    config.textLayers,
+    config.textMaxWidthRatio,
+    config.textMinHorizontalScale,
+    activeNameplateBox,
+    svgBounds.width,
+    effectiveFontSize,
+    effectiveLetterSpacing,
+  ])
 
   // Compute text shapes ONCE using per-character contour classification.
   // Shared between textSubtractGeometry and ExtrudedTextLayer to avoid
@@ -645,9 +677,11 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
       steps: 1,
     })
 
-    geo.translate(-textCenterX + svgCenter.x, -textCenterY + svgCenter.y, -DEPTH_SCALE)
+    geo.translate(-textCenterX, -textCenterY, -DEPTH_SCALE)
+    geo.scale(textHorizontalScale, 1, 1)
+    geo.translate(svgCenter.x, svgCenter.y, 0)
     return geo
-  }, [textShapes, textCenterBounds, config.textLayers, config.layers, svgCenter])
+  }, [textShapes, textCenterBounds, config.textLayers, config.layers, svgCenter, textHorizontalScale])
 
   // CSG subtraction geometry built from every `mode: 'cut'` layer.
   // Unlike the `shape.holes.push()` fallback (which is fragile when SVG
@@ -869,7 +903,7 @@ export function SvgExtrusionScene({ config, svgPath, text, selectedVariantName, 
             return (
               <group
                 position={[localX, localY, 0.02]}
-                scale={[1, -1, 1]}
+                scale={[textHorizontalScale, -1, 1]}
               >
                 {config.textLayers.map((layer, index) => (
                   <ExtrudedTextLayer

@@ -47,7 +47,6 @@ function transformCmds(cmds: Cmd[], fn: (x: number, y: number) => [number, numbe
   })
 }
 
-/** Convert opentype path commands to nested THREE.Shape[] (with holes). */
 function cmdsToShapes(cmds: Cmd[]): THREE.Shape[] {
   if (cmds.length === 0) return []
   const contours: Cmd[][] = []
@@ -95,7 +94,7 @@ function cmdsToShapes(cmds: Cmd[]): THREE.Shape[] {
   data.sort((a, b) => b.area - a.area)
   const depth = data.map(() => 0)
   const parents = data.map(() => -1)
-  const TOL = 5
+  const tolerance = 5
   for (let i = 1; i < data.length; i++) {
     const tp = data[i]!.points[0]
     if (!tp) continue
@@ -103,10 +102,10 @@ function cmdsToShapes(cmds: Cmd[]): THREE.Shape[] {
       const cj = data[j]!
       const ci = data[i]!
       const inBox =
-        ci.bounds.minX >= cj.bounds.minX - TOL &&
-        ci.bounds.maxX <= cj.bounds.maxX + TOL &&
-        ci.bounds.minY >= cj.bounds.minY - TOL &&
-        ci.bounds.maxY <= cj.bounds.maxY + TOL
+        ci.bounds.minX >= cj.bounds.minX - tolerance &&
+        ci.bounds.maxX <= cj.bounds.maxX + tolerance &&
+        ci.bounds.minY >= cj.bounds.minY - tolerance &&
+        ci.bounds.maxY <= cj.bounds.maxY + tolerance
       if (!inBox) continue
       let inside = false
       const poly = cj.points
@@ -126,6 +125,7 @@ function cmdsToShapes(cmds: Cmd[]): THREE.Shape[] {
       }
     }
   }
+
   const shapes: THREE.Shape[] = []
   const byIdx = new Map<number, THREE.Shape>()
   for (let i = 0; i < data.length; i++) {
@@ -295,7 +295,7 @@ export function BleachSignScene({ text, config }: BleachSignSceneProps) {
     if (!font || !svgs.left || !svgs.expander || !svgs.middle || !svgs.right) return null
 
     const fontSize = config.textFontSize ?? DEFAULT_FONT_SIZE
-    // Build text shapes — one per letter, advancing by glyph width.
+    // Build text shapes for the full extruded stroke stack.
     const textShapes: THREE.Shape[] = []
     let cursorX = 0
     for (let i = 0; i < displayText.length; i++) {
@@ -321,7 +321,7 @@ export function BleachSignScene({ text, config }: BleachSignSceneProps) {
       const offsetX = cursorX - mnx
       const transformed = transformCmds(cmds, (x, y) => [x + offsetX, y])
       textShapes.push(...cmdsToShapes(transformed))
-      cursorX = mxx + offsetX + fontSize * (config.textLetterSpacing ?? 0)
+      cursorX += (mxx - mnx) + fontSize * (config.textLetterSpacing ?? 0)
     }
     const textWidth = cursorX
 
@@ -440,17 +440,15 @@ export function BleachSignScene({ text, config }: BleachSignSceneProps) {
       }
     }
 
-    // Position text inside the frame, centred horizontally between the
-    // two expanders' inner edges.
-    const textCx = (expanderLX + expanderRX + leftExpW + rightExpW * 0 + middleW) / 2
-    // Simpler: centre between expander L start and expander R end.
+    // Position the text inside the frame, centred between the two expanders.
     const textCenterX = (expanderLX + expanderRX + rightExpW) / 2
-    const textTranslateX = textCenterX - textWidth / 2
     // Centre text vertically on its own bbox first, then nudge with a
     // config-driven offset (textOffsetY in font-size units, negative
     // pushes the text upward — matches the legacy layout where the
     // name sits in the upper half above the horizontal stripes).
-    let textMinY = Infinity, textMaxY = -Infinity
+    const textOffsetY = (config.textOffsetY ?? -0.6) * fontSize
+    let textMinY = Infinity,
+      textMaxY = -Infinity
     for (const shape of textShapes) {
       for (const p of shape.getPoints()) {
         if (p.y < textMinY) textMinY = p.y
@@ -458,7 +456,7 @@ export function BleachSignScene({ text, config }: BleachSignSceneProps) {
       }
     }
     const textCY = textMinY === Infinity ? 0 : (textMinY + textMaxY) / 2
-    const textOffsetY = (config.textOffsetY ?? -0.6) * fontSize
+    const textTranslateX = textCenterX - textWidth / 2
     const textTranslateY = -textCY + textOffsetY
     const positionedText = textShapes.map((shape) => {
       const outer = shape.getPoints(24).map((p) => new THREE.Vector2(p.x + textTranslateX, p.y + textTranslateY))
@@ -469,8 +467,6 @@ export function BleachSignScene({ text, config }: BleachSignSceneProps) {
       }
       return s
     })
-    void textCx
-
     // Bbox for centring the whole sign in the camera.
     const allBB = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity }
     const accBB = (shapes: THREE.Shape[]) => {
@@ -527,8 +523,6 @@ export function BleachSignScene({ text, config }: BleachSignSceneProps) {
       }
     }
 
-    // Text layers — stroke stack: blue (widest stroke), white (narrower
-    // stroke), red (fill, no stroke). Mirrors the legacy 2D draw order.
     if (config.textLayers) {
       for (const layer of config.textLayers) {
         const m = extrudedMesh(textShapes, layer, DEPTH_SCALE)
@@ -545,16 +539,21 @@ export function BleachSignScene({ text, config }: BleachSignSceneProps) {
   useEffect(() => {
     return () => {
       if (!meshes) return
+      const disposeMaterial = (mat: THREE.Material) => {
+        const mapped = mat as THREE.Material & { map?: THREE.Texture | null }
+        mapped.map?.dispose()
+        mat.dispose()
+      }
       for (const m of meshes) {
         m.geometry.dispose()
-        if (Array.isArray(m.material)) m.material.forEach((mat) => mat.dispose())
-        else m.material.dispose()
+        if (Array.isArray(m.material)) m.material.forEach(disposeMaterial)
+        else disposeMaterial(m.material)
       }
     }
   }, [meshes])
 
   const baseScale = config.scale ?? 1
-  // Shrink slightly with longer names so the canvas isn't overrun.
+  // Shrink slightly with longer names so the preview stays in frame.
   const lengthScale = Math.max(0.6, 1 - Math.max(0, displayText.length - 6) * 0.04)
   const scale = baseScale * lengthScale
 

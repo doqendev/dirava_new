@@ -21,51 +21,16 @@ interface ExtrudedTextLayerProps {
   centerBounds?: { minX: number; minY: number; maxX: number; maxY: number } | null
 }
 
-/** Shrink a contour toward its centroid by a given amount */
-function shrinkContour(points: THREE.Vector2[], amount: number): THREE.Vector2[] {
-  let cx = 0, cy = 0
-  for (const p of points) { cx += p.x; cy += p.y }
-  cx /= points.length
-  cy /= points.length
-
-  return points.map(p => {
-    const dx = p.x - cx
-    const dy = p.y - cy
-    const dist = Math.sqrt(dx * dx + dy * dy)
-    if (dist === 0) return p.clone()
-    const scale = Math.max(0, (dist - amount) / dist)
-    return new THREE.Vector2(cx + dx * scale, cy + dy * scale)
-  })
-}
-
 export function ExtrudedTextLayer({ shapes, layer, depthScale, lightOn = true, centerBounds = null }: ExtrudedTextLayerProps) {
   const geometry = useMemo(() => {
     if (shapes.length === 0) return null
 
-    // If strokeWidth is set, expand shapes then manually re-add shrunk holes
-    let finalShapes: THREE.Shape[]
-    if (layer.strokeWidth) {
-      const solidShapes = shapes
-        .map(s => { const pts = s.getPoints(); return pts.length > 0 ? new THREE.Shape(pts) : null })
-        .filter((s): s is THREE.Shape => s !== null)
-      if (solidShapes.length === 0) return null
-      const expanded = expandShapes(solidShapes, layer.strokeWidth)
-      // Re-add shrunk holes from original shapes after expansion
-      if (!layer.stripHoles) {
-        for (let i = 0; i < expanded.length && i < shapes.length; i++) {
-          const src = shapes[i]
-          const dst = expanded[i]
-          if (!src || !dst) continue
-          for (const hole of src.holes) {
-            const shrunk = shrinkContour(hole.getPoints(), layer.strokeWidth)
-            dst.holes.push(new THREE.Path(shrunk))
-          }
-        }
-      }
-      finalShapes = expanded
-    } else {
-      finalShapes = shapes
-    }
+    const sourceShapes = layer.stripHoles
+      ? shapes.map((shape) => new THREE.Shape(shape.getPoints()))
+      : shapes
+    const finalShapes = layer.strokeWidth
+      ? expandShapes(sourceShapes, layer.strokeWidth, layer.strokeJoinType ?? 'round')
+      : sourceShapes
 
     if (finalShapes.length === 0) return null
 
@@ -96,7 +61,7 @@ export function ExtrudedTextLayer({ shapes, layer, depthScale, lightOn = true, c
 
     geo.computeVertexNormals()
     return geo
-  }, [shapes, layer.depth, layer.strokeWidth, layer.stripHoles, depthScale, centerBounds])
+  }, [shapes, layer.depth, layer.strokeWidth, layer.strokeJoinType, layer.stripHoles, depthScale, centerBounds])
 
   const material = useMemo(() => {
     const baseIntensity = layer.emissiveIntensity ?? 0

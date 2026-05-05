@@ -26,6 +26,199 @@ const INTRO_END_POSITION: [number, number, number] = [0, 0, 0]
 const INTRO_START_SCALE_MULTIPLIER = 1
 const INTRO_END_SCALE_MULTIPLIER = 1
 const PRESENTATION_BASE_ROTATION: [number, number, number] = [0, 0, 0]
+const CURVE_SAMPLE_STEPS = 18
+const PAIR_GAP_SAMPLE_STEPS = 96
+const PAIR_GAP_PERCENTILE = 0.1
+const AUTO_PAIR_MIN_OVERLAP = -0.08
+const AUTO_PAIR_MAX_OVERLAP = 0.22
+
+type Cmd = { type: string; x?: number; y?: number; x1?: number; y1?: number; x2?: number; y2?: number }
+type PathPoint = { x: number; y: number }
+
+function lerp(a: number, b: number, t: number): number {
+  return a + (b - a) * t
+}
+
+function quadraticAt(a: number, b: number, c: number, t: number): number {
+  const mt = 1 - t
+  return mt * mt * a + 2 * mt * t * b + t * t * c
+}
+
+function cubicAt(a: number, b: number, c: number, d: number, t: number): number {
+  const mt = 1 - t
+  return mt * mt * mt * a + 3 * mt * mt * t * b + 3 * mt * t * t * c + t * t * t * d
+}
+
+function getContoursFromCommands(commands: Cmd[]): PathPoint[][] {
+  const contours: PathPoint[][] = []
+  let currentContour: PathPoint[] = []
+  let currentPoint: PathPoint | null = null
+
+  const addPoint = (x: number, y: number) => {
+    const point = { x, y }
+    currentContour.push(point)
+    currentPoint = point
+  }
+
+  for (const cmd of commands) {
+    if (cmd.type === 'M' && cmd.x !== undefined && cmd.y !== undefined) {
+      if (currentContour.length > 0) contours.push(currentContour)
+      currentContour = []
+      addPoint(cmd.x, cmd.y)
+      continue
+    }
+
+    if (cmd.type === 'L' && cmd.x !== undefined && cmd.y !== undefined) {
+      addPoint(cmd.x, cmd.y)
+      continue
+    }
+
+    if (cmd.type === 'Q' && currentPoint && cmd.x1 !== undefined && cmd.y1 !== undefined && cmd.x !== undefined && cmd.y !== undefined) {
+      const start = currentPoint as PathPoint
+      for (let i = 1; i <= CURVE_SAMPLE_STEPS; i++) {
+        const t = i / CURVE_SAMPLE_STEPS
+        addPoint(
+          quadraticAt(start.x, cmd.x1, cmd.x, t),
+          quadraticAt(start.y, cmd.y1, cmd.y, t),
+        )
+      }
+      continue
+    }
+
+    if (cmd.type === 'C' && currentPoint && cmd.x1 !== undefined && cmd.y1 !== undefined && cmd.x2 !== undefined && cmd.y2 !== undefined && cmd.x !== undefined && cmd.y !== undefined) {
+      const start = currentPoint as PathPoint
+      for (let i = 1; i <= CURVE_SAMPLE_STEPS; i++) {
+        const t = i / CURVE_SAMPLE_STEPS
+        addPoint(
+          cubicAt(start.x, cmd.x1, cmd.x2, cmd.x, t),
+          cubicAt(start.y, cmd.y1, cmd.y2, cmd.y, t),
+        )
+      }
+    }
+  }
+
+  if (currentContour.length > 0) contours.push(currentContour)
+  return contours
+}
+
+function getContoursBounds(contours: PathPoint[][]): { minX: number; minY: number; maxX: number; maxY: number } | null {
+  let minX = Infinity
+  let minY = Infinity
+  let maxX = -Infinity
+  let maxY = -Infinity
+
+  for (const contour of contours) {
+    for (const point of contour) {
+      minX = Math.min(minX, point.x)
+      minY = Math.min(minY, point.y)
+      maxX = Math.max(maxX, point.x)
+      maxY = Math.max(maxY, point.y)
+    }
+  }
+
+  if (minX === Infinity || minY === Infinity || maxX === -Infinity || maxY === -Infinity) return null
+  return { minX, minY, maxX, maxY }
+}
+
+function getFilledIntervalsAtY(contours: PathPoint[][], y: number): Array<[number, number]> {
+  const intersections: number[] = []
+
+  for (const contour of contours) {
+    for (let i = 0; i < contour.length; i++) {
+      const a = contour[i]!
+      const b = contour[(i + 1) % contour.length]!
+      if ((a.y > y) !== (b.y > y)) {
+        intersections.push(lerp(a.x, b.x, (y - a.y) / (b.y - a.y)))
+      }
+    }
+  }
+
+  intersections.sort((a, b) => a - b)
+
+  const intervals: Array<[number, number]> = []
+  for (let i = 0; i + 1 < intersections.length; i += 2) {
+    intervals.push([intersections[i]!, intersections[i + 1]!])
+  }
+
+  return intervals
+}
+
+function getPairContourGap(font: any, leftChar: string, rightChar: string): number | null {
+  const leftContours = getContoursFromCommands(font.getPath(leftChar, 0, 0, FONT_SIZE).commands as Cmd[])
+  const rightContours = getContoursFromCommands(font.getPath(rightChar, 0, 0, FONT_SIZE).commands as Cmd[])
+  const leftBounds = getContoursBounds(leftContours)
+  const rightBounds = getContoursBounds(rightContours)
+  if (!leftBounds || !rightBounds) return null
+
+  const yMin = Math.max(leftBounds.minY, rightBounds.minY)
+  const yMax = Math.min(leftBounds.maxY, rightBounds.maxY)
+  if (yMax <= yMin) return null
+
+  const alignOffset = leftBounds.maxX - rightBounds.minX
+  const gaps: number[] = []
+
+  for (let i = 0; i <= PAIR_GAP_SAMPLE_STEPS; i++) {
+    const y = lerp(yMin, yMax, i / PAIR_GAP_SAMPLE_STEPS)
+    const leftIntervals = getFilledIntervalsAtY(leftContours, y)
+    const rightIntervals = getFilledIntervalsAtY(rightContours, y)
+    if (leftIntervals.length === 0 || rightIntervals.length === 0) continue
+
+    const leftRightEdge = Math.max(...leftIntervals.map(([, maxX]) => maxX))
+    const rightLeftEdge = Math.min(...rightIntervals.map(([minX]) => minX + alignOffset))
+    const gap = rightLeftEdge - leftRightEdge
+    if (Number.isFinite(gap)) gaps.push(gap)
+  }
+
+  if (gaps.length === 0) return null
+  gaps.sort((a, b) => a - b)
+  return gaps[Math.min(gaps.length - 1, Math.floor(gaps.length * PAIR_GAP_PERCENTILE))]!
+}
+
+function getConfiguredPairOverlap(
+  font: any,
+  previousChar: string,
+  char: string,
+  config: PreviewConfig,
+  autoGapCache: Map<string, number | null>,
+): number {
+  const pair = `${previousChar}${char}`
+  const pairKey = pair.toLowerCase()
+  const pairOverlap =
+    config.textCharOverlapByPair?.[pair]
+    ?? config.textCharOverlapByPair?.[pairKey]
+
+  if (pairOverlap !== undefined) return pairOverlap
+
+  const targetGap = config.textAutoGlyphGap
+  if (targetGap === undefined) return config.textCharOverlap ?? 0.1
+
+  const cacheKey = `${previousChar}\u0000${char}`
+  let contourGap = autoGapCache.get(cacheKey)
+  if (contourGap === undefined) {
+    contourGap = getPairContourGap(font, previousChar, char)
+    autoGapCache.set(cacheKey, contourGap)
+  }
+
+  if (contourGap === null) return config.textCharOverlap ?? 0.1
+  const overlap = (contourGap - targetGap) / FONT_SIZE
+  return Math.max(AUTO_PAIR_MIN_OVERLAP, Math.min(AUTO_PAIR_MAX_OVERLAP, overlap))
+}
+
+function getShapesBounds(shapes: THREE.Shape[]): { minX: number; maxX: number } | null {
+  let minX = Infinity
+  let maxX = -Infinity
+
+  for (const shape of shapes) {
+    const points = shape.getPoints(24)
+    for (const point of points) {
+      minX = Math.min(minX, point.x)
+      maxX = Math.max(maxX, point.x)
+    }
+  }
+
+  if (minX === Infinity || maxX === -Infinity) return null
+  return { minX, maxX }
+}
 
 function easeOutCubic(t: number): number {
   return 1 - Math.pow(1 - t, 3)
@@ -88,8 +281,8 @@ export function TextExtrusionScene({ text, config }: TextExtrusionSceneProps) {
   const textShapes = useMemo(() => {
     if (!font) return null
 
-    type Cmd = { type: string; x?: number; y?: number; x1?: number; y1?: number; x2?: number; y2?: number }
     const allShapes: THREE.Shape[] = []
+    const autoGapCache = new Map<string, number | null>()
     let cursorX = 0
 
     for (let ci = 0; ci < displayText.length; ci++) {
@@ -105,7 +298,14 @@ export function TextExtrusionScene({ text, config }: TextExtrusionSceneProps) {
       }
       if (minX === Infinity) continue
 
-      const offsetX = cursorX - minX
+      const previousChar = displayText[ci - 1]
+      const charOverlap = previousChar
+        ? getConfiguredPairOverlap(font, previousChar, char, config, autoGapCache)
+        : config.textCharOverlap ?? 0.1
+      const offsetX =
+        spacingMode === 'advance' || !previousChar
+          ? cursorX - minX
+          : cursorX - minX - FONT_SIZE * charOverlap
       const transformed: Cmd[] = charCmds.map(cmd => {
         const shifted: Cmd = { ...cmd }
         if (shifted.x !== undefined) shifted.x += offsetX
@@ -203,21 +403,27 @@ export function TextExtrusionScene({ text, config }: TextExtrusionSceneProps) {
         const advanceWidth = Number(font.getAdvanceWidth?.(char, FONT_SIZE)) || (maxX - minX)
         cursorX += advanceWidth + FONT_SIZE * letterSpacing
       } else {
-        // Overlap characters so actual 3D shapes touch (not just bounding boxes).
-        const charOverlap = config.textCharOverlap ?? 0.1
-        cursorX = maxX + offsetX - FONT_SIZE * charOverlap
+        cursorX = maxX + offsetX
       }
     }
 
     return allShapes.length > 0 ? allShapes : null
-  }, [font, displayText, config.textCharOverlap, spacingMode, letterSpacing])
+  }, [font, displayText, config, spacingMode, letterSpacing])
 
   const baseScale = config.scale ?? 1
+  const textBounds = useMemo(() => {
+    return textShapes ? getShapesBounds(textShapes) : null
+  }, [textShapes])
+  const textWidth = textBounds ? textBounds.maxX - textBounds.minX : 0
   // Shrink as the name gets longer so the model stays inside the canvas
   // instead of running off the edges. Up to 4 characters the scale is
   // unchanged; each additional character shaves ~6% until a floor of 55%.
   const lengthScale = Math.max(0.55, 1 - Math.max(0, displayText.length - 4) * 0.06)
-  const scale = baseScale * lengthScale
+  const widthScale =
+    config.textMaxSceneWidth && textWidth > 0
+      ? Math.min(1, config.textMaxSceneWidth / textWidth)
+      : 1
+  const scale = baseScale * Math.min(lengthScale, widthScale)
   const shouldAnimateIntro = !shouldReduceMotion && !hasPlayedIntroRef.current
   const initialScale = scale * (shouldAnimateIntro ? INTRO_START_SCALE_MULTIPLIER : INTRO_END_SCALE_MULTIPLIER)
   const initialRotation = shouldAnimateIntro ? INTRO_START_ROTATION : INTRO_END_ROTATION
@@ -282,9 +488,11 @@ export function TextExtrusionScene({ text, config }: TextExtrusionSceneProps) {
 
   // Dispose Three.js geometries/materials on unmount to prevent WebGL memory leaks
   useEffect(() => {
+    const group = groupRef.current
+
     return () => {
-      if (groupRef.current) {
-        groupRef.current.traverse((child) => {
+      if (group) {
+        group.traverse((child) => {
           if (child instanceof THREE.Mesh) {
             child.geometry?.dispose()
             if (Array.isArray(child.material)) {

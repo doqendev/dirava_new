@@ -250,6 +250,12 @@ export interface PreviewConfig {
   textMaxHeightRatioByLength?: Record<number, number>
   /** Additional overlap between letters for text-extrusion (fraction of font size, default 0.1). */
   textCharOverlap?: number
+  /** Pair-specific text-extrusion overlap overrides, keyed by adjacent characters. */
+  textCharOverlapByPair?: Record<string, number>
+  /** Target visible gap between glyph contours before the stroke layer expands them. */
+  textAutoGlyphGap?: number
+  /** Maximum final text width for text-extrusion scenes, in scene units. */
+  textMaxSceneWidth?: number
   /** Text spacing strategy for text-extrusion. `advance` uses glyph advance widths (combo-independent). */
   textSpacingMode?: 'shape-overlap' | 'advance'
   /** Extra letter spacing in font-size units when textSpacingMode is `advance` (e.g. 0.05). */
@@ -347,6 +353,16 @@ export interface PreviewConfig {
    * width would overflow those caps. This bypasses `textShrinkAfter`.
    */
   textShrinkToFit?: boolean
+  /**
+   * Keep the configured font size instead of shrinking long names. Overflow
+   * is handled by adaptive letter spacing and optional horizontal squeezing,
+   * so text height stays stable while width changes.
+   */
+  textFixedFontSize?: boolean
+  /** Horizontally scale the rendered text down when spacing alone cannot fit. */
+  textSqueezeToFit?: boolean
+  /** Lower clamp for horizontal squeeze (default 0.7). */
+  textMinHorizontalScale?: number
   /**
    * Lower clamp for the adaptive letter spacing (default -0.1). Raise
    * toward 0 to prevent letters from overlapping when the name is long
