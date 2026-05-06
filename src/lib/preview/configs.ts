@@ -3582,6 +3582,25 @@ previewConfigs['dragon-ball-custom-sign'] = {
   background: '#0a0a12',
 }
 
+const dragonBallSignBaseDepth = previewConfigs['dragon-ball-custom-sign'].baseLayer!.depth
+const dragonBallKeychainBaseDepth = 3
+const dragonBallKeychainOffsetDelta = dragonBallKeychainBaseDepth - dragonBallSignBaseDepth
+const shiftDragonBallLayerOffsetZ = (layer: LayerConfig): LayerConfig => ({
+  ...layer,
+  ...(layer.offsetZ === undefined ? {} : { offsetZ: layer.offsetZ + dragonBallKeychainOffsetDelta }),
+})
+
+previewConfigs['dragon-ball-custom-keychain'] = {
+  ...previewConfigs['dragon-ball-custom-sign'],
+  baseLayer: {
+    ...previewConfigs['dragon-ball-custom-sign'].baseLayer!,
+    depth: dragonBallKeychainBaseDepth,
+  },
+  firstHalfLayer: shiftDragonBallLayerOffsetZ(previewConfigs['dragon-ball-custom-sign'].firstHalfLayer!),
+  secondHalfLayer: shiftDragonBallLayerOffsetZ(previewConfigs['dragon-ball-custom-sign'].secondHalfLayer!),
+  ballLayers: previewConfigs['dragon-ball-custom-sign'].ballLayers!.map(shiftDragonBallLayerOffsetZ),
+}
+
 // Hunter x Hunter kerning table — lifted from the legacy 2D canvas
 // preview (snippets/hxh.liquid), expressed in pixels for a 200px font.
 // Divide by 200 so each value ends up as a fraction of font size, which
@@ -4103,8 +4122,6 @@ const previewHandleAliases: Record<string, string> = {
   // variants cover fewer characters than the sign, but the preview
   // mapping is kept complete so newly-added variants auto-resolve.
   'one-piece-custom-keychain': 'one-piece-custom-sign',
-  // Dragon Ball keychain reuses the sign's preview wholesale.
-  'dragon-ball-custom-keychain': 'dragon-ball-custom-sign',
 }
 
 function resolvePreviewHandle(handle: string): string {
