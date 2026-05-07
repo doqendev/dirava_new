@@ -1183,7 +1183,7 @@
     "necessaryCookies": "mizoke-locale (idioma), mizoke-currency (moeda), mizoke-cookie-consent (escolhas de consentimento), mizoke-session (sessão), Shopify Cart ID (carrinho)",
     "analytics": "Analíticos",
     "analyticsDesc": "Ajudam-nos a compreender como os visitantes interagem com o nosso site.",
-    "analyticsCookies": "Vercel Analytics (visualizações, desempenho), Vercel Speed Insights (Core Web Vitals), Sentry (rastreio de erros, replay de sessão)",
+    "analyticsCookies": "Sentry rastreio de erros e replay de sessão",
     "marketing": "Marketing",
     "marketingDesc": "Utilizados para apresentar anúncios relevantes e acompanhar o desempenho das campanhas.",
     "marketingCookies": "Pixels de marketing Shopify (rastreio de conversões)",
