@@ -241,25 +241,22 @@ test.describe('Product Detail Page', () => {
     }
   })
 
-  test('stock indicator shows availability', async ({ page }) => {
+  test('personalized product does not show stock messaging', async ({ page }) => {
     await page.goto(PRODUCT_URL)
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(1000)
 
-    // Stock status
+    const personalizationInput = page.getByRole('textbox', { name: /your name on the sign/i })
+    await expect(personalizationInput.first()).toBeVisible()
+
+    // Made-to-order products should not expose Shopify quantity state.
     const inStock = page.getByText('In Stock', { exact: true })
     const outOfStock = page.getByText('Out of Stock', { exact: true })
     const lowStock = page.getByText(/only \d+ left/i)
 
-    const inStockCount = await inStock.count()
-    const outOfStockCount = await outOfStock.count()
-    const lowStockCount = await lowStock.count()
-
-    console.log('Stock indicators - In:', inStockCount, 'Out:', outOfStockCount, 'Low:', lowStockCount)
-
-    // At least one should be present
-    const hasStockIndicator = inStockCount > 0 || outOfStockCount > 0 || lowStockCount > 0
-    expect(hasStockIndicator).toBeTruthy()
+    await expect(inStock).toHaveCount(0)
+    await expect(outOfStock).toHaveCount(0)
+    await expect(lowStock).toHaveCount(0)
   })
 
   test('product page works for different products', async ({ page }) => {

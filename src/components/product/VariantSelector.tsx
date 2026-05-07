@@ -33,6 +33,8 @@ interface VariantSelectorProps {
   showImageLabels?: boolean
   /** On mobile, render image options as a single horizontal rail. */
   mobileImageRail?: boolean
+  /** Personalized made-to-order products should not gate options by Shopify stock flags. */
+  ignoreAvailability?: boolean
 }
 
 export function VariantSelector({
@@ -46,9 +48,12 @@ export function VariantSelector({
   themeColor,
   showImageLabels = false,
   mobileImageRail = false,
+  ignoreAvailability = false,
 }: VariantSelectorProps) {
   // Check if a specific option value is available
   const isOptionAvailable = (optionName: string, optionValue: string) => {
+    if (ignoreAvailability) return true
+
     // Create a hypothetical selection with this option
     const hypotheticalSelection = {
       ...selectedOptions,

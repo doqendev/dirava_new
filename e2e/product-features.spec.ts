@@ -112,25 +112,22 @@ test.describe('Product Page Features', () => {
     await expect(page.locator('button[title="Copy link"], button[aria-label="Copy link"]')).toBeVisible()
   })
 
-  test('Stock indicator is visible', async ({ page }) => {
+  test('personalized product does not show stock messaging', async ({ page }) => {
     await page.goto(PRODUCT_URL)
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(1000)
 
-    // Stock indicator should be visible with one of the status texts
+    const personalizationInput = page.getByRole('textbox', { name: /your name on the sign/i })
+    await expect(personalizationInput.first()).toBeVisible()
+
+    // Made-to-order products should not expose Shopify quantity state.
     const inStock = page.getByText('In Stock', { exact: true })
     const outOfStock = page.getByText('Out of Stock', { exact: true })
     const lowStock = page.getByText(/Only \d+ left/)
 
-    const inStockCount = await inStock.count()
-    const outOfStockCount = await outOfStock.count()
-    const lowStockCount = await lowStock.count()
-
-    console.log('In Stock:', inStockCount, 'Out of Stock:', outOfStockCount, 'Low Stock:', lowStockCount)
-
-    // At least one should be visible
-    const hasStockIndicator = inStockCount > 0 || outOfStockCount > 0 || lowStockCount > 0
-    expect(hasStockIndicator).toBeTruthy()
+    await expect(inStock).toHaveCount(0)
+    await expect(outOfStock).toHaveCount(0)
+    await expect(lowStock).toHaveCount(0)
   })
 
   test('Recently Viewed persists across page navigation', async ({ page }) => {

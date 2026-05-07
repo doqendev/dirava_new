@@ -266,7 +266,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       '@type': 'Offer',
       price: product.priceRange.minVariantPrice.amount,
       priceCurrency: product.priceRange.minVariantPrice.currencyCode,
-      availability: product.variants.some(v => v.availableForSale)
+      availability: product.personalization || product.variants.some((v) => v.availableForSale)
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',
       url: `${SITE_URL}/worlds/${universe}/${product.handle}`,

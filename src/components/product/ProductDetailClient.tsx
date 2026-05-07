@@ -143,13 +143,13 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
     const variantFromUrl = variantParam
       ? product.variants.find((v) => v.title === variantParam)
         ?? product.variants.find((v) =>
-          v.availableForSale &&
+          (product.personalization || v.availableForSale) &&
           v.selectedOptions.some((opt) => opt.value === variantParam)
         )
       : null
 
     const target = variantFromUrl
-      || product.variants.find((v) => v.availableForSale)
+      || product.variants.find((v) => product.personalization || v.availableForSale)
       || product.variants[0]
 
     if (target) {
@@ -321,6 +321,9 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
       )
     )
   }, [product.variants, selectedOptions])
+  const selectedVariantPurchasable = Boolean(
+    selectedVariant && (product.personalization || selectedVariant.availableForSale)
+  )
 
   // Compute initial gallery image index from URL variant's image
   const initialImageIndex = useMemo(() => {
@@ -466,6 +469,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                     imageOptionName={variantImageOptionName}
                     themeColor={themeColor}
                     mode="preview"
+                    ignoreAvailability={product.personalization}
                   />
                   {hasLivePreviewBuilder && (
                   <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-stretch lg:hidden">
@@ -504,7 +508,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                       quantity={1}
                       unitPrice={selectedVariant ? parseFloat(selectedVariant.price.amount) : undefined}
                       currency={selectedVariant?.price.currencyCode}
-                      available={selectedVariant?.availableForSale ?? false}
+                      available={selectedVariantPurchasable}
                       requiresPersonalization={product.personalization}
                       personalizationValue={personalizationName}
                       onPersonalizationError={handlePreviewPersonalizationError}
@@ -522,7 +526,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 quantity,
                 unitPrice: selectedVariant ? parseFloat(selectedVariant.price.amount) : undefined,
                 currency: selectedVariant?.price.currencyCode,
-                available: selectedVariant?.availableForSale ?? false,
+                available: selectedVariantPurchasable,
                 requiresPersonalization: product.personalization,
                 personalizationValue: personalizationName,
                 onPersonalizationError: handlePersonalizationError,
@@ -623,6 +627,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                     variantImages={variantImages}
                     imageOptionName={variantImageOptionName}
                     themeColor={themeColor}
+                    ignoreAvailability={product.personalization}
                   />
                 ) : (
                   <VariantSelector
@@ -631,13 +636,14 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                     selectedOptions={selectedOptions}
                     onOptionChange={handleOptionChange}
                     themeColor={themeColor}
+                    ignoreAvailability={product.personalization}
                   />
                 )}
               </div>
             )}
 
-            {/* Real Shopify availability, including made-to-order products. */}
-            {selectedVariant && (
+            {/* Shopify stock is only meaningful for stocked products. */}
+            {selectedVariant && !product.personalization && (
               <StockIndicator
                 availableForSale={selectedVariant.availableForSale}
                 quantityAvailable={selectedVariant.quantityAvailable}
@@ -672,7 +678,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                       quantity={1}
                       unitPrice={selectedVariant ? parseFloat(selectedVariant.price.amount) : undefined}
                       currency={selectedVariant?.price.currencyCode}
-                      available={selectedVariant?.availableForSale ?? false}
+                      available={selectedVariantPurchasable}
                       requiresPersonalization={product.personalization}
                       personalizationValue={personalizationName}
                       onPersonalizationError={handlePersonalizationError}
@@ -693,7 +699,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   quantity={quantity}
                   unitPrice={selectedVariant ? parseFloat(selectedVariant.price.amount) : undefined}
                   currency={selectedVariant?.price.currencyCode}
-                  available={selectedVariant?.availableForSale ?? false}
+                  available={selectedVariantPurchasable}
                   attributes={cartAttributes}
                   themeColor="#19ff7a"
                 />
@@ -912,7 +918,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
         productTitle={product.title}
         price={selectedVariant?.price || product.priceRange.minVariantPrice}
         variantId={selectedVariant?.id || ''}
-        available={selectedVariant?.availableForSale ?? false}
+        available={selectedVariantPurchasable}
         requiresPersonalization={product.personalization}
         personalizationValue={personalizationName}
         onPersonalizationError={handlePersonalizationError}

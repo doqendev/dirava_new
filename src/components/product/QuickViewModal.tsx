@@ -113,12 +113,12 @@ export function QuickViewModal() {
         const variantFromTrigger = quickViewProduct.variantName
           ? data.variants.find((v: ProductVariant) => v.title === quickViewProduct.variantName)
             ?? data.variants.find((v: ProductVariant) =>
-              v.availableForSale &&
+              (productData.personalization || v.availableForSale) &&
               v.selectedOptions.some((opt: { name: string; value: string }) => opt.value === quickViewProduct.variantName)
             )
           : null
         const target = variantFromTrigger
-          || data.variants.find((v: ProductVariant) => v.availableForSale)
+          || data.variants.find((v: ProductVariant) => productData.personalization || v.availableForSale)
           || data.variants[0]
 
         if (target) {
@@ -252,6 +252,9 @@ export function QuickViewModal() {
       )
     )
   }, [product, selectedOptions])
+  const selectedVariantPurchasable = Boolean(
+    selectedVariant && (product?.personalization || selectedVariant.availableForSale)
+  )
 
   const handleOptionChange = (name: string, value: string) => {
     setSelectedOptions((prev) => {
@@ -626,6 +629,7 @@ export function QuickViewModal() {
                             variantImages={variantImages}
                             imageOptionName={variantImageOptionName}
                             mode="preview"
+                            ignoreAvailability={product.personalization}
                           />
                         ) : (
                           <VariantSelector
@@ -633,6 +637,7 @@ export function QuickViewModal() {
                             variants={product.variants}
                             selectedOptions={selectedOptions}
                             onOptionChange={handleOptionChange}
+                            ignoreAvailability={product.personalization}
                           />
                         )
                       )}
@@ -689,7 +694,7 @@ export function QuickViewModal() {
                       )}
 
                       {/* Availability */}
-                      {selectedVariant && !selectedVariant.availableForSale && (
+                      {selectedVariant && !product.personalization && !selectedVariant.availableForSale && (
                         <p className="text-sm text-red-400">
                           {t('variantUnavailable')}
                         </p>
@@ -704,7 +709,7 @@ export function QuickViewModal() {
                               quantity={quantity}
                               unitPrice={selectedVariant ? parseFloat(selectedVariant.price.amount) : undefined}
                               currency={selectedVariant?.price.currencyCode}
-                              available={selectedVariant?.availableForSale ?? false}
+                              available={selectedVariantPurchasable}
                               requiresPersonalization={product.personalization}
                               personalizationValue={personalizationName}
                               onPersonalizationError={handlePersonalizationError}

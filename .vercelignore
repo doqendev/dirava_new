@@ -22,7 +22,7 @@ e2e/.playwright-state.json
 .omc
 outputs
 screenshots
-images
+/images
 
 *.log
 /*.png

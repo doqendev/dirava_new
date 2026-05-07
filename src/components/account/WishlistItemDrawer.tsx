@@ -85,9 +85,11 @@ export function WishlistItemDrawer({ item, isOpen, onClose }: WishlistItemDrawer
         // Set product data
         setProduct(productData)
 
-        // Set initial selected options (first available variant or saved variant)
+        // Set initial selected options (first purchasable variant or saved variant)
         const savedVariant = productData.variants.find((v) => v.id === item.variantId)
-        const firstAvailable = productData.variants.find((v) => v.availableForSale)
+        const firstAvailable = productData.variants.find(
+          (v) => productData.personalization || v.availableForSale
+        )
         const defaultVariant = savedVariant || firstAvailable || productData.variants[0]
 
         if (defaultVariant) {
@@ -120,6 +122,9 @@ export function WishlistItemDrawer({ item, isOpen, onClose }: WishlistItemDrawer
       )
     )
   }, [product, selectedOptions])
+  const selectedVariantPurchasable = Boolean(
+    selectedVariant && (product?.personalization || selectedVariant.availableForSale)
+  )
 
   const handleOptionChange = (name: string, value: string) => {
     setSelectedOptions((prev) => ({ ...prev, [name]: value }))
@@ -129,6 +134,7 @@ export function WishlistItemDrawer({ item, isOpen, onClose }: WishlistItemDrawer
 
   const handleAddToCart = async () => {
     if (!selectedVariant || !item) return
+    if (!selectedVariantPurchasable) return
 
     // Validate personalization is filled if required
     if (product?.personalization && !personalizationName.trim()) {
@@ -223,6 +229,7 @@ export function WishlistItemDrawer({ item, isOpen, onClose }: WishlistItemDrawer
               variants={product.variants}
               selectedOptions={selectedOptions}
               onOptionChange={handleOptionChange}
+              ignoreAvailability={product.personalization}
             />
           )}
 
@@ -276,10 +283,10 @@ export function WishlistItemDrawer({ item, isOpen, onClose }: WishlistItemDrawer
             className="w-full"
             onClick={handleAddToCart}
             isLoading={isAddingToCart}
-            disabled={!selectedVariant?.availableForSale}
+            disabled={!selectedVariantPurchasable}
           >
             <ShoppingCart className="w-4 h-4 mr-2" />
-            {selectedVariant?.availableForSale ? 'Add to Cart' : 'Out of Stock'}
+            {selectedVariantPurchasable ? 'Add to Cart' : 'Out of Stock'}
           </Button>
         </div>
       ) : null}

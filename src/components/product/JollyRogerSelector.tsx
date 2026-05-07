@@ -28,6 +28,7 @@ interface JollyRogerSelectorProps {
   themeColor?: string
   mode?: 'buy-box' | 'preview'
   className?: string
+  ignoreAvailability?: boolean
 }
 
 export function JollyRogerSelector({
@@ -40,6 +41,7 @@ export function JollyRogerSelector({
   themeColor,
   mode = 'buy-box',
   className,
+  ignoreAvailability = false,
 }: JollyRogerSelectorProps) {
   const t = useTranslations('product')
   const isCompact = mode === 'preview'
@@ -86,6 +88,7 @@ export function JollyRogerSelector({
           themeColor={themeColor}
           showImageLabels
           mobileImageRail
+          ignoreAvailability={ignoreAvailability}
         />
         <div className="pointer-events-none absolute inset-y-0 right-0 w-9 bg-gradient-to-l from-[#06080d] via-[#06080d]/70 to-transparent sm:hidden" />
       </div>
