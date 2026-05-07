@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { shopifyClient } from '@/lib/shopify/client'
 import { enforceSameOrigin } from '@/lib/auth/csrf'
 import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimit'
+import { readJsonBody } from '@/lib/utils/readJsonBody'
 import { CUSTOMER_RECOVER } from '@/lib/shopify/customerMutations'
 import type { CustomerUserError } from '@/types/customer'
 
@@ -26,11 +27,17 @@ export async function POST(request: Request) {
     )
   }
 
-  try {
-    const body = (await request.json()) as {
-      email?: string
-    }
+  const body = await readJsonBody<{
+    email?: string
+  }>(request)
+  if (!body) {
+    return NextResponse.json(
+      { success: true },
+      { headers: { 'Cache-Control': 'no-store' } }
+    )
+  }
 
+  try {
     const email = body.email?.trim().toLowerCase()
     if (!email) {
       return NextResponse.json(

@@ -60,6 +60,7 @@ function NewsletterForm() {
   const tErrors = useTranslations('errors')
   const [email, setEmail] = useState('')
   const [consent, setConsent] = useState(false)
+  const [website, setWebsite] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
 
@@ -89,7 +90,11 @@ function NewsletterForm() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({
+          email: email.trim(),
+          marketingConsent: consent,
+          website,
+        }),
       })
 
       const data = await response.json()
@@ -101,6 +106,7 @@ function NewsletterForm() {
       setStatus('success')
       setEmail('')
       setConsent(false)
+      setWebsite('')
 
       // Reset after 3 seconds
       setTimeout(() => setStatus('idle'), 3000)
@@ -112,6 +118,16 @@ function NewsletterForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-md">
+      <input
+        type="text"
+        name="website"
+        value={website}
+        onChange={(e) => setWebsite(e.target.value)}
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="hidden"
+      />
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1 relative">
           <input
@@ -197,7 +213,6 @@ export function Footer() {
     { label: tCommon('worlds'), href: '/worlds' },
     { label: tCommon('drops'), href: '/drops' },
     { label: tCommon('newArrivals'), href: '/new' },
-    { label: tCommon('sale'), href: '/sale' },
   ]
 
   const accountLinks = [

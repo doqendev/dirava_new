@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Star, ImagePlus, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils/cn'
@@ -8,6 +8,28 @@ import { cn } from '@/lib/utils/cn'
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_FILE_SIZE = 4 * 1024 * 1024 // 4MB
 const MAX_IMAGES = 3
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''
+
+interface TurnstileApi {
+  render: (
+    container: HTMLElement,
+    options: {
+      sitekey: string
+      theme: 'dark'
+      callback: (token: string) => void
+      'expired-callback': () => void
+      'error-callback': () => void
+    }
+  ) => string | undefined
+  reset: (widgetId?: string) => void
+  remove: (widgetId: string) => void
+}
+
+declare global {
+  interface Window {
+    turnstile?: TurnstileApi
+  }
+}
 
 interface ReviewFormProps {
   productHandle: string
@@ -21,6 +43,8 @@ export default function ReviewForm({ productHandle }: ReviewFormProps) {
   const [email, setEmail] = useState('')
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
+  const [website, setWebsite] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState('')
   const [anonymous, setAnonymous] = useState(false)
   const [images, setImages] = useState<File[]>([])
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
@@ -28,6 +52,56 @@ export default function ReviewForm({ productHandle }: ReviewFormProps) {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [error, setError] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const turnstileContainerRef = useRef<HTMLDivElement>(null)
+  const turnstileWidgetRef = useRef<string | undefined>(undefined)
+
+  useEffect(() => {
+    if (!TURNSTILE_SITE_KEY || !turnstileContainerRef.current) return
+
+    let cancelled = false
+
+    const renderTurnstile = () => {
+      if (cancelled || turnstileWidgetRef.current || !turnstileContainerRef.current || !window.turnstile) {
+        return
+      }
+
+      turnstileWidgetRef.current = window.turnstile.render(turnstileContainerRef.current, {
+        sitekey: TURNSTILE_SITE_KEY,
+        theme: 'dark',
+        callback: (token) => {
+          setTurnstileToken(token)
+          setError('')
+        },
+        'expired-callback': () => setTurnstileToken(''),
+        'error-callback': () => setTurnstileToken(''),
+      })
+    }
+
+    if (window.turnstile) {
+      renderTurnstile()
+    } else {
+      const existingScript = document.querySelector<HTMLScriptElement>(
+        'script[src^="https://challenges.cloudflare.com/turnstile/v0/api.js"]'
+      )
+      const script = existingScript || document.createElement('script')
+
+      script.addEventListener('load', renderTurnstile, { once: true })
+      if (!existingScript) {
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
+        script.async = true
+        script.defer = true
+        document.head.appendChild(script)
+      }
+    }
+
+    return () => {
+      cancelled = true
+      if (turnstileWidgetRef.current && window.turnstile) {
+        window.turnstile.remove(turnstileWidgetRef.current)
+        turnstileWidgetRef.current = undefined
+      }
+    }
+  }, [])
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -97,6 +171,11 @@ export default function ReviewForm({ productHandle }: ReviewFormProps) {
       return
     }
 
+    if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      setError(t('captchaRequired'))
+      return
+    }
+
     setIsSubmitting(true)
 
     try {
@@ -108,6 +187,8 @@ export default function ReviewForm({ productHandle }: ReviewFormProps) {
       formData.append('authorEmail', anonymous ? '' : email)
       formData.append('title', title)
       formData.append('content', content)
+      formData.append('website', website)
+      formData.append('turnstileToken', turnstileToken)
 
       for (const img of images) {
         formData.append('images', img)
@@ -134,9 +215,12 @@ export default function ReviewForm({ productHandle }: ReviewFormProps) {
       setEmail('')
       setTitle('')
       setContent('')
+      setWebsite('')
+      setTurnstileToken('')
       setAnonymous(false)
       setImages([])
       setImagePreviews([])
+      window.turnstile?.reset(turnstileWidgetRef.current)
 
       setTimeout(() => {
         setIsSubmitted(false)
@@ -162,6 +246,16 @@ export default function ReviewForm({ productHandle }: ReviewFormProps) {
   return (
     <form onSubmit={handleSubmit} className="bg-bg-card/50 backdrop-blur-sm border border-border-subtle rounded-xl p-6">
       <h3 className="text-xl font-display font-bold mb-6">{t('writeReview')}</h3>
+      <input
+        type="text"
+        name="website"
+        value={website}
+        onChange={(e) => setWebsite(e.target.value)}
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="hidden"
+      />
 
       {/* Star Rating */}
       <div className="mb-6">
@@ -334,6 +428,10 @@ export default function ReviewForm({ productHandle }: ReviewFormProps) {
         <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
           {error}
         </div>
+      )}
+
+      {TURNSTILE_SITE_KEY && (
+        <div className="mb-4 min-h-[65px]" ref={turnstileContainerRef} />
       )}
 
       {/* Submit */}

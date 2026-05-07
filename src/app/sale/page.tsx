@@ -5,7 +5,6 @@ import { ChevronRight, Tag } from 'lucide-react'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_ALL_PRODUCTS } from '@/lib/shopify/queries'
 import { getCountry } from '@/i18n/country'
-import { extractNodes } from '@/lib/shopify/utils'
 import {
   CollectionFilters,
   CollectionGrid,
@@ -22,25 +21,32 @@ import { SITE_URL } from '@/lib/utils/siteUrl'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('seo')
+  const tSale = await getTranslations('salePage')
+  const hasSaleProducts = (await getSaleProducts()).length > 0
+  const title = hasSaleProducts ? t('saleTitle') : `${tSale('noSaleItems')} | ${t('siteName')}`
+  const description = hasSaleProducts ? t('saleDescription') : tSale('noSaleItemsDescription')
 
   return {
-    title: t('saleTitle'),
-    description: t('saleDescription'),
+    title,
+    description,
     keywords: t('keywords'),
     alternates: {
       canonical: `${SITE_URL}/sale`,
     },
+    robots: hasSaleProducts
+      ? { index: true, follow: true }
+      : { index: false, follow: true },
     openGraph: {
-      title: t('saleTitle'),
-      description: t('saleDescription'),
+      title,
+      description,
       type: 'website',
       siteName: t('siteName'),
       images: [`${SITE_URL}/opengraph-image`],
     },
     twitter: {
       card: 'summary_large_image',
-      title: t('saleTitle'),
-      description: t('saleDescription'),
+      title,
+      description,
     },
   }
 }
@@ -51,17 +57,36 @@ interface Props {
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }
 
+type ProductWithUniverse = ShopifyProduct & { universe?: { value: string } | null }
+
+interface AllProductsResponse {
+  products: {
+    pageInfo: {
+      hasNextPage: boolean
+      endCursor: string | null
+    }
+    edges: Array<{ node: ProductWithUniverse }>
+  }
+}
+
 async function getSaleProducts() {
   try {
     const country = await getCountry()
-    const data = await shopifyFetch<{
-      products: { edges: Array<{ node: ShopifyProduct & { universe?: { value: string } | null } }> }
-    }>(GET_ALL_PRODUCTS, {
-      first: 250,
-      country,
-    })
+    const allProducts: ProductWithUniverse[] = []
+    let after: string | null = null
+    let hasNextPage = true
 
-    const allProducts = extractNodes(data.products)
+    while (hasNextPage) {
+      const data: AllProductsResponse = await shopifyFetch<AllProductsResponse>(GET_ALL_PRODUCTS, {
+        first: 250,
+        after,
+        country,
+      })
+
+      allProducts.push(...data.products.edges.map((edge) => edge.node))
+      after = data.products.pageInfo.endCursor
+      hasNextPage = data.products.pageInfo.hasNextPage && Boolean(after)
+    }
 
     // Filter to only products on sale (compareAtPrice > price)
     const saleProducts = allProducts.filter((product) => {
@@ -155,6 +180,7 @@ async function SaleContent({
         productCount={products.length}
         basePath={basePath}
         currentParams={currentParams}
+        currencyCode={products[0]?.price.currencyCode}
       />
 
       {/* Main Content */}

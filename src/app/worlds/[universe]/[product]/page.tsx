@@ -47,6 +47,8 @@ interface RecommendedProductNode {
   collections?: { edges: Array<{ node: { handle: string; metafield?: { value: string } | null } }> }
 }
 
+const VALID_UNIVERSE_SLUGS = new Set(Object.keys(UNIVERSE_CONFIG))
+
 async function getProduct(handle: string) {
   try {
     const country = await getCountry()
@@ -132,10 +134,17 @@ async function getProduct(handle: string) {
       .find((v): v is string => !!v && v !== 'true' && v !== 'false')
     const productUniverse = universeFromMetafield || universeFromCollection || null
 
-    // Get collection handle for related products (first universe collection)
-    const collectionHandle = product.collections?.edges?.find(
-      (edge) => edge.node.metafield?.value === 'true'
-    )?.node.handle || product.collections?.edges?.[0]?.node.handle
+    const universeCollection = product.collections?.edges?.find((edge) => {
+      const value = edge.node.metafield?.value
+      if (productUniverse && value === productUniverse) return true
+      return Boolean(value && VALID_UNIVERSE_SLUGS.has(value))
+    })
+
+    const collectionHandle =
+      universeCollection?.node.handle ||
+      product.collections?.edges?.find((edge) => productUniverse && edge.node.handle === productUniverse)
+        ?.node.handle ||
+      product.collections?.edges?.[0]?.node.handle
 
     return {
       id: product.id,

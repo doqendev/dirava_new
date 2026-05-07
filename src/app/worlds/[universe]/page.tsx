@@ -5,7 +5,7 @@ import { ChevronRight } from 'lucide-react'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_UNIVERSE_PRODUCTS } from '@/lib/shopify/queries'
 import { getCountry } from '@/i18n/country'
-import { extractNodes, getFirstAvailableVariant } from '@/lib/shopify/utils'
+import { getFirstAvailableVariant } from '@/lib/shopify/utils'
 import { UNIVERSE_CONFIG } from '@/lib/utils/constants'
 import { AccentTheme } from '@/components/theme/AccentTheme'
 import { SITE_URL } from '@/lib/utils/siteUrl'
@@ -26,6 +26,17 @@ import type { Metadata } from 'next'
 interface Props {
   params: Promise<{ universe: string }>
   searchParams: Promise<Record<string, string | string[] | undefined>>
+}
+
+interface UniverseProductsCollection extends Omit<ShopifyCollection, 'products'> {
+  themeColor?: { value: string } | null
+  products?: {
+    pageInfo: {
+      hasNextPage: boolean
+      endCursor: string | null
+    }
+    edges: Array<{ node: ShopifyProduct }>
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -67,26 +78,45 @@ async function getCollectionThemeColor(handle: string): Promise<string | null> {
 async function getUniverseProducts(handle: string) {
   try {
     const country = await getCountry()
-    const data = await shopifyFetch<{
-      collection: ShopifyCollection | null
-    }>(GET_UNIVERSE_PRODUCTS, {
-      handle,
-      first: 250, // Fetch all products for client-side filtering
-      country,
-    })
+    let collection: UniverseProductsCollection | null = null
+    const products: ShopifyProduct[] = []
+    let after: string | null = null
+    let hasNextPage = true
 
-    if (!data.collection) {
+    while (hasNextPage) {
+      const data: {
+        collection: UniverseProductsCollection | null
+      } = await shopifyFetch<{
+        collection: UniverseProductsCollection | null
+      }>(GET_UNIVERSE_PRODUCTS, {
+        handle,
+        first: 250,
+        after,
+        country,
+      })
+
+      if (!data.collection) {
+        return null
+      }
+
+      collection = collection || data.collection
+      if (data.collection.products) {
+        products.push(...data.collection.products.edges.map((edge) => edge.node))
+        after = data.collection.products.pageInfo.endCursor
+        hasNextPage = data.collection.products.pageInfo.hasNextPage && Boolean(after)
+      } else {
+        hasNextPage = false
+      }
+    }
+
+    if (!collection) {
       return null
     }
 
-    const products = data.collection.products
-      ? extractNodes(data.collection.products as { edges: Array<{ node: ShopifyProduct }> })
-      : []
-
-    const collectionThemeColor = (data.collection as ShopifyCollection & { themeColor?: { value: string } | null }).themeColor?.value || null
+    const collectionThemeColor = collection.themeColor?.value || null
 
     return {
-      collection: data.collection,
+      collection,
       themeColorHex: collectionThemeColor,
       products: products.flatMap((product: ShopifyProduct & { metafield?: { value: string } | null }) => {
         const variants = product.variants?.edges?.map((e) => e.node) || []
@@ -244,6 +274,7 @@ async function UniverseContent({
         productCount={data.products.length}
         basePath={basePath}
         currentParams={currentParams}
+        currencyCode={data.products[0]?.price.currencyCode}
       />
 
       {/* Main Content */}

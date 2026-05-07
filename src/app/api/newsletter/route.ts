@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { gql } from 'graphql-request'
 import { adminFetch, hasAdminApiCredentials } from '@/lib/shopify/adminClient'
 import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimit'
+import { requireSameOrigin } from '@/lib/utils/csrf'
+import { appendCustomerComplianceEvent } from '@/lib/shopify/customerCompliance'
 
 export const dynamic = 'force-dynamic'
+const CONSENT_VERSION = 'newsletter-marketing-v1'
+const MARKETING_OPT_IN_LEVEL = 'SINGLE_OPT_IN'
 
 const CREATE_MARKETING_SUBSCRIBER = gql`
   mutation customerCreate($input: CustomerInput!) {
@@ -89,10 +93,44 @@ interface CustomerSearchResponse {
   }
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+async function recordNewsletterConsent(input: {
+  customerId: string
+  ip: string
+  userAgent: string | null
+  source: string | null
+}) {
+  try {
+    await appendCustomerComplianceEvent(input.customerId, 'newsletter_consent', {
+      type: 'newsletter_marketing_opt_in',
+      version: CONSENT_VERSION,
+      occurredAt: new Date().toISOString(),
+      ip: input.ip,
+      userAgent: input.userAgent,
+      source: input.source,
+    })
+  } catch (error) {
+    console.error(
+      'Failed to record newsletter consent audit event:',
+      error instanceof Error ? error.message : error
+    )
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
+    const csrfReject = requireSameOrigin(request)
+    if (csrfReject) return csrfReject
+
     const ip = getClientIp(request)
-    const rl = await checkRateLimit(`newsletter:${ip}`, { maxRequests: 5, windowSeconds: 600 })
+    const rl = await checkRateLimit(`newsletter:${ip}`, {
+      maxRequests: 5,
+      windowSeconds: 600,
+      failClosed: true,
+    })
     if (rl.limited) {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
@@ -109,7 +147,23 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { email } = body
+    if (!isRecord(body)) {
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+    }
+
+    const { email, marketingConsent, website } = body
+
+    if (typeof website === 'string' && website.trim().length > 0) {
+      console.warn(`[Newsletter] Honeypot triggered (ip=${ip})`)
+      return NextResponse.json({ success: true, message: 'Successfully subscribed to the newsletter!' })
+    }
+
+    if (marketingConsent !== true) {
+      return NextResponse.json(
+        { error: 'Marketing consent is required' },
+        { status: 400 }
+      )
+    }
 
     if (!email || typeof email !== 'string') {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 })
@@ -147,7 +201,7 @@ export async function POST(request: NextRequest) {
             customerId: existingCustomer.id,
             emailMarketingConsent: {
               marketingState: 'SUBSCRIBED',
-              marketingOptInLevel: 'CONFIRMED_OPT_IN',
+              marketingOptInLevel: MARKETING_OPT_IN_LEVEL,
             },
           },
         }
@@ -160,6 +214,15 @@ export async function POST(request: NextRequest) {
           { error: updateErrors[0]?.message || 'Failed to subscribe' },
           { status: 400 }
         )
+      }
+
+      if (updateResponse.customerEmailMarketingConsentUpdate.customer) {
+        await recordNewsletterConsent({
+          customerId: updateResponse.customerEmailMarketingConsentUpdate.customer.id,
+          ip,
+          userAgent: request.headers.get('user-agent'),
+          source: request.headers.get('referer'),
+        })
       }
 
       return NextResponse.json({
@@ -175,7 +238,7 @@ export async function POST(request: NextRequest) {
           email: normalizedEmail,
           emailMarketingConsent: {
             marketingState: 'SUBSCRIBED',
-            marketingOptInLevel: 'CONFIRMED_OPT_IN',
+            marketingOptInLevel: MARKETING_OPT_IN_LEVEL,
           },
         },
       }
@@ -197,6 +260,13 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+
+    await recordNewsletterConsent({
+      customerId: customer.id,
+      ip,
+      userAgent: request.headers.get('user-agent'),
+      source: request.headers.get('referer'),
+    })
 
     return NextResponse.json({
       success: true,

@@ -4,6 +4,7 @@ import { getCustomerFromAccessToken } from '@/lib/auth/customer'
 import { setCustomerSessionCookie } from '@/lib/auth/session'
 import { enforceSameOrigin } from '@/lib/auth/csrf'
 import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimit'
+import { readJsonBody } from '@/lib/utils/readJsonBody'
 import {
   CUSTOMER_ACCESS_TOKEN_CREATE,
   CUSTOMER_CREATE,
@@ -41,14 +42,20 @@ export async function POST(request: Request) {
     )
   }
 
-  try {
-    const body = (await request.json()) as {
-      email?: string
-      password?: string
-      firstName?: string
-      lastName?: string
-    }
+  const body = await readJsonBody<{
+    email?: string
+    password?: string
+    firstName?: string
+    lastName?: string
+  }>(request)
+  if (!body) {
+    return NextResponse.json(
+      { success: false, error: 'Invalid request body.' },
+      { status: 400 }
+    )
+  }
 
+  try {
     const email = body.email?.trim().toLowerCase()
     const password = body.password ?? ''
     const firstName = body.firstName?.trim() ?? ''

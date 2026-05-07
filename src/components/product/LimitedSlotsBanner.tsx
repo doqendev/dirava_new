@@ -5,6 +5,7 @@ import { getProductSlots } from '@/data/productSlots'
 
 interface LimitedSlotsBannerProps {
   accent?: string
+  productType?: string
   /** Product handle — used to read its bucketed slot total + the
    *  per-day deterministic available count. */
   productHandle: string
@@ -16,17 +17,33 @@ function hexToRgb(hex: string): string {
   return `${parseInt(match[0]!, 16)}, ${parseInt(match[1]!, 16)}, ${parseInt(match[2]!, 16)}`
 }
 
+function isCustomSign(productHandle: string, productType?: string): boolean {
+  const handle = productHandle.toLowerCase()
+  const type = productType?.toLowerCase() || ''
+  return handle.includes('sign') || type.includes('sign')
+}
+
 /**
  * Limited-slots banner shown under the gallery: lightning icon + copy
  * on the left, ticking countdown (HRS / MINS / SECS) on the right.
  * The countdown resets at local midnight so it's consistent across
  * visitors but never fakes "expires in 5 minutes" desperation.
  */
-export function LimitedSlotsBanner({ accent = '#19ff7a', productHandle }: LimitedSlotsBannerProps) {
+export function LimitedSlotsBanner({
+  accent = '#19ff7a',
+  productHandle,
+  productType,
+}: LimitedSlotsBannerProps) {
   const accentRgb = hexToRgb(accent)
   const { available, total } = getProductSlots(productHandle)
   const filled = Math.max(0, Math.min(total, total - available))
   const filledPct = total === 0 ? 0 : (filled / total) * 100
+  const customSign = isCustomSign(productHandle, productType)
+  const title = customSign ? 'Limited daily production' : 'Limited daily packing'
+  const description = customSign
+    ? 'We only make a small number of custom signs each day to keep quality high.'
+    : 'We reserve a small number of daily packing slots to keep orders moving cleanly.'
+  const slotsLabel = customSign ? 'production spots left today' : 'order spots left today'
 
   return (
     <div
@@ -102,10 +119,10 @@ export function LimitedSlotsBanner({ accent = '#19ff7a', productHandle }: Limite
             className="text-[12px] font-black uppercase leading-tight tracking-normal sm:text-[14px]"
             style={{ color: accent }}
           >
-            Limited daily production
+            {title}
           </div>
           <p className="mt-0.5 max-w-none text-[10.5px] font-medium leading-[1.3] text-white sm:mt-1 sm:max-w-[240px] sm:text-[12px]">
-            We only make a small number of custom signs each day to keep quality high.
+            {description}
           </p>
         </div>
       </div>
@@ -124,7 +141,7 @@ export function LimitedSlotsBanner({ accent = '#19ff7a', productHandle }: Limite
             {available}
           </span>
           <span className="text-[10px] font-bold uppercase leading-none tracking-[0.12em] text-white/55 sm:text-[11px]">
-            production spots left today
+            {slotsLabel}
           </span>
         </div>
         <div

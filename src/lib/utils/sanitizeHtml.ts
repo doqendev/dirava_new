@@ -1,5 +1,20 @@
 import sanitize from 'sanitize-html'
 
+const ALLOWED_IMAGE_HOSTS = new Set([
+  'cdn.shopify.com',
+  'shopifycdn.net',
+])
+
+function isAllowedImageSrc(src: string | undefined): boolean {
+  if (!src) return false
+  try {
+    const url = new URL(src)
+    return url.protocol === 'https:' && ALLOWED_IMAGE_HOSTS.has(url.hostname)
+  } catch {
+    return false
+  }
+}
+
 /**
  * Sanitize HTML from trusted sources (e.g. Shopify product descriptions).
  * Uses a server-safe allowlist so product pages can render during SSR.
@@ -15,14 +30,16 @@ export function sanitizeHtml(html: string): string {
       'blockquote', 'hr', 'img',
     ],
     allowedAttributes: {
-      '*': ['class', 'id'],
       a: ['href', 'target', 'rel'],
       img: ['src', 'alt', 'width', 'height'],
     },
     allowedSchemes: ['http', 'https', 'mailto', 'tel'],
     allowedSchemesByTag: {
-      img: ['http', 'https', 'data'],
+      img: ['https'],
     },
+    exclusiveFilter: (frame) => (
+      frame.tag === 'img' && !isAllowedImageSrc(frame.attribs.src)
+    ),
     transformTags: {
       a: sanitize.simpleTransform('a', { rel: 'noopener noreferrer' }, true),
     },

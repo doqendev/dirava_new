@@ -13,9 +13,29 @@ async function gotoProductPage(page: import('@playwright/test').Page) {
   }
 }
 
+async function addProductAndOpenCart(page: import('@playwright/test').Page) {
+  await gotoProductPage(page)
+  await page.getByRole('textbox', { name: /your name on the sign/i }).fill('LUFFY')
+
+  const addToCartButton = page.getByRole('button', { name: /add to cart/i })
+  const addToCartCount = await addToCartButton.count()
+
+  if (addToCartCount === 0) {
+    test.skip()
+    return null
+  }
+
+  await addToCartButton.first().click()
+  const drawer = page.getByRole('dialog', { name: /shopping cart/i })
+  await expect(drawer).toBeVisible({ timeout: 7000 })
+
+  return drawer
+}
+
 test.describe('Cart Operations', () => {
   test('add product to cart from product page', async ({ page }) => {
     await gotoProductPage(page)
+    await page.getByRole('textbox', { name: /your name on the sign/i }).fill('LUFFY')
 
     // Find Add to Cart button
     const addToCartButton = page.getByRole('button', { name: /add to cart/i })
@@ -33,8 +53,7 @@ test.describe('Cart Operations', () => {
       // Click add to cart
       await addToCartButton.first().click()
 
-      // Wait for adding state
-      await page.waitForTimeout(1000)
+      await expect(page.getByRole('dialog', { name: /shopping cart/i })).toBeVisible({ timeout: 7000 })
 
       // Cart icon should show quantity
       const cartButton = page.getByRole('button', { name: /cart/i }).first()
@@ -43,62 +62,24 @@ test.describe('Cart Operations', () => {
   }, { timeout: 15000 })
 
   test('cart drawer opens showing item', async ({ page }) => {
-    await gotoProductPage(page)
-
-    // Add product to cart
-    const addToCartButton = page.getByRole('button', { name: /add to cart/i })
-    const addToCartCount = await addToCartButton.count()
-
-    if (addToCartCount === 0) {
-      test.skip()
-      return
-    }
-
-    await addToCartButton.first().click()
-    await page.waitForTimeout(2000)
-
-    // Cart drawer should open automatically or we can open it
-    const cartButton = page.getByRole('button', { name: /cart/i }).first()
-    await cartButton.click()
-    await page.waitForTimeout(500)
-
-    // Drawer should be visible
-    const drawer = page.locator('[role="dialog"]').or(page.locator('[class*="drawer"]'))
-    await expect(drawer.first()).toBeVisible({ timeout: 5000 })
+    const drawer = await addProductAndOpenCart(page)
+    if (!drawer) return
 
     // Should show product in cart
-    const cartItems = page.locator('[class*="cart"] img').or(page.locator('[role="dialog"] img'))
+    const cartItems = drawer.locator('img')
     const itemCount = await cartItems.count()
     console.log('Cart items visible:', itemCount)
+    expect(itemCount).toBeGreaterThan(0)
   }, { timeout: 15000 })
 
   test('quantity can be updated in cart', async ({ page }) => {
-    await gotoProductPage(page)
-
-    // Add product to cart
-    const addToCartButton = page.getByRole('button', { name: /add to cart/i })
-    const addToCartCount = await addToCartButton.count()
-
-    if (addToCartCount === 0) {
-      test.skip()
-      return
-    }
-
-    await addToCartButton.first().click()
-    await page.waitForTimeout(2000)
-
-    // Open cart
-    const cartButton = page.getByRole('button', { name: /cart/i }).first()
-    await cartButton.click()
-    await page.waitForTimeout(500)
+    const drawer = await addProductAndOpenCart(page)
+    if (!drawer) return
 
     // Look for quantity controls (+ and - buttons)
-    const increaseButton = page.getByRole('button', { name: '+' }).or(
-      page.locator('button').filter({ hasText: '+' })
-    )
-    const decreaseButton = page.getByRole('button', { name: '-' }).or(
-      page.locator('button').filter({ hasText: '-' })
-    )
+    const line = drawer.getByTestId('cart-line').first()
+    const increaseButton = line.getByTestId('cart-line-increase')
+    const decreaseButton = line.getByTestId('cart-line-decrease')
 
     const increaseCount = await increaseButton.count()
     const decreaseCount = await decreaseButton.count()
@@ -108,7 +89,7 @@ test.describe('Cart Operations', () => {
     if (increaseCount > 0) {
       // Click increase
       await increaseButton.first().click()
-      await page.waitForTimeout(1000)
+      await expect(line.getByTestId('cart-line-quantity')).toHaveText('2', { timeout: 5000 })
 
       // Quantity should update (check cart badge or drawer)
       console.log('Quantity increased')
@@ -116,36 +97,18 @@ test.describe('Cart Operations', () => {
   }, { timeout: 15000 })
 
   test('item can be removed from cart', async ({ page }) => {
-    await gotoProductPage(page)
-
-    // Add product to cart
-    const addToCartButton = page.getByRole('button', { name: /add to cart/i })
-    const addToCartCount = await addToCartButton.count()
-
-    if (addToCartCount === 0) {
-      test.skip()
-      return
-    }
-
-    await addToCartButton.first().click()
-    await page.waitForTimeout(2000)
-
-    // Open cart
-    const cartButton = page.getByRole('button', { name: /cart/i }).first()
-    await cartButton.click()
-    await page.waitForTimeout(500)
+    const drawer = await addProductAndOpenCart(page)
+    if (!drawer) return
 
     // Look for remove button (trash icon or remove text)
-    const removeButton = page.getByRole('button', { name: /remove/i }).or(
-      page.locator('button').filter({ has: page.locator('svg.lucide-trash, svg[class*="trash"]') })
-    )
+    const removeButton = drawer.getByTestId('cart-line-remove')
 
     const removeCount = await removeButton.count()
     console.log('Remove buttons found:', removeCount)
 
     if (removeCount > 0) {
       await removeButton.first().click()
-      await page.waitForTimeout(1000)
+      await expect(drawer.getByText(/empty/i).first()).toBeVisible({ timeout: 7000 })
 
       console.log('Item removed from cart')
     }
@@ -153,6 +116,7 @@ test.describe('Cart Operations', () => {
 
   test('cart page shows same items as drawer', async ({ page }) => {
     await gotoProductPage(page)
+    await page.getByRole('textbox', { name: /your name on the sign/i }).fill('LUFFY')
 
     // Add product to cart
     const addToCartButton = page.getByRole('button', { name: /add to cart/i })
@@ -172,7 +136,7 @@ test.describe('Cart Operations', () => {
     await page.waitForTimeout(1000)
 
     // Should show cart items
-    const cartItems = page.locator('img[src*="shopify"], img[src*="cdn"]')
+    const cartItems = page.locator('main img[src*="shopify"], main img[src*="cdn"]')
     const itemCount = await cartItems.count()
     console.log('Items on cart page:', itemCount)
 
@@ -197,6 +161,7 @@ test.describe('Cart Operations', () => {
 
   test('checkout button links to Shopify checkout', async ({ page }) => {
     await gotoProductPage(page)
+    await page.getByRole('textbox', { name: /your name on the sign/i }).fill('LUFFY')
 
     // Add product to cart
     const addToCartButton = page.getByRole('button', { name: /add to cart/i })

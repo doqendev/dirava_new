@@ -1,0 +1,2 @@
+export const SHOPIFY_API_VERSION =
+  process.env.NEXT_PUBLIC_SHOPIFY_API_VERSION || '2026-04'

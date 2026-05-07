@@ -6,7 +6,6 @@ import { ChevronRight } from 'lucide-react'
 import { shopifyFetch } from '@/lib/shopify/client'
 import { GET_ALL_PRODUCTS } from '@/lib/shopify/queries'
 import { getCountry } from '@/i18n/country'
-import { extractNodes } from '@/lib/shopify/utils'
 import {
   CollectionFilters,
   CollectionGrid,
@@ -88,17 +87,36 @@ interface Props {
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }
 
+type ProductWithUniverse = ShopifyProduct & { universe?: { value: string } | null }
+
+interface AllProductsResponse {
+  products: {
+    pageInfo: {
+      hasNextPage: boolean
+      endCursor: string | null
+    }
+    edges: Array<{ node: ProductWithUniverse }>
+  }
+}
+
 async function getProductsOfType(type: ProductTypeFilter) {
   try {
     const country = await getCountry()
-    const data = await shopifyFetch<{
-      products: { edges: Array<{ node: ShopifyProduct & { universe?: { value: string } | null } }> }
-    }>(GET_ALL_PRODUCTS, {
-      first: 250,
-      country,
-    })
+    const rawProducts: ProductWithUniverse[] = []
+    let after: string | null = null
+    let hasNextPage = true
 
-    const rawProducts = extractNodes(data.products)
+    while (hasNextPage) {
+      const data: AllProductsResponse = await shopifyFetch<AllProductsResponse>(GET_ALL_PRODUCTS, {
+        first: 250,
+        after,
+        country,
+      })
+
+      rawProducts.push(...data.products.edges.map((edge) => edge.node))
+      after = data.products.pageInfo.endCursor
+      hasNextPage = data.products.pageInfo.hasNextPage && Boolean(after)
+    }
 
     // Pre-filter to this product type only (server-side, on raw Shopify shape)
     const matchingProducts = filterProducts(
@@ -184,6 +202,7 @@ async function ShopByTypeContent({
         productCount={products.length}
         basePath={basePath}
         currentParams={currentParams}
+        currencyCode={products[0]?.price.currencyCode}
         hideProductTypeFilter
         universeOptions={universeOptions}
       />

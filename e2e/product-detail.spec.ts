@@ -3,6 +3,13 @@ import { test, expect } from '@playwright/test'
 const PRODUCT_URL = '/worlds/one-piece/one-piece-custom-sign'
 const ALTERNATIVE_PRODUCT = '/worlds/one-piece/one-piece-custom-sign'
 
+async function fillPersonalizationIfPresent(page: import('@playwright/test').Page) {
+  const personalizationInput = page.getByRole('textbox', { name: /your name on the sign/i })
+  if (await personalizationInput.count() > 0) {
+    await personalizationInput.first().fill('LUFFY')
+  }
+}
+
 test.describe('Product Detail Page', () => {
   test('product page loads with title, price, and images', async ({ page }) => {
     await page.goto(PRODUCT_URL)
@@ -31,8 +38,8 @@ test.describe('Product Detail Page', () => {
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(1000)
 
-    // Look for thumbnail images
-    const thumbnails = page.locator('img[src*="shopify"], img[src*="cdn"]')
+    // Look for thumbnail buttons, not the preloaded hidden images.
+    const thumbnails = page.getByRole('button', { name: /view image/i })
     const thumbnailCount = await thumbnails.count()
 
     console.log('Total images/thumbnails:', thumbnailCount)
@@ -85,13 +92,9 @@ test.describe('Product Detail Page', () => {
     if (outOfStockCount > 0) {
       await expect(outOfStockButton.first()).toBeDisabled()
     } else if (addToCartCount > 0) {
+      await fillPersonalizationIfPresent(page)
       await addToCartButton.click()
-      await page.waitForTimeout(1000)
-
-      // Should show adding/added state
-      const addedText = page.getByText(/adding|added/i)
-      const addedCount = await addedText.count()
-      console.log('Added state shown:', addedCount > 0)
+      await expect(page.getByRole('dialog', { name: /shopping cart/i })).toBeVisible({ timeout: 7000 })
     }
   }, { timeout: 15000 })
 
@@ -164,7 +167,7 @@ test.describe('Product Detail Page', () => {
     await expect(descriptionHeading).toBeVisible()
 
     // Description content
-    const descriptionText = page.locator('text=/fabric|material|cotton|polyester|wash|care/i')
+    const descriptionText = page.locator('text=/pla|painted|magnet|size|care/i')
     const descCount = await descriptionText.count()
 
     console.log('Description content found:', descCount > 0)

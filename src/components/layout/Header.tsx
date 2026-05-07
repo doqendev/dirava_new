@@ -61,7 +61,6 @@ export function Header({ className }: HeaderProps) {
               { href: '/shop', label: tCommon('shop') },
               { href: '/new', label: tCommon('newArrivals') },
               { href: '/drops', label: tCommon('drops') },
-              { href: '/sale', label: tCommon('sale') },
             ].map((link) => (
               <Link
                 key={link.href}

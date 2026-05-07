@@ -4,6 +4,7 @@ import { getCustomerFromAccessToken } from '@/lib/auth/customer'
 import { setCustomerSessionCookie } from '@/lib/auth/session'
 import { enforceSameOrigin } from '@/lib/auth/csrf'
 import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimit'
+import { readJsonBody } from '@/lib/utils/readJsonBody'
 import { CUSTOMER_RESET_BY_URL } from '@/lib/shopify/customerMutations'
 import type { CustomerUserError, ShopifyCustomerAccessToken } from '@/types/customer'
 
@@ -46,12 +47,18 @@ export async function POST(request: Request) {
     )
   }
 
-  try {
-    const body = (await request.json()) as {
-      password?: string
-      resetUrl?: string
-    }
+  const body = await readJsonBody<{
+    password?: string
+    resetUrl?: string
+  }>(request)
+  if (!body) {
+    return NextResponse.json(
+      { success: false, error: 'Invalid request body.' },
+      { status: 400 }
+    )
+  }
 
+  try {
     const password = body.password ?? ''
     const resetUrl = body.resetUrl ?? ''
 

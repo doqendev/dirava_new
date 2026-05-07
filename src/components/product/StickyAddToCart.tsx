@@ -75,6 +75,8 @@ export function StickyAddToCart({
           <AddToCartButton
             variantId={variantId}
             quantity={quantity}
+            unitPrice={parseFloat(price.amount)}
+            currency={price.currencyCode}
             available={available}
             requiresPersonalization={requiresPersonalization}
             personalizationValue={personalizationValue}

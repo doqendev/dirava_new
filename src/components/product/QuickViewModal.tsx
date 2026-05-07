@@ -702,6 +702,8 @@ export function QuickViewModal() {
                             <AddToCartButton
                               variantId={selectedVariant?.id || ''}
                               quantity={quantity}
+                              unitPrice={selectedVariant ? parseFloat(selectedVariant.price.amount) : undefined}
+                              currency={selectedVariant?.price.currencyCode}
                               available={selectedVariant?.availableForSale ?? false}
                               requiresPersonalization={product.personalization}
                               personalizationValue={personalizationName}

@@ -53,11 +53,16 @@ function getAllowedOrigins(): string[] {
  *   for a state-changing route).
  */
 export function requireSameOrigin(request: Request): NextResponse | null {
-  const allowed = getAllowedOrigins()
+  const allowed = new Set(getAllowedOrigins())
+  try {
+    allowed.add(new URL(request.url).origin)
+  } catch {
+    // Ignore malformed request URLs and rely on the configured allow-list.
+  }
 
   const origin = request.headers.get('origin')
   if (origin) {
-    if (allowed.includes(origin)) return null
+    if (allowed.has(origin)) return null
     return NextResponse.json({ error: 'Forbidden: cross-origin request' }, { status: 403 })
   }
 
@@ -65,7 +70,7 @@ export function requireSameOrigin(request: Request): NextResponse | null {
   if (referer) {
     try {
       const refOrigin = new URL(referer).origin
-      if (allowed.includes(refOrigin)) return null
+      if (allowed.has(refOrigin)) return null
     } catch {
       // Malformed referer falls through to the rejection below.
     }

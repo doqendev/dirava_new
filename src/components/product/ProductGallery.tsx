@@ -30,6 +30,8 @@ interface ProductImage {
 interface CanvasCartProps {
   variantId: string
   quantity: number
+  unitPrice?: number
+  currency?: string
   available: boolean
   requiresPersonalization: boolean
   personalizationValue: string
@@ -393,6 +395,8 @@ export const ProductGallery = forwardRef<ProductGalleryHandle, ProductGalleryPro
                             <AddToCartButton
                               variantId={canvasCart.variantId}
                               quantity={canvasCart.quantity}
+                              unitPrice={canvasCart.unitPrice}
+                              currency={canvasCart.currency}
                               available={canvasCart.available}
                               requiresPersonalization={canvasCart.requiresPersonalization}
                               personalizationValue={canvasCart.personalizationValue}

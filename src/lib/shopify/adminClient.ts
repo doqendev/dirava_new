@@ -1,6 +1,5 @@
 import { GraphQLClient } from 'graphql-request'
-
-const API_VERSION = '2024-01'
+import { SHOPIFY_API_VERSION } from '@/lib/shopify/apiVersion'
 
 // --- Token cache (in-memory, per-process) ---
 
@@ -20,7 +19,7 @@ function getShopifyAdminDomain(): string {
 }
 
 function getAdminEndpoint(): string {
-  return `https://${getShopifyAdminDomain()}/admin/api/${API_VERSION}/graphql.json`
+  return `https://${getShopifyAdminDomain()}/admin/api/${SHOPIFY_API_VERSION}/graphql.json`
 }
 
 export function hasAdminApiCredentials(): boolean {

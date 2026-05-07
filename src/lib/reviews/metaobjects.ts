@@ -5,6 +5,7 @@
  */
 
 import { adminFetch } from '@/lib/shopify/adminClient'
+import { calculateReviewStats, mergeDemoReviews } from '@/lib/reviews/demoReviews'
 import type { Review, ReviewRating, AdminReview } from '@/types/reviews'
 
 // ============================================================================
@@ -77,8 +78,8 @@ const CREATE_REVIEW = `
  * Get all reviews by type
  */
 const GET_ALL_REVIEWS = `
-  query GetAllReviews($type: String!, $first: Int!) {
-    metaobjects(type: $type, first: $first, sortKey: "id", reverse: true) {
+  query GetAllReviews($type: String!, $first: Int!, $after: String) {
+    metaobjects(type: $type, first: $first, after: $after, sortKey: "id", reverse: true) {
       nodes {
         id
         handle
@@ -87,6 +88,10 @@ const GET_ALL_REVIEWS = `
           value
         }
         updatedAt
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
       }
     }
   }
@@ -170,6 +175,10 @@ interface CreateMetaobjectResponse {
 interface GetMetaobjectsResponse {
   metaobjects: {
     nodes: MetaobjectNode[]
+    pageInfo: {
+      hasNextPage: boolean
+      endCursor: string | null
+    }
   }
 }
 
@@ -242,6 +251,25 @@ function parseReviewFromMetaobject(node: MetaobjectNode): Review {
     verified: getField('verified_purchase') === 'true',
     countryCode: getField('country_code') || undefined,
   }
+}
+
+async function fetchAllReviewMetaobjects(): Promise<MetaobjectNode[]> {
+  const nodes: MetaobjectNode[] = []
+  let after: string | null = null
+  let hasNextPage = true
+
+  while (hasNextPage) {
+    const response: GetMetaobjectsResponse = await adminFetch<GetMetaobjectsResponse>(
+      GET_ALL_REVIEWS,
+      { type: 'shop_review', first: 250, after }
+    )
+
+    nodes.push(...response.metaobjects.nodes)
+    after = response.metaobjects.pageInfo.endCursor
+    hasNextPage = response.metaobjects.pageInfo.hasNextPage && Boolean(after)
+  }
+
+  return nodes
 }
 
 /**
@@ -459,17 +487,14 @@ export async function getExistingReviewSourceIds(): Promise<Set<string>> {
  */
 export async function getAllReviews(status?: string): Promise<AdminReview[]> {
   try {
-    const response = await adminFetch<GetMetaobjectsResponse>(
-      GET_ALL_REVIEWS,
-      { type: 'shop_review', first: 250 }
-    )
+    const nodes = await fetchAllReviewMetaobjects()
 
     const getField = (node: MetaobjectNode, key: string) =>
       node.fields.find(f => f.key === key)?.value || ''
 
     const filtered = status
-      ? response.metaobjects.nodes.filter(node => getField(node, 'status') === status)
-      : response.metaobjects.nodes
+      ? nodes.filter(node => getField(node, 'status') === status)
+      : nodes
 
     return filtered.map(parseAdminReviewFromMetaobject)
   } catch (error) {
@@ -548,21 +573,21 @@ export async function getReviewsByProduct(
   try {
     // Fetch all shop_review metaobjects and filter in-memory
     // Shopify metaobject query filtering is unreliable for field values
-    const response = await adminFetch<GetMetaobjectsResponse>(
-      GET_ALL_REVIEWS,
-      { type: 'shop_review', first: 250 }
-    )
+    const nodes = await fetchAllReviewMetaobjects()
 
     const getField = (node: MetaobjectNode, key: string) =>
       node.fields.find(f => f.key === key)?.value || ''
 
-    const filtered = response.metaobjects.nodes.filter((node) => {
+    const filtered = nodes.filter((node) => {
       if (getField(node, 'product_handle') !== productHandle) return false
       if (status && getField(node, 'status') !== status) return false
       return true
     })
 
-    return filtered.map(parseReviewFromMetaobject)
+    const reviews = filtered.map(parseReviewFromMetaobject)
+    return status === undefined || status === 'approved'
+      ? mergeDemoReviews(productHandle, reviews)
+      : reviews
   } catch (error) {
     console.error(
       `[reviews] getReviewsByProduct failed for "${productHandle}":`,
@@ -578,29 +603,7 @@ export async function getReviewsByProduct(
 export async function getReviewStats(productHandle: string): Promise<ReviewRating> {
   try {
     const approvedReviews = await getReviewsByProduct(productHandle, 'approved')
-
-    if (approvedReviews.length === 0) {
-      return {
-        averageRating: 0,
-        reviewCount: 0,
-        ratingBreakdown: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
-      }
-    }
-
-    const breakdown = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
-    let totalRating = 0
-
-    for (const review of approvedReviews) {
-      const rating = Math.min(5, Math.max(1, review.rating)) as 1 | 2 | 3 | 4 | 5
-      breakdown[rating]++
-      totalRating += rating
-    }
-
-    return {
-      averageRating: totalRating / approvedReviews.length,
-      reviewCount: approvedReviews.length,
-      ratingBreakdown: breakdown,
-    }
+    return calculateReviewStats(approvedReviews)
   } catch (error) {
     console.error('Error calculating review stats:', error)
     return {
@@ -721,13 +724,10 @@ export async function updateReview(
 export async function getReviewsByEmail(email: string): Promise<Review[]> {
   try {
     // Fetch all reviews and filter by email
-    const response = await adminFetch<GetMetaobjectsResponse>(
-      GET_ALL_REVIEWS,
-      { type: 'shop_review', first: 100 }
-    )
+    const nodes = await fetchAllReviewMetaobjects()
 
     // Filter by exact email match
-    const matchingNodes = response.metaobjects.nodes.filter(node => {
+    const matchingNodes = nodes.filter(node => {
       const emailField = node.fields.find(f => f.key === 'author_email')
       return emailField?.value === email
     })

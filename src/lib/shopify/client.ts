@@ -1,4 +1,5 @@
 import { GraphQLClient } from 'graphql-request'
+import { SHOPIFY_API_VERSION } from '@/lib/shopify/apiVersion'
 
 const domain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN
 const storefrontAccessToken = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN
@@ -11,7 +12,7 @@ if (!storefrontAccessToken) {
   throw new Error('NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN is not defined')
 }
 
-const endpoint = `https://${domain}/api/2024-01/graphql.json`
+const endpoint = `https://${domain}/api/${SHOPIFY_API_VERSION}/graphql.json`
 
 export const shopifyClient = new GraphQLClient(endpoint, {
   headers: {

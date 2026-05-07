@@ -117,6 +117,7 @@ async function NewArrivalsContent({
         productCount={products.length}
         basePath={basePath}
         currentParams={currentParams}
+        currencyCode={products[0]?.price.currencyCode}
       />
 
       {/* Main Content */}

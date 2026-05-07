@@ -43,7 +43,7 @@ function getLimiter(prefix: string, maxRequests: number, windowSeconds: number):
  */
 export async function checkRateLimit(
   key: string,
-  opts: { maxRequests: number; windowSeconds: number }
+  opts: { maxRequests: number; windowSeconds: number; failClosed?: boolean }
 ): Promise<{ limited: boolean; retryAfter?: number }> {
   const prefix = key.split(':')[0] || 'api'
   const limiter = getLimiter(prefix, opts.maxRequests, opts.windowSeconds)
@@ -66,8 +66,13 @@ export async function checkRateLimit(
 
     return { limited: false }
   } catch (error) {
-    // If Redis fails, allow the request (fail open)
-    console.error('[Rate Limit] Redis error, allowing request:', error instanceof Error ? error.message : 'Unknown error')
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    if (opts.failClosed) {
+      console.error('[Rate Limit] Redis error. Blocking sensitive request:', message)
+      return { limited: true, retryAfter: 60 }
+    }
+
+    console.error('[Rate Limit] Redis error, allowing request:', message)
     return { limited: false }
   }
 }

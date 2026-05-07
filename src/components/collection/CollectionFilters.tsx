@@ -26,8 +26,24 @@ interface CollectionFiltersProps {
   productCount: number
   basePath: string
   currentParams: Record<string, string>
+  currencyCode?: string
   hideProductTypeFilter?: boolean
   universeOptions?: UniverseFilterOption[]
+}
+
+function getCurrencySymbol(currencyCode = 'EUR'): string {
+  try {
+    const parts = new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: currencyCode,
+      currencyDisplay: 'narrowSymbol',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).formatToParts(0)
+    return parts.find((part) => part.type === 'currency')?.value || currencyCode
+  } catch {
+    return currencyCode
+  }
 }
 
 // Filter Checkbox Component
@@ -125,6 +141,7 @@ function PriceRangeSlider({
   value,
   onChange,
   themeColor,
+  currencyCode,
   t,
 }: {
   min: number
@@ -132,10 +149,13 @@ function PriceRangeSlider({
   value: [number, number]
   onChange: (value: [number, number]) => void
   themeColor: string
+  currencyCode?: string
   t: ReturnType<typeof useTranslations>
 }) {
   const [localMin, setLocalMin] = useState(value[0])
   const [localMax, setLocalMax] = useState(value[1])
+  const currencySymbol = getCurrencySymbol(currencyCode)
+  const range = Math.max(max - min, 1)
 
   // Sync with external value
   useEffect(() => {
@@ -165,7 +185,7 @@ function PriceRangeSlider({
           <label className="text-xs text-white/50 mb-1 block">{t('min')}</label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50 text-sm">
-              $
+              {currencySymbol}
             </span>
             <input
               type="number"
@@ -183,7 +203,7 @@ function PriceRangeSlider({
           <label className="text-xs text-white/50 mb-1 block">{t('max')}</label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50 text-sm">
-              $
+              {currencySymbol}
             </span>
             <input
               type="number"
@@ -204,8 +224,8 @@ function PriceRangeSlider({
         <div
           className="absolute h-full rounded-full"
           style={{
-            left: `${((localMin - min) / (max - min)) * 100}%`,
-            right: `${100 - ((localMax - min) / (max - min)) * 100}%`,
+            left: `${((localMin - min) / range) * 100}%`,
+            right: `${100 - ((localMax - min) / range) * 100}%`,
             backgroundColor: themeColor,
           }}
         />
@@ -224,6 +244,7 @@ function DesktopFilters({
   onClearFilters,
   hideProductTypeFilter,
   universeOptions,
+  currencyCode,
   t,
 }: {
   filters: FilterState
@@ -234,6 +255,7 @@ function DesktopFilters({
   onClearFilters: () => void
   hideProductTypeFilter?: boolean
   universeOptions?: UniverseFilterOption[]
+  currencyCode?: string
   t: ReturnType<typeof useTranslations>
 }) {
   const toggleProductType = (type: ProductTypeFilter) => {
@@ -344,6 +366,7 @@ function DesktopFilters({
                 onFilterChange('priceMax', max < priceRange.max ? String(max) : null)
               }}
               themeColor={themeColor}
+              currencyCode={currencyCode}
               t={t}
             />
           </FilterSection>
@@ -364,6 +387,7 @@ function MobileFilterDrawer({
   onClose,
   hideProductTypeFilter,
   universeOptions,
+  currencyCode,
   t,
 }: {
   filters: FilterState
@@ -375,6 +399,7 @@ function MobileFilterDrawer({
   onClose: () => void
   hideProductTypeFilter?: boolean
   universeOptions?: UniverseFilterOption[]
+  currencyCode?: string
   t: ReturnType<typeof useTranslations>
 }) {
   const toggleProductType = (type: ProductTypeFilter) => {
@@ -507,6 +532,7 @@ function MobileFilterDrawer({
                 onFilterChange('priceMax', max < priceRange.max ? String(max) : null)
               }}
               themeColor={themeColor}
+              currencyCode={currencyCode}
               t={t}
             />
           </FilterSection>
@@ -535,6 +561,7 @@ export function CollectionFilters({
   productCount,
   basePath,
   currentParams,
+  currencyCode,
   hideProductTypeFilter,
   universeOptions,
 }: CollectionFiltersProps) {
@@ -570,6 +597,7 @@ export function CollectionFilters({
         onClearFilters={clearFilters}
         hideProductTypeFilter={hideProductTypeFilter}
         universeOptions={universeOptions}
+        currencyCode={currencyCode}
         t={t}
       />
 
@@ -586,6 +614,7 @@ export function CollectionFilters({
             onClose={closeFilterDrawer}
             hideProductTypeFilter={hideProductTypeFilter}
             universeOptions={universeOptions}
+            currencyCode={currencyCode}
             t={t}
           />
         )}

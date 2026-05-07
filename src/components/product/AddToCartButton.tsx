@@ -16,6 +16,8 @@ import { isBlockedName } from '@/lib/utils/personalizationBlocklist'
 interface AddToCartButtonProps {
   variantId: string
   quantity?: number
+  unitPrice?: number
+  currency?: string
   available?: boolean
   attributes?: Array<{ key: string; value: string }>
   className?: string
@@ -34,6 +36,8 @@ type ButtonState = 'idle' | 'loading' | 'success' | 'error' | 'personalization-e
 export function AddToCartButton({
   variantId,
   quantity = 1,
+  unitPrice,
+  currency,
   available = true,
   attributes,
   className,
@@ -90,7 +94,12 @@ export function AddToCartButton({
       // Fire Track Clear AddToCart event (gated by marketing consent)
       const consent = useCookieConsentStore.getState()
       if (consent.consentGiven && consent.preferences.marketing) {
-        trackAddToCart({ variantId, price: 0, currency: 'EUR', quantity })
+        trackAddToCart({
+          variantId,
+          price: unitPrice ?? 0,
+          currency: currency || 'EUR',
+          quantity,
+        })
       }
 
       // Open cart after success

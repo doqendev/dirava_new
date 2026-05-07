@@ -1,8 +1,24 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 
 // Known product URL from the debug tests
 const PRODUCT_URL = '/worlds/one-piece/one-piece-custom-sign'
 const ALTERNATIVE_PRODUCT_URL = '/worlds/one-piece/one-piece-custom-sign'
+
+async function fillPersonalizationIfPresent(page: Page) {
+  const personalizationInput = page.getByRole('textbox', { name: /your name on the sign/i })
+  if (await personalizationInput.count() > 0) {
+    await personalizationInput.first().fill('LUFFY')
+  }
+}
+
+async function openSharePanel(page: Page) {
+  const shareToggle = page.getByRole('button', { name: /^share$/i }).first()
+  await shareToggle.scrollIntoViewIfNeeded()
+  await shareToggle.click()
+  const copyButton = page.locator('button[title="Copy link"], button[aria-label="Copy link"]')
+  await expect(copyButton).toBeVisible()
+  return copyButton
+}
 
 test.describe('Product Page Features', () => {
   test('Size Guide button is visible and modal opens', async ({ page }) => {
@@ -57,15 +73,9 @@ test.describe('Product Page Features', () => {
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(1000)
 
-    // Check for Share section
-    const shareText = page.getByText('Share:')
-    const shareCount = await shareText.count()
-    console.log('Share: text count:', shareCount)
-
-    await expect(shareText.first()).toBeVisible()
+    const copyButton = await openSharePanel(page)
 
     // Check for social share buttons by their aria-label
-    const copyButton = page.locator('button[title="Copy link"], button[aria-label="Copy link"]')
     await expect(copyButton).toBeVisible()
 
     const xButton = page.locator('button[title="Share on X"], button[aria-label="Share on X"]')
@@ -89,8 +99,8 @@ test.describe('Product Page Features', () => {
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(1000)
 
-    // Click copy link button
-    const copyButton = page.locator('button[title="Copy link"], button[aria-label="Copy link"]')
+    const copyButton = await openSharePanel(page)
+    await copyButton.scrollIntoViewIfNeeded()
     await copyButton.click()
 
     // Check for confirmation (button should show "Copied!")
@@ -139,7 +149,7 @@ test.describe('Product Page Features', () => {
 
     // Check localStorage for recently viewed
     const recentlyViewed = await page.evaluate(() => {
-      const stored = localStorage.getItem('neo-stage-recently-viewed')
+      const stored = localStorage.getItem('mizoke-recently-viewed')
       return stored ? JSON.parse(stored) : null
     })
 
@@ -223,14 +233,12 @@ test.describe('Product Page Features', () => {
       // Product is out of stock, verify button is disabled
       await expect(outOfStockButton.first()).toBeDisabled()
     } else if (addToCartCount > 0) {
+      await fillPersonalizationIfPresent(page)
+
       // Product is in stock, click main Add to Cart button
       await mainAddToCartButton.click()
 
-      // Wait for loading state
-      await expect(page.getByText(/adding/i)).toBeVisible({ timeout: 5000 })
-
-      // Wait for success state
-      await expect(page.getByText(/added/i)).toBeVisible({ timeout: 10000 })
+      await expect(page.getByRole('dialog', { name: /shopping cart/i })).toBeVisible({ timeout: 7000 })
     }
   })
 

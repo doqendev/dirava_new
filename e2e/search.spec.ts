@@ -48,7 +48,8 @@ test.describe('Search Functionality', () => {
     await page.waitForTimeout(2000) // Wait for search results from Shopify
 
     // Look for product results
-    const results = page.locator('a[href*="/worlds/"]')
+    const searchModal = page.getByRole('dialog', { name: /search products/i })
+    const results = searchModal.locator('a[href*="/worlds/"], a[href^="/products/"]')
     const resultCount = await results.count()
 
     console.log('Search results found:', resultCount)
@@ -72,15 +73,18 @@ test.describe('Search Functionality', () => {
     await page.waitForTimeout(2000)
 
     // Click first result if exists
-    const firstResult = page.locator('a[href*="/worlds/"]').first()
+    const searchModal = page.getByRole('dialog', { name: /search products/i })
+    const firstResult = searchModal.locator('a[href*="/worlds/"], a[href^="/products/"]').first()
     const resultCount = await firstResult.count()
 
     if (resultCount > 0) {
-      await firstResult.click()
-      await page.waitForLoadState('networkidle')
+      const href = await firstResult.getAttribute('href')
+      console.log('First search result href:', href)
+      expect(href).toMatch(/^\/(worlds\/[^/]+\/[^/]+|products\/[^/]+)$/)
+      await firstResult.click({ force: true })
 
       // Should navigate to product page
-      expect(page.url()).toContain('/worlds/')
+      await expect(page).toHaveURL(/\/(worlds\/[^/]+\/[^/]+|products\/[^/]+)$/, { timeout: 10000 })
     }
   })
 

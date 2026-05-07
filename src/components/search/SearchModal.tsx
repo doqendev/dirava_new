@@ -251,13 +251,14 @@ export function SearchModal() {
     setRecentSearches([])
   }
 
-  const handleProductClick = () => {
+  const handleProductClick = (href: string) => {
     if (query.trim()) {
       saveRecentSearch(query.trim())
     }
     closeSearch()
     setQuery('')
     setResults([])
+    window.location.assign(href)
   }
 
   const handleClose = () => {
@@ -395,41 +396,48 @@ export function SearchModal() {
                         {t('products')}
                       </h3>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        {results.slice(0, 8).map((product) => (
-                          <Link
-                            key={product.id}
-                            href={product.collections?.edges?.[0]?.node?.metafield?.value
-                              ? `/worlds/${product.collections.edges[0].node.metafield.value}/${product.handle}`
-                              : `/products/${product.handle}`}
-                            onClick={handleProductClick}
-                            className="group"
-                          >
-                            <div className="aspect-square bg-bg-secondary rounded-lg overflow-hidden mb-2 relative">
-                              {product.featuredImage ? (
-                                <Image
-                                  src={product.featuredImage.url}
-                                  alt={product.featuredImage.altText || product.title}
-                                  fill
-                                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                                  sizes="(max-width: 640px) 50vw, 25vw"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-white/20">
-                                  <Search className="w-8 h-8" />
-                                </div>
-                              )}
-                            </div>
-                            <h4 className="text-sm text-white/80 group-hover:text-white line-clamp-1 transition-colors">
-                              {product.title}
-                            </h4>
-                            <p className="text-sm text-neon-cyan font-mono">
-                              {formatPrice(
-                                product.priceRange.minVariantPrice.amount,
-                                product.priceRange.minVariantPrice.currencyCode
-                              )}
-                            </p>
-                          </Link>
-                        ))}
+                        {results.slice(0, 8).map((product) => {
+                          const productHref = product.collections?.edges?.[0]?.node?.metafield?.value
+                            ? `/worlds/${product.collections.edges[0].node.metafield.value}/${product.handle}`
+                            : `/products/${product.handle}`
+
+                          return (
+                            <Link
+                              key={product.id}
+                              href={productHref}
+                              onClick={(event) => {
+                                event.preventDefault()
+                                handleProductClick(productHref)
+                              }}
+                              className="group"
+                            >
+                              <div className="aspect-square bg-bg-secondary rounded-lg overflow-hidden mb-2 relative">
+                                {product.featuredImage ? (
+                                  <Image
+                                    src={product.featuredImage.url}
+                                    alt={product.featuredImage.altText || product.title}
+                                    fill
+                                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                    sizes="(max-width: 640px) 50vw, 25vw"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-white/20">
+                                    <Search className="w-8 h-8" />
+                                  </div>
+                                )}
+                              </div>
+                              <h4 className="text-sm text-white/80 group-hover:text-white line-clamp-1 transition-colors">
+                                {product.title}
+                              </h4>
+                              <p className="text-sm text-neon-cyan font-mono">
+                                {formatPrice(
+                                  product.priceRange.minVariantPrice.amount,
+                                  product.priceRange.minVariantPrice.currencyCode
+                                )}
+                              </p>
+                            </Link>
+                          )
+                        })}
                       </div>
 
                       {/* View All Results */}

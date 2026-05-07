@@ -208,7 +208,7 @@ export function CartDrawer() {
                     // default featured image.
                     const lineImage = line.merchandise.image ?? line.merchandise.product.featuredImage
                     return (
-                    <li key={line.id} className="p-4">
+                    <li key={line.id} className="p-4" data-testid="cart-line">
                       <div className="flex gap-4">
                         {/* Product Image */}
                         <div className="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-bg-secondary">
@@ -260,6 +260,7 @@ export function CartDrawer() {
                                 onClick={() =>
                                   updateItem(line.id, Math.max(0, line.quantity - 1))
                                 }
+                                data-testid="cart-line-decrease"
                                 disabled={loadingItems.has(line.id)}
                                 className={cn(
                                   'w-8 h-8 flex items-center justify-center',
@@ -271,11 +272,12 @@ export function CartDrawer() {
                               >
                                 <Minus className="w-4 h-4" />
                               </button>
-                              <span className="w-8 text-center font-mono text-sm">
+                              <span className="w-8 text-center font-mono text-sm" data-testid="cart-line-quantity">
                                 {line.quantity}
                               </span>
                               <button
                                 onClick={() => updateItem(line.id, line.quantity + 1)}
+                                data-testid="cart-line-increase"
                                 disabled={loadingItems.has(line.id)}
                                 className={cn(
                                   'w-8 h-8 flex items-center justify-center',
@@ -314,6 +316,7 @@ export function CartDrawer() {
                               </button>
                               <button
                                 onClick={() => removeItem(line.id)}
+                                data-testid="cart-line-remove"
                                 disabled={loadingItems.has(line.id)}
                                 className={cn(
                                   'w-8 h-8 flex items-center justify-center',

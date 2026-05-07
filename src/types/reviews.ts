@@ -20,6 +20,7 @@ export interface Review {
   createdAt: string
   verified?: boolean
   countryCode?: string
+  source?: 'customer' | 'demo'
 }
 
 export interface AdminReview extends Review {

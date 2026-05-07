@@ -14,7 +14,6 @@ const navLinks = [
   { href: '/worlds', labelKey: 'worlds' as const },
   { href: '/shop', labelKey: 'shop' as const },
   { href: '/new', labelKey: 'newArrivals' as const },
-  { href: '/sale', labelKey: 'sale' as const },
 ]
 
 const secondaryLinks = [

@@ -3,6 +3,8 @@ import { createReview } from '@/lib/reviews/metaobjects'
 import { checkRateLimit, getClientIp } from '@/lib/utils/rateLimit'
 import { validateReview } from '@/lib/utils/validation'
 import { uploadImageToShopify } from '@/lib/shopify/fileUpload'
+import { requireSameOrigin } from '@/lib/utils/csrf'
+import { verifyTurnstileToken } from '@/lib/utils/turnstile'
 
 const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
 const MAX_IMAGE_SIZE = 4 * 1024 * 1024 // 4MB per image (stay under Vercel's 4.5MB body limit)
@@ -10,13 +12,20 @@ const MAX_IMAGES = 3
 
 export async function POST(request: Request) {
   try {
+    const csrfReject = requireSameOrigin(request)
+    if (csrfReject) return csrfReject
+
     // Rate limit: 2 requests per minute per IP (tighter for image uploads)
     const ip = getClientIp(request)
-    const rl = await checkRateLimit(`review:${ip}`, { maxRequests: 2, windowSeconds: 60 })
+    const rl = await checkRateLimit(`review:${ip}`, {
+      maxRequests: 2,
+      windowSeconds: 60,
+      failClosed: true,
+    })
     if (rl.limited) {
       return NextResponse.json(
         { success: false, error: 'Too many requests. Please try again later.' },
-        { status: 429 }
+        { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } }
       )
     }
 
@@ -37,6 +46,8 @@ export async function POST(request: Request) {
         title: formData.get('title') as string | null,
         content: formData.get('content') as string | null,
         anonymous: formData.get('anonymous') === 'true',
+        website: formData.get('website') as string | null,
+        turnstileToken: formData.get('turnstileToken') as string | null,
       }
 
       // Extract image files
@@ -49,6 +60,26 @@ export async function POST(request: Request) {
     } else {
       // Handle JSON (no images)
       bodyData = await request.json()
+    }
+
+    const honeypot = bodyData.website
+    if (typeof honeypot === 'string' && honeypot.trim().length > 0) {
+      console.warn(`[Reviews] Honeypot triggered (ip=${ip})`)
+      return NextResponse.json(
+        { success: true },
+        { headers: { 'Cache-Control': 'no-store' } }
+      )
+    }
+
+    const turnstileToken = typeof bodyData.turnstileToken === 'string'
+      ? bodyData.turnstileToken
+      : null
+    const turnstileValid = await verifyTurnstileToken(turnstileToken, ip)
+    if (!turnstileValid) {
+      return NextResponse.json(
+        { success: false, error: 'Verification failed. Please try again.' },
+        { status: 400 }
+      )
     }
 
     // Validate and sanitize text fields

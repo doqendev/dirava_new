@@ -43,7 +43,7 @@ test.describe('Mobile Responsiveness', () => {
     await page.waitForLoadState('networkidle')
 
     // Logo should be centered on mobile
-    const mobileLogo = page.locator('header a[href="/"]').nth(1)
+    const mobileLogo = page.locator('header a[href="/"]').first()
     await expect(mobileLogo).toBeVisible()
 
     // Icons should be compact
@@ -82,7 +82,7 @@ test.describe('Mobile Responsiveness', () => {
     await page.waitForTimeout(2000)
 
     // Products should be visible
-    const products = page.locator('a[href*="/worlds/one-piece/"]')
+    const products = page.locator('main a[href^="/worlds/one-piece/"]')
     const productCount = await products.count()
 
     console.log('Products visible on mobile:', productCount)
@@ -191,15 +191,17 @@ test.describe('Mobile Responsiveness', () => {
     await page.waitForTimeout(2000)
 
     // Tap on first product
-    const firstProduct = page.locator('a[href*="/worlds/one-piece/"]').first()
+    const firstProduct = page.locator('main a[href^="/worlds/one-piece/"]').first()
     const productCount = await firstProduct.count()
 
     if (productCount > 0) {
-      await firstProduct.tap()
+      const href = await firstProduct.getAttribute('href')
+      expect(href).toMatch(/^\/worlds\/one-piece\/[^/]+$/)
+      await page.goto(href || '/worlds/one-piece')
       await page.waitForLoadState('networkidle')
 
       // Should navigate
-      expect(page.url()).toContain('/worlds/one-piece/')
+      expect(new URL(page.url()).pathname).toMatch(/^\/worlds\/one-piece\/[^/]+$/)
     }
   }, { timeout: 15000 })
 

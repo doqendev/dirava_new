@@ -502,6 +502,8 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                     <AddToCartButton
                       variantId={selectedVariant?.id || ''}
                       quantity={1}
+                      unitPrice={selectedVariant ? parseFloat(selectedVariant.price.amount) : undefined}
+                      currency={selectedVariant?.price.currencyCode}
                       available={selectedVariant?.availableForSale ?? false}
                       requiresPersonalization={product.personalization}
                       personalizationValue={personalizationName}
@@ -518,6 +520,8 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               canvasCart={previewConfig && galleryInlineControlsEnabled ? {
                 variantId: selectedVariant?.id || '',
                 quantity,
+                unitPrice: selectedVariant ? parseFloat(selectedVariant.price.amount) : undefined,
+                currency: selectedVariant?.price.currencyCode,
                 available: selectedVariant?.availableForSale ?? false,
                 requiresPersonalization: product.personalization,
                 personalizationValue: personalizationName,
@@ -632,8 +636,8 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
               </div>
             )}
 
-            {/* Stock Indicator (hidden for personalized products) */}
-            {selectedVariant && !product.personalization && (
+            {/* Real Shopify availability, including made-to-order products. */}
+            {selectedVariant && (
               <StockIndicator
                 availableForSale={selectedVariant.availableForSale}
                 quantityAvailable={selectedVariant.quantityAvailable}
@@ -666,6 +670,8 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                     <AddToCartButton
                       variantId={selectedVariant?.id || ''}
                       quantity={1}
+                      unitPrice={selectedVariant ? parseFloat(selectedVariant.price.amount) : undefined}
+                      currency={selectedVariant?.price.currencyCode}
                       available={selectedVariant?.availableForSale ?? false}
                       requiresPersonalization={product.personalization}
                       personalizationValue={personalizationName}
@@ -685,6 +691,8 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                 <AddToCartButton
                   variantId={selectedVariant?.id || ''}
                   quantity={quantity}
+                  unitPrice={selectedVariant ? parseFloat(selectedVariant.price.amount) : undefined}
+                  currency={selectedVariant?.price.currencyCode}
                   available={selectedVariant?.availableForSale ?? false}
                   attributes={cartAttributes}
                   themeColor="#19ff7a"
@@ -708,14 +716,21 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
             )}
 
             <div className="pt-4">
-              <TrustStrip />
+              <TrustStrip
+                productType={product.productType}
+                isPersonalized={product.personalization}
+              />
             </div>
 
             {/* Limited slots — keep urgency near the buying flow, after the
                 baseline trust signals so it supports rather than replaces
                 reassurance. The left column under the gallery stays clean. */}
             <div className={cn(product.personalization ? 'pt-5' : 'pt-7')}>
-              <LimitedSlotsBanner accent={themeColor} productHandle={product.handle} />
+              <LimitedSlotsBanner
+                accent={themeColor}
+                productHandle={product.handle}
+                productType={product.productType}
+              />
             </div>
             </div>
             {/* end buy box card */}
@@ -730,7 +745,11 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                   aria-expanded={isDescriptionOpen}
                   className="w-full flex items-center justify-between py-5"
                 >
-                  <span className="font-display text-[16px] font-bold uppercase tracking-wider text-white">
+                  <span
+                    role="heading"
+                    aria-level={2}
+                    className="font-display text-[16px] font-bold uppercase tracking-wider text-white"
+                  >
                     {t('description')}
                   </span>
                   <ChevronDown
@@ -793,6 +812,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                     <p>{t('shippingUK')}</p>
                     <p>{t('shippingCanada')}</p>
                     <p>{t('shippingAustralia')}</p>
+                    <p className="text-white/45 text-xs pt-1">{t('shippingUSUnavailable')}</p>
                     <p className="text-white/45 text-xs pt-1">{t('shippingCustoms')}</p>
                   </div>
                 </div>
@@ -830,7 +850,9 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
                     <p>{t('returnsPolicy')}</p>
                     <p>{t('returnsExchanges')}</p>
                     <p>{t('returnsRefund')}</p>
-                    <p className="text-white/45 text-xs pt-1">{t('returnsFinalSale')}</p>
+                    {product.personalization && (
+                      <p className="text-white/45 text-xs pt-1">{t('returnsFinalSale')}</p>
+                    )}
                   </div>
                 </div>
               </div>

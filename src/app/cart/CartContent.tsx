@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
@@ -13,8 +14,14 @@ import { useCartStore } from '@/stores/cartStore'
 export default function CartContent() {
   const t = useTranslations('cart')
   const tDiscount = useTranslations('discount')
-  const { lines, totalQuantity, subtotal, total, discountAmount, checkoutUrl, updateItem, removeItem, loadingItems } =
+  const { cartId, lines, totalQuantity, subtotal, total, discountAmount, checkoutUrl, updateItem, removeItem, loadingItems, initializeCart } =
     useCartStore()
+
+  useEffect(() => {
+    if (cartId && lines.length === 0) {
+      initializeCart()
+    }
+  }, [cartId, lines.length, initializeCart])
 
   if (lines.length === 0) {
     return (
@@ -68,6 +75,7 @@ export default function CartContent() {
               <div
                 key={line.id}
                 className="flex gap-4 p-4 bg-bg-card rounded-xl border border-border-subtle"
+                data-testid="cart-line"
               >
                 {/* Product Image */}
                 <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-bg-secondary">
@@ -113,6 +121,7 @@ export default function CartContent() {
                         onClick={() =>
                           updateItem(line.id, Math.max(0, line.quantity - 1))
                         }
+                        data-testid="cart-line-decrease"
                         disabled={loadingItems.has(line.id)}
                         className={cn(
                           'w-10 h-10 flex items-center justify-center',
@@ -124,11 +133,12 @@ export default function CartContent() {
                       >
                         <Minus className="w-4 h-4" />
                       </button>
-                      <span className="w-10 text-center font-mono">
+                      <span className="w-10 text-center font-mono" data-testid="cart-line-quantity">
                         {line.quantity}
                       </span>
                       <button
                         onClick={() => updateItem(line.id, line.quantity + 1)}
+                        data-testid="cart-line-increase"
                         disabled={loadingItems.has(line.id)}
                         className={cn(
                           'w-10 h-10 flex items-center justify-center',
@@ -151,6 +161,7 @@ export default function CartContent() {
                       </span>
                       <button
                         onClick={() => removeItem(line.id)}
+                        data-testid="cart-line-remove"
                         disabled={loadingItems.has(line.id)}
                         className={cn(
                           'w-10 h-10 flex items-center justify-center rounded-lg',

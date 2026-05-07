@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
 import { Mail, Check, Loader2, Zap } from 'lucide-react'
@@ -12,25 +13,38 @@ export function NewsletterBanner() {
   const t = useTranslations('newsletter')
   const tFooter = useTranslations('footer')
   const [email, setEmail] = useState('')
+  const [consent, setConsent] = useState(false)
+  const [website, setWebsite] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) return
+    if (!consent) {
+      setStatus('error')
+      setMessage(tFooter('consentRequired'))
+      return
+    }
 
     setStatus('loading')
     try {
       const res = await fetch('/api/newsletter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({
+          email,
+          marketingConsent: consent,
+          website,
+        }),
       })
 
       if (res.ok) {
         setStatus('success')
         setMessage(t('successMessage'))
         setEmail('')
+        setConsent(false)
+        setWebsite('')
       } else {
         const data = await res.json()
         setStatus('error')
@@ -148,40 +162,73 @@ export function NewsletterBanner() {
               <span className="text-neon-cyan font-semibold">{message}</span>
             </motion.div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
-              <div className="flex-1 relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30 group-focus-within:text-neon-cyan transition-colors" />
-                <Input
-                  type="email"
-                  placeholder={tFooter('emailPlaceholder')}
-                  value={email}
-                  onChange={handleEmailChange}
+            <form onSubmit={handleSubmit} className="max-w-lg mx-auto">
+              <input
+                type="text"
+                name="website"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="hidden"
+              />
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex-1 relative group">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30 group-focus-within:text-neon-cyan transition-colors" />
+                  <Input
+                    type="email"
+                    placeholder={tFooter('emailPlaceholder')}
+                    value={email}
+                    onChange={handleEmailChange}
+                    className={cn(
+                      'pl-12 h-14 text-base',
+                      'bg-white/5 border-white/10',
+                      'focus:border-neon-cyan/50 focus:shadow-[0_0_20px_rgba(0,245,255,0.15)]',
+                      'transition-shadow duration-300'
+                    )}
+                    required
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  disabled={status === 'loading'}
                   className={cn(
-                    'pl-12 h-14 text-base',
-                    'bg-white/5 border-white/10',
-                    'focus:border-neon-cyan/50 focus:shadow-[0_0_20px_rgba(0,245,255,0.15)]',
+                    'h-14 px-10 text-base font-bold',
+                    'shadow-[0_0_20px_rgba(0,245,255,0.3)]',
+                    'hover:shadow-[0_0_30px_rgba(0,245,255,0.5)]',
                     'transition-shadow duration-300'
                   )}
-                  required
-                />
+                  variant="primary"
+                >
+                  {status === 'loading' ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    t('joinNow')
+                  )}
+                </Button>
               </div>
-              <Button
-                type="submit"
-                disabled={status === 'loading'}
-                className={cn(
-                  'h-14 px-10 text-base font-bold',
-                  'shadow-[0_0_20px_rgba(0,245,255,0.3)]',
-                  'hover:shadow-[0_0_30px_rgba(0,245,255,0.5)]',
-                  'transition-shadow duration-300'
-                )}
-                variant="primary"
-              >
-                {status === 'loading' ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  t('joinNow')
-                )}
-              </Button>
+              <label className="mt-3 flex items-start gap-2 text-left text-xs text-white/45">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => {
+                    setConsent(e.target.checked)
+                    if (status === 'error') {
+                      setStatus('idle')
+                      setMessage('')
+                    }
+                  }}
+                  className="mt-0.5 rounded border-white/20 bg-black/40 text-neon-cyan focus:ring-neon-cyan"
+                  disabled={status === 'loading'}
+                />
+                <span>
+                  {tFooter('newsletterConsent')}{' '}
+                  <Link href="/policies/privacy" className="text-neon-cyan hover:underline">
+                    {tFooter('privacyPolicy')}
+                  </Link>
+                </span>
+              </label>
             </form>
           )}
 

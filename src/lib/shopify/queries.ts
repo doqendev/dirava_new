@@ -187,6 +187,7 @@ export const GET_PRODUCT = gql`
             id
             title
             availableForSale
+            quantityAvailable
             price {
               amount
               currencyCode
@@ -539,9 +540,13 @@ export const GET_BEST_SELLERS = gql`
  */
 export const GET_ALL_PRODUCTS = gql`
   ${PRODUCT_FRAGMENT}
-  query GetAllProducts($first: Int!, $country: CountryCode = PT)
+  query GetAllProducts($first: Int!, $after: String, $country: CountryCode = PT)
   @inContext(country: $country) {
-    products(first: $first, sortKey: CREATED_AT, reverse: true) {
+    products(first: $first, after: $after, sortKey: CREATED_AT, reverse: true) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
       edges {
         node {
           ...ProductFields
