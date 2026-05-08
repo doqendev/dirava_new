@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getReviewsByProduct, getReviewStats } from '@/lib/reviews/metaobjects'
+import { getPublicReviewData } from '@/lib/reviews/metaobjects'
 
 const EMPTY_STATS = {
   averageRating: 0,
@@ -16,14 +16,11 @@ export async function GET(
   // Reviews are non-critical — never 500 the product page over a review
   // fetch failure. Log and return empty data so the UI renders "no reviews yet".
   try {
-    const [reviews, stats] = await Promise.all([
-      getReviewsByProduct(handle, 'approved'),
-      getReviewStats(handle),
-    ])
+    const { reviews, stats } = await getPublicReviewData(handle)
 
     return NextResponse.json(
       { success: true, reviews, stats },
-      { headers: { 'Cache-Control': 's-maxage=30, stale-while-revalidate=120' } }
+      { headers: { 'Cache-Control': 's-maxage=300, stale-while-revalidate=600' } }
     )
   } catch (error) {
     console.error(

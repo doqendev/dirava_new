@@ -15,7 +15,7 @@ import { getLocalizedFaqs } from '@/data/faq'
 import { getLocalizedProductFaqs, generalFaqIndices } from '@/data/productFaqs'
 import { getLocale } from '@/i18n/request'
 import { getMessages } from '@/i18n/messages'
-import { getReviewsByProduct, getReviewStats } from '@/lib/reviews/metaobjects'
+import { getPublicReviewData } from '@/lib/reviews/metaobjects'
 import type { ShopifyProduct } from '@/types/shopify'
 import type { Review } from '@/types/reviews'
 import { SITE_URL } from '@/lib/utils/siteUrl'
@@ -245,11 +245,11 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   const tCommon = await getTranslations('common')
 
   // Fetch recommendations and review data in parallel
-  const [recommendations, reviewStats, approvedReviews] = await Promise.all([
+  const [recommendations, reviewData] = await Promise.all([
     getRecommendedProducts(product.id, product.collectionHandle || null, universe),
-    getReviewStats(productHandle),
-    getReviewsByProduct(productHandle, 'approved'),
+    getPublicReviewData(productHandle),
   ])
+  const { stats: reviewStats, reviews: approvedReviews } = reviewData
 
   // Product JSON-LD schema
   const productSchema = {
@@ -396,6 +396,8 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       <div id="reviews" className="px-4 py-12 max-w-7xl mx-auto border-t border-border-subtle">
         <ReviewList
           productHandle={product.handle}
+          initialReviews={approvedReviews}
+          initialStats={reviewStats}
           color={
             UNIVERSE_CONFIG[
               (product.productUniverse || universe) as keyof typeof UNIVERSE_CONFIG

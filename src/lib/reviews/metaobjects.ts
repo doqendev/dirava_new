@@ -4,6 +4,7 @@
  * Uses Shopify Metaobjects as a database for product reviews
  */
 
+import { revalidateTag, unstable_cache } from 'next/cache'
 import { adminFetch } from '@/lib/shopify/adminClient'
 import { calculateReviewStats, mergeDemoReviews } from '@/lib/reviews/demoReviews'
 import type { Review, ReviewRating, AdminReview } from '@/types/reviews'
@@ -208,6 +209,14 @@ interface ReviewImportSourceIdsResponse {
   }
 }
 
+interface PublicReviewData {
+  reviews: Review[]
+  stats: ReviewRating
+}
+
+const PUBLIC_REVIEWS_CACHE_TAG = 'public-reviews'
+const PUBLIC_REVIEWS_REVALIDATE_SECONDS = 300
+
 // ============================================================================
 // Helper Functions
 // ============================================================================
@@ -270,6 +279,49 @@ async function fetchAllReviewMetaobjects(): Promise<MetaobjectNode[]> {
   }
 
   return nodes
+}
+
+async function getReviewsByProductUncached(
+  productHandle: string,
+  status?: string
+): Promise<Review[]> {
+  // Fetch all shop_review metaobjects and filter in-memory.
+  // Shopify metaobject query filtering is unreliable for field values.
+  const nodes = await fetchAllReviewMetaobjects()
+
+  const getField = (node: MetaobjectNode, key: string) =>
+    node.fields.find(f => f.key === key)?.value || ''
+
+  const filtered = nodes.filter((node) => {
+    if (getField(node, 'product_handle') !== productHandle) return false
+    if (status && getField(node, 'status') !== status) return false
+    return true
+  })
+
+  const reviews = filtered.map(parseReviewFromMetaobject)
+  return status === undefined || status === 'approved'
+    ? mergeDemoReviews(productHandle, reviews)
+    : reviews
+}
+
+const getCachedApprovedReviewsByProduct = unstable_cache(
+  async (productHandle: string) => getReviewsByProductUncached(productHandle, 'approved'),
+  ['public-approved-reviews-by-product-v1'],
+  {
+    revalidate: PUBLIC_REVIEWS_REVALIDATE_SECONDS,
+    tags: [PUBLIC_REVIEWS_CACHE_TAG],
+  }
+)
+
+function revalidatePublicReviews(): void {
+  try {
+    revalidateTag(PUBLIC_REVIEWS_CACHE_TAG)
+  } catch (error) {
+    console.warn(
+      '[reviews] public review cache revalidation skipped:',
+      error instanceof Error ? error.message : error
+    )
+  }
 }
 
 /**
@@ -553,6 +605,7 @@ export async function createReview(data: {
       return null
     }
 
+    revalidatePublicReviews()
     return parseReviewFromMetaobject(response.metaobjectCreate.metaobject)
   } catch (error) {
     console.error('Error creating review:', error)
@@ -571,29 +624,28 @@ export async function getReviewsByProduct(
   status?: string
 ): Promise<Review[]> {
   try {
-    // Fetch all shop_review metaobjects and filter in-memory
-    // Shopify metaobject query filtering is unreliable for field values
-    const nodes = await fetchAllReviewMetaobjects()
+    if (status === 'approved') {
+      return await getCachedApprovedReviewsByProduct(productHandle)
+    }
 
-    const getField = (node: MetaobjectNode, key: string) =>
-      node.fields.find(f => f.key === key)?.value || ''
-
-    const filtered = nodes.filter((node) => {
-      if (getField(node, 'product_handle') !== productHandle) return false
-      if (status && getField(node, 'status') !== status) return false
-      return true
-    })
-
-    const reviews = filtered.map(parseReviewFromMetaobject)
-    return status === undefined || status === 'approved'
-      ? mergeDemoReviews(productHandle, reviews)
-      : reviews
+    return await getReviewsByProductUncached(productHandle, status)
   } catch (error) {
     console.error(
       `[reviews] getReviewsByProduct failed for "${productHandle}":`,
       error instanceof Error ? error.message : error
     )
     return []
+  }
+}
+
+/**
+ * Get approved public reviews and aggregate stats with a single cached read.
+ */
+export async function getPublicReviewData(productHandle: string): Promise<PublicReviewData> {
+  const reviews = await getReviewsByProduct(productHandle, 'approved')
+  return {
+    reviews,
+    stats: calculateReviewStats(reviews),
   }
 }
 
@@ -641,6 +693,7 @@ export async function updateReviewStatus(
       return null
     }
 
+    revalidatePublicReviews()
     return parseReviewFromMetaobject(response.metaobjectUpdate.metaobject)
   } catch (error) {
     console.error('Error updating review status:', error)
@@ -711,6 +764,7 @@ export async function updateReview(
       return null
     }
 
+    revalidatePublicReviews()
     return parseReviewFromMetaobject(response.metaobjectUpdate.metaobject)
   } catch (error) {
     console.error('Error updating review:', error)

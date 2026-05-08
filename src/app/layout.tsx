@@ -61,6 +61,12 @@ export async function generateMetadata(): Promise<Metadata> {
     description: t('homeDescription'),
     keywords: t('keywords'),
     authors: [{ name: t('siteName') }],
+    icons: {
+      icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
+      shortcut: ['/icon.svg'],
+      apple: [{ url: '/apple-icon', sizes: '180x180', type: 'image/png' }],
+    },
+    manifest: '/manifest.webmanifest',
     openGraph: {
       type: 'website',
       locale: ogLocaleMap[locale] || 'en_US',

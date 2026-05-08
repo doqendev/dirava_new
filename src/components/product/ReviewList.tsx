@@ -23,16 +23,23 @@ function countryCodeToFlag(code: string): string {
 
 interface ReviewListProps {
   productHandle: string
+  initialReviews?: Review[]
+  initialStats?: ReviewRating
   /** Universe accent color used to theme stars and breakdown bars. */
   color?: string
 }
 
-export default function ReviewList({ productHandle, color }: ReviewListProps) {
+export default function ReviewList({
+  productHandle,
+  initialReviews,
+  initialStats,
+  color,
+}: ReviewListProps) {
   const t = useTranslations('reviews')
   const locale = useLocale()
-  const [reviews, setReviews] = useState<Review[]>([])
-  const [stats, setStats] = useState<ReviewRating | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [reviews, setReviews] = useState<Review[]>(() => initialReviews ?? [])
+  const [stats, setStats] = useState<ReviewRating | null>(() => initialStats ?? null)
+  const [isLoading, setIsLoading] = useState(initialReviews === undefined)
   const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null)
   const [photosOnly, setPhotosOnly] = useState(false)
 
@@ -47,6 +54,13 @@ export default function ReviewList({ productHandle, color }: ReviewListProps) {
   )
 
   useEffect(() => {
+    if (initialReviews !== undefined) {
+      setReviews(initialReviews)
+      setStats(initialStats ?? null)
+      setIsLoading(false)
+      return
+    }
+
     const fetchReviews = async () => {
       setIsLoading(true)
       try {
@@ -64,7 +78,7 @@ export default function ReviewList({ productHandle, color }: ReviewListProps) {
     }
 
     fetchReviews()
-  }, [productHandle])
+  }, [productHandle, initialReviews, initialStats])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)

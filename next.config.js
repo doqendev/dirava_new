@@ -70,8 +70,22 @@ const nextConfig = {
       },
     ]
   },
+  async rewrites() {
+    return [
+      {
+        source: '/favicon.ico',
+        destination: '/icon.svg',
+      },
+    ]
+  },
   async headers() {
     return [
+      {
+        source: '/meta.json',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=3600, stale-while-revalidate=86400' },
+        ],
+      },
       {
         source: '/(.*)',
         headers: [

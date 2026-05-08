@@ -1,0 +1,20 @@
+{
+  "name": "Mizoke",
+  "short_name": "Mizoke",
+  "description": "Premium custom anime merchandise and personalized LED signs.",
+  "url": "https://www.mizoke.com",
+  "theme_color": "#0a0a12",
+  "background_color": "#0a0a12",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/apple-icon",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

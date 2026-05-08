@@ -72,7 +72,7 @@ export async function checkRateLimit(
       return { limited: true, retryAfter: 60 }
     }
 
-    console.error('[Rate Limit] Redis error, allowing request:', message)
+    console.warn('[Rate Limit] Redis error, allowing non-sensitive request:', message)
     return { limited: false }
   }
 }
