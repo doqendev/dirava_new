@@ -34,6 +34,7 @@ describe('metaAttribution', () => {
   afterEach(() => {
     clearClickIds()
     clearCookies()
+    vi.restoreAllMocks()
     vi.useRealTimers()
   })
 
@@ -42,12 +43,18 @@ describe('metaAttribution', () => {
     expect(makeFbc('CLICK123', 123)).toBe('fb.1.123.CLICK123')
   })
 
+  it('generates a 10-digit _fbp random component by default', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0)
+
+    expect(makeFbp(123)).toBe('fb.1.123.1000000000')
+  })
+
   it('creates _fbp and _fbc from the current fbclid when invoked', () => {
     replaceUrl('/?fbclid=FB123')
 
     ensureMetaAttribution()
 
-    expect(readTrackingCookie('_fbp')).toMatch(new RegExp(`^fb\\.1\\.${NOW}\\.\\d+$`))
+    expect(readTrackingCookie('_fbp')).toMatch(new RegExp(`^fb\\.1\\.${NOW}\\.\\d{10}$`))
     expect(readTrackingCookie('_fbc')).toBe(`fb.1.${NOW}.FB123`)
   })
 

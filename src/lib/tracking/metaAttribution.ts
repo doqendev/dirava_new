@@ -26,13 +26,7 @@ function setTrackingCookie(name: string, value: string): void {
 }
 
 function makeRandomId(): string {
-  if (typeof crypto !== 'undefined' && 'getRandomValues' in crypto) {
-    const values = new Uint32Array(2)
-    crypto.getRandomValues(values)
-    return `${values[0] ?? 0}${values[1] ?? 0}`
-  }
-
-  return Math.floor(Math.random() * 1e16).toString()
+  return Math.floor(1000000000 + Math.random() * 9000000000).toString()
 }
 
 export function makeFbp(now = Date.now(), randomId = makeRandomId()): string {
