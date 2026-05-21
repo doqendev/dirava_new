@@ -29,6 +29,7 @@ const ALLOWED_EVENTS = new Set([
   'ViewContent',
   'AddToCart',
   'InitiateCheckout',
+  'Purchase',
 ])
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -96,12 +97,20 @@ export async function POST(req: NextRequest) {
   try {
     // Track Clear's ingest reads X-TL-API-Key (confirmed from their pixel
     // source). Neither X-API-Key nor Authorization: Bearer are recognised.
+    const upstreamHeaders: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'X-TL-API-Key': API_KEY,
+    }
+    if (clientIp) {
+      upstreamHeaders['X-TL-Client-IP'] = clientIp
+    }
+    if (userAgent) {
+      upstreamHeaders['X-TL-Client-UA'] = userAgent
+    }
+
     const res = await fetch(INGEST_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-TL-API-Key': API_KEY,
-      },
+      headers: upstreamHeaders,
       body: payload,
     })
 

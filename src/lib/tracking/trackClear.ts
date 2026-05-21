@@ -12,6 +12,7 @@
  */
 
 import { getClickIds } from './clickIds'
+import { readTrackingCookie } from './metaAttribution'
 
 const PROXY_PATH = '/api/track'
 
@@ -26,12 +27,6 @@ function newEventId(): string {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
 }
 
-function readCookie(name: string): string | null {
-  if (typeof document === 'undefined') return null
-  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
-  return match ? decodeURIComponent(match[2]!) : null
-}
-
 interface TrackClearPayload {
   eventName: string
   eventId: string
@@ -40,6 +35,9 @@ interface TrackClearPayload {
   referrer: string
   fbp: string | null
   fbc: string | null
+  fbclid: string | null
+  gbraid: string | null
+  wbraid: string | null
   ttclid: string | null
   rdtCid: string | null
   epik: string | null
@@ -65,7 +63,7 @@ function buildPayload(
 
   // Extract Google Analytics client ID from _ga cookie if present
   let gaClientId: string | null = null
-  const gaCookie = readCookie('_ga')
+  const gaCookie = readTrackingCookie('_ga')
   if (gaCookie) {
     const parts = gaCookie.split('.')
     if (parts.length >= 4) gaClientId = parts.slice(2).join('.')
@@ -77,11 +75,14 @@ function buildPayload(
     timestamp: Date.now(),
     url: window.location.href,
     referrer: document.referrer || '',
-    fbp: readCookie('_fbp'),
-    fbc: readCookie('_fbc'),
+    fbp: readTrackingCookie('_fbp'),
+    fbc: readTrackingCookie('_fbc'),
+    fbclid: clickIds['fbclid'] || null,
+    gbraid: clickIds['gbraid'] || null,
+    wbraid: clickIds['wbraid'] || null,
     ttclid: clickIds['ttclid'] || null,
     rdtCid: clickIds['rdt_cid'] || null,
-    epik: clickIds['epik'] || readCookie('_epik'),
+    epik: clickIds['epik'] || readTrackingCookie('_epik'),
     gclid: clickIds['gclid'] || null,
     gaClientId,
     utmSource: utm['utm_source'] || null,

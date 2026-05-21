@@ -21,6 +21,13 @@ const CLICK_ID_PARAMS = [
   'li_fat_id', // LinkedIn
   'twclid', // X (Twitter) Ads
   'irclickid', // Impact partner tracking
+  'rdt_cid', // Reddit
+  'epik', // Pinterest
+  'utm_source',
+  'utm_medium',
+  'utm_campaign',
+  'utm_content',
+  'utm_term',
 ] as const
 
 interface StoredClickIds {

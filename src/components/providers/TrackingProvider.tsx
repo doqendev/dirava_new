@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { captureClickIds } from '@/lib/tracking/clickIds'
+import { ensureMetaAttribution } from '@/lib/tracking/metaAttribution'
 import { trackPageView } from '@/lib/tracking/trackClear'
 import { useCookieConsentStore } from '@/stores/cookieConsentStore'
 
@@ -21,6 +22,7 @@ export function TrackingProvider(): null {
   useEffect(() => {
     if (!consentGiven || !marketingEnabled) return
     captureClickIds()
+    ensureMetaAttribution()
     trackPageView()
     // searchParams is included so navigation to URLs with new click IDs
     // (e.g. ?fbclid=…) re-captures before firing PageView.

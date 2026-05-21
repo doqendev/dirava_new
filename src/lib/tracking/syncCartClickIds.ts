@@ -9,6 +9,7 @@
 import { shopifyClient } from '@/lib/shopify/client'
 import { gql } from 'graphql-request'
 import { getClickIds } from './clickIds'
+import { getMetaAttributionCookies } from './metaAttribution'
 
 const CART_ATTRIBUTES_UPDATE = gql`
   mutation CartAttributesUpdate($cartId: ID!, $attributes: [AttributeInput!]!) {
@@ -26,13 +27,21 @@ const CART_ATTRIBUTES_UPDATE = gql`
 
 export async function syncCartClickIds(cartId: string): Promise<void> {
   const ids = getClickIds()
-  const keys = Object.keys(ids)
+  const metaCookies = getMetaAttributionCookies()
+  const idsWithCookies: Record<string, string> = { ...ids }
+  if (metaCookies.fbp) {
+    idsWithCookies.fbp = metaCookies.fbp
+  }
+  if (metaCookies.fbc) {
+    idsWithCookies.fbc = metaCookies.fbc
+  }
+  const keys = Object.keys(idsWithCookies)
   if (keys.length === 0) return
 
   try {
     const attributes = keys
       .map((key) => {
-        const value = ids[key]
+        const value = idsWithCookies[key]
         if (!value) return null
         return { key: `_${key}`, value }
       })

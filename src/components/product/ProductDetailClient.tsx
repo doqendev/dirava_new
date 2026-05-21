@@ -91,6 +91,8 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
   const config = UNIVERSE_CONFIG[universe as keyof typeof UNIVERSE_CONFIG]
   const themeColor = config?.color || '#00f5ff'
   const universeName = config?.name || universe.replace(/-/g, ' ')
+  const consentGiven = useCookieConsentStore((state) => state.consentGiven)
+  const marketingEnabled = useCookieConsentStore((state) => state.preferences.marketing)
 
   // Size guide modal state
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false)
@@ -206,6 +208,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
 
   // Ref for sticky add-to-cart IntersectionObserver
   const cartButtonRef = useRef<HTMLDivElement>(null)
+  const viewContentTrackedProductRef = useRef<string | null>(null)
 
   // Gallery ref for programmatic 3D navigation
   const galleryRef = useRef<ProductGalleryHandle>(null)
@@ -288,6 +291,7 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
   }, [product.personalization, personalizationName, dragonBallOReplacementActive, ballPickerEnabled, effectiveBallPosition, describeBallPosition])
 
   // Track product view for recently viewed feature
+  const primaryVariantId = product.variants[0]?.id
   useTrackProductView({
     productId: product.id,
     handle: product.handle,
@@ -296,22 +300,34 @@ export function ProductDetailClient({ universe, product }: ProductDetailClientPr
     compareAtPrice: product.compareAtPriceRange?.minVariantPrice,
     image: product.images[0] || null,
     universe,
-    variantId: product.variants[0]?.id,
+    variantId: primaryVariantId,
   })
 
-  // Fire Track Clear ViewContent once per product (gated by marketing consent)
+  // Fire Track Clear ViewContent once per product. If the shopper grants
+  // marketing consent after landing on the PDP, this effect runs again and
+  // sends the product view without requiring a navigation.
   useEffect(() => {
-    const consent = useCookieConsentStore.getState()
-    if (!consent.consentGiven || !consent.preferences.marketing) return
+    if (!consentGiven || !marketingEnabled) return
+    if (viewContentTrackedProductRef.current === product.id) return
+
+    viewContentTrackedProductRef.current = product.id
     trackViewContent({
-      variantId: product.variants[0]?.id,
+      variantId: primaryVariantId,
       title: product.title,
       productType: product.productType || '',
       price: parseFloat(product.priceRange.minVariantPrice.amount),
       currency: product.priceRange.minVariantPrice.currencyCode,
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [product.id])
+  }, [
+    consentGiven,
+    marketingEnabled,
+    primaryVariantId,
+    product.id,
+    product.priceRange.minVariantPrice.amount,
+    product.priceRange.minVariantPrice.currencyCode,
+    product.productType,
+    product.title,
+  ])
 
   // Find selected variant
   const selectedVariant = useMemo(() => {
