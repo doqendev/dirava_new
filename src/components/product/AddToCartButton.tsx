@@ -94,11 +94,13 @@ export function AddToCartButton({
       // Fire Track Clear AddToCart event (gated by marketing consent)
       const consent = useCookieConsentStore.getState()
       if (consent.consentGiven && consent.preferences.marketing) {
+        const cartId = useCartStore.getState().cartId
         trackAddToCart({
           variantId,
           price: unitPrice ?? 0,
           currency: currency || 'EUR',
           quantity,
+          cartId,
         })
       }
 

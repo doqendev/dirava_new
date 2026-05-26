@@ -403,6 +403,7 @@ export function CartDrawer() {
                       })),
                       totalValue: parseFloat(total?.amount || subtotal?.amount || '0'),
                       currency: total?.currencyCode || subtotal?.currencyCode || 'EUR',
+                      cartId: store.cartId,
                     })
                     syncCartClickIds(store.cartId).finally(() => {
                       window.location.href = checkoutUrl

@@ -8,8 +8,10 @@
 
 import { shopifyClient } from '@/lib/shopify/client'
 import { gql } from 'graphql-request'
-import { getClickIds } from './clickIds'
+import { useCookieConsentStore } from '@/stores/cookieConsentStore'
+import { getClickIds, getStoredLandingPage } from './clickIds'
 import { getMetaAttributionCookies } from './metaAttribution'
+import { ensureTrackClearSessionId } from './trackClearSession'
 
 const CART_ATTRIBUTES_UPDATE = gql`
   mutation CartAttributesUpdate($cartId: ID!, $attributes: [AttributeInput!]!) {
@@ -28,13 +30,29 @@ const CART_ATTRIBUTES_UPDATE = gql`
 export async function syncCartClickIds(cartId: string): Promise<void> {
   const ids = getClickIds()
   const metaCookies = getMetaAttributionCookies()
+  const trackclearSessionId = ensureTrackClearSessionId()
+  const consent = useCookieConsentStore.getState()
   const idsWithCookies: Record<string, string> = { ...ids }
+
+  if (trackclearSessionId) {
+    idsWithCookies.trackclear_session_id = trackclearSessionId
+  }
   if (metaCookies.fbp) {
     idsWithCookies.fbp = metaCookies.fbp
   }
   if (metaCookies.fbc) {
     idsWithCookies.fbc = metaCookies.fbc
   }
+  if (typeof window !== 'undefined') {
+    idsWithCookies.landing_page = getStoredLandingPage() || window.location.href
+  }
+  if (consent.consentGiven) {
+    idsWithCookies.tc_consent_analytics = String(consent.preferences.analytics)
+    idsWithCookies.tc_consent_marketing = String(consent.preferences.marketing)
+    idsWithCookies.tc_consent_timestamp = consent.consentDate || new Date().toISOString()
+    idsWithCookies.tc_consent_source = 'headless_storefront'
+  }
+
   const keys = Object.keys(idsWithCookies)
   if (keys.length === 0) return
 

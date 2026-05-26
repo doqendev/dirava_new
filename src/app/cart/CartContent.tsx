@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import type { MouseEvent } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
@@ -10,6 +11,9 @@ import { formatPrice } from '@/lib/utils/formatPrice'
 import { Button } from '@/components/ui/Button'
 import { DiscountCodeInput } from '@/components/cart/DiscountCodeInput'
 import { useCartStore } from '@/stores/cartStore'
+import { useCookieConsentStore } from '@/stores/cookieConsentStore'
+import { syncCartClickIds } from '@/lib/tracking/syncCartClickIds'
+import { trackInitiateCheckout } from '@/lib/tracking/trackClear'
 
 export default function CartContent() {
   const t = useTranslations('cart')
@@ -22,6 +26,28 @@ export default function CartContent() {
       initializeCart()
     }
   }, [cartId, lines.length, initializeCart])
+
+  const handleCheckoutClick = (event: MouseEvent) => {
+    const store = useCartStore.getState()
+    if (!store.cartId || !checkoutUrl) return
+
+    const consent = useCookieConsentStore.getState()
+    if (!consent.consentGiven || !consent.preferences.marketing) return
+
+    event.preventDefault()
+    trackInitiateCheckout({
+      lines: lines.map((line) => ({
+        variantId: line.merchandise.id,
+        quantity: line.quantity,
+      })),
+      totalValue: parseFloat(total?.amount || subtotal?.amount || '0'),
+      currency: total?.currencyCode || subtotal?.currencyCode || 'EUR',
+      cartId: store.cartId,
+    })
+    syncCartClickIds(store.cartId).finally(() => {
+      window.location.href = checkoutUrl
+    })
+  }
 
   if (lines.length === 0) {
     return (
@@ -231,6 +257,7 @@ export default function CartContent() {
             size="lg"
             className="w-full"
             disabled={!checkoutUrl}
+            onClick={handleCheckoutClick}
           >
             {t('proceedToCheckout')}
           </Button>

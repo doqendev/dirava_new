@@ -13,6 +13,7 @@
 
 import { getClickIds } from './clickIds'
 import { readTrackingCookie } from './metaAttribution'
+import { ensureTrackClearSessionId } from './trackClearSession'
 
 const PROXY_PATH = '/api/track'
 
@@ -33,6 +34,9 @@ interface TrackClearPayload {
   timestamp: number
   url: string
   referrer: string
+  trackclearSessionId: string | null
+  checkoutToken: string | null
+  cartToken: string | null
   fbp: string | null
   fbc: string | null
   fbclid: string | null
@@ -53,10 +57,16 @@ interface TrackClearPayload {
   customData: Record<string, unknown>
 }
 
+interface TrackClearEventContext {
+  checkoutToken?: string | null
+  cartToken?: string | null
+}
+
 function buildPayload(
   eventName: string,
   customData: Record<string, unknown>,
-  userData: Record<string, string | null> = {}
+  userData: Record<string, string | null> = {},
+  context: TrackClearEventContext = {}
 ): TrackClearPayload {
   const clickIds = getClickIds()
   const utm = clickIds // URL params shared namespace
@@ -75,6 +85,9 @@ function buildPayload(
     timestamp: Date.now(),
     url: window.location.href,
     referrer: document.referrer || '',
+    trackclearSessionId: ensureTrackClearSessionId(),
+    checkoutToken: context.checkoutToken || null,
+    cartToken: context.cartToken || null,
     fbp: readTrackingCookie('_fbp'),
     fbc: readTrackingCookie('_fbc'),
     fbclid: clickIds['fbclid'] || null,
@@ -102,11 +115,12 @@ function buildPayload(
 async function send(
   eventName: string,
   customData: Record<string, unknown>,
-  userData: Record<string, string | null> = {}
+  userData: Record<string, string | null> = {},
+  context: TrackClearEventContext = {}
 ): Promise<void> {
   if (!canTrack()) return
   try {
-    const payload = buildPayload(eventName, customData, userData)
+    const payload = buildPayload(eventName, customData, userData, context)
     // keepalive lets the request survive a navigation (checkout redirect).
     await fetch(PROXY_PATH, {
       method: 'POST',
@@ -148,6 +162,7 @@ interface AddToCartPayload {
   price: number
   currency: string
   quantity: number
+  cartId?: string | null
 }
 export function trackAddToCart(p: AddToCartPayload): void {
   void send('AddToCart', {
@@ -156,13 +171,14 @@ export function trackAddToCart(p: AddToCartPayload): void {
     value: p.price * p.quantity,
     currency: p.currency,
     numItems: p.quantity,
-  })
+  }, {}, { cartToken: p.cartId || null })
 }
 
 interface InitiateCheckoutPayload {
   lines: Array<{ variantId: string; quantity: number }>
   totalValue: number
   currency: string
+  cartId?: string | null
 }
 export function trackInitiateCheckout(p: InitiateCheckoutPayload): void {
   void send('InitiateCheckout', {
@@ -171,5 +187,5 @@ export function trackInitiateCheckout(p: InitiateCheckoutPayload): void {
     value: p.totalValue,
     currency: p.currency,
     numItems: p.lines.reduce((sum, l) => sum + l.quantity, 0),
-  })
+  }, {}, { cartToken: p.cartId || null })
 }

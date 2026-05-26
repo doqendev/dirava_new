@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest'
 import { shopifyClient } from '@/lib/shopify/client'
 import { captureClickIds, clearClickIds } from '../clickIds'
+import { ensureTrackClearSessionId } from '../trackClearSession'
 import { syncCartClickIds } from '../syncCartClickIds'
 
 vi.mock('@/lib/shopify/client', () => ({
@@ -47,6 +48,7 @@ describe('syncCartClickIds', () => {
     captureClickIds()
     document.cookie = '_fbp=fb.1.1.1234567890; Path=/'
     document.cookie = '_fbc=fb.1.1.FB123; Path=/'
+    const sessionId = ensureTrackClearSessionId()
 
     await syncCartClickIds('gid://shopify/Cart/test')
 
@@ -56,6 +58,7 @@ describe('syncCartClickIds', () => {
       | undefined
 
     expect(variables?.attributes).toEqual(expect.arrayContaining([
+      { key: '_trackclear_session_id', value: sessionId },
       { key: '_fbp', value: 'fb.1.1.1234567890' },
       { key: '_fbc', value: 'fb.1.1.FB123' },
       { key: '_fbclid', value: 'FB123' },
@@ -70,6 +73,12 @@ describe('syncCartClickIds', () => {
       { key: '_utm_campaign', value: 'tracking_test' },
       { key: '_utm_content', value: 'creative_a' },
       { key: '_utm_term', value: 'luffy' },
+    ]))
+    expect(variables?.attributes).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        key: '_landing_page',
+        value: expect.stringContaining('fbclid=FB123'),
+      }),
     ]))
   })
 })

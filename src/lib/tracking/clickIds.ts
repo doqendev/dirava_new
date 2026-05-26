@@ -33,6 +33,7 @@ const CLICK_ID_PARAMS = [
 interface StoredClickIds {
   ids: Record<string, string>
   capturedAt: number
+  landingPage?: string
 }
 
 function readStore(): StoredClickIds | null {
@@ -74,7 +75,11 @@ export function captureClickIds(): void {
   try {
     const existing = readStore()
     const merged = { ...(existing?.ids || {}), ...captured }
-    const payload: StoredClickIds = { ids: merged, capturedAt: Date.now() }
+    const payload: StoredClickIds = {
+      ids: merged,
+      capturedAt: Date.now(),
+      landingPage: window.location.href,
+    }
     window.localStorage.setItem(KEY, JSON.stringify(payload))
   } catch {
     // Quota / disabled storage — safe to ignore
@@ -84,6 +89,11 @@ export function captureClickIds(): void {
 /** Get the currently stored click IDs (may be empty object). */
 export function getClickIds(): Record<string, string> {
   return readStore()?.ids ?? {}
+}
+
+/** Landing URL where the currently stored click IDs or UTMs were captured. */
+export function getStoredLandingPage(): string | null {
+  return readStore()?.landingPage || null
 }
 
 /** Clear the stored click IDs (e.g. on logout or opt-out). */
