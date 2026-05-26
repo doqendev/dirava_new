@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/Button'
 import { DiscountCodeInput } from '@/components/cart/DiscountCodeInput'
 import { useCartStore } from '@/stores/cartStore'
 import { useCookieConsentStore } from '@/stores/cookieConsentStore'
-import { syncCartClickIds } from '@/lib/tracking/syncCartClickIds'
+import { continueToCheckoutWithAttribution } from '@/lib/tracking/checkoutAttribution'
 import { trackInitiateCheckout } from '@/lib/tracking/trackClear'
 
 export default function CartContent() {
@@ -29,7 +29,8 @@ export default function CartContent() {
 
   const handleCheckoutClick = (event: MouseEvent) => {
     const store = useCartStore.getState()
-    if (!store.cartId || !checkoutUrl) return
+    const checkoutHref = store.checkoutUrl || checkoutUrl
+    if (!store.cartId || !checkoutHref) return
 
     const consent = useCookieConsentStore.getState()
     if (!consent.consentGiven || !consent.preferences.marketing) return
@@ -44,9 +45,7 @@ export default function CartContent() {
       currency: total?.currencyCode || subtotal?.currencyCode || 'EUR',
       cartId: store.cartId,
     })
-    syncCartClickIds(store.cartId).finally(() => {
-      window.location.href = checkoutUrl
-    })
+    continueToCheckoutWithAttribution(store.cartId, checkoutHref)
   }
 
   if (lines.length === 0) {

@@ -10,6 +10,7 @@ import { useCartStore } from '@/stores/cartStore'
 import { useUIStore } from '@/stores/uiStore'
 import { useToastStore } from '@/stores/toastStore'
 import { useCookieConsentStore } from '@/stores/cookieConsentStore'
+import { syncCartClickIds } from '@/lib/tracking/syncCartClickIds'
 import { trackAddToCart } from '@/lib/tracking/trackClear'
 import { isBlockedName } from '@/lib/utils/personalizationBlocklist'
 
@@ -102,6 +103,9 @@ export function AddToCartButton({
           quantity,
           cartId,
         })
+        if (cartId) {
+          void syncCartClickIds(cartId)
+        }
       }
 
       // Open cart after success
